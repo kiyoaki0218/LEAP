@@ -274,11 +274,11 @@
       <div class="flex bg-slate-200/70 p-1 rounded-xl">
         <button id="shop-tab-prefix" onclick="switchShopTab('prefix')" class="flex-1 py-2 text-xs font-bold rounded-lg bg-white shadow-sm text-slate-900 transition-all flex items-center justify-center gap-1">
           <span>🏷️ 前称号（〇〇の）</span>
-          <span id="prefix-owned-count" class="text-[10px] bg-emerald-100 text-emerald-800 px-1.5 py-0.2 rounded-full">1/16</span>
+          <span id="prefix-owned-count" class="text-[10px] bg-emerald-100 text-emerald-800 px-1.5 py-0.2 rounded-full">1/35</span>
         </button>
         <button id="shop-tab-suffix" onclick="switchShopTab('suffix')" class="flex-1 py-2 text-xs font-bold rounded-lg text-slate-600 hover:text-slate-900 transition-all flex items-center justify-center gap-1">
           <span>🎖️ 後称号（〜〇〇）</span>
-          <span id="suffix-owned-count" class="text-[10px] bg-slate-200 text-slate-600 px-1.5 py-0.2 rounded-full">1/16</span>
+          <span id="suffix-owned-count" class="text-[10px] bg-slate-200 text-slate-600 px-1.5 py-0.2 rounded-full">1/35</span>
         </button>
       </div>
 
@@ -409,42 +409,91 @@
 
     // ショップ称号マスターデータ
         // 称号マスターデータ（前称号 ＆ 後称号）
+        // 称号マスターデータ（前称号 35種 ＆ 後称号 35種 ＝ 1,225通り）
     const PREFIX_TITLES = [
+      // 序盤・手頃 (0〜150 Coin)
       { id: "pre_init", name: "始まりの", price: 0 },
       { id: "pre_novice", name: "見習いの", price: 50 },
       { id: "pre_steady", name: "コツコツの", price: 80 },
-      { id: "pre_effort", name: "努力の", price: 120 },
+      { id: "pre_effort", name: "努力の", price: 100 },
+      { id: "pre_earnest", name: "ひたむきな", price: 120 },
+      { id: "pre_daily", name: "日課の", price: 150 },
+      // 中盤・成長 (200〜600 Coin)
       { id: "pre_swift", name: "疾風の", price: 200 },
-      { id: "pre_veteran", name: "歴戦の", price: 300 },
-      { id: "pre_sleeping", name: "眠れる", price: 400 },
+      { id: "pre_lightning", name: "電光石火の", price: 250 },
+      { id: "pre_precise", name: "精密な", price: 300 },
+      { id: "pre_veteran", name: "歴戦の", price: 350 },
+      { id: "pre_skilled", name: "熟練の", price: 400 },
+      { id: "pre_sleeping", name: "眠れる", price: 450 },
       { id: "pre_lone", name: "孤高の", price: 500 },
+      { id: "pre_fierce", name: "猛烈な", price: 550 },
+      { id: "pre_active", name: "現役の", price: 600 },
+      // 受験・学術系 (650〜1200 Coin)
       { id: "pre_talented", name: "秀才の", price: 650 },
+      { id: "pre_ronin", name: "歴戦浪人の", price: 700 },
+      { id: "pre_study", name: "学究の", price: 750 },
       { id: "pre_awakened", name: "覚醒の", price: 800 },
+      { id: "pre_academic", name: "知性の", price: 900 },
       { id: "pre_genius", name: "天才の", price: 1000 },
-      { id: "pre_indomitable", name: "不屈の", price: 1300 },
+      { id: "pre_unbeaten", name: "常勝の", price: 1100 },
+      { id: "pre_indomitable", name: "不屈の", price: 1200 },
+      // 厨二・属性系 (1300〜2200 Coin)
+      { id: "pre_crimson", name: "紅蓮の", price: 1300 },
+      { id: "pre_azure", name: "蒼穹の", price: 1400 },
+      { id: "pre_darkness", name: "漆黒の", price: 1500 },
       { id: "pre_abyss", name: "深淵の", price: 1600 },
-      { id: "pre_legendary", name: "伝説の", price: 2000 },
-      { id: "pre_mythic", name: "神話の", price: 2500 },
-      { id: "pre_ultimate", name: "究極の", price: 3000 }
+      { id: "pre_phantom", name: "幻影の", price: 1800 },
+      { id: "pre_transcend", name: "超越の", price: 2000 },
+      { id: "pre_dimension", name: "異次元の", price: 2200 },
+      // 神話・究極 (2500〜5000 Coin)
+      { id: "pre_legendary", name: "伝説の", price: 2500 },
+      { id: "pre_mythic", name: "神話の", price: 3000 },
+      { id: "pre_truth", name: "真理の", price: 3500 },
+      { id: "pre_absolute", name: "絶対の", price: 4000 },
+      { id: "pre_ultimate", name: "究極の", price: 5000 }
     ];
 
     const SUFFIX_TITLES = [
+      // 序盤・手頃 (0〜150 Coin)
       { id: "suf_beginner", name: "ビギナー", price: 0 },
       { id: "suf_challenger", name: "チャレンジャー", price: 50 },
       { id: "suf_student", name: "受験生", price: 80 },
-      { id: "suf_worker", name: "努力家", price: 120 },
+      { id: "suf_worker", name: "努力家", price: 100 },
+      { id: "suf_learner", name: "学習者", price: 120 },
+      { id: "suf_candidate", name: "志望者", price: 150 },
+      // 中盤・成長 (200〜600 Coin)
       { id: "suf_honor", name: "優等生", price: 200 },
-      { id: "suf_collector", name: "単語集め人", price: 300 },
-      { id: "suf_seeker", name: "求道者", price: 450 },
-      { id: "suf_elite", name: "難関大突破", price: 600 },
+      { id: "suf_collector", name: "単語集め人", price: 250 },
+      { id: "suf_speed", name: "速読派", price: 300 },
+      { id: "suf_seeker", name: "求道者", price: 350 },
+      { id: "suf_fighter", name: "戦士", price: 400 },
+      { id: "suf_expert", name: "エキスパート", price: 450 },
+      { id: "suf_elite", name: "難関大志望", price: 500 },
+      { id: "suf_march", name: "MARCH志望", price: 550 },
+      { id: "suf_waseda", name: "早慶志望", price: 600 },
+      // 大学・上位志望 (700〜1200 Coin)
+      { id: "suf_med", name: "医学部志望", price: 700 },
       { id: "suf_kyodai", name: "京大志望", price: 800 },
       { id: "suf_todai", name: "東大志望", price: 1000 },
-      { id: "suf_conqueror", name: "語彙の覇者", price: 1300 },
+      { id: "suf_passer", name: "合格者", price: 1100 },
+      { id: "suf_sage", name: "賢者", price: 1200 },
+      // 能力・称号系 (1300〜2200 Coin)
+      { id: "suf_machine", name: "暗記マシン", price: 1300 },
+      { id: "suf_pioneer", name: "開拓者", price: 1400 },
+      { id: "suf_brave", name: "勇者", price: 1500 },
       { id: "suf_king", name: "読解王", price: 1600 },
+      { id: "suf_conqueror", name: "語彙の覇者", price: 1800 },
       { id: "suf_master", name: "LEAPマスター", price: 2000 },
+      { id: "suf_grandmaster", name: "名誉教授", price: 2200 },
+      // 学術・神話・概念系 (2500〜6000 Coin)
       { id: "suf_linguist", name: "言語学者", price: 2500 },
-      { id: "suf_god", name: "語彙の神", price: 3000 },
-      { id: "suf_concept", name: "概念", price: 5000 }
+      { id: "suf_philosopher", name: "哲学者", price: 3000 },
+      { id: "suf_overlord", name: "覇王", price: 3500 },
+      { id: "suf_ruler", name: "絶対王者", price: 4000 },
+      { id: "suf_incarnation", name: "英単語の化身", price: 4500 },
+      { id: "suf_god", name: "語彙の神", price: 5000 },
+      { id: "suf_oracle", name: "神託", price: 5500 },
+      { id: "suf_concept", name: "概念", price: 6000 }
     ];
 
     const STORAGE_KEY = "LEAP_QUIZ_USER_DATA_V2";
@@ -811,38 +860,85 @@
       }
     }
 
-    // LINE / SNS 共有（URL練り込み＆小窓プレビュー対応）
-    async function shareResult(platform) {
+    // 安全でポップアップブロックされないリンク開放ヘルパー（Web標準）
+    function openSafeLink(targetUrl) {
+      const link = document.createElement("a");
+      link.href = targetUrl;
+      link.target = "_blank";
+      link.rel = "noopener noreferrer";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    // LINE / X / クリップボード共有（同期処理でポップアップブロックを完全回避）
+    function shareResult(platform) {
       const resultUrl = generateResultUrl();
-      const text = generateShareText(resultUrl);
+      const finalScore = Math.round(quizState.score);
+      const accuracy = Math.round((quizState.correctCount / quizState.questions.length) * 100);
+      const titleName = getFullTitle();
+
+      // LINE用テキスト (挑戦状メッセージ)
+      const lineMessage = `【LEAP 4択英単語 挑戦状🔥】\n` +
+                          `範囲: ${selectedRange.label}\n` +
+                          `称号: 【${titleName}】\n` +
+                          `スコア: ${finalScore}点 (正答率: ${accuracy}% / 最大コンボ: ${quizState.maxCombo}回)\n\n` +
+                          `👇結果カードを見る＆挑戦する！\n` +
+                          `${resultUrl}`;
+
+      // X (Twitter) 用テキスト
+      const xMessage = `【LEAP 4択英単語 挑戦状🔥】\n` +
+                       `範囲: ${selectedRange.label} でスコア【${finalScore}点】(称号: ${titleName}) を記録！\n` +
+                       `君はこの記録を超えられるか！？\n`;
 
       if (platform === "line") {
-        // LINEスキーム: 本文とURLを確実にLINEトークに渡す（LINE内小窓プレビューが表示される）
-        const lineUrl = `https://line.me/R/msg/text/?${encodeURIComponent(text)}`;
-        window.open(lineUrl, "_blank");
+        // モバイル判定（スマホならLINEアプリ直起動、PCなら公式Web共有）
+        const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+        let lineUrl = "";
+        if (isMobile) {
+          // スマホ: LINEアプリを直接立ち上げて文言＋URLをセット
+          lineUrl = `https://line.me/R/msg/text/?${encodeURIComponent(lineMessage)}`;
+        } else {
+          // PC: LINE公式Webシェア画面（URLプレビューカードが表示される）
+          lineUrl = `https://social-plugins.line.me/lineit/share?url=${encodeURIComponent(resultUrl)}`;
+        }
+        openSafeLink(lineUrl);
         showToast("LINE共有を開きました！");
       } else if (platform === "x") {
-        const xText = `【LEAP 4択クイズ挑戦状🔥】\n範囲: ${selectedRange.label} でスコア ${Math.round(quizState.score)}点を記録！\n君はこの記録を超えられるか！？\n`;
-        const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(xText)}&url=${encodeURIComponent(resultUrl)}&hashtags=LEAP,英単語`;
-        window.open(url, "_blank");
+        // X (旧Twitter) 公式 Web Intent（確実かつ世界標準）
+        const tweetUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(xMessage)}&url=${encodeURIComponent(resultUrl)}&hashtags=${encodeURIComponent("LEAP,英単語")}`;
+        openSafeLink(tweetUrl);
+        showToast("X (Twitter) を開きました！");
       } else if (platform === "copy") {
-        navigator.clipboard.writeText(text).then(() => {
-          showToast("挑戦状URL＆文言をコピーしました！");
-        }).catch(() => {
-          showToast("コピーに失敗しました");
-        });
-      } else if (platform === "share") {
-        if (navigator.share) {
-          try {
-            await navigator.share({
-              title: "LEAP 4択英単語クイズ 結果挑戦状",
-              text: text,
-              url: resultUrl
-            });
-            showToast("共有しました！");
-          } catch(e) {}
+        // クリップボードコピー
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(lineMessage).then(() => {
+            showToast("挑戦状テキストとURLをコピーしました！");
+          }).catch(() => {
+            fallbackCopy(lineMessage);
+          });
+        } else {
+          fallbackCopy(lineMessage);
         }
       }
+    }
+
+    // 古いブラウザ向けのフォールバックコピー
+    function fallbackCopy(text) {
+      const ta = document.createElement("textarea");
+      ta.value = text;
+      ta.style.position = "fixed";
+      ta.style.opacity = "0";
+      document.body.appendChild(ta);
+      ta.focus();
+      ta.select();
+      try {
+        document.execCommand("copy");
+        showToast("挑戦状テキストとURLをコピーしました！");
+      } catch (e) {
+        showToast("コピーに失敗しました");
+      }
+      document.body.removeChild(ta);
     }
 
     // URLの ?res= パラメータから挑戦状を復元表示する処理
