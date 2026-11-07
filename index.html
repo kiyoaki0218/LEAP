@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LEAP 4択英単語クイズ</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: { 50: '#f0fdf4', 500: '#10b981', 600: '#059669', 700: '#047857' }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;500;700&display=swap');
+    body { font-family: 'Inter', 'Noto Sans JP', sans-serif; }
+    .fade-in { animation: fadeIn 0.2s ease-in-out forwards; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+  </style>
+  <!-- 実データ(1〜400)の読み込み -->
+  <script src="./words_data.js"></script>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col justify-between selection:bg-slate-200">
+
+  <!-- ヘッダー -->
+  <header class="w-full max-w-xl mx-auto px-4 py-4 flex items-center justify-between border-b border-slate-200/80">
+    <div class="flex items-center gap-2 cursor-pointer" onclick="navigate('screen-home')">
+      <span class="w-3 h-3 rounded-full bg-emerald-500"></span>
+      <h1 class="font-bold text-lg tracking-tight text-slate-900">LEAP Quiz</h1>
+    </div>
+    <div class="flex items-center gap-3 text-sm">
+      <div class="bg-amber-50 border border-amber-200 px-3 py-1 rounded-full font-medium text-amber-800 flex items-center gap-1 shadow-sm">
+        <span>🪙</span>
+        <span id="header-coins">0</span>
+      </div>
+      <div id="header-title" class="bg-slate-200 text-slate-700 font-semibold px-2.5 py-1 rounded-md text-xs">
+        単語ビギナー
+      </div>
+    </div>
+  </header>
+
+  <!-- メインコンテンツ領域 -->
+  <main class="w-full max-w-xl mx-auto px-4 py-6 flex-1 flex flex-col justify-center">
+
+    <!-- 1. トップ画面 -->
+    <section id="screen-home" class="fade-in space-y-6">
+      <div class="text-center space-y-2 py-4">
+        <span class="inline-block px-3 py-1 bg-emerald-100 text-emerald-800 text-xs font-semibold rounded-full tracking-wider">
+          SIMPLE & SPEEDY
+        </span>
+        <h2 class="text-3xl font-extrabold tracking-tight text-slate-900">LEAP 4択英単語</h2>
+        <p class="text-slate-500 text-sm">英語から日本語の語義を素早く答えるトレーニング</p>
+      </div>
+
+      <!-- ステータスカード -->
+      <div class="grid grid-cols-2 gap-3 bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
+        <div class="p-3 bg-slate-50 rounded-xl">
+          <p class="text-xs text-slate-400 font-medium">ハイスコア</p>
+          <p id="home-highscore" class="text-2xl font-bold text-slate-800 mt-1">0 <span class="text-xs font-normal text-slate-500">pts</span></p>
+        </div>
+        <div class="p-3 bg-slate-50 rounded-xl">
+          <p class="text-xs text-slate-400 font-medium">装着中の称号</p>
+          <p id="home-title" class="text-base font-bold text-emerald-600 truncate mt-1">単語ビギナー</p>
+        </div>
+      </div>
+
+      <!-- 操作ボタン -->
+      <div class="space-y-3 pt-2">
+        <button onclick="navigate('screen-select')" class="w-full py-4 bg-slate-900 hover:bg-slate-800 active:scale-[0.99] text-white font-bold rounded-xl shadow-md transition-all flex items-center justify-center gap-2">
+          <span>クイズを始める</span>
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg>
+        </button>
+        <button onclick="navigate('screen-shop')" class="w-full py-3.5 bg-white hover:bg-slate-100 active:scale-[0.99] border border-slate-200 text-slate-700 font-semibold rounded-xl shadow-sm transition-all flex items-center justify-center gap-2">
+          <span>🛍️ 称号ショップ</span>
+        </button>
+      </div>
+
+      <!-- 単語データ情報・手動読込 -->
+      <div class="pt-4 border-t border-slate-200/80 text-xs text-slate-400 flex flex-col items-center gap-2">
+        <p id="data-status-text">LEAP実データ (ID: 1〜400) 読込済</p>
+        <label class="cursor-pointer text-emerald-600 hover:underline">
+          <span>[+] 追加のJSONファイルを読み込む</span>
+          <input type="file" id="json-file-input" accept=".json" class="hidden" onchange="handleCustomDataUpload(event)">
+        </label>
+      </div>
+    </section>
+
+    <!-- 2. Part / 範囲選択画面 -->
+    <section id="screen-select" class="fade-in hidden space-y-6">
+      <div class="flex items-center justify-between pb-2 border-b border-slate-200">
+        <h2 class="text-xl font-bold text-slate-900">出題範囲の選択</h2>
+        <button onclick="navigate('screen-home')" class="text-sm text-slate-500 hover:text-slate-800">戻る</button>
+      </div>
+
+      <!-- モード切り替えタブ -->
+      <div class="flex bg-slate-200/70 p-1 rounded-xl">
+        <button id="tab-btn-part" onclick="switchRangeMode('part')" class="flex-1 py-2 text-sm font-semibold rounded-lg bg-white shadow-sm text-slate-900 transition-all">Partから選択</button>
+        <button id="tab-btn-custom" onclick="switchRangeMode('custom')" class="flex-1 py-2 text-sm font-semibold rounded-lg text-slate-600 hover:text-slate-900 transition-all">カスタム範囲指定</button>
+      </div>
+
+      <!-- Part選択パネル -->
+      <div id="panel-part" class="space-y-2.5">
+        <!-- Part 1 (実装済・プレイ可能) -->
+        <button onclick="selectPart(1, 1, 400)" class="w-full text-left p-4 bg-white hover:border-emerald-500 border-2 border-emerald-500/80 rounded-xl transition shadow-sm flex justify-between items-center group">
+          <div>
+            <div class="font-bold text-slate-900 group-hover:text-emerald-600 transition flex items-center gap-2">
+              <span>Part 1</span>
+              <span class="text-[10px] bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded-full">プレイ可能</span>
+            </div>
+            <div class="text-xs text-slate-500 mt-0.5">重要・基礎単語 (ID: 1 〜 400)</div>
+          </div>
+          <span class="text-xs font-bold px-3 py-1 bg-emerald-50 text-emerald-700 rounded-md border border-emerald-200">400語</span>
+        </button>
+
+        <!-- Part 2 (未実装・Coming Soon) -->
+        <div class="relative w-full">
+          <button disabled class="w-full text-left p-4 bg-slate-100/70 border border-slate-200/70 rounded-xl flex justify-between items-center cursor-not-allowed opacity-50 select-none">
+            <div>
+              <div class="font-bold text-slate-500">Part 2</div>
+              <div class="text-xs text-slate-400 mt-0.5">標準・頻出単語 (ID: 401 〜 1000)</div>
+            </div>
+            <span class="text-xs font-semibold px-2.5 py-1 bg-slate-200/50 rounded-md text-slate-400">600語</span>
+          </button>
+          <div class="absolute inset-0 flex items-center justify-end pr-4 pointer-events-none">
+            <span class="bg-slate-900/85 backdrop-blur-sm text-amber-300 text-[11px] font-extrabold px-3 py-1 rounded-full tracking-wider shadow flex items-center gap-1.5 border border-slate-700">
+              <span>🔒</span> COMING SOON
+            </span>
+          </div>
+        </div>
+
+        <!-- Part 3 (未実装・Coming Soon) -->
+        <div class="relative w-full">
+          <button disabled class="w-full text-left p-4 bg-slate-100/70 border border-slate-200/70 rounded-xl flex justify-between items-center cursor-not-allowed opacity-50 select-none">
+            <div>
+              <div class="font-bold text-slate-500">Part 3</div>
+              <div class="text-xs text-slate-400 mt-0.5">応用・発展単語 (ID: 1001 〜 1400)</div>
+            </div>
+            <span class="text-xs font-semibold px-2.5 py-1 bg-slate-200/50 rounded-md text-slate-400">400語</span>
+          </button>
+          <div class="absolute inset-0 flex items-center justify-end pr-4 pointer-events-none">
+            <span class="bg-slate-900/85 backdrop-blur-sm text-amber-300 text-[11px] font-extrabold px-3 py-1 rounded-full tracking-wider shadow flex items-center gap-1.5 border border-slate-700">
+              <span>🔒</span> COMING SOON
+            </span>
+          </div>
+        </div>
+
+        <!-- Part 4 (未実装・Coming Soon) -->
+        <div class="relative w-full">
+          <button disabled class="w-full text-left p-4 bg-slate-100/70 border border-slate-200/70 rounded-xl flex justify-between items-center cursor-not-allowed opacity-50 select-none">
+            <div>
+              <div class="font-bold text-slate-500">Part 4</div>
+              <div class="text-xs text-slate-400 mt-0.5">最難関・発展単語 (ID: 1401 〜 2000)</div>
+            </div>
+            <span class="text-xs font-semibold px-2.5 py-1 bg-slate-200/50 rounded-md text-slate-400">600語</span>
+          </button>
+          <div class="absolute inset-0 flex items-center justify-end pr-4 pointer-events-none">
+            <span class="bg-slate-900/85 backdrop-blur-sm text-amber-300 text-[11px] font-extrabold px-3 py-1 rounded-full tracking-wider shadow flex items-center gap-1.5 border border-slate-700">
+              <span>🔒</span> COMING SOON
+            </span>
+          </div>
+        </div>
+
+        <!-- ＋α 難単語 (未実装・Coming Soon) -->
+        <div class="relative w-full">
+          <button disabled class="w-full text-left p-4 bg-slate-100/70 border border-slate-200/70 rounded-xl flex justify-between items-center cursor-not-allowed opacity-50 select-none">
+            <div>
+              <div class="font-bold text-slate-500">+α 難単語</div>
+              <div class="text-xs text-slate-400 mt-0.5">プラスアルファ (ID: 2001 〜 2300)</div>
+            </div>
+            <span class="text-xs font-semibold px-2.5 py-1 bg-slate-200/50 rounded-md text-slate-400">300語</span>
+          </button>
+          <div class="absolute inset-0 flex items-center justify-end pr-4 pointer-events-none">
+            <span class="bg-slate-900/85 backdrop-blur-sm text-amber-300 text-[11px] font-extrabold px-3 py-1 rounded-full tracking-wider shadow flex items-center gap-1.5 border border-slate-700">
+              <span>🔒</span> COMING SOON
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- カスタム範囲指定パネル -->
+      <div id="panel-custom" class="hidden bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+        <div>
+          <label class="block text-xs font-semibold text-slate-500 mb-1">開始 ID</label>
+          <input type="number" id="custom-start-id" value="1" min="1" max="400" class="w-full p-3 border border-slate-300 rounded-xl font-bold text-slate-800 focus:outline-none focus:border-slate-800">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-500 mb-1">終了 ID</label>
+          <input type="number" id="custom-end-id" value="100" min="1" max="400" class="w-full p-3 border border-slate-300 rounded-xl font-bold text-slate-800 focus:outline-none focus:border-slate-800">
+        </div>
+        <p class="text-xs text-emerald-600 font-medium">※ 現在は Part 1 (ID: 1〜400) のデータが収録されています（例: 1〜200、50〜325 など自由に入力可能）。</p>
+      </div>
+
+      <!-- 問題数選択 -->
+      <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-2">
+        <label class="block text-xs font-bold text-slate-500">出題数</label>
+        <div class="grid grid-cols-4 gap-2">
+          <button type="button" onclick="setQuestionCount(10)" class="q-count-btn py-2 text-sm font-semibold border rounded-lg bg-slate-900 text-white border-slate-900">10問</button>
+          <button type="button" onclick="setQuestionCount(20)" class="q-count-btn py-2 text-sm font-semibold border rounded-lg bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100">20問</button>
+          <button type="button" onclick="setQuestionCount(30)" class="q-count-btn py-2 text-sm font-semibold border rounded-lg bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100">30問</button>
+          <button type="button" onclick="setQuestionCount(0)" class="q-count-btn py-2 text-sm font-semibold border rounded-lg bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100">全問</button>
+        </div>
+      </div>
+
+      <button id="start-quiz-btn" onclick="startCustomQuiz()" class="w-full py-4 bg-emerald-600 hover:bg-emerald-700 active:scale-[0.99] text-white font-bold rounded-xl shadow-md transition flex items-center justify-center gap-2">
+        <span>この範囲でスタート</span>
+      </button>
+    </section>
+
+    <!-- 3. クイズ画面 -->
+    <section id="screen-quiz" class="fade-in hidden space-y-6">
+      <!-- 進行バー & 情報 -->
+      <div class="space-y-2">
+        <div class="flex items-center justify-between text-xs text-slate-500 font-medium">
+          <span id="quiz-progress-text">Q 1 / 10</span>
+          <div class="flex items-center gap-3">
+            <span id="quiz-combo-badge" class="hidden text-amber-600 font-bold bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200">
+              🔥 0 COMBO
+            </span>
+            <span id="quiz-range-info" class="text-slate-400">Part 1</span>
+          </div>
+        </div>
+        <div class="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
+          <div id="quiz-progress-bar" class="bg-emerald-500 h-full w-0 transition-all duration-300"></div>
+        </div>
+      </div>
+
+      <!-- 出題単語カード -->
+      <div class="bg-white p-8 rounded-2xl border border-slate-200 shadow-sm text-center min-h-[160px] flex flex-col justify-center items-center">
+        <span id="quiz-word-id" class="text-xs font-semibold text-slate-400 uppercase tracking-widest mb-1">ID: #1</span>
+        <h3 id="quiz-word" class="text-4xl font-extrabold text-slate-900 tracking-tight">agree</h3>
+      </div>
+
+      <!-- 4択選択肢 -->
+      <div id="quiz-options-container" class="space-y-3"></div>
+
+      <div class="text-center">
+        <button onclick="abortQuiz()" class="text-xs text-slate-400 hover:text-rose-500 transition">中断して戻る</button>
+      </div>
+    </section>
+
+    <!-- 4. ショップ画面 -->
+    <section id="screen-shop" class="fade-in hidden space-y-6">
+      <div class="flex items-center justify-between pb-2 border-b border-slate-200">
+        <div>
+          <h2 class="text-xl font-bold text-slate-900">称号ショップ</h2>
+          <p class="text-xs text-slate-400">クイズで稼いだコインで称号を手に入れよう</p>
+        </div>
+        <button onclick="navigate('screen-home')" class="text-sm text-slate-500 hover:text-slate-800">戻る</button>
+      </div>
+
+      <!-- 称号リスト -->
+      <div id="shop-titles-list" class="space-y-3"></div>
+    </section>
+
+    <!-- 5. 結果画面 -->
+    <section id="screen-result" class="fade-in hidden space-y-6">
+      <!-- スコアカードUI -->
+      <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-lg space-y-6 text-center">
+        <div class="space-y-1">
+          <span class="text-xs font-bold uppercase tracking-wider text-slate-400">QUIZ RESULT</span>
+          <h2 id="result-title-name" class="text-xl font-bold text-emerald-600">LEAPマスター</h2>
+        </div>
+
+        <div class="py-4 border-y border-slate-100 flex items-center justify-around">
+          <div>
+            <p class="text-xs text-slate-400">スコア</p>
+            <p id="result-score" class="text-3xl font-extrabold text-slate-900 mt-1">100<span class="text-xs font-normal text-slate-500">点</span></p>
+          </div>
+          <div class="h-10 w-[1px] bg-slate-200"></div>
+          <div>
+            <p class="text-xs text-slate-400">正答率</p>
+            <p id="result-accuracy" class="text-3xl font-extrabold text-emerald-600 mt-1">100<span class="text-xs font-normal text-slate-500">%</span></p>
+          </div>
+          <div class="h-10 w-[1px] bg-slate-200"></div>
+          <div>
+            <p class="text-xs text-slate-400">最大コンボ</p>
+            <p id="result-combo" class="text-3xl font-extrabold text-amber-500 mt-1">10<span class="text-xs font-normal text-slate-500">回</span></p>
+          </div>
+        </div>
+
+        <!-- 獲得コイン報知 -->
+        <div class="bg-amber-50 border border-amber-200 rounded-xl p-3 flex items-center justify-center gap-2 text-amber-900 font-bold text-sm">
+          <span>🪙 獲得コイン:</span>
+          <span id="result-earned-coins">+120 Coin</span>
+        </div>
+
+        <!-- 間違えた単語リスト -->
+        <div id="result-mistakes-section" class="text-left space-y-2 hidden">
+          <h4 class="text-xs font-bold text-slate-500 uppercase">間違えた単語の復習</h4>
+          <div id="result-mistakes-list" class="max-h-40 overflow-y-auto space-y-1.5 text-xs bg-slate-50 p-3 rounded-xl border border-slate-200"></div>
+        </div>
+
+        <!-- SNS・友達共有 -->
+        <div class="space-y-2 pt-2">
+          <p class="text-xs font-semibold text-slate-500">結果をシェアして挑戦状を送る</p>
+          <div class="grid grid-cols-3 gap-2">
+            <button onclick="shareResult('x')" class="py-2.5 px-3 bg-black hover:bg-slate-800 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 shadow-sm transition">
+              <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+              <span>X で共有</span>
+            </button>
+            <button onclick="shareResult('line')" class="py-2.5 px-3 bg-[#06C755] hover:opacity-90 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 shadow-sm transition">
+              <span>LINE で送る</span>
+            </button>
+            <button onclick="shareResult('copy')" class="py-2.5 px-3 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 shadow-sm transition">
+              <span>コピー</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- リトライ / ホームボタン -->
+      <div class="grid grid-cols-2 gap-3">
+        <button onclick="retryCurrentQuiz()" class="py-3.5 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl shadow-md transition text-sm">
+          もう一度挑戦
+        </button>
+        <button onclick="navigate('screen-home')" class="py-3.5 bg-white hover:bg-slate-100 border border-slate-200 text-slate-700 font-bold rounded-xl shadow-sm transition text-sm">
+          トップへ戻る
+        </button>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- トースト通知 -->
+  <div id="toast" class="fixed bottom-5 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-xs font-medium px-4 py-2 rounded-full shadow-lg opacity-0 pointer-events-none transition-all duration-300">
+    コピーしました
+  </div>
+
+  <footer class="py-4 text-center text-xs text-slate-400">
+    LEAP 4-Choice Vocabulary Quiz
+  </footer>
+
+  <script>
+    // 実データ（LEAP_WORDS_DATA: words_data.js）を格納
+    let ALL_WORDS = [];
+    if (typeof LEAP_WORDS_DATA !== 'undefined' && Array.isArray(LEAP_WORDS_DATA)) {
+      ALL_WORDS = [...LEAP_WORDS_DATA];
+    }
+
+    // Vercel等の静的ホスティング時に words.json からも読み込めるフォールバック
+    async function checkAndFetchData() {
+      if (ALL_WORDS.length > 0) return;
+      try {
+        const res = await fetch("./LEAP単語データ/words.json");
+        if (res.ok) {
+          const json = await res.json();
+          if (Array.isArray(json) && json.length > 0) {
+            ALL_WORDS = json;
+            document.getElementById("data-status-text").textContent = `LEAP実データ (${ALL_WORDS.length} 語) 読込済`;
+          }
+        }
+      } catch (e) {
+        console.warn("fetch fallback", e);
+      }
+    }
+
+    // ショップ称号マスターデータ
+    const SHOP_TITLES = [
+      { id: "beginner", name: "単語ビギナー", price: 0, desc: "最初から所持している称号" },
+      { id: "challenger", name: "見習いチャレンジャー", price: 50, desc: "一歩を踏み出した学習者" },
+      { id: "diligent", name: "コツコツ努力家", price: 100, desc: "継続学習を怠らない証" },
+      { id: "collector", name: "単語コレクター", price: 250, desc: "語彙集めに情熱を注ぐ者" },
+      { id: "elite", name: "難関大突破", price: 500, desc: "ハイレベルな語彙力の証" },
+      { id: "kyodai", name: "京大志望", price: 750, desc: "高い知性と読解力を目指す称号" },
+      { id: "todai", name: "東大志望", price: 1000, desc: "最高峰の語彙に挑む覚悟" },
+      { id: "master", name: "LEAPマスター", price: 1500, desc: "LEAPの単語を完全に制覇した証" }
+    ];
+
+    const STORAGE_KEY = "LEAP_QUIZ_USER_DATA";
+    let userData = {
+      coins: 0,
+      highScore: 0,
+      equippedTitle: "単語ビギナー",
+      purchasedTitles: ["beginner"]
+    };
+
+    function loadUserData() {
+      try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) userData = Object.assign(userData, JSON.parse(saved));
+      } catch (e) { console.error(e); }
+      updateUserUI();
+    }
+
+    function saveUserData() {
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(userData)); } catch (e) {}
+      updateUserUI();
+    }
+
+    function updateUserUI() {
+      document.getElementById("header-coins").textContent = userData.coins;
+      document.getElementById("header-title").textContent = userData.equippedTitle;
+      document.getElementById("home-highscore").innerHTML = `${userData.highScore} <span class="text-xs font-normal text-slate-500">pts</span>`;
+      document.getElementById("home-title").textContent = userData.equippedTitle;
+    }
+
+    function handleCustomDataUpload(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        try {
+          const json = JSON.parse(event.target.result);
+          if (Array.isArray(json)) {
+            mergeWords(json);
+            showToast(`${json.length}件の単語データを読み込みました`);
+            document.getElementById("data-status-text").textContent = `単語データ: ${file.name} (${ALL_WORDS.length} 語)`;
+          } else { alert("配列形式のJSONを指定してください。"); }
+        } catch (err) { alert("JSONのパースに失敗しました。"); }
+      };
+      reader.readAsText(file);
+    }
+
+    function mergeWords(newWords) {
+      const map = new Map();
+      ALL_WORDS.forEach(w => map.set(w.id, w));
+      newWords.forEach(w => {
+        let part = w.part || 1;
+        map.set(w.id, { id: w.id, word: w.word, meaning: w.meaning, part });
+      });
+      ALL_WORDS = Array.from(map.values()).sort((a, b) => a.id - b.id);
+    }
+
+    const SCREENS = ["screen-home", "screen-select", "screen-quiz", "screen-shop", "screen-result"];
+    function navigate(screenId) {
+      SCREENS.forEach(id => {
+        const el = document.getElementById(id);
+        if (id === screenId) { el.classList.remove("hidden"); el.classList.add("fade-in"); }
+        else { el.classList.add("hidden"); el.classList.remove("fade-in"); }
+      });
+      window.scrollTo(0, 0);
+      if (screenId === "screen-shop") renderShop();
+    }
+
+    let rangeMode = "part";
+    let selectedRange = { start: 1, end: 400, label: "Part 1" };
+    let questionLimit = 10;
+
+    function switchRangeMode(mode) {
+      rangeMode = mode;
+      const partBtn = document.getElementById("tab-btn-part");
+      const customBtn = document.getElementById("tab-btn-custom");
+      const partPanel = document.getElementById("panel-part");
+      const customPanel = document.getElementById("panel-custom");
+
+      if (mode === "part") {
+        partBtn.className = "flex-1 py-2 text-sm font-semibold rounded-lg bg-white shadow-sm text-slate-900 transition-all";
+        customBtn.className = "flex-1 py-2 text-sm font-semibold rounded-lg text-slate-600 hover:text-slate-900 transition-all";
+        partPanel.classList.remove("hidden");
+        customPanel.classList.add("hidden");
+      } else {
+        customBtn.className = "flex-1 py-2 text-sm font-semibold rounded-lg bg-white shadow-sm text-slate-900 transition-all";
+        partBtn.className = "flex-1 py-2 text-sm font-semibold rounded-lg text-slate-600 hover:text-slate-900 transition-all";
+        partPanel.classList.add("hidden");
+        customPanel.classList.remove("hidden");
+      }
+    }
+
+    function setQuestionCount(count) {
+      questionLimit = count;
+      document.querySelectorAll(".q-count-btn").forEach(btn => {
+        btn.className = "q-count-btn py-2 text-sm font-semibold border rounded-lg bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100";
+      });
+      event.target.className = "q-count-btn py-2 text-sm font-semibold border rounded-lg bg-slate-900 text-white border-slate-900";
+    }
+
+    function selectPart(partNum, start, end) {
+      selectedRange = { start, end, label: `Part ${partNum}` };
+      startQuiz();
+    }
+
+    function startCustomQuiz() {
+      if (rangeMode === "custom") {
+        const start = parseInt(document.getElementById("custom-start-id").value) || 1;
+        const end = parseInt(document.getElementById("custom-end-id").value) || 100;
+        if (start > end) { alert("開始IDは終了ID以下にしてください。"); return; }
+        selectedRange = { start, end, label: `ID: ${start}〜${end}` };
+      }
+      startQuiz();
+    }
+
+    let quizState = { questions: [], currentIndex: 0, score: 0, combo: 0, maxCombo: 0, correctCount: 0, earnedCoins: 0, mistakes: [], isAnswered: false };
+
+    function startQuiz() {
+      let pool = ALL_WORDS.filter(w => w.id >= selectedRange.start && w.id <= selectedRange.end);
+      if (pool.length === 0) {
+        alert(`指定された範囲（ID: ${selectedRange.start}〜${selectedRange.end}）に単語が存在しません。\n※ 現在はID: 1〜400に対応しています。`);
+        return;
+      }
+      pool = shuffleArray([...pool]);
+      let qCount = questionLimit === 0 ? pool.length : Math.min(questionLimit, pool.length);
+      const selectedWords = pool.slice(0, qCount);
+
+      quizState.questions = selectedWords.map(targetWord => {
+        let candidates = ALL_WORDS.filter(w => w.id !== targetWord.id);
+        candidates = shuffleArray(candidates).slice(0, 3);
+        const options = shuffleArray([
+          { text: targetWord.meaning, isCorrect: true },
+          ...candidates.map(c => ({ text: c.meaning, isCorrect: false }))
+        ]);
+        return { word: targetWord, options: options };
+      });
+
+      quizState.currentIndex = 0;
+      quizState.score = 0;
+      quizState.combo = 0;
+      quizState.maxCombo = 0;
+      quizState.correctCount = 0;
+      quizState.earnedCoins = 0;
+      quizState.mistakes = [];
+      quizState.isAnswered = false;
+
+      document.getElementById("quiz-range-info").textContent = selectedRange.label;
+      navigate("screen-quiz");
+      renderQuestion();
+    }
+
+    function renderQuestion() {
+      const q = quizState.questions[quizState.currentIndex];
+      quizState.isAnswered = false;
+
+      const total = quizState.questions.length;
+      const current = quizState.currentIndex + 1;
+      document.getElementById("quiz-progress-text").textContent = `Q ${current} / ${total}`;
+      document.getElementById("quiz-progress-bar").style.width = `${((current - 1) / total) * 100}%`;
+
+      const comboBadge = document.getElementById("quiz-combo-badge");
+      if (quizState.combo >= 2) {
+        comboBadge.textContent = `🔥 ${quizState.combo} COMBO`;
+        comboBadge.classList.remove("hidden");
+      } else { comboBadge.classList.add("hidden"); }
+
+      document.getElementById("quiz-word-id").textContent = `ID: #${q.word.id}`;
+      document.getElementById("quiz-word").textContent = q.word.word;
+
+      const container = document.getElementById("quiz-options-container");
+      container.innerHTML = "";
+
+      q.options.forEach((opt, idx) => {
+        const btn = document.createElement("button");
+        btn.className = "w-full text-left p-4 bg-white hover:bg-slate-50 border border-slate-200 rounded-xl font-medium text-slate-800 transition active:scale-[0.99] flex items-center gap-3";
+        btn.innerHTML = `<span class="w-6 h-6 rounded-md bg-slate-100 text-slate-500 text-xs font-bold flex items-center justify-center shrink-0 border border-slate-200">${idx + 1}</span><span class="text-sm leading-snug">${opt.text}</span>`;
+        btn.onclick = () => handleAnswer(opt, btn);
+        container.appendChild(btn);
+      });
+    }
+
+    function handleAnswer(selectedOption, clickedBtn) {
+      if (quizState.isAnswered) return;
+      quizState.isAnswered = true;
+
+      const q = quizState.questions[quizState.currentIndex];
+      const buttons = document.getElementById("quiz-options-container").querySelectorAll("button");
+
+      if (selectedOption.isCorrect) {
+        quizState.correctCount++;
+        quizState.combo++;
+        if (quizState.combo > quizState.maxCombo) quizState.maxCombo = quizState.combo;
+
+        let coinBonus = 10;
+        if (quizState.combo >= 10) coinBonus += 10;
+        else if (quizState.combo >= 5) coinBonus += 5;
+        else if (quizState.combo >= 3) coinBonus += 2;
+
+        quizState.earnedCoins += coinBonus;
+        quizState.score += (100 / quizState.questions.length);
+
+        clickedBtn.classList.remove("bg-white", "hover:bg-slate-50", "border-slate-200");
+        clickedBtn.classList.add("bg-emerald-50", "border-emerald-500", "text-emerald-900");
+      } else {
+        quizState.combo = 0;
+        quizState.mistakes.push(q.word);
+        clickedBtn.classList.remove("bg-white", "hover:bg-slate-50", "border-slate-200");
+        clickedBtn.classList.add("bg-rose-50", "border-rose-400", "text-rose-900");
+        buttons.forEach((btn, idx) => {
+          if (q.options[idx].isCorrect) btn.classList.add("bg-emerald-50", "border-emerald-500", "text-emerald-900");
+        });
+      }
+
+      setTimeout(() => {
+        quizState.currentIndex++;
+        if (quizState.currentIndex < quizState.questions.length) renderQuestion();
+        else finishQuiz();
+      }, 700);
+    }
+
+    window.addEventListener("keydown", (e) => {
+      const quizScreen = document.getElementById("screen-quiz");
+      if (quizScreen.classList.contains("hidden") || quizState.isAnswered) return;
+      if (["1", "2", "3", "4"].includes(e.key)) {
+        const buttons = document.getElementById("quiz-options-container").querySelectorAll("button");
+        const idx = parseInt(e.key) - 1;
+        if (buttons[idx]) buttons[idx].click();
+      }
+    });
+
+    function abortQuiz() {
+      if (confirm("クイズを中断してトップ画面に戻りますか？")) navigate("screen-home");
+    }
+
+    function finishQuiz() {
+      const totalQ = quizState.questions.length;
+      const finalScore = Math.round(quizState.score);
+      const accuracy = Math.round((quizState.correctCount / totalQ) * 100);
+
+      userData.coins += quizState.earnedCoins;
+      if (finalScore > userData.highScore) userData.highScore = finalScore;
+      saveUserData();
+
+      document.getElementById("result-title-name").textContent = userData.equippedTitle;
+      document.getElementById("result-score").innerHTML = `${finalScore}<span class="text-xs font-normal text-slate-500">点</span>`;
+      document.getElementById("result-accuracy").innerHTML = `${accuracy}<span class="text-xs font-normal text-slate-500">%</span>`;
+      document.getElementById("result-combo").innerHTML = `${quizState.maxCombo}<span class="text-xs font-normal text-slate-500">回</span>`;
+      document.getElementById("result-earned-coins").textContent = `+${quizState.earnedCoins} Coin`;
+
+      const mistakeSection = document.getElementById("result-mistakes-section");
+      const mistakeList = document.getElementById("result-mistakes-list");
+      mistakeList.innerHTML = "";
+
+      if (quizState.mistakes.length > 0) {
+        mistakeSection.classList.remove("hidden");
+        quizState.mistakes.forEach(w => {
+          const item = document.createElement("div");
+          item.className = "flex justify-between py-1 border-b border-slate-200/60 last:border-0";
+          item.innerHTML = `<span class="font-bold text-slate-800">${w.word}</span> <span class="text-slate-600">${w.meaning}</span>`;
+          mistakeList.appendChild(item);
+        });
+      } else { mistakeSection.classList.add("hidden"); }
+
+      navigate("screen-result");
+    }
+
+    function retryCurrentQuiz() { startQuiz(); }
+
+    function generateShareText() {
+      const finalScore = Math.round(quizState.score);
+      const accuracy = Math.round((quizState.correctCount / quizState.questions.length) * 100);
+      return `【LEAP 4択クイズ挑戦状🔥】\n` +
+             `範囲: ${selectedRange.label}\n` +
+             `称号: 【${userData.equippedTitle}】\n` +
+             `スコア: ${finalScore}点 (正答率: ${accuracy}% / 最大コンボ: ${quizState.maxCombo}回)\n\n` +
+             `君はこの記録を超えられるか！？ #LEAP #英単語`;
+    }
+
+    function shareResult(platform) {
+      const text = generateShareText();
+      const currentUrl = window.location.href;
+      if (platform === "x") {
+        window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(currentUrl)}`, "_blank");
+      } else if (platform === "line") {
+        window.open(`https://social-plugins.line.me/lineit/share?url=${encodeURIComponent(currentUrl + "\n\n" + text)}`, "_blank");
+      } else if (platform === "copy") {
+        navigator.clipboard.writeText(text + "\n" + currentUrl).then(() => showToast("挑戦状テキストをコピーしました！")).catch(() => showToast("コピーに失敗しました"));
+      }
+    }
+
+    function renderShop() {
+      const container = document.getElementById("shop-titles-list");
+      container.innerHTML = "";
+
+      SHOP_TITLES.forEach(title => {
+        const isOwned = userData.purchasedTitles.includes(title.id);
+        const isEquipped = userData.equippedTitle === title.name;
+
+        const card = document.createElement("div");
+        card.className = "p-4 bg-white border border-slate-200 rounded-2xl flex items-center justify-between shadow-sm";
+
+        let actionBtnHtml = "";
+        if (isEquipped) {
+          actionBtnHtml = `<span class="text-xs font-bold px-3 py-1.5 bg-emerald-100 text-emerald-800 rounded-lg">装着中</span>`;
+        } else if (isOwned) {
+          actionBtnHtml = `<button onclick="equipTitle('${title.name}')" class="text-xs font-bold px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-white rounded-lg transition">装着する</button>`;
+        } else {
+          actionBtnHtml = `<button onclick="buyTitle('${title.id}', ${title.price}, '${title.name}')" class="text-xs font-bold px-3 py-1.5 bg-amber-500 hover:bg-amber-600 text-white rounded-lg transition flex items-center gap-1 shadow-sm"><span>🪙 ${title.price}</span><span>購入</span></button>`;
+        }
+
+        card.innerHTML = `<div><div class="font-bold text-slate-800 text-sm flex items-center gap-1.5"><span>${title.name}</span></div><div class="text-xs text-slate-400 mt-0.5">${title.desc}</div></div><div>${actionBtnHtml}</div>`;
+        container.appendChild(card);
+      });
+    }
+
+    function buyTitle(id, price, name) {
+      if (userData.coins < price) { alert("コインが足りません！"); return; }
+      userData.coins -= price;
+      userData.purchasedTitles.push(id);
+      userData.equippedTitle = name;
+      saveUserData();
+      showToast(`称号「${name}」を獲得・装着しました！`);
+      renderShop();
+    }
+
+    function equipTitle(name) {
+      userData.equippedTitle = name;
+      saveUserData();
+      showToast(`称号「${name}」を装着しました`);
+      renderShop();
+    }
+
+    function shuffleArray(arr) {
+      const copy = [...arr];
+      for (let i = copy.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [copy[i], copy[j]] = [copy[j], copy[i]];
+      }
+      return copy;
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById("toast");
+      toast.textContent = msg;
+      toast.classList.remove("opacity-0", "pointer-events-none");
+      toast.classList.add("opacity-100");
+      setTimeout(() => { toast.classList.remove("opacity-100"); toast.classList.add("opacity-0", "pointer-events-none"); }, 2000);
+    }
+
+    window.addEventListener("DOMContentLoaded", () => {
+      loadUserData();
+      checkAndFetchData();
+    });
+  </script>
+</body>
+</html>
