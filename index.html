@@ -4,6 +4,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>LEAP 4択英単語クイズ</title>
+  <!-- Open Graph / LINE リンクプレビュー用設定 -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="LEAP 4択英単語クイズ 挑戦状🔥">
+  <meta property="og:description" content="大学受験英単語LEAPの4択クイズ！友達のスコア記録に挑んでみよう！">
+  <meta name="description" content="大学受験英単語LEAPの4択クイズ！友達のスコア記録に挑んでみよう！">
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -264,8 +269,11 @@
       <!-- スコアカードUI -->
       <div id="result-card" class="bg-white rounded-3xl p-6 border border-slate-200 shadow-lg space-y-6 text-center">
         <div class="space-y-1">
-          <span class="text-xs font-bold uppercase tracking-wider text-slate-400">QUIZ RESULT</span>
+          <span id="result-header-label" class="text-xs font-bold uppercase tracking-wider text-slate-400">QUIZ RESULT</span>
           <h2 id="result-title-name" class="text-xl font-bold text-emerald-600">LEAPマスター</h2>
+          <p id="result-challenge-badge" class="hidden text-xs font-bold text-amber-700 bg-amber-100 py-1 px-3 rounded-full inline-block mt-1">
+            🔥 友達からの挑戦状！この記録を超えられるか？
+          </p>
         </div>
 
         <div class="py-4 border-y border-slate-100 flex items-center justify-around">
@@ -321,13 +329,21 @@
         </div>
       </div>
 
-      <!-- リトライ / ホームボタン -->
-      <div class="grid grid-cols-2 gap-3">
+      <!-- リトライ / ホームボタン / 挑戦ボタン -->
+      <div id="result-action-buttons" class="grid grid-cols-2 gap-3">
         <button onclick="retryCurrentQuiz()" class="py-3.5 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl shadow-md transition text-sm">
           もう一度挑戦
         </button>
         <button onclick="navigate('screen-home')" class="py-3.5 bg-white hover:bg-slate-100 border border-slate-200 text-slate-700 font-bold rounded-xl shadow-sm transition text-sm">
           トップへ戻る
+        </button>
+      </div>
+      <div id="result-challenge-action" class="hidden space-y-2">
+        <button onclick="acceptChallenge()" class="w-full py-4 bg-emerald-600 hover:bg-emerald-700 active:scale-[0.99] text-white font-bold rounded-xl shadow-md transition flex items-center justify-center gap-2 text-base">
+          <span>⚔️ この挑戦を受けて立つ！</span>
+        </button>
+        <button onclick="navigate('screen-home')" class="w-full py-3 bg-white hover:bg-slate-100 border border-slate-200 text-slate-700 font-bold rounded-xl text-sm transition">
+          トップ画面へ
         </button>
       </div>
     </section>
@@ -620,7 +636,14 @@
       if (finalScore > userData.highScore) userData.highScore = finalScore;
       saveUserData();
 
+      document.getElementById("result-header-label").textContent = "QUIZ RESULT";
       document.getElementById("result-title-name").textContent = userData.equippedTitle;
+      const chBadge = document.getElementById("result-challenge-badge");
+      if (chBadge) chBadge.classList.add("hidden");
+      const ecBox = document.getElementById("result-earned-coins").parentElement;
+      if (ecBox) ecBox.classList.remove("hidden");
+      document.getElementById("result-action-buttons").classList.remove("hidden");
+      document.getElementById("result-challenge-action").classList.add("hidden");
       document.getElementById("result-score").innerHTML = `${finalScore}<span class="text-xs font-normal text-slate-500">点</span>`;
       document.getElementById("result-accuracy").innerHTML = `${accuracy}<span class="text-xs font-normal text-slate-500">%</span>`;
       document.getElementById("result-combo").innerHTML = `${quizState.maxCombo}<span class="text-xs font-normal text-slate-500">回</span>`;
@@ -645,20 +668,40 @@
 
     function retryCurrentQuiz() { startQuiz(); }
 
-    function generateShareText() {
+    // 結果をURLパラメータに練り込んだ共有用URLを生成
+    function generateResultUrl() {
+      const finalScore = Math.round(quizState.score);
+      const accuracy = Math.round((quizState.correctCount / quizState.questions.length) * 100);
+      const data = {
+        s: finalScore,
+        a: accuracy,
+        c: quizState.maxCombo,
+        t: userData.equippedTitle,
+        rs: selectedRange.start,
+        re: selectedRange.end,
+        rl: selectedRange.label
+      };
+      // URLセーフなBase64エンコード
+      const jsonStr = encodeURIComponent(JSON.stringify(data));
+      const b64 = btoa(jsonStr).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+      const base = window.location.origin + window.location.pathname;
+      return `${base}?res=${b64}`;
+    }
+
+    function generateShareText(resultUrl) {
       const finalScore = Math.round(quizState.score);
       const accuracy = Math.round((quizState.correctCount / quizState.questions.length) * 100);
       return `【LEAP 4択クイズ挑戦状🔥】\n` +
              `範囲: ${selectedRange.label}\n` +
              `称号: 【${userData.equippedTitle}】\n` +
              `スコア: ${finalScore}点 (正答率: ${accuracy}% / 最大コンボ: ${quizState.maxCombo}回)\n\n` +
-             `君はこの記録を超えられるか！？ #LEAP #英単語`;
+             `👇私の結果を見る＆挑戦を受ける！\n` +
+             `${resultUrl}`;
     }
 
     // 結果カードの画像Blobを生成
     async function captureResultBlob() {
       const card = document.getElementById("result-card");
-      // 共有エリアなど一時的に隠したい要素があれば隠す
       const shareBox = card.querySelector(".space-y-3.pt-2");
       if (shareBox) shareBox.style.display = "none";
 
@@ -696,53 +739,94 @@
       }
     }
 
-    // LINE / SNS 共有（Web Share APIによる画像付き共有対応）
+    // LINE / SNS 共有（URL練り込み＆小窓プレビュー対応）
     async function shareResult(platform) {
-      const text = generateShareText();
-      const currentUrl = window.location.href;
+      const resultUrl = generateResultUrl();
+      const text = generateShareText(resultUrl);
 
-      // LINEや共有ボタン押下時: Web Share API (画像添付) を最優先で試行
-      if (navigator.canShare) {
-        try {
-          showToast("共有データを準備中...");
-          const blob = await captureResultBlob();
-          const file = new File([blob], "leap_score.png", { type: "image/png" });
-
-          if (navigator.canShare({ files: [file] })) {
-            await navigator.share({
-              title: "LEAP 4択英単語クイズ 結果",
-              text: text,
-              url: currentUrl,
-              files: [file]
-            });
-            showToast("共有シートを開きました！");
-            return;
-          }
-        } catch (e) {
-          // ユーザーによるキャンセルや非対応の場合はフォールバックへ
-          if (e.name === "AbortError") return;
-        }
-      }
-
-      // Web Share API 非対応環境向けのフォールバック
       if (platform === "line") {
-        // スクショ画像を自動ダウンロードしてからLINEを開く
-        downloadResultImage();
-        showToast("画像を保存しました！LINEで貼って送ろう");
-        setTimeout(() => {
-          const url = `https://social-plugins.line.me/lineit/share?url=${encodeURIComponent(currentUrl + "\n\n" + text)}`;
-          window.open(url, "_blank");
-        }, 1000);
+        // LINEスキーム: 本文とURLを確実にLINEトークに渡す（LINE内小窓プレビューが表示される）
+        const lineUrl = `https://line.me/R/msg/text/?${encodeURIComponent(text)}`;
+        window.open(lineUrl, "_blank");
+        showToast("LINE共有を開きました！");
       } else if (platform === "x") {
-        const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(currentUrl)}`;
+        const xText = `【LEAP 4択クイズ挑戦状🔥】\n範囲: ${selectedRange.label} でスコア ${Math.round(quizState.score)}点を記録！\n君はこの記録を超えられるか！？\n`;
+        const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(xText)}&url=${encodeURIComponent(resultUrl)}&hashtags=LEAP,英単語`;
         window.open(url, "_blank");
       } else if (platform === "copy") {
-        navigator.clipboard.writeText(text + "\n" + currentUrl).then(() => {
-          showToast("挑戦状テキストをコピーしました！");
+        navigator.clipboard.writeText(text).then(() => {
+          showToast("挑戦状URL＆文言をコピーしました！");
         }).catch(() => {
           showToast("コピーに失敗しました");
         });
+      } else if (platform === "share") {
+        if (navigator.share) {
+          try {
+            await navigator.share({
+              title: "LEAP 4択英単語クイズ 結果挑戦状",
+              text: text,
+              url: resultUrl
+            });
+            showToast("共有しました！");
+          } catch(e) {}
+        }
       }
+    }
+
+    // URLの ?res= パラメータから挑戦状を復元表示する処理
+    let incomingChallengeRange = null;
+
+    function checkIncomingChallenge() {
+      const params = new URLSearchParams(window.location.search);
+      const resParam = params.get("res");
+      if (!resParam) return;
+
+      try {
+        // Base64デコード
+        let b64 = resParam.replace(/-/g, "+").replace(/_/g, "/");
+        while (b64.length % 4) b64 += "=";
+        const jsonStr = decodeURIComponent(atob(b64));
+        const d = JSON.parse(jsonStr);
+
+        incomingChallengeRange = {
+          start: d.rs || 1,
+          end: d.re || 400,
+          label: d.rl || "Part 1"
+        };
+        selectedRange = incomingChallengeRange;
+
+        // 結果画面のUIを挑戦状モードに設定
+        document.getElementById("result-header-label").textContent = "CHALLENGE FROM FRIEND";
+        document.getElementById("result-title-name").textContent = `称号: 【${d.t || "挑戦者"}】`;
+        document.getElementById("result-score").innerHTML = `${d.s || 0}<span class="text-xs font-normal text-slate-500">点</span>`;
+        document.getElementById("result-accuracy").innerHTML = `${d.a || 0}<span class="text-xs font-normal text-slate-500">%</span>`;
+        document.getElementById("result-combo").innerHTML = `${d.c || 0}<span class="text-xs font-normal text-slate-500">回</span>`;
+
+        const challengeBadge = document.getElementById("result-challenge-badge");
+        if (challengeBadge) {
+          challengeBadge.textContent = `🔥 友達からの挑戦状！出題範囲: ${d.rl || "Part 1"}`;
+          challengeBadge.classList.remove("hidden");
+        }
+
+        // コイン獲得表示を隠す
+        const earnedCoinsBox = document.getElementById("result-earned-coins").parentElement;
+        if (earnedCoinsBox) earnedCoinsBox.classList.add("hidden");
+
+        // ボタンの切り替え
+        document.getElementById("result-action-buttons").classList.add("hidden");
+        document.getElementById("result-challenge-action").classList.remove("hidden");
+
+        navigate("screen-result");
+      } catch (err) {
+        console.warn("Failed to parse challenge url parameter", err);
+      }
+    }
+
+    function acceptChallenge() {
+      if (incomingChallengeRange) {
+        selectedRange = incomingChallengeRange;
+      }
+      startQuiz();
     }
 
     function renderShop() {
@@ -807,6 +891,7 @@
     window.addEventListener("DOMContentLoaded", () => {
       loadUserData();
       checkAndFetchData();
+      checkIncomingChallenge();
     });
   </script>
 </body>
