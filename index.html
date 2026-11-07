@@ -30,6 +30,7 @@
   </style>
   <!-- 実データ(1〜400)の読み込み -->
   <script src="./words_data.js"></script>
+  <!-- html2canvas (スクリーンショット生成) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col justify-between selection:bg-slate-200">
@@ -46,7 +47,7 @@
         <span id="header-coins">0</span>
       </div>
       <div id="header-title" class="bg-slate-200 text-slate-700 font-semibold px-2.5 py-1 rounded-md text-xs">
-        単語ビギナー
+        始まりのビギナー
       </div>
     </div>
   </header>
@@ -72,17 +73,17 @@
         </div>
         <div class="p-3 bg-slate-50 rounded-xl">
           <p class="text-xs text-slate-400 font-medium">装着中の称号</p>
-          <p id="home-title" class="text-base font-bold text-emerald-600 truncate mt-1">単語ビギナー</p>
+          <p id="home-title" class="text-base font-bold text-emerald-600 truncate mt-1">始まりのビギナー</p>
         </div>
       </div>
 
       <!-- 操作ボタン -->
       <div class="space-y-3 pt-2">
-        <button onclick="navigate('screen-select')" class="w-full py-4 bg-slate-900 hover:bg-slate-800 active:scale-[0.99] text-white font-bold rounded-xl shadow-md transition-all flex items-center justify-center gap-2">
+        <button type="button" onclick="navigate('screen-select')" class="w-full py-4 bg-slate-900 hover:bg-slate-800 active:scale-[0.99] text-white font-bold rounded-xl shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer">
           <span>クイズを始める</span>
           <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg>
         </button>
-        <button onclick="navigate('screen-shop')" class="w-full py-3.5 bg-white hover:bg-slate-100 active:scale-[0.99] border border-slate-200 text-slate-700 font-semibold rounded-xl shadow-sm transition-all flex items-center justify-center gap-2">
+        <button type="button" onclick="navigate('screen-shop')" class="w-full py-3.5 bg-white hover:bg-slate-100 active:scale-[0.99] border border-slate-200 text-slate-700 font-semibold rounded-xl shadow-sm transition-all flex items-center justify-center gap-2 cursor-pointer">
           <span>🛍️ 称号ショップ</span>
         </button>
       </div>
@@ -101,19 +102,19 @@
     <section id="screen-select" class="fade-in hidden space-y-6">
       <div class="flex items-center justify-between pb-2 border-b border-slate-200">
         <h2 class="text-xl font-bold text-slate-900">出題範囲の選択</h2>
-        <button onclick="navigate('screen-home')" class="text-sm text-slate-500 hover:text-slate-800">戻る</button>
+        <button type="button" onclick="navigate('screen-home')" class="text-sm text-slate-500 hover:text-slate-800">戻る</button>
       </div>
 
       <!-- モード切り替えタブ -->
       <div class="flex bg-slate-200/70 p-1 rounded-xl">
-        <button id="tab-btn-part" onclick="switchRangeMode('part')" class="flex-1 py-2 text-sm font-semibold rounded-lg bg-white shadow-sm text-slate-900 transition-all">Partから選択</button>
-        <button id="tab-btn-custom" onclick="switchRangeMode('custom')" class="flex-1 py-2 text-sm font-semibold rounded-lg text-slate-600 hover:text-slate-900 transition-all">カスタム範囲指定</button>
+        <button type="button" id="tab-btn-part" onclick="switchRangeMode('part')" class="flex-1 py-2 text-sm font-semibold rounded-lg bg-white shadow-sm text-slate-900 transition-all">Partから選択</button>
+        <button type="button" id="tab-btn-custom" onclick="switchRangeMode('custom')" class="flex-1 py-2 text-sm font-semibold rounded-lg text-slate-600 hover:text-slate-900 transition-all">カスタム範囲指定</button>
       </div>
 
       <!-- Part選択パネル -->
       <div id="panel-part" class="space-y-2.5">
         <!-- Part 1 (実装済・プレイ可能) -->
-        <button onclick="selectPart(1, 1, 400)" class="w-full text-left p-4 bg-white hover:border-emerald-500 border-2 border-emerald-500/80 rounded-xl transition shadow-sm flex justify-between items-center group">
+        <button type="button" onclick="selectPart(1, 1, 400)" class="w-full text-left p-4 bg-white hover:border-emerald-500 border-2 border-emerald-500/80 rounded-xl transition shadow-sm flex justify-between items-center group cursor-pointer">
           <div>
             <div class="font-bold text-slate-900 group-hover:text-emerald-600 transition flex items-center gap-2">
               <span>Part 1</span>
@@ -126,7 +127,7 @@
 
         <!-- Part 2 (未実装・Coming Soon) -->
         <div class="relative w-full">
-          <button disabled class="w-full text-left p-4 bg-slate-100/70 border border-slate-200/70 rounded-xl flex justify-between items-center cursor-not-allowed opacity-50 select-none">
+          <button disabled type="button" class="w-full text-left p-4 bg-slate-100/70 border border-slate-200/70 rounded-xl flex justify-between items-center cursor-not-allowed opacity-50 select-none">
             <div>
               <div class="font-bold text-slate-500">Part 2</div>
               <div class="text-xs text-slate-400 mt-0.5">標準・頻出単語 (ID: 401 〜 1000)</div>
@@ -142,7 +143,7 @@
 
         <!-- Part 3 (未実装・Coming Soon) -->
         <div class="relative w-full">
-          <button disabled class="w-full text-left p-4 bg-slate-100/70 border border-slate-200/70 rounded-xl flex justify-between items-center cursor-not-allowed opacity-50 select-none">
+          <button disabled type="button" class="w-full text-left p-4 bg-slate-100/70 border border-slate-200/70 rounded-xl flex justify-between items-center cursor-not-allowed opacity-50 select-none">
             <div>
               <div class="font-bold text-slate-500">Part 3</div>
               <div class="text-xs text-slate-400 mt-0.5">応用・発展単語 (ID: 1001 〜 1400)</div>
@@ -158,7 +159,7 @@
 
         <!-- Part 4 (未実装・Coming Soon) -->
         <div class="relative w-full">
-          <button disabled class="w-full text-left p-4 bg-slate-100/70 border border-slate-200/70 rounded-xl flex justify-between items-center cursor-not-allowed opacity-50 select-none">
+          <button disabled type="button" class="w-full text-left p-4 bg-slate-100/70 border border-slate-200/70 rounded-xl flex justify-between items-center cursor-not-allowed opacity-50 select-none">
             <div>
               <div class="font-bold text-slate-500">Part 4</div>
               <div class="text-xs text-slate-400 mt-0.5">最難関・発展単語 (ID: 1401 〜 2000)</div>
@@ -174,7 +175,7 @@
 
         <!-- ＋α 難単語 (未実装・Coming Soon) -->
         <div class="relative w-full">
-          <button disabled class="w-full text-left p-4 bg-slate-100/70 border border-slate-200/70 rounded-xl flex justify-between items-center cursor-not-allowed opacity-50 select-none">
+          <button disabled type="button" class="w-full text-left p-4 bg-slate-100/70 border border-slate-200/70 rounded-xl flex justify-between items-center cursor-not-allowed opacity-50 select-none">
             <div>
               <div class="font-bold text-slate-500">+α 難単語</div>
               <div class="text-xs text-slate-400 mt-0.5">プラスアルファ (ID: 2001 〜 2300)</div>
@@ -213,7 +214,7 @@
         </div>
       </div>
 
-      <button id="start-quiz-btn" onclick="startCustomQuiz()" class="w-full py-4 bg-emerald-600 hover:bg-emerald-700 active:scale-[0.99] text-white font-bold rounded-xl shadow-md transition flex items-center justify-center gap-2">
+      <button type="button" id="start-quiz-btn" onclick="startCustomQuiz()" class="w-full py-4 bg-emerald-600 hover:bg-emerald-700 active:scale-[0.99] text-white font-bold rounded-xl shadow-md transition flex items-center justify-center gap-2 cursor-pointer">
         <span>この範囲でスタート</span>
       </button>
     </section>
@@ -246,7 +247,7 @@
       <div id="quiz-options-container" class="space-y-3"></div>
 
       <div class="text-center">
-        <button onclick="abortQuiz()" class="text-xs text-slate-400 hover:text-rose-500 transition">中断して戻る</button>
+        <button type="button" onclick="abortQuiz()" class="text-xs text-slate-400 hover:text-rose-500 transition">中断して戻る</button>
       </div>
     </section>
 
@@ -257,7 +258,7 @@
           <h2 class="text-xl font-bold text-slate-900">称号カスタムショップ</h2>
           <p class="text-xs text-slate-400">前称号と後称号を組み合わせて自分だけの二つ名を作ろう</p>
         </div>
-        <button onclick="navigate('screen-home')" class="text-sm text-slate-500 hover:text-slate-800 font-medium">戻る</button>
+        <button type="button" onclick="navigate('screen-home')" class="text-sm text-slate-500 hover:text-slate-800 font-medium">戻る</button>
       </div>
 
       <!-- 現在の装着称号プレビューカード -->
@@ -272,11 +273,11 @@
 
       <!-- 前称号 / 後称号 切替タブ -->
       <div class="flex bg-slate-200/70 p-1 rounded-xl">
-        <button id="shop-tab-prefix" onclick="switchShopTab('prefix')" class="flex-1 py-2 text-xs font-bold rounded-lg bg-white shadow-sm text-slate-900 transition-all flex items-center justify-center gap-1">
+        <button type="button" id="shop-tab-prefix" onclick="switchShopTab('prefix')" class="flex-1 py-2 text-xs font-bold rounded-lg bg-white shadow-sm text-slate-900 transition-all flex items-center justify-center gap-1 cursor-pointer">
           <span>🏷️ 前称号（〇〇の）</span>
           <span id="prefix-owned-count" class="text-[10px] bg-emerald-100 text-emerald-800 px-1.5 py-0.2 rounded-full">1/35</span>
         </button>
-        <button id="shop-tab-suffix" onclick="switchShopTab('suffix')" class="flex-1 py-2 text-xs font-bold rounded-lg text-slate-600 hover:text-slate-900 transition-all flex items-center justify-center gap-1">
+        <button type="button" id="shop-tab-suffix" onclick="switchShopTab('suffix')" class="flex-1 py-2 text-xs font-bold rounded-lg text-slate-600 hover:text-slate-900 transition-all flex items-center justify-center gap-1 cursor-pointer">
           <span>🎖️ 後称号（〜〇〇）</span>
           <span id="suffix-owned-count" class="text-[10px] bg-slate-200 text-slate-600 px-1.5 py-0.2 rounded-full">1/35</span>
         </button>
@@ -294,7 +295,7 @@
       <div id="result-card" class="bg-white rounded-3xl p-6 border border-slate-200 shadow-lg space-y-6 text-center">
         <div class="space-y-1">
           <span id="result-header-label" class="text-xs font-bold uppercase tracking-wider text-slate-400">QUIZ RESULT</span>
-          <h2 id="result-title-name" class="text-xl font-bold text-emerald-600">LEAPマスター</h2>
+          <h2 id="result-title-name" class="text-xl font-bold text-emerald-600">始まりのビギナー</h2>
           <p id="result-challenge-badge" class="hidden text-xs font-bold text-amber-700 bg-amber-100 py-1 px-3 rounded-full inline-block mt-1">
             🔥 友達からの挑戦状！この記録を超えられるか？
           </p>
@@ -332,22 +333,22 @@
         <!-- SNS・友達共有 & スクリーンショット -->
         <div class="space-y-3 pt-2">
           <!-- スクショ専用ボタン -->
-          <button id="btn-screenshot" onclick="downloadResultImage()" class="w-full py-3 bg-slate-100 hover:bg-slate-200 active:scale-[0.99] border border-slate-300/80 text-slate-800 font-bold rounded-xl text-xs flex items-center justify-center gap-2 shadow-sm transition">
+          <button type="button" id="btn-screenshot" onclick="downloadResultImage()" class="w-full py-3 bg-slate-100 hover:bg-slate-200 active:scale-[0.99] border border-slate-300/80 text-slate-800 font-bold rounded-xl text-xs flex items-center justify-center gap-2 shadow-sm transition cursor-pointer">
             <span class="text-base">📸</span>
             <span>結果カードのスクショを保存</span>
           </button>
 
           <p class="text-xs font-semibold text-slate-500">結果をシェアして挑戦状を送る</p>
           <div class="grid grid-cols-3 gap-2">
-            <button onclick="shareResult('line')" class="py-2.5 px-2 bg-[#06C755] hover:opacity-90 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 shadow-sm transition">
+            <button type="button" onclick="shareResult('line')" class="py-2.5 px-2 bg-[#06C755] hover:opacity-90 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 shadow-sm transition cursor-pointer">
               <span>LINE で送る</span>
             </button>
-            <button onclick="shareResult('x')" class="py-2.5 px-2 bg-black hover:bg-slate-800 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 shadow-sm transition">
+            <button type="button" onclick="shareResult('x')" class="py-2.5 px-2 bg-black hover:bg-slate-800 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 shadow-sm transition cursor-pointer">
               <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
               <span>X で共有</span>
             </button>
-            <button onclick="shareResult('copy')" class="py-2.5 px-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 shadow-sm transition">
-              <span>テキスト</span>
+            <button type="button" onclick="shareResult('copy')" class="py-2.5 px-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 shadow-sm transition cursor-pointer">
+              <span>コピー</span>
             </button>
           </div>
         </div>
@@ -355,18 +356,18 @@
 
       <!-- リトライ / ホームボタン / 挑戦ボタン -->
       <div id="result-action-buttons" class="grid grid-cols-2 gap-3">
-        <button onclick="retryCurrentQuiz()" class="py-3.5 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl shadow-md transition text-sm">
+        <button type="button" onclick="retryCurrentQuiz()" class="py-3.5 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl shadow-md transition text-sm cursor-pointer">
           もう一度挑戦
         </button>
-        <button onclick="navigate('screen-home')" class="py-3.5 bg-white hover:bg-slate-100 border border-slate-200 text-slate-700 font-bold rounded-xl shadow-sm transition text-sm">
+        <button type="button" onclick="navigate('screen-home')" class="py-3.5 bg-white hover:bg-slate-100 border border-slate-200 text-slate-700 font-bold rounded-xl shadow-sm transition text-sm cursor-pointer">
           トップへ戻る
         </button>
       </div>
       <div id="result-challenge-action" class="hidden space-y-2">
-        <button onclick="acceptChallenge()" class="w-full py-4 bg-emerald-600 hover:bg-emerald-700 active:scale-[0.99] text-white font-bold rounded-xl shadow-md transition flex items-center justify-center gap-2 text-base">
+        <button type="button" onclick="acceptChallenge()" class="w-full py-4 bg-emerald-600 hover:bg-emerald-700 active:scale-[0.99] text-white font-bold rounded-xl shadow-md transition flex items-center justify-center gap-2 text-base cursor-pointer">
           <span>⚔️ この挑戦を受けて立つ！</span>
         </button>
-        <button onclick="navigate('screen-home')" class="w-full py-3 bg-white hover:bg-slate-100 border border-slate-200 text-slate-700 font-bold rounded-xl text-sm transition">
+        <button type="button" onclick="navigate('screen-home')" class="w-full py-3 bg-white hover:bg-slate-100 border border-slate-200 text-slate-700 font-bold rounded-xl text-sm transition cursor-pointer">
           トップ画面へ
         </button>
       </div>
@@ -384,41 +385,14 @@
   </footer>
 
   <script>
-    // 実データ（LEAP_WORDS_DATA: words_data.js）を格納
-    let ALL_WORDS = [];
-    if (typeof LEAP_WORDS_DATA !== 'undefined' && Array.isArray(LEAP_WORDS_DATA)) {
-      ALL_WORDS = [...LEAP_WORDS_DATA];
-    }
-
-    // Vercel等の静的ホスティング時に words.json からも読み込めるフォールバック
-    async function checkAndFetchData() {
-      if (ALL_WORDS.length > 0) return;
-      try {
-        const res = await fetch("./LEAP単語データ/words.json");
-        if (res.ok) {
-          const json = await res.json();
-          if (Array.isArray(json) && json.length > 0) {
-            ALL_WORDS = json;
-            document.getElementById("data-status-text").textContent = `LEAP実データ (${ALL_WORDS.length} 語) 読込済`;
-          }
-        }
-      } catch (e) {
-        console.warn("fetch fallback", e);
-      }
-    }
-
-    // ショップ称号マスターデータ
-        // 称号マスターデータ（前称号 ＆ 後称号）
-        // 称号マスターデータ（前称号 35種 ＆ 後称号 35種 ＝ 1,225通り）
+    // 称号マスターデータ（前称号 35種 ＆ 後称号 35種 ＝ 1,225通り）
     const PREFIX_TITLES = [
-      // 序盤・手頃 (0〜150 Coin)
       { id: "pre_init", name: "始まりの", price: 0 },
       { id: "pre_novice", name: "見習いの", price: 50 },
       { id: "pre_steady", name: "コツコツの", price: 80 },
       { id: "pre_effort", name: "努力の", price: 100 },
       { id: "pre_earnest", name: "ひたむきな", price: 120 },
       { id: "pre_daily", name: "日課の", price: 150 },
-      // 中盤・成長 (200〜600 Coin)
       { id: "pre_swift", name: "疾風の", price: 200 },
       { id: "pre_lightning", name: "電光石火の", price: 250 },
       { id: "pre_precise", name: "精密な", price: 300 },
@@ -428,7 +402,6 @@
       { id: "pre_lone", name: "孤高の", price: 500 },
       { id: "pre_fierce", name: "猛烈な", price: 550 },
       { id: "pre_active", name: "現役の", price: 600 },
-      // 受験・学術系 (650〜1200 Coin)
       { id: "pre_talented", name: "秀才の", price: 650 },
       { id: "pre_ronin", name: "歴戦浪人の", price: 700 },
       { id: "pre_study", name: "学究の", price: 750 },
@@ -437,7 +410,6 @@
       { id: "pre_genius", name: "天才の", price: 1000 },
       { id: "pre_unbeaten", name: "常勝の", price: 1100 },
       { id: "pre_indomitable", name: "不屈の", price: 1200 },
-      // 厨二・属性系 (1300〜2200 Coin)
       { id: "pre_crimson", name: "紅蓮の", price: 1300 },
       { id: "pre_azure", name: "蒼穹の", price: 1400 },
       { id: "pre_darkness", name: "漆黒の", price: 1500 },
@@ -445,7 +417,6 @@
       { id: "pre_phantom", name: "幻影の", price: 1800 },
       { id: "pre_transcend", name: "超越の", price: 2000 },
       { id: "pre_dimension", name: "異次元の", price: 2200 },
-      // 神話・究極 (2500〜5000 Coin)
       { id: "pre_legendary", name: "伝説の", price: 2500 },
       { id: "pre_mythic", name: "神話の", price: 3000 },
       { id: "pre_truth", name: "真理の", price: 3500 },
@@ -454,14 +425,12 @@
     ];
 
     const SUFFIX_TITLES = [
-      // 序盤・手頃 (0〜150 Coin)
       { id: "suf_beginner", name: "ビギナー", price: 0 },
       { id: "suf_challenger", name: "チャレンジャー", price: 50 },
       { id: "suf_student", name: "受験生", price: 80 },
       { id: "suf_worker", name: "努力家", price: 100 },
       { id: "suf_learner", name: "学習者", price: 120 },
       { id: "suf_candidate", name: "志望者", price: 150 },
-      // 中盤・成長 (200〜600 Coin)
       { id: "suf_honor", name: "優等生", price: 200 },
       { id: "suf_collector", name: "単語集め人", price: 250 },
       { id: "suf_speed", name: "速読派", price: 300 },
@@ -471,13 +440,11 @@
       { id: "suf_elite", name: "難関大志望", price: 500 },
       { id: "suf_march", name: "MARCH志望", price: 550 },
       { id: "suf_waseda", name: "早慶志望", price: 600 },
-      // 大学・上位志望 (700〜1200 Coin)
       { id: "suf_med", name: "医学部志望", price: 700 },
       { id: "suf_kyodai", name: "京大志望", price: 800 },
       { id: "suf_todai", name: "東大志望", price: 1000 },
       { id: "suf_passer", name: "合格者", price: 1100 },
       { id: "suf_sage", name: "賢者", price: 1200 },
-      // 能力・称号系 (1300〜2200 Coin)
       { id: "suf_machine", name: "暗記マシン", price: 1300 },
       { id: "suf_pioneer", name: "開拓者", price: 1400 },
       { id: "suf_brave", name: "勇者", price: 1500 },
@@ -485,7 +452,6 @@
       { id: "suf_conqueror", name: "語彙の覇者", price: 1800 },
       { id: "suf_master", name: "LEAPマスター", price: 2000 },
       { id: "suf_grandmaster", name: "名誉教授", price: 2200 },
-      // 学術・神話・概念系 (2500〜6000 Coin)
       { id: "suf_linguist", name: "言語学者", price: 2500 },
       { id: "suf_philosopher", name: "哲学者", price: 3000 },
       { id: "suf_overlord", name: "覇王", price: 3500 },
@@ -496,6 +462,30 @@
       { id: "suf_concept", name: "概念", price: 6000 }
     ];
 
+    // 実データ（LEAP_WORDS_DATA: words_data.js）を格納
+    let ALL_WORDS = [];
+    if (typeof LEAP_WORDS_DATA !== 'undefined' && Array.isArray(LEAP_WORDS_DATA)) {
+      ALL_WORDS = [...LEAP_WORDS_DATA];
+    }
+
+    async function checkAndFetchData() {
+      if (ALL_WORDS.length > 0) return;
+      try {
+        const res = await fetch("./LEAP単語データ/words.json");
+        if (res.ok) {
+          const json = await res.json();
+          if (Array.isArray(json) && json.length > 0) {
+            ALL_WORDS = json;
+            const statusEl = document.getElementById("data-status-text");
+            if (statusEl) statusEl.textContent = `LEAP実データ (${ALL_WORDS.length} 語) 読込済`;
+          }
+        }
+      } catch (e) {
+        console.warn("fetch fallback", e);
+      }
+    }
+
+    // ユーザーデータ管理
     const STORAGE_KEY = "LEAP_QUIZ_USER_DATA_V2";
     let userData = {
       coins: 0,
@@ -507,7 +497,7 @@
     };
 
     function getFullTitle() {
-      return `${userData.prefix || ""}${userData.suffix || "ビギナー"}`;
+      return (userData.prefix || "") + (userData.suffix || "ビギナー");
     }
 
     function loadUserData() {
@@ -516,7 +506,6 @@
         if (saved) {
           const parsed = JSON.parse(saved);
           userData = Object.assign(userData, parsed);
-          // 旧データからの移行ケア
           if (!userData.purchasedPrefixes) userData.purchasedPrefixes = ["pre_init"];
           if (!userData.purchasedSuffixes) userData.purchasedSuffixes = ["suf_beginner"];
           if (!userData.prefix) userData.prefix = "始まりの";
@@ -533,10 +522,14 @@
 
     function updateUserUI() {
       const full = getFullTitle();
-      document.getElementById("header-coins").textContent = userData.coins;
-      document.getElementById("header-title").textContent = full;
-      document.getElementById("home-highscore").innerHTML = `${userData.highScore} <span class="text-xs font-normal text-slate-500">pts</span>`;
-      document.getElementById("home-title").textContent = full;
+      const hCoins = document.getElementById("header-coins");
+      const hTitle = document.getElementById("header-title");
+      const hScore = document.getElementById("home-highscore");
+      const homeT = document.getElementById("home-title");
+      if (hCoins) hCoins.textContent = userData.coins;
+      if (hTitle) hTitle.textContent = full;
+      if (hScore) hScore.innerHTML = `${userData.highScore} <span class="text-xs font-normal text-slate-500">pts</span>`;
+      if (homeT) homeT.textContent = full;
 
       const spPre = document.getElementById("shop-preview-prefix");
       const spSuf = document.getElementById("shop-preview-suffix");
@@ -554,7 +547,8 @@
           if (Array.isArray(json)) {
             mergeWords(json);
             showToast(`${json.length}件の単語データを読み込みました`);
-            document.getElementById("data-status-text").textContent = `単語データ: ${file.name} (${ALL_WORDS.length} 語)`;
+            const statusEl = document.getElementById("data-status-text");
+            if (statusEl) statusEl.textContent = `単語データ: ${file.name} (${ALL_WORDS.length} 語)`;
           } else { alert("配列形式のJSONを指定してください。"); }
         } catch (err) { alert("JSONのパースに失敗しました。"); }
       };
@@ -571,17 +565,26 @@
       ALL_WORDS = Array.from(map.values()).sort((a, b) => a.id - b.id);
     }
 
+    // 画面遷移
     const SCREENS = ["screen-home", "screen-select", "screen-quiz", "screen-shop", "screen-result"];
     function navigate(screenId) {
       SCREENS.forEach(id => {
         const el = document.getElementById(id);
-        if (id === screenId) { el.classList.remove("hidden"); el.classList.add("fade-in"); }
-        else { el.classList.add("hidden"); el.classList.remove("fade-in"); }
+        if (el) {
+          if (id === screenId) {
+            el.classList.remove("hidden");
+            el.classList.add("fade-in");
+          } else {
+            el.classList.add("hidden");
+            el.classList.remove("fade-in");
+          }
+        }
       });
       window.scrollTo(0, 0);
       if (screenId === "screen-shop") renderShop();
     }
 
+    // 範囲選択
     let rangeMode = "part";
     let selectedRange = { start: 1, end: 400, label: "Part 1" };
     let questionLimit = 10;
@@ -594,15 +597,15 @@
       const customPanel = document.getElementById("panel-custom");
 
       if (mode === "part") {
-        partBtn.className = "flex-1 py-2 text-sm font-semibold rounded-lg bg-white shadow-sm text-slate-900 transition-all";
-        customBtn.className = "flex-1 py-2 text-sm font-semibold rounded-lg text-slate-600 hover:text-slate-900 transition-all";
-        partPanel.classList.remove("hidden");
-        customPanel.classList.add("hidden");
+        if (partBtn) partBtn.className = "flex-1 py-2 text-sm font-semibold rounded-lg bg-white shadow-sm text-slate-900 transition-all";
+        if (customBtn) customBtn.className = "flex-1 py-2 text-sm font-semibold rounded-lg text-slate-600 hover:text-slate-900 transition-all";
+        if (partPanel) partPanel.classList.remove("hidden");
+        if (customPanel) customPanel.classList.add("hidden");
       } else {
-        customBtn.className = "flex-1 py-2 text-sm font-semibold rounded-lg bg-white shadow-sm text-slate-900 transition-all";
-        partBtn.className = "flex-1 py-2 text-sm font-semibold rounded-lg text-slate-600 hover:text-slate-900 transition-all";
-        partPanel.classList.add("hidden");
-        customPanel.classList.remove("hidden");
+        if (customBtn) customBtn.className = "flex-1 py-2 text-sm font-semibold rounded-lg bg-white shadow-sm text-slate-900 transition-all";
+        if (partBtn) partBtn.className = "flex-1 py-2 text-sm font-semibold rounded-lg text-slate-600 hover:text-slate-900 transition-all";
+        if (partPanel) partPanel.classList.add("hidden");
+        if (customPanel) customPanel.classList.remove("hidden");
       }
     }
 
@@ -611,7 +614,9 @@
       document.querySelectorAll(".q-count-btn").forEach(btn => {
         btn.className = "q-count-btn py-2 text-sm font-semibold border rounded-lg bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100";
       });
-      event.target.className = "q-count-btn py-2 text-sm font-semibold border rounded-lg bg-slate-900 text-white border-slate-900";
+      if (event && event.target) {
+        event.target.className = "q-count-btn py-2 text-sm font-semibold border rounded-lg bg-slate-900 text-white border-slate-900";
+      }
     }
 
     function selectPart(partNum, start, end) {
@@ -629,6 +634,7 @@
       startQuiz();
     }
 
+    // クイズエンジン
     let quizState = { questions: [], currentIndex: 0, score: 0, combo: 0, maxCombo: 0, correctCount: 0, earnedCoins: 0, mistakes: [], isAnswered: false };
 
     function startQuiz() {
@@ -660,7 +666,8 @@
       quizState.mistakes = [];
       quizState.isAnswered = false;
 
-      document.getElementById("quiz-range-info").textContent = selectedRange.label;
+      const rInfo = document.getElementById("quiz-range-info");
+      if (rInfo) rInfo.textContent = selectedRange.label;
       navigate("screen-quiz");
       renderQuestion();
     }
@@ -671,24 +678,34 @@
 
       const total = quizState.questions.length;
       const current = quizState.currentIndex + 1;
-      document.getElementById("quiz-progress-text").textContent = `Q ${current} / ${total}`;
-      document.getElementById("quiz-progress-bar").style.width = `${((current - 1) / total) * 100}%`;
+      const progText = document.getElementById("quiz-progress-text");
+      const progBar = document.getElementById("quiz-progress-bar");
+      if (progText) progText.textContent = `Q ${current} / ${total}`;
+      if (progBar) progBar.style.width = `${((current - 1) / total) * 100}%`;
 
       const comboBadge = document.getElementById("quiz-combo-badge");
-      if (quizState.combo >= 2) {
-        comboBadge.textContent = `🔥 ${quizState.combo} COMBO`;
-        comboBadge.classList.remove("hidden");
-      } else { comboBadge.classList.add("hidden"); }
+      if (comboBadge) {
+        if (quizState.combo >= 2) {
+          comboBadge.textContent = `🔥 ${quizState.combo} COMBO`;
+          comboBadge.classList.remove("hidden");
+        } else {
+          comboBadge.classList.add("hidden");
+        }
+      }
 
-      document.getElementById("quiz-word-id").textContent = `ID: #${q.word.id}`;
-      document.getElementById("quiz-word").textContent = q.word.word;
+      const wordIdEl = document.getElementById("quiz-word-id");
+      const wordEl = document.getElementById("quiz-word");
+      if (wordIdEl) wordIdEl.textContent = `ID: #${q.word.id}`;
+      if (wordEl) wordEl.textContent = q.word.word;
 
       const container = document.getElementById("quiz-options-container");
+      if (!container) return;
       container.innerHTML = "";
 
       q.options.forEach((opt, idx) => {
         const btn = document.createElement("button");
-        btn.className = "w-full text-left p-4 bg-white hover:bg-slate-50 border border-slate-200 rounded-xl font-medium text-slate-800 transition active:scale-[0.99] flex items-center gap-3";
+        btn.type = "button";
+        btn.className = "w-full text-left p-4 bg-white hover:bg-slate-50 border border-slate-200 rounded-xl font-medium text-slate-800 transition active:scale-[0.99] flex items-center gap-3 cursor-pointer";
         btn.innerHTML = `<span class="w-6 h-6 rounded-md bg-slate-100 text-slate-500 text-xs font-bold flex items-center justify-center shrink-0 border border-slate-200">${idx + 1}</span><span class="text-sm leading-snug">${opt.text}</span>`;
         btn.onclick = () => handleAnswer(opt, btn);
         container.appendChild(btn);
@@ -736,7 +753,7 @@
 
     window.addEventListener("keydown", (e) => {
       const quizScreen = document.getElementById("screen-quiz");
-      if (quizScreen.classList.contains("hidden") || quizState.isAnswered) return;
+      if (!quizScreen || quizScreen.classList.contains("hidden") || quizState.isAnswered) return;
       if (["1", "2", "3", "4"].includes(e.key)) {
         const buttons = document.getElementById("quiz-options-container").querySelectorAll("button");
         const idx = parseInt(e.key) - 1;
@@ -757,14 +774,20 @@
       if (finalScore > userData.highScore) userData.highScore = finalScore;
       saveUserData();
 
-      document.getElementById("result-header-label").textContent = "QUIZ RESULT";
-      document.getElementById("result-title-name").textContent = getFullTitle();
+      const rHead = document.getElementById("result-header-label");
+      const rTitle = document.getElementById("result-title-name");
       const chBadge = document.getElementById("result-challenge-badge");
-      if (chBadge) chBadge.classList.add("hidden");
       const ecBox = document.getElementById("result-earned-coins").parentElement;
+      const actBtns = document.getElementById("result-action-buttons");
+      const chActs = document.getElementById("result-challenge-action");
+
+      if (rHead) rHead.textContent = "QUIZ RESULT";
+      if (rTitle) rTitle.textContent = getFullTitle();
+      if (chBadge) chBadge.classList.add("hidden");
       if (ecBox) ecBox.classList.remove("hidden");
-      document.getElementById("result-action-buttons").classList.remove("hidden");
-      document.getElementById("result-challenge-action").classList.add("hidden");
+      if (actBtns) actBtns.classList.remove("hidden");
+      if (chActs) chActs.classList.add("hidden");
+
       document.getElementById("result-score").innerHTML = `${finalScore}<span class="text-xs font-normal text-slate-500">点</span>`;
       document.getElementById("result-accuracy").innerHTML = `${accuracy}<span class="text-xs font-normal text-slate-500">%</span>`;
       document.getElementById("result-combo").innerHTML = `${quizState.maxCombo}<span class="text-xs font-normal text-slate-500">回</span>`;
@@ -772,24 +795,26 @@
 
       const mistakeSection = document.getElementById("result-mistakes-section");
       const mistakeList = document.getElementById("result-mistakes-list");
-      mistakeList.innerHTML = "";
+      if (mistakeList) mistakeList.innerHTML = "";
 
       if (quizState.mistakes.length > 0) {
-        mistakeSection.classList.remove("hidden");
+        if (mistakeSection) mistakeSection.classList.remove("hidden");
         quizState.mistakes.forEach(w => {
           const item = document.createElement("div");
           item.className = "flex justify-between py-1 border-b border-slate-200/60 last:border-0";
           item.innerHTML = `<span class="font-bold text-slate-800">${w.word}</span> <span class="text-slate-600">${w.meaning}</span>`;
-          mistakeList.appendChild(item);
+          if (mistakeList) mistakeList.appendChild(item);
         });
-      } else { mistakeSection.classList.add("hidden"); }
+      } else {
+        if (mistakeSection) mistakeSection.classList.add("hidden");
+      }
 
       navigate("screen-result");
     }
 
     function retryCurrentQuiz() { startQuiz(); }
 
-    // 結果をURLパラメータに練り込んだ共有用URLを生成
+    // 共有用URLの生成
     function generateResultUrl() {
       const finalScore = Math.round(quizState.score);
       const accuracy = Math.round((quizState.correctCount / quizState.questions.length) * 100);
@@ -802,25 +827,13 @@
         re: selectedRange.end,
         rl: selectedRange.label
       };
-      // URLセーフなBase64エンコード
       const jsonStr = encodeURIComponent(JSON.stringify(data));
       const b64 = btoa(jsonStr).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
       const base = window.location.origin + window.location.pathname;
       return `${base}?res=${b64}`;
     }
 
-    function generateShareText(resultUrl) {
-      const finalScore = Math.round(quizState.score);
-      const accuracy = Math.round((quizState.correctCount / quizState.questions.length) * 100);
-      return `【LEAP 4択クイズ挑戦状🔥】\n` +
-             `範囲: ${selectedRange.label}\n` +
-             `称号: 【${getFullTitle()}】\n` +
-             `スコア: ${finalScore}点 (正答率: ${accuracy}% / 最大コンボ: ${quizState.maxCombo}回)\n\n` +
-             `👇私の結果を見る＆挑戦を受ける！\n` +
-             `${resultUrl}`;
-    }
-
-    // 結果カードの画像Blobを生成
+    // スクリーンショット保存
     async function captureResultBlob() {
       const card = document.getElementById("result-card");
       const shareBox = card.querySelector(".space-y-3.pt-2");
@@ -840,7 +853,6 @@
       });
     }
 
-    // スクショ画像をダウンロード保存
     async function downloadResultImage() {
       showToast("スクリーンショットを生成中...");
       try {
@@ -860,7 +872,7 @@
       }
     }
 
-    // 安全でポップアップブロックされないリンク開放ヘルパー（Web標準）
+    // 安全なリンク開放（Web標準・ポップアップブロック完全回避）
     function openSafeLink(targetUrl) {
       const link = document.createElement("a");
       link.href = targetUrl;
@@ -871,14 +883,13 @@
       document.body.removeChild(link);
     }
 
-    // LINE / X / クリップボード共有（同期処理でポップアップブロックを完全回避）
+    // LINE / X / クリップボード共有
     function shareResult(platform) {
       const resultUrl = generateResultUrl();
       const finalScore = Math.round(quizState.score);
       const accuracy = Math.round((quizState.correctCount / quizState.questions.length) * 100);
       const titleName = getFullTitle();
 
-      // LINE用テキスト (挑戦状メッセージ)
       const lineMessage = `【LEAP 4択英単語 挑戦状🔥】\n` +
                           `範囲: ${selectedRange.label}\n` +
                           `称号: 【${titleName}】\n` +
@@ -886,31 +897,25 @@
                           `👇結果カードを見る＆挑戦する！\n` +
                           `${resultUrl}`;
 
-      // X (Twitter) 用テキスト
       const xMessage = `【LEAP 4択英単語 挑戦状🔥】\n` +
                        `範囲: ${selectedRange.label} でスコア【${finalScore}点】(称号: ${titleName}) を記録！\n` +
                        `君はこの記録を超えられるか！？\n`;
 
       if (platform === "line") {
-        // モバイル判定（スマホならLINEアプリ直起動、PCなら公式Web共有）
         const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
         let lineUrl = "";
         if (isMobile) {
-          // スマホ: LINEアプリを直接立ち上げて文言＋URLをセット
           lineUrl = `https://line.me/R/msg/text/?${encodeURIComponent(lineMessage)}`;
         } else {
-          // PC: LINE公式Webシェア画面（URLプレビューカードが表示される）
           lineUrl = `https://social-plugins.line.me/lineit/share?url=${encodeURIComponent(resultUrl)}`;
         }
         openSafeLink(lineUrl);
         showToast("LINE共有を開きました！");
       } else if (platform === "x") {
-        // X (旧Twitter) 公式 Web Intent（確実かつ世界標準）
         const tweetUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(xMessage)}&url=${encodeURIComponent(resultUrl)}&hashtags=${encodeURIComponent("LEAP,英単語")}`;
         openSafeLink(tweetUrl);
         showToast("X (Twitter) を開きました！");
       } else if (platform === "copy") {
-        // クリップボードコピー
         if (navigator.clipboard && navigator.clipboard.writeText) {
           navigator.clipboard.writeText(lineMessage).then(() => {
             showToast("挑戦状テキストとURLをコピーしました！");
@@ -923,7 +928,6 @@
       }
     }
 
-    // 古いブラウザ向けのフォールバックコピー
     function fallbackCopy(text) {
       const ta = document.createElement("textarea");
       ta.value = text;
@@ -941,7 +945,7 @@
       document.body.removeChild(ta);
     }
 
-    // URLの ?res= パラメータから挑戦状を復元表示する処理
+    // 挑戦状URL受領時の自動復元
     let incomingChallengeRange = null;
 
     function checkIncomingChallenge() {
@@ -950,7 +954,6 @@
       if (!resParam) return;
 
       try {
-        // Base64デコード
         let b64 = resParam.replace(/-/g, "+").replace(/_/g, "/");
         while (b64.length % 4) b64 += "=";
         const jsonStr = decodeURIComponent(atob(b64));
@@ -963,7 +966,6 @@
         };
         selectedRange = incomingChallengeRange;
 
-        // 結果画面のUIを挑戦状モードに設定
         document.getElementById("result-header-label").textContent = "CHALLENGE FROM FRIEND";
         document.getElementById("result-title-name").textContent = `称号: 【${d.t || "挑戦者"}】`;
         document.getElementById("result-score").innerHTML = `${d.s || 0}<span class="text-xs font-normal text-slate-500">点</span>`;
@@ -976,11 +978,9 @@
           challengeBadge.classList.remove("hidden");
         }
 
-        // コイン獲得表示を隠す
         const earnedCoinsBox = document.getElementById("result-earned-coins").parentElement;
         if (earnedCoinsBox) earnedCoinsBox.classList.add("hidden");
 
-        // ボタンの切り替え
         document.getElementById("result-action-buttons").classList.add("hidden");
         document.getElementById("result-challenge-action").classList.remove("hidden");
 
@@ -991,24 +991,23 @@
     }
 
     function acceptChallenge() {
-      if (incomingChallengeRange) {
-        selectedRange = incomingChallengeRange;
-      }
+      if (incomingChallengeRange) selectedRange = incomingChallengeRange;
       startQuiz();
     }
 
-    let currentShopTab = "prefix"; // "prefix" or "suffix"
+    // ショップ機能
+    let currentShopTab = "prefix";
 
     function switchShopTab(tab) {
       currentShopTab = tab;
       const tabPre = document.getElementById("shop-tab-prefix");
       const tabSuf = document.getElementById("shop-tab-suffix");
       if (tab === "prefix") {
-        tabPre.className = "flex-1 py-2 text-xs font-bold rounded-lg bg-white shadow-sm text-slate-900 transition-all flex items-center justify-center gap-1";
-        tabSuf.className = "flex-1 py-2 text-xs font-bold rounded-lg text-slate-600 hover:text-slate-900 transition-all flex items-center justify-center gap-1";
+        if (tabPre) tabPre.className = "flex-1 py-2 text-xs font-bold rounded-lg bg-white shadow-sm text-slate-900 transition-all flex items-center justify-center gap-1 cursor-pointer";
+        if (tabSuf) tabSuf.className = "flex-1 py-2 text-xs font-bold rounded-lg text-slate-600 hover:text-slate-900 transition-all flex items-center justify-center gap-1 cursor-pointer";
       } else {
-        tabSuf.className = "flex-1 py-2 text-xs font-bold rounded-lg bg-white shadow-sm text-slate-900 transition-all flex items-center justify-center gap-1";
-        tabPre.className = "flex-1 py-2 text-xs font-bold rounded-lg text-slate-600 hover:text-slate-900 transition-all flex items-center justify-center gap-1";
+        if (tabSuf) tabSuf.className = "flex-1 py-2 text-xs font-bold rounded-lg bg-white shadow-sm text-slate-900 transition-all flex items-center justify-center gap-1 cursor-pointer";
+        if (tabPre) tabPre.className = "flex-1 py-2 text-xs font-bold rounded-lg text-slate-600 hover:text-slate-900 transition-all flex items-center justify-center gap-1 cursor-pointer";
       }
       renderShop();
     }
@@ -1018,7 +1017,6 @@
       if (!container) return;
       container.innerHTML = "";
 
-      // 所持数バッジ更新
       const preOwned = document.getElementById("prefix-owned-count");
       const sufOwned = document.getElementById("suffix-owned-count");
       if (preOwned) preOwned.textContent = `${userData.purchasedPrefixes.length}/${PREFIX_TITLES.length}`;
@@ -1046,17 +1044,17 @@
         if (isEquipped) {
           statusBadge = `<span class="text-[10px] font-extrabold bg-emerald-500 text-white px-2 py-0.5 rounded-full">装着中</span>`;
         } else if (isOwned) {
-          statusBadge = `<button onclick="equipPart('${item.id}', '${item.name}', '${currentShopTab}')" class="text-[10px] font-bold bg-slate-900 hover:bg-slate-800 text-white px-2.5 py-1 rounded-lg w-full transition">装着する</button>`;
+          statusBadge = `<button type="button" onclick="equipPart('${item.id}', '${item.name}', '${currentShopTab}')" class="text-[10px] font-bold bg-slate-900 hover:bg-slate-800 text-white px-2.5 py-1 rounded-lg w-full transition cursor-pointer">装着する</button>`;
         } else {
-          statusBadge = `<button onclick="buyPart('${item.id}', ${item.price}, '${item.name}', '${currentShopTab}')" class="text-[10px] font-bold bg-amber-500 hover:bg-amber-600 text-white px-2 py-1 rounded-lg w-full transition flex items-center justify-center gap-1 shadow-sm"><span>🪙 ${item.price}</span><span>購入</span></button>`;
+          statusBadge = `<button type="button" onclick="buyPart('${item.id}', ${item.price}, '${item.name}', '${currentShopTab}')" class="text-[10px] font-bold bg-amber-500 hover:bg-amber-600 text-white px-2 py-1 rounded-lg w-full transition flex items-center justify-center gap-1 shadow-sm cursor-pointer"><span>🪙 ${item.price}</span><span>購入</span></button>`;
         }
 
         box.innerHTML = `
           <div class="w-full flex justify-between items-center text-[10px] text-slate-400 font-semibold mb-1">
             <span>${isPrefix ? "前称号" : "後称号"}</span>
-            ${isOwned ? "<span class="text-emerald-600">✓ 所持</span>" : ""}
+            ${isOwned ? '<span class="text-emerald-600">✓ 所持</span>' : ''}
           </div>
-          <div class="font-extrabold text-sm text-slate-900 tracking-tight my-auto ${isEquipped ? "text-emerald-700" : ""}">
+          <div class="font-extrabold text-sm text-slate-900 tracking-tight my-auto ${isEquipped ? 'text-emerald-700' : ''}">
             ${item.name}
           </div>
           <div class="w-full mt-2">
@@ -1097,6 +1095,7 @@
       renderShop();
     }
 
+    // ユーティリティ
     function shuffleArray(arr) {
       const copy = [...arr];
       for (let i = copy.length - 1; i > 0; i--) {
@@ -1108,12 +1107,17 @@
 
     function showToast(msg) {
       const toast = document.getElementById("toast");
+      if (!toast) return;
       toast.textContent = msg;
       toast.classList.remove("opacity-0", "pointer-events-none");
       toast.classList.add("opacity-100");
-      setTimeout(() => { toast.classList.remove("opacity-100"); toast.classList.add("opacity-0", "pointer-events-none"); }, 2000);
+      setTimeout(() => {
+        toast.classList.remove("opacity-100");
+        toast.classList.add("opacity-0", "pointer-events-none");
+      }, 2000);
     }
 
+    // 初期化
     window.addEventListener("DOMContentLoaded", () => {
       loadUserData();
       checkAndFetchData();
