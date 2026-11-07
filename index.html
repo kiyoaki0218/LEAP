@@ -25,6 +25,7 @@
   </style>
   <!-- 実データ(1〜400)の読み込み -->
   <script src="./words_data.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col justify-between selection:bg-slate-200">
 
@@ -261,7 +262,7 @@
     <!-- 5. 結果画面 -->
     <section id="screen-result" class="fade-in hidden space-y-6">
       <!-- スコアカードUI -->
-      <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-lg space-y-6 text-center">
+      <div id="result-card" class="bg-white rounded-3xl p-6 border border-slate-200 shadow-lg space-y-6 text-center">
         <div class="space-y-1">
           <span class="text-xs font-bold uppercase tracking-wider text-slate-400">QUIZ RESULT</span>
           <h2 id="result-title-name" class="text-xl font-bold text-emerald-600">LEAPマスター</h2>
@@ -296,19 +297,25 @@
           <div id="result-mistakes-list" class="max-h-40 overflow-y-auto space-y-1.5 text-xs bg-slate-50 p-3 rounded-xl border border-slate-200"></div>
         </div>
 
-        <!-- SNS・友達共有 -->
-        <div class="space-y-2 pt-2">
+        <!-- SNS・友達共有 & スクリーンショット -->
+        <div class="space-y-3 pt-2">
+          <!-- スクショ専用ボタン -->
+          <button id="btn-screenshot" onclick="downloadResultImage()" class="w-full py-3 bg-slate-100 hover:bg-slate-200 active:scale-[0.99] border border-slate-300/80 text-slate-800 font-bold rounded-xl text-xs flex items-center justify-center gap-2 shadow-sm transition">
+            <span class="text-base">📸</span>
+            <span>結果カードのスクショを保存</span>
+          </button>
+
           <p class="text-xs font-semibold text-slate-500">結果をシェアして挑戦状を送る</p>
           <div class="grid grid-cols-3 gap-2">
-            <button onclick="shareResult('x')" class="py-2.5 px-3 bg-black hover:bg-slate-800 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 shadow-sm transition">
+            <button onclick="shareResult('line')" class="py-2.5 px-2 bg-[#06C755] hover:opacity-90 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 shadow-sm transition">
+              <span>LINE で送る</span>
+            </button>
+            <button onclick="shareResult('x')" class="py-2.5 px-2 bg-black hover:bg-slate-800 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 shadow-sm transition">
               <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
               <span>X で共有</span>
             </button>
-            <button onclick="shareResult('line')" class="py-2.5 px-3 bg-[#06C755] hover:opacity-90 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 shadow-sm transition">
-              <span>LINE で送る</span>
-            </button>
-            <button onclick="shareResult('copy')" class="py-2.5 px-3 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 shadow-sm transition">
-              <span>コピー</span>
+            <button onclick="shareResult('copy')" class="py-2.5 px-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 shadow-sm transition">
+              <span>テキスト</span>
             </button>
           </div>
         </div>
@@ -648,15 +655,93 @@
              `君はこの記録を超えられるか！？ #LEAP #英単語`;
     }
 
-    function shareResult(platform) {
+    // 結果カードの画像Blobを生成
+    async function captureResultBlob() {
+      const card = document.getElementById("result-card");
+      // 共有エリアなど一時的に隠したい要素があれば隠す
+      const shareBox = card.querySelector(".space-y-3.pt-2");
+      if (shareBox) shareBox.style.display = "none";
+
+      const canvas = await html2canvas(card, {
+        scale: 2,
+        backgroundColor: "#ffffff",
+        logging: false,
+        useCORS: true
+      });
+
+      if (shareBox) shareBox.style.display = "";
+
+      return new Promise((resolve) => {
+        canvas.toBlob((blob) => resolve(blob), "image/png");
+      });
+    }
+
+    // スクショ画像をダウンロード保存
+    async function downloadResultImage() {
+      showToast("スクリーンショットを生成中...");
+      try {
+        const blob = await captureResultBlob();
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `LEAP_Score_${Date.now()}.png`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        showToast("画像を保存しました！");
+      } catch (err) {
+        console.error(err);
+        showToast("画像の生成に失敗しました");
+      }
+    }
+
+    // LINE / SNS 共有（Web Share APIによる画像付き共有対応）
+    async function shareResult(platform) {
       const text = generateShareText();
       const currentUrl = window.location.href;
-      if (platform === "x") {
-        window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(currentUrl)}`, "_blank");
-      } else if (platform === "line") {
-        window.open(`https://social-plugins.line.me/lineit/share?url=${encodeURIComponent(currentUrl + "\n\n" + text)}`, "_blank");
+
+      // LINEや共有ボタン押下時: Web Share API (画像添付) を最優先で試行
+      if (navigator.canShare) {
+        try {
+          showToast("共有データを準備中...");
+          const blob = await captureResultBlob();
+          const file = new File([blob], "leap_score.png", { type: "image/png" });
+
+          if (navigator.canShare({ files: [file] })) {
+            await navigator.share({
+              title: "LEAP 4択英単語クイズ 結果",
+              text: text,
+              url: currentUrl,
+              files: [file]
+            });
+            showToast("共有シートを開きました！");
+            return;
+          }
+        } catch (e) {
+          // ユーザーによるキャンセルや非対応の場合はフォールバックへ
+          if (e.name === "AbortError") return;
+        }
+      }
+
+      // Web Share API 非対応環境向けのフォールバック
+      if (platform === "line") {
+        // スクショ画像を自動ダウンロードしてからLINEを開く
+        downloadResultImage();
+        showToast("画像を保存しました！LINEで貼って送ろう");
+        setTimeout(() => {
+          const url = `https://social-plugins.line.me/lineit/share?url=${encodeURIComponent(currentUrl + "\n\n" + text)}`;
+          window.open(url, "_blank");
+        }, 1000);
+      } else if (platform === "x") {
+        const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(currentUrl)}`;
+        window.open(url, "_blank");
       } else if (platform === "copy") {
-        navigator.clipboard.writeText(text + "\n" + currentUrl).then(() => showToast("挑戦状テキストをコピーしました！")).catch(() => showToast("コピーに失敗しました"));
+        navigator.clipboard.writeText(text + "\n" + currentUrl).then(() => {
+          showToast("挑戦状テキストをコピーしました！");
+        }).catch(() => {
+          showToast("コピーに失敗しました");
+        });
       }
     }
 
