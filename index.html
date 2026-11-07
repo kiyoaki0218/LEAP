@@ -56,8 +56,8 @@
   <main class="w-full max-w-xl mx-auto px-4 py-6 flex-1 flex flex-col justify-center">
 
     <!-- 1. トップ画面 -->
-    <section id="screen-home" class="fade-in space-y-6">
-      <div class="text-center space-y-2 py-4">
+    <section id="screen-home" class="fade-in space-y-5">
+      <div class="text-center space-y-2 py-2">
         <span class="inline-block px-3 py-1 bg-emerald-100 text-emerald-800 text-xs font-semibold rounded-full tracking-wider">
           SIMPLE & SPEEDY
         </span>
@@ -77,19 +77,38 @@
         </div>
       </div>
 
+      <!-- 苦手単語復習バナー（間違えた問題があるときに表示） -->
+      <div id="home-weak-banner" class="hidden bg-rose-50 border border-rose-200 rounded-2xl p-4 flex items-center justify-between shadow-sm">
+        <div>
+          <div class="font-bold text-rose-800 text-sm flex items-center gap-1.5">
+            <span>🔥</span>
+            <span>苦手・間違えた単語の復習</span>
+          </div>
+          <div id="home-weak-count-text" class="text-xs text-rose-600 mt-0.5">現在 0 語が復習待ちです</div>
+        </div>
+        <div class="flex gap-2">
+          <button type="button" onclick="startWeakWordsQuiz()" class="px-3.5 py-2 bg-rose-600 hover:bg-rose-700 active:scale-[0.98] text-white text-xs font-bold rounded-xl shadow-sm transition cursor-pointer">
+            特訓する
+          </button>
+          <button type="button" onclick="openWeakWordsModal()" class="px-2.5 py-2 bg-white hover:bg-rose-100 border border-rose-200 text-rose-700 text-xs font-bold rounded-xl transition cursor-pointer">
+            一覧
+          </button>
+        </div>
+      </div>
+
       <!-- 操作ボタン -->
-      <div class="space-y-3 pt-2">
+      <div class="space-y-3 pt-1">
         <button type="button" onclick="navigate('screen-select')" class="w-full py-4 bg-slate-900 hover:bg-slate-800 active:scale-[0.99] text-white font-bold rounded-xl shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer">
           <span>クイズを始める</span>
           <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg>
         </button>
         <button type="button" onclick="navigate('screen-shop')" class="w-full py-3.5 bg-white hover:bg-slate-100 active:scale-[0.99] border border-slate-200 text-slate-700 font-semibold rounded-xl shadow-sm transition-all flex items-center justify-center gap-2 cursor-pointer">
-          <span>🛍️ 称号ショップ</span>
+          <span>🛍️ 称号カスタムショップ</span>
         </button>
       </div>
 
       <!-- 単語データ情報・手動読込 -->
-      <div class="pt-4 border-t border-slate-200/80 text-xs text-slate-400 flex flex-col items-center gap-2">
+      <div class="pt-3 border-t border-slate-200/80 text-xs text-slate-400 flex flex-col items-center gap-2">
         <p id="data-status-text">LEAP実データ (ID: 1〜400) 読込済</p>
         <label class="cursor-pointer text-emerald-600 hover:underline">
           <span>[+] 追加のJSONファイルを読み込む</span>
@@ -99,9 +118,9 @@
     </section>
 
     <!-- 2. Part / 範囲選択画面 -->
-    <section id="screen-select" class="fade-in hidden space-y-6">
+    <section id="screen-select" class="fade-in hidden space-y-5">
       <div class="flex items-center justify-between pb-2 border-b border-slate-200">
-        <h2 class="text-xl font-bold text-slate-900">出題範囲の選択</h2>
+        <h2 class="text-xl font-bold text-slate-900">出題範囲＆設定</h2>
         <button type="button" onclick="navigate('screen-home')" class="text-sm text-slate-500 hover:text-slate-800">戻る</button>
       </div>
 
@@ -203,19 +222,34 @@
         <p class="text-xs text-emerald-600 font-medium">※ 現在は Part 1 (ID: 1〜400) のデータが収録されています（例: 1〜200、50〜325 など自由に入力可能）。</p>
       </div>
 
-      <!-- 問題数選択 -->
-      <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-2">
-        <label class="block text-xs font-bold text-slate-500">出題数</label>
-        <div class="grid grid-cols-4 gap-2">
-          <button type="button" onclick="setQuestionCount(10)" class="q-count-btn py-2 text-sm font-semibold border rounded-lg bg-slate-900 text-white border-slate-900">10問</button>
-          <button type="button" onclick="setQuestionCount(20)" class="q-count-btn py-2 text-sm font-semibold border rounded-lg bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100">20問</button>
-          <button type="button" onclick="setQuestionCount(30)" class="q-count-btn py-2 text-sm font-semibold border rounded-lg bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100">30問</button>
-          <button type="button" onclick="setQuestionCount(0)" class="q-count-btn py-2 text-sm font-semibold border rounded-lg bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100">全問</button>
+      <!-- 出題数選択（10問, 20問, 50問, 100問, 全問, 自由入力） -->
+      <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-3">
+        <div class="flex items-center justify-between">
+          <label class="block text-xs font-bold text-slate-700">出題数</label>
+          <span id="current-qcount-badge" class="text-xs font-extrabold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200">10問</span>
+        </div>
+
+        <!-- プリセットボタン -->
+        <div class="grid grid-cols-5 gap-1.5">
+          <button type="button" onclick="setQuestionCount(10)" class="q-count-btn py-2 text-xs font-bold border rounded-lg bg-slate-900 text-white border-slate-900 cursor-pointer">10問</button>
+          <button type="button" onclick="setQuestionCount(20)" class="q-count-btn py-2 text-xs font-bold border rounded-lg bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100 cursor-pointer">20問</button>
+          <button type="button" onclick="setQuestionCount(50)" class="q-count-btn py-2 text-xs font-bold border rounded-lg bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100 cursor-pointer">50問</button>
+          <button type="button" onclick="setQuestionCount(100)" class="q-count-btn py-2 text-xs font-bold border rounded-lg bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100 cursor-pointer">100問</button>
+          <button type="button" onclick="setQuestionCount(0)" class="q-count-btn py-2 text-xs font-bold border rounded-lg bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100 cursor-pointer">全問</button>
+        </div>
+
+        <!-- 自由指定の数値入力ボックス -->
+        <div class="pt-2 border-t border-slate-100 flex items-center justify-between gap-2">
+          <span class="text-xs text-slate-500 font-medium">好きな問題数を指定:</span>
+          <div class="flex items-center gap-1.5">
+            <input type="number" id="custom-qcount-input" placeholder="例: 15" min="1" max="400" oninput="handleCustomQCountInput(this.value)" class="w-20 p-1.5 text-center border border-slate-300 rounded-lg text-xs font-bold text-slate-800 focus:outline-none focus:border-slate-800">
+            <span class="text-xs text-slate-500 font-bold">問</span>
+          </div>
         </div>
       </div>
 
       <button type="button" id="start-quiz-btn" onclick="startCustomQuiz()" class="w-full py-4 bg-emerald-600 hover:bg-emerald-700 active:scale-[0.99] text-white font-bold rounded-xl shadow-md transition flex items-center justify-center gap-2 cursor-pointer">
-        <span>この範囲でスタート</span>
+        <span>この条件でスタート</span>
       </button>
     </section>
 
@@ -226,6 +260,9 @@
         <div class="flex items-center justify-between text-xs text-slate-500 font-medium">
           <span id="quiz-progress-text">Q 1 / 10</span>
           <div class="flex items-center gap-3">
+            <span id="quiz-live-coins" class="text-amber-700 font-bold bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200">
+              🪙 +0
+            </span>
             <span id="quiz-combo-badge" class="hidden text-amber-600 font-bold bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200">
               🔥 0 COMBO
             </span>
@@ -246,8 +283,11 @@
       <!-- 4択選択肢 -->
       <div id="quiz-options-container" class="space-y-3"></div>
 
-      <div class="text-center">
-        <button type="button" onclick="abortQuiz()" class="text-xs text-slate-400 hover:text-rose-500 transition">中断して戻る</button>
+      <!-- 中断ボタン -->
+      <div class="text-center pt-2">
+        <button type="button" onclick="abortQuiz()" class="text-xs font-semibold text-slate-400 hover:text-rose-500 p-2 rounded-lg transition cursor-pointer">
+          ✕ 中断して結果を確定する (コイン保存)
+        </button>
       </div>
     </section>
 
@@ -284,9 +324,7 @@
       </div>
 
       <!-- 四角いボックスのグリッド一覧 -->
-      <div id="shop-grid-container" class="grid grid-cols-2 sm:grid-cols-3 gap-2.5 max-h-[460px] overflow-y-auto pr-1">
-        <!-- JSで四角いボックスをレンダリング -->
-      </div>
+      <div id="shop-grid-container" class="grid grid-cols-2 sm:grid-cols-3 gap-2.5 max-h-[460px] overflow-y-auto pr-1"></div>
     </section>
 
     <!-- 5. 結果画面 -->
@@ -303,8 +341,8 @@
 
         <div class="py-4 border-y border-slate-100 flex items-center justify-around">
           <div>
-            <p class="text-xs text-slate-400">スコア</p>
-            <p id="result-score" class="text-3xl font-extrabold text-slate-900 mt-1">100<span class="text-xs font-normal text-slate-500">点</span></p>
+            <p class="text-xs text-slate-400">正解数</p>
+            <p id="result-score" class="text-3xl font-extrabold text-slate-900 mt-1">10/10<span class="text-xs font-normal text-slate-500">問</span></p>
           </div>
           <div class="h-10 w-[1px] bg-slate-200"></div>
           <div>
@@ -324,15 +362,19 @@
           <span id="result-earned-coins">+120 Coin</span>
         </div>
 
-        <!-- 間違えた単語リスト -->
+        <!-- 間違えた単語リスト（復習用） -->
         <div id="result-mistakes-section" class="text-left space-y-2 hidden">
-          <h4 class="text-xs font-bold text-slate-500 uppercase">間違えた単語の復習</h4>
-          <div id="result-mistakes-list" class="max-h-40 overflow-y-auto space-y-1.5 text-xs bg-slate-50 p-3 rounded-xl border border-slate-200"></div>
+          <div class="flex items-center justify-between">
+            <h4 class="text-xs font-bold text-rose-600 uppercase flex items-center gap-1">
+              <span>⚠️</span> 間違えた単語（苦手データに保存済）
+            </h4>
+            <span class="text-[10px] text-slate-400">トップからいつでも復習可能</span>
+          </div>
+          <div id="result-mistakes-list" class="max-h-48 overflow-y-auto space-y-1.5 text-xs bg-slate-50 p-3 rounded-xl border border-slate-200"></div>
         </div>
 
         <!-- SNS・友達共有 & スクリーンショット -->
         <div class="space-y-3 pt-2">
-          <!-- スクショ専用ボタン -->
           <button type="button" id="btn-screenshot" onclick="downloadResultImage()" class="w-full py-3 bg-slate-100 hover:bg-slate-200 active:scale-[0.99] border border-slate-300/80 text-slate-800 font-bold rounded-xl text-xs flex items-center justify-center gap-2 shadow-sm transition cursor-pointer">
             <span class="text-base">📸</span>
             <span>結果カードのスクショを保存</span>
@@ -375,8 +417,35 @@
 
   </main>
 
+  <!-- 苦手単語一覧モーダル -->
+  <div id="modal-weak-words" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl space-y-4 max-h-[85vh] flex flex-col">
+      <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+        <div>
+          <h3 class="font-extrabold text-lg text-slate-900 flex items-center gap-1.5">
+            <span>🔥</span>
+            <span>苦手単語データ帳</span>
+          </h3>
+          <p class="text-xs text-slate-400">クイズで間違えた単語が自動記録されています</p>
+        </div>
+        <button type="button" onclick="closeWeakWordsModal()" class="text-slate-400 hover:text-slate-700 text-lg font-bold p-1">✕</button>
+      </div>
+
+      <div id="modal-weak-words-list" class="flex-1 overflow-y-auto space-y-2 pr-1"></div>
+
+      <div class="pt-2 border-t border-slate-100 flex gap-2">
+        <button type="button" onclick="startWeakWordsQuiz()" class="flex-1 py-3 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-xl text-xs transition cursor-pointer">
+          この苦手単語でクイズ開始
+        </button>
+        <button type="button" onclick="clearWeakWords()" class="py-3 px-3 bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold rounded-xl text-xs transition cursor-pointer">
+          全消去
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- トースト通知 -->
-  <div id="toast" class="fixed bottom-5 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-xs font-medium px-4 py-2 rounded-full shadow-lg opacity-0 pointer-events-none transition-all duration-300">
+  <div id="toast" class="fixed bottom-5 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-xs font-medium px-4 py-2 rounded-full shadow-lg opacity-0 pointer-events-none transition-all duration-300 z-50">
     コピーしました
   </div>
 
@@ -462,7 +531,7 @@
       { id: "suf_concept", name: "概念", price: 6000 }
     ];
 
-    // 実データ（LEAP_WORDS_DATA: words_data.js）を格納
+    // 実データ（LEAP_WORDS_DATA: words_data.js）
     let ALL_WORDS = [];
     if (typeof LEAP_WORDS_DATA !== 'undefined' && Array.isArray(LEAP_WORDS_DATA)) {
       ALL_WORDS = [...LEAP_WORDS_DATA];
@@ -485,15 +554,16 @@
       }
     }
 
-    // ユーザーデータ管理
-    const STORAGE_KEY = "LEAP_QUIZ_USER_DATA_V2";
+    // ユーザーデータ管理（弱点単語データベース weakWords を追加）
+    const STORAGE_KEY = "LEAP_QUIZ_USER_DATA_V3";
     let userData = {
       coins: 0,
       highScore: 0,
       prefix: "始まりの",
       suffix: "ビギナー",
       purchasedPrefixes: ["pre_init"],
-      purchasedSuffixes: ["suf_beginner"]
+      purchasedSuffixes: ["suf_beginner"],
+      weakWords: {} // { id: { id, word, meaning, count } }
     };
 
     function getFullTitle() {
@@ -502,7 +572,7 @@
 
     function loadUserData() {
       try {
-        const saved = localStorage.getItem(STORAGE_KEY) || localStorage.getItem("LEAP_QUIZ_USER_DATA");
+        const saved = localStorage.getItem(STORAGE_KEY) || localStorage.getItem("LEAP_QUIZ_USER_DATA_V2") || localStorage.getItem("LEAP_QUIZ_USER_DATA");
         if (saved) {
           const parsed = JSON.parse(saved);
           userData = Object.assign(userData, parsed);
@@ -510,6 +580,7 @@
           if (!userData.purchasedSuffixes) userData.purchasedSuffixes = ["suf_beginner"];
           if (!userData.prefix) userData.prefix = "始まりの";
           if (!userData.suffix) userData.suffix = "ビギナー";
+          if (!userData.weakWords) userData.weakWords = {};
         }
       } catch (e) { console.error(e); }
       updateUserUI();
@@ -535,6 +606,19 @@
       const spSuf = document.getElementById("shop-preview-suffix");
       if (spPre) spPre.textContent = userData.prefix;
       if (spSuf) spSuf.textContent = userData.suffix;
+
+      // 苦手単語バナーの更新
+      const weakKeys = Object.keys(userData.weakWords || {});
+      const weakBanner = document.getElementById("home-weak-banner");
+      const weakCountText = document.getElementById("home-weak-count-text");
+      if (weakBanner && weakCountText) {
+        if (weakKeys.length > 0) {
+          weakBanner.classList.remove("hidden");
+          weakCountText.textContent = `現在 ${weakKeys.length} 語の間違えた単語が復習待ちです`;
+        } else {
+          weakBanner.classList.add("hidden");
+        }
+      }
     }
 
     function handleCustomDataUpload(e) {
@@ -584,10 +668,11 @@
       if (screenId === "screen-shop") renderShop();
     }
 
-    // 範囲選択
+    // 範囲選択 ＆ 出題数
     let rangeMode = "part";
     let selectedRange = { start: 1, end: 400, label: "Part 1" };
     let questionLimit = 10;
+    let isWeakMode = false;
 
     function switchRangeMode(mode) {
       rangeMode = mode;
@@ -611,20 +696,39 @@
 
     function setQuestionCount(count) {
       questionLimit = count;
+      const badge = document.getElementById("current-qcount-badge");
+      if (badge) badge.textContent = count === 0 ? "全問" : `${count}問`;
+
       document.querySelectorAll(".q-count-btn").forEach(btn => {
-        btn.className = "q-count-btn py-2 text-sm font-semibold border rounded-lg bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100";
+        btn.className = "q-count-btn py-2 text-xs font-bold border rounded-lg bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100 cursor-pointer";
       });
-      if (event && event.target) {
-        event.target.className = "q-count-btn py-2 text-sm font-semibold border rounded-lg bg-slate-900 text-white border-slate-900";
+      if (event && event.target && event.target.classList.contains("q-count-btn")) {
+        event.target.className = "q-count-btn py-2 text-xs font-bold border rounded-lg bg-slate-900 text-white border-slate-900 cursor-pointer";
+      }
+      const customInput = document.getElementById("custom-qcount-input");
+      if (customInput) customInput.value = "";
+    }
+
+    function handleCustomQCountInput(val) {
+      const num = parseInt(val);
+      if (!isNaN(num) && num > 0) {
+        questionLimit = num;
+        const badge = document.getElementById("current-qcount-badge");
+        if (badge) badge.textContent = `${num}問 (自由指定)`;
+        document.querySelectorAll(".q-count-btn").forEach(btn => {
+          btn.className = "q-count-btn py-2 text-xs font-bold border rounded-lg bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100 cursor-pointer";
+        });
       }
     }
 
     function selectPart(partNum, start, end) {
       selectedRange = { start, end, label: `Part ${partNum}` };
+      isWeakMode = false;
       startQuiz();
     }
 
     function startCustomQuiz() {
+      isWeakMode = false;
       if (rangeMode === "custom") {
         const start = parseInt(document.getElementById("custom-start-id").value) || 1;
         const end = parseInt(document.getElementById("custom-end-id").value) || 100;
@@ -634,8 +738,32 @@
       startQuiz();
     }
 
+    // 苦手単語復習モードの開始
+    function startWeakWordsQuiz() {
+      const weakList = Object.values(userData.weakWords || {});
+      if (weakList.length === 0) {
+        alert("間違えた苦手単語はまだありません！");
+        return;
+      }
+      closeWeakWordsModal();
+      isWeakMode = true;
+      selectedRange = { start: 1, end: 400, label: `苦手単語復習 (${weakList.length}語)` };
+      startQuizWithPool(weakList);
+    }
+
     // クイズエンジン
-    let quizState = { questions: [], currentIndex: 0, score: 0, combo: 0, maxCombo: 0, correctCount: 0, earnedCoins: 0, mistakes: [], isAnswered: false };
+    let quizState = {
+      questions: [],
+      currentIndex: 0,
+      score: 0,
+      combo: 0,
+      maxCombo: 0,
+      correctCount: 0,
+      earnedCoins: 0,
+      mistakes: [],
+      isAnswered: false,
+      isAborted: false
+    };
 
     function startQuiz() {
       let pool = ALL_WORDS.filter(w => w.id >= selectedRange.start && w.id <= selectedRange.end);
@@ -643,6 +771,10 @@
         alert(`指定された範囲（ID: ${selectedRange.start}〜${selectedRange.end}）に単語が存在しません。\n※ 現在はID: 1〜400に対応しています。`);
         return;
       }
+      startQuizWithPool(pool);
+    }
+
+    function startQuizWithPool(pool) {
       pool = shuffleArray([...pool]);
       let qCount = questionLimit === 0 ? pool.length : Math.min(questionLimit, pool.length);
       const selectedWords = pool.slice(0, qCount);
@@ -665,9 +797,13 @@
       quizState.earnedCoins = 0;
       quizState.mistakes = [];
       quizState.isAnswered = false;
+      quizState.isAborted = false;
 
       const rInfo = document.getElementById("quiz-range-info");
       if (rInfo) rInfo.textContent = selectedRange.label;
+      const liveCoins = document.getElementById("quiz-live-coins");
+      if (liveCoins) liveCoins.textContent = `🪙 +0`;
+
       navigate("screen-quiz");
       renderQuestion();
     }
@@ -682,6 +818,9 @@
       const progBar = document.getElementById("quiz-progress-bar");
       if (progText) progText.textContent = `Q ${current} / ${total}`;
       if (progBar) progBar.style.width = `${((current - 1) / total) * 100}%`;
+
+      const liveCoins = document.getElementById("quiz-live-coins");
+      if (liveCoins) liveCoins.textContent = `🪙 +${quizState.earnedCoins}`;
 
       const comboBadge = document.getElementById("quiz-combo-badge");
       if (comboBadge) {
@@ -732,11 +871,35 @@
         quizState.earnedCoins += coinBonus;
         quizState.score += (100 / quizState.questions.length);
 
+        // 苦手復習モードで正解した場合は苦手カウントを減らす/解消
+        if (isWeakMode && userData.weakWords && userData.weakWords[q.word.id]) {
+          userData.weakWords[q.word.id].count--;
+          if (userData.weakWords[q.word.id].count <= 0) {
+            delete userData.weakWords[q.word.id];
+          }
+          saveUserData();
+        }
+
         clickedBtn.classList.remove("bg-white", "hover:bg-slate-50", "border-slate-200");
         clickedBtn.classList.add("bg-emerald-50", "border-emerald-500", "text-emerald-900");
       } else {
         quizState.combo = 0;
         quizState.mistakes.push(q.word);
+
+        // 苦手単語データに自動登録
+        if (!userData.weakWords) userData.weakWords = {};
+        if (!userData.weakWords[q.word.id]) {
+          userData.weakWords[q.word.id] = {
+            id: q.word.id,
+            word: q.word.word,
+            meaning: q.word.meaning,
+            count: 1
+          };
+        } else {
+          userData.weakWords[q.word.id].count++;
+        }
+        saveUserData();
+
         clickedBtn.classList.remove("bg-white", "hover:bg-slate-50", "border-slate-200");
         clickedBtn.classList.add("bg-rose-50", "border-rose-400", "text-rose-900");
         buttons.forEach((btn, idx) => {
@@ -744,10 +907,16 @@
         });
       }
 
+      const liveCoins = document.getElementById("quiz-live-coins");
+      if (liveCoins) liveCoins.textContent = `🪙 +${quizState.earnedCoins}`;
+
       setTimeout(() => {
         quizState.currentIndex++;
-        if (quizState.currentIndex < quizState.questions.length) renderQuestion();
-        else finishQuiz();
+        if (quizState.currentIndex < quizState.questions.length) {
+          renderQuestion();
+        } else {
+          finishQuiz(false);
+        }
       }, 700);
     }
 
@@ -761,17 +930,33 @@
       }
     });
 
+    // クイズ中断時：正解した分のコインを保存して結果を確定
     function abortQuiz() {
-      if (confirm("クイズを中断してトップ画面に戻りますか？")) navigate("screen-home");
+      if (quizState.currentIndex === 0) {
+        navigate("screen-home");
+        return;
+      }
+      const confirmMsg = quizState.earnedCoins > 0
+        ? `クイズを中断しますか？\n（ここまで獲得した 🪙 ${quizState.earnedCoins} Coin は保存されます）`
+        : "クイズを中断して終了しますか？";
+
+      if (confirm(confirmMsg)) {
+        finishQuiz(true);
+      }
     }
 
-    function finishQuiz() {
-      const totalQ = quizState.questions.length;
+    function finishQuiz(isAborted) {
+      quizState.isAborted = !!isAborted;
+      const answeredCount = isAborted ? quizState.currentIndex : quizState.questions.length;
+      const totalQ = isAborted ? answeredCount : quizState.questions.length;
+      const accuracy = totalQ > 0 ? Math.round((quizState.correctCount / totalQ) * 100) : 0;
       const finalScore = Math.round(quizState.score);
-      const accuracy = Math.round((quizState.correctCount / totalQ) * 100);
 
+      // コインとハイスコアの永続保存
       userData.coins += quizState.earnedCoins;
-      if (finalScore > userData.highScore) userData.highScore = finalScore;
+      if (!isAborted && finalScore > userData.highScore) {
+        userData.highScore = finalScore;
+      }
       saveUserData();
 
       const rHead = document.getElementById("result-header-label");
@@ -781,18 +966,19 @@
       const actBtns = document.getElementById("result-action-buttons");
       const chActs = document.getElementById("result-challenge-action");
 
-      if (rHead) rHead.textContent = "QUIZ RESULT";
+      if (rHead) rHead.textContent = isAborted ? "QUIZ ABORTED (中断結果)" : "QUIZ RESULT";
       if (rTitle) rTitle.textContent = getFullTitle();
       if (chBadge) chBadge.classList.add("hidden");
       if (ecBox) ecBox.classList.remove("hidden");
       if (actBtns) actBtns.classList.remove("hidden");
       if (chActs) chActs.classList.add("hidden");
 
-      document.getElementById("result-score").innerHTML = `${finalScore}<span class="text-xs font-normal text-slate-500">点</span>`;
+      document.getElementById("result-score").innerHTML = `${quizState.correctCount}/${totalQ}<span class="text-xs font-normal text-slate-500">問</span>`;
       document.getElementById("result-accuracy").innerHTML = `${accuracy}<span class="text-xs font-normal text-slate-500">%</span>`;
       document.getElementById("result-combo").innerHTML = `${quizState.maxCombo}<span class="text-xs font-normal text-slate-500">回</span>`;
-      document.getElementById("result-earned-coins").textContent = `+${quizState.earnedCoins} Coin`;
+      document.getElementById("result-earned-coins").textContent = `+${quizState.earnedCoins} Coin 獲得！`;
 
+      // 間違えた単語リスト（復習用）
       const mistakeSection = document.getElementById("result-mistakes-section");
       const mistakeList = document.getElementById("result-mistakes-list");
       if (mistakeList) mistakeList.innerHTML = "";
@@ -801,25 +987,93 @@
         if (mistakeSection) mistakeSection.classList.remove("hidden");
         quizState.mistakes.forEach(w => {
           const item = document.createElement("div");
-          item.className = "flex justify-between py-1 border-b border-slate-200/60 last:border-0";
-          item.innerHTML = `<span class="font-bold text-slate-800">${w.word}</span> <span class="text-slate-600">${w.meaning}</span>`;
+          item.className = "flex justify-between items-center py-1.5 border-b border-slate-200/60 last:border-0";
+          item.innerHTML = `
+            <div>
+              <span class="font-bold text-slate-800">${w.word}</span>
+              <span class="text-slate-400 text-[10px] ml-1">#${w.id}</span>
+            </div>
+            <div class="text-slate-600 font-medium">${w.meaning}</div>
+          `;
           if (mistakeList) mistakeList.appendChild(item);
         });
       } else {
         if (mistakeSection) mistakeSection.classList.add("hidden");
       }
 
+      if (isAborted) {
+        showToast(`中断しました。🪙 ${quizState.earnedCoins} Coin を獲得しました！`);
+      }
+
       navigate("screen-result");
     }
 
-    function retryCurrentQuiz() { startQuiz(); }
+    function retryCurrentQuiz() {
+      if (isWeakMode) startWeakWordsQuiz();
+      else startQuiz();
+    }
+
+    // 苦手単語モーダル制御
+    function openWeakWordsModal() {
+      const modal = document.getElementById("modal-weak-words");
+      const listContainer = document.getElementById("modal-weak-words-list");
+      if (!modal || !listContainer) return;
+
+      const items = Object.values(userData.weakWords || {});
+      listContainer.innerHTML = "";
+
+      if (items.length === 0) {
+        listContainer.innerHTML = `<div class="text-center py-8 text-slate-400 text-xs">現在記録されている苦手単語はありません！</div>`;
+      } else {
+        items.forEach(item => {
+          const row = document.createElement("div");
+          row.className = "p-3 bg-slate-50 border border-slate-200 rounded-xl flex items-center justify-between text-xs";
+          row.innerHTML = `
+            <div>
+              <div class="font-bold text-slate-900 text-sm flex items-center gap-1.5">
+                <span>${item.word}</span>
+                <span class="text-[10px] bg-rose-100 text-rose-700 font-extrabold px-1.5 py-0.2 rounded-full">ミス ${item.count}回</span>
+              </div>
+              <div class="text-slate-500 mt-0.5">${item.meaning}</div>
+            </div>
+            <button type="button" onclick="removeSingleWeakWord(${item.id})" class="text-slate-400 hover:text-rose-600 text-xs px-2 py-1 rounded">削除</button>
+          `;
+          listContainer.appendChild(row);
+        });
+      }
+
+      modal.classList.remove("hidden");
+    }
+
+    function closeWeakWordsModal() {
+      const modal = document.getElementById("modal-weak-words");
+      if (modal) modal.classList.add("hidden");
+    }
+
+    function removeSingleWeakWord(id) {
+      if (userData.weakWords && userData.weakWords[id]) {
+        delete userData.weakWords[id];
+        saveUserData();
+        openWeakWordsModal();
+      }
+    }
+
+    function clearWeakWords() {
+      if (confirm("苦手単語データをすべて消去しますか？")) {
+        userData.weakWords = {};
+        saveUserData();
+        openWeakWordsModal();
+        showToast("苦手単語データをリセットしました");
+      }
+    }
 
     // 共有用URLの生成
     function generateResultUrl() {
-      const finalScore = Math.round(quizState.score);
-      const accuracy = Math.round((quizState.correctCount / quizState.questions.length) * 100);
+      const totalQ = quizState.questions.length;
+      const accuracy = totalQ > 0 ? Math.round((quizState.correctCount / totalQ) * 100) : 0;
       const data = {
-        s: finalScore,
+        s: quizState.correctCount,
+        tq: totalQ,
         a: accuracy,
         c: quizState.maxCombo,
         t: getFullTitle(),
@@ -886,19 +1140,19 @@
     // LINE / X / クリップボード共有
     function shareResult(platform) {
       const resultUrl = generateResultUrl();
-      const finalScore = Math.round(quizState.score);
-      const accuracy = Math.round((quizState.correctCount / quizState.questions.length) * 100);
+      const totalQ = quizState.questions.length;
+      const accuracy = totalQ > 0 ? Math.round((quizState.correctCount / totalQ) * 100) : 0;
       const titleName = getFullTitle();
 
       const lineMessage = `【LEAP 4択英単語 挑戦状🔥】\n` +
                           `範囲: ${selectedRange.label}\n` +
                           `称号: 【${titleName}】\n` +
-                          `スコア: ${finalScore}点 (正答率: ${accuracy}% / 最大コンボ: ${quizState.maxCombo}回)\n\n` +
+                          `成績: ${quizState.correctCount}/${totalQ}問正解 (正答率: ${accuracy}% / 最大コンボ: ${quizState.maxCombo}回)\n\n` +
                           `👇結果カードを見る＆挑戦する！\n` +
                           `${resultUrl}`;
 
       const xMessage = `【LEAP 4択英単語 挑戦状🔥】\n` +
-                       `範囲: ${selectedRange.label} でスコア【${finalScore}点】(称号: ${titleName}) を記録！\n` +
+                       `範囲: ${selectedRange.label} で【${quizState.correctCount}/${totalQ}問正解】(称号: ${titleName}) を記録！\n` +
                        `君はこの記録を超えられるか！？\n`;
 
       if (platform === "line") {
@@ -968,7 +1222,7 @@
 
         document.getElementById("result-header-label").textContent = "CHALLENGE FROM FRIEND";
         document.getElementById("result-title-name").textContent = `称号: 【${d.t || "挑戦者"}】`;
-        document.getElementById("result-score").innerHTML = `${d.s || 0}<span class="text-xs font-normal text-slate-500">点</span>`;
+        document.getElementById("result-score").innerHTML = `${d.s || 0}/${d.tq || 10}<span class="text-xs font-normal text-slate-500">問</span>`;
         document.getElementById("result-accuracy").innerHTML = `${d.a || 0}<span class="text-xs font-normal text-slate-500">%</span>`;
         document.getElementById("result-combo").innerHTML = `${d.c || 0}<span class="text-xs font-normal text-slate-500">回</span>`;
 
@@ -992,6 +1246,7 @@
 
     function acceptChallenge() {
       if (incomingChallengeRange) selectedRange = incomingChallengeRange;
+      isWeakMode = false;
       startQuiz();
     }
 
