@@ -881,6 +881,16 @@
       }));
     }
 
+    function loadAchievements() {
+      try {
+        const saved = localStorage.getItem("LEAP_ACHIEVEMENTS_V1");
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          if (Array.isArray(parsed)) unlockedAchievements = parsed;
+        }
+      } catch (e) { unlockedAchievements = []; }
+    }
+
     function saveAchievements() {
       try { localStorage.setItem("LEAP_ACHIEVEMENTS_V1", JSON.stringify(unlockedAchievements)); } catch (e) {}
     }
@@ -2316,6 +2326,7 @@
       };
       selectedRange = incomingChallengeRange;
 
+      try {
         document.getElementById("result-header-label").textContent = "CHALLENGE FROM FRIEND";
         document.getElementById("result-title-name").textContent = `称号: 【${d.t || "挑戦者"}】`;
         document.getElementById("result-score").innerHTML = `${d.s || 0}/${d.tq || 10}<span class="text-xs font-normal text-slate-500">問</span>`;
