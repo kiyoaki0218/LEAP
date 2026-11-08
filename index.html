@@ -85,11 +85,11 @@
       <div id="header-title" class="bg-slate-200 text-slate-700 font-semibold px-2.5 py-1 rounded-md text-xs max-w-[150px] truncate">
         始まりのビギナー
       </div>
-      <div class="flex items-center gap-2">
+            <div class="flex items-center gap-2">
         <span id="achievement-badge" class="hidden text-emerald-600 font-extrabold bg-emerald-100 rounded-full w-6 h-6 flex items-center justify-center text-sm">🏆</span>
         <span id="achievement-count" class="hidden text-xs font-bold bg-slate-200 px-2 py-0.5 rounded-full">0/0</span>
-        <button type="button" onclick="openAchievementsModal()" class="text-slate-500 hover:text-slate-800 text-sm p-1 rounded-lg transition cursor-pointer" title="実績・トロフィーを見る">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-.813.259a3.375 3.375 0 00-2.456 2.456zM13.5 15.75l-2.25 2.25a3.375 3.375 0 104.51 4.511L18 16.5l-1.5 1.5s-1.5-1.5-1.5-1.5a3.375 3.375 0 104.51-4.511L18 15.75z" /></svg>
+        <button type="button" id="dark-toggle-btn" onclick="toggleDarkMode()" class="text-slate-500 hover:text-slate-800 text-sm p-1 rounded-lg transition cursor-pointer" title="ダークモード切替（☀️ライト / 🌙ダーク）">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z" /></svg>
         </button>
       </div>
     </div>
@@ -2061,6 +2061,50 @@
       userData.voiceEnabled = !userData.voiceEnabled;
       saveUserData();
       showToast(userData.voiceEnabled ? "🔊 音声読み上げをONにしました" : "🔇 音声読み上げをOFFにしました");
+    }
+
+    // ===== ダークモード =====
+    const DARK_STORAGE_KEY = "LEAP_DARK_MODE_V1";
+
+    function getDarkMode() {
+      const stored = localStorage.getItem(DARK_STORAGE_KEY);
+      if (stored !== null) return stored === "dark";
+      if (localStorage.getItem("LEAP_DARK_MODE")) return false;
+      return false;
+    }
+
+    function setDarkMode(dark) {
+      localStorage.setItem(DARK_STORAGE_KEY, dark ? "dark" : "light");
+    }
+
+    function toggleDarkMode() {
+      const isDark = getDarkMode();
+      const next = !isDark;
+      setDarkMode(next);
+      applyDarkMode(next);
+    }
+
+    function applyDarkMode(dark) {
+      const root = document.documentElement;
+      if (dark) {
+        root.classList.add("dark");
+        root.setAttribute("data-theme", "dark");
+      } else {
+        root.classList.remove("dark");
+        root.removeAttribute("data-theme");
+      }
+      const toggleBtn = document.getElementById("dark-toggle-btn");
+      if (toggleBtn) {
+        toggleBtn.title = dark ? "ライトモードに切替（☀️）" : "ダークモードに切替（🌙）";
+        toggleBtn.innerHTML = dark
+          ? '<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773l-1.591-1.591M12 8.25a3 3 0 11-6 0 3 3 0 016 0z" /></svg>'
+          : '<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z" /></svg>';
+      }
+    }
+
+    function initDarkMode() {
+      const dark = getDarkMode();
+      applyDarkMode(dark);
     }
 
     // 苦手単語モーダル制御
