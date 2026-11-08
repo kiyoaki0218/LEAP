@@ -64,7 +64,7 @@
     .fever-5-active  #quiz-combo-badge { animation: feverTextGlow   0.7s ease-out; }
     .fever-10-active #quiz-combo-badge { animation: feverTextGlow10 0.7s ease-out; }
   </style>
-  <!-- 実データ(1〜400)の読み込み -->
+  <!-- 実データ(1〜1000)の読み込み -->
   <script src="./words_data.js"></script>
   <!-- html2canvas (スクリーンショット生成) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -167,7 +167,7 @@
 
       <!-- 単語データ情報・手動読込 -->
       <div class="pt-3 border-t border-slate-200/80 text-xs text-slate-400 flex flex-col items-center gap-2">
-        <p id="data-status-text">LEAP実データ (ID: 1〜400) 読込済</p>
+        <p id="data-status-text">LEAP実データ (ID: 1〜1000) 読込済</p>
         <label class="cursor-pointer text-emerald-600 hover:underline">
           <span>[+] 追加のJSONファイルを読み込む</span>
           <input type="file" id="json-file-input" accept=".json" class="hidden" onchange="handleCustomDataUpload(event)">
@@ -202,21 +202,17 @@
           <span class="text-xs font-bold px-3 py-1 bg-emerald-50 text-emerald-700 rounded-md border border-emerald-200">400語</span>
         </button>
 
-        <!-- Part 2 (未実装・Coming Soon) -->
-        <div class="relative w-full">
-          <button disabled type="button" class="w-full text-left p-4 bg-slate-100/70 border border-slate-200/70 rounded-xl flex justify-between items-center cursor-not-allowed opacity-50 select-none">
-            <div>
-              <div class="font-bold text-slate-500">Part 2</div>
-              <div class="text-xs text-slate-400 mt-0.5">標準・頻出単語 (ID: 401 〜 1000)</div>
+        <!-- Part 2 (実装済・プレイ可能) -->
+        <button type="button" onclick="selectPart(2, 401, 1000)" class="w-full text-left p-4 bg-white hover:border-emerald-500 border-2 border-emerald-500/80 rounded-xl transition shadow-sm flex justify-between items-center group cursor-pointer">
+          <div>
+            <div class="font-bold text-slate-900 group-hover:text-emerald-600 transition flex items-center gap-2">
+              <span>Part 2</span>
+              <span class="text-[10px] bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded-full">プレイ可能</span>
             </div>
-            <span class="text-xs font-semibold px-2.5 py-1 bg-slate-200/50 rounded-md text-slate-400">600語</span>
-          </button>
-          <div class="absolute inset-0 flex items-center justify-end pr-4 pointer-events-none">
-            <span class="bg-slate-900/85 backdrop-blur-sm text-amber-300 text-[11px] font-extrabold px-3 py-1 rounded-full tracking-wider shadow flex items-center gap-1.5 border border-slate-700">
-              <span>🔒</span> COMING SOON
-            </span>
+            <div class="text-xs text-slate-500 mt-0.5">標準・頻出単語 (ID: 401 〜 1000)</div>
           </div>
-        </div>
+          <span class="text-xs font-bold px-3 py-1 bg-emerald-50 text-emerald-700 rounded-md border border-emerald-200">600語</span>
+        </button>
 
         <!-- Part 3 (未実装・Coming Soon) -->
         <div class="relative w-full">
@@ -271,13 +267,13 @@
       <div id="panel-custom" class="hidden bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-4">
         <div>
           <label class="block text-xs font-semibold text-slate-500 mb-1">開始 ID</label>
-          <input type="number" id="custom-start-id" value="1" min="1" max="400" class="w-full p-3 border border-slate-300 rounded-xl font-bold text-slate-800 focus:outline-none focus:border-slate-800">
+          <input type="number" id="custom-start-id" value="1" min="1" max="1000" class="w-full p-3 border border-slate-300 rounded-xl font-bold text-slate-800 focus:outline-none focus:border-slate-800">
         </div>
         <div>
           <label class="block text-xs font-semibold text-slate-500 mb-1">終了 ID</label>
-          <input type="number" id="custom-end-id" value="100" min="1" max="400" class="w-full p-3 border border-slate-300 rounded-xl font-bold text-slate-800 focus:outline-none focus:border-slate-800">
+          <input type="number" id="custom-end-id" value="100" min="1" max="1000" class="w-full p-3 border border-slate-300 rounded-xl font-bold text-slate-800 focus:outline-none focus:border-slate-800">
         </div>
-        <p class="text-xs text-emerald-600 font-medium">※ 現在は Part 1 (ID: 1〜400) のデータが収録されています（例: 1〜200、50〜325 など自由に入力可能）。</p>
+        <p class="text-xs text-emerald-600 font-medium">※ Part 1 (ID: 1〜400) と Part 2 (ID: 401〜1000) のデータが収録されています（例: 1〜200、450〜800 など自由に入力可能）。</p>
       </div>
 
       <!-- 出題数選択（10問, 20問, 50問, 100問, 全問, 自由入力） -->
@@ -300,7 +296,7 @@
         <div class="pt-2 border-t border-slate-100 flex items-center justify-between gap-2">
           <span class="text-xs text-slate-500 font-medium">好きな問題数を指定:</span>
           <div class="flex items-center gap-1.5">
-            <input type="number" id="custom-qcount-input" placeholder="例: 15" min="1" max="400" oninput="handleCustomQCountInput(this.value)" class="w-20 p-1.5 text-center border border-slate-300 rounded-lg text-xs font-bold text-slate-800 focus:outline-none focus:border-slate-800">
+            <input type="number" id="custom-qcount-input" placeholder="例: 15" min="1" max="1000" oninput="handleCustomQCountInput(this.value)" class="w-20 p-1.5 text-center border border-slate-300 rounded-lg text-xs font-bold text-slate-800 focus:outline-none focus:border-slate-800">
             <span class="text-xs text-slate-500 font-bold">問</span>
           </div>
         </div>
@@ -602,6 +598,30 @@
       ALL_WORDS = [...LEAP_WORDS_DATA];
     }
 
+    // 収録データが対応するID範囲（データ追加に応じて自動で拡張される）
+    function getDataIdRange() {
+      let start = Infinity, end = 0;
+      ALL_WORDS.forEach(w => {
+        if (typeof w.id !== "number") return;
+        if (w.id < start) start = w.id;
+        if (w.id > end) end = w.id;
+      });
+      if (end === 0) return { start: 1, end: 0 };
+      return { start: Number.isFinite(start) ? start : 1, end };
+    }
+
+    // 範囲入力の上限とデータ表記を実際の収録範囲に合わせる
+    function syncDataRangeUi() {
+      const range = getDataIdRange();
+      if (!range.end) return;
+      const statusEl = document.getElementById("data-status-text");
+      if (statusEl) statusEl.textContent = `LEAP実データ (ID: ${range.start}〜${range.end}) 読込済`;
+      ["custom-start-id", "custom-end-id", "custom-qcount-input"].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.max = String(range.end);
+      });
+    }
+
     async function checkAndFetchData() {
       if (ALL_WORDS.length > 0) return;
       try {
@@ -610,8 +630,7 @@
           const json = await res.json();
           if (Array.isArray(json) && json.length > 0) {
             ALL_WORDS = json;
-            const statusEl = document.getElementById("data-status-text");
-            if (statusEl) statusEl.textContent = `LEAP実データ (${ALL_WORDS.length} 語) 読込済`;
+            syncDataRangeUi();
           }
         }
       } catch (e) {
@@ -745,6 +764,7 @@
         map.set(w.id, { id: w.id, word: w.word, meaning: w.meaning, part });
       });
       ALL_WORDS = Array.from(map.values()).sort((a, b) => a.id - b.id);
+      syncDataRangeUi();
     }
 
     // 画面遷移
@@ -876,7 +896,8 @@
     function startQuiz() {
       let pool = ALL_WORDS.filter(w => w.id >= selectedRange.start && w.id <= selectedRange.end);
       if (pool.length === 0) {
-        alert(`指定された範囲（ID: ${selectedRange.start}〜${selectedRange.end}）に単語が存在しません。\n※ 現在はID: 1〜400に対応しています。`);
+        const range = getDataIdRange();
+        alert(`指定された範囲（ID: ${selectedRange.start}〜${selectedRange.end}）に単語が存在しません。\n※ 現在はID: ${range.start}〜${range.end}に対応しています。`);
         return;
       }
       startQuizWithPool(pool);
@@ -1209,6 +1230,7 @@
     }
 
     // ===== デイリーチャレンジ =====
+    // 全収録範囲から出題しつつ、過去に間違えた単語（苦手単語）をメインにする
     function startDailyChallenge() {
       const today = getTodayString();
       if (userData.lastDailyDate === today) {
@@ -1218,9 +1240,57 @@
         isDailyMode = true;
       }
       isWeakMode = false;
-      selectedRange = { start: 1, end: 400, label: "Part 1（デイリーチャレンジ）" };
       questionLimit = 20;
-      startQuiz();
+
+      const range = getDataIdRange();
+      const inRange = ALL_WORDS.filter(w => w.id >= range.start && w.id <= range.end);
+      if (inRange.length === 0) {
+        alert("単語データが読み込まれていません。");
+        return;
+      }
+      selectedRange = { start: range.start, end: range.end, label: `デイリーチャレンジ (ID: ${range.start}〜${range.end})` };
+
+      // 苦手単語は間違い回数が多いほど出やすくする
+      const wordById = new Map(inRange.map(w => [w.id, w]));
+      const weakEntries = Object.values(userData.weakWords || {})
+        .filter(w => wordById.has(w.id))
+        .sort((a, b) => (b.count || 0) - (a.count || 0));
+
+      const total = Math.min(questionLimit, inRange.length);
+      const weakQuota = weakEntries.length === 0 ? 0 : Math.min(weakEntries.length, Math.round(total * 0.7));
+
+      const picked = [];
+      const pickedIds = new Set();
+
+      if (weakQuota > 0) {
+        const weighted = [];
+        weakEntries.forEach(w => {
+          const repeats = Math.max(1, Math.min(w.count || 1, 5));
+          for (let i = 0; i < repeats; i++) weighted.push(wordById.get(w.id));
+        });
+        shuffleArray(weighted).forEach(w => {
+          if (picked.length >= weakQuota || pickedIds.has(w.id)) return;
+          picked.push(w);
+          pickedIds.add(w.id);
+        });
+      }
+
+      // 残りの枠は苦手以外の単語から埋める（苦手70% / 新規30%のバランスを保つ）
+      const weakIds = new Set(weakEntries.map(w => w.id));
+      shuffleArray(inRange.filter(w => !weakIds.has(w.id))).forEach(w => {
+        if (picked.length >= total) return;
+        picked.push(w);
+        pickedIds.add(w.id);
+      });
+      if (picked.length < total) {
+        shuffleArray(inRange).forEach(w => {
+          if (picked.length >= total || pickedIds.has(w.id)) return;
+          picked.push(w);
+          pickedIds.add(w.id);
+        });
+      }
+
+      startQuizWithPool(picked);
     }
 
     // ===== スコア履歴UI =====
@@ -1650,6 +1720,7 @@
     // 初期化
     window.addEventListener("DOMContentLoaded", () => {
       loadUserData();
+      syncDataRangeUi();
       checkAndFetchData();
       checkIncomingChallenge();
     });
