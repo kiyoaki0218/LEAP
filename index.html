@@ -11,8 +11,25 @@
   <meta name="description" content="大学受験英単語LEAPの4択クイズ！友達のスコア記録に挑んでみよう！">
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
+  <!-- アプリ用アイコン（favicon / PWA） -->
+  <link rel="icon" href="./favicon.png" type="image/png">
+  <link rel="icon" href="./icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="./apple-touch-icon.png">
+  <link rel="manifest" href="./manifest.json">
+  <meta name="theme-color" content="#059669">
+  <script>
+    // ダークモードの初期適用（画面のチラつき防止）
+    try {
+      var _dm = localStorage.getItem("LEAP_DARK_MODE_V1");
+      if (_dm === "dark") {
+        document.documentElement.setAttribute("data-theme", "dark");
+        document.documentElement.classList.add("dark");
+      }
+    } catch (e) {}
+  </script>
   <script>
     tailwind.config = {
+      darkMode: 'class',
       theme: {
         extend: {
           colors: {
@@ -63,6 +80,104 @@
     .combo-pop-anim  { animation: comboPop 0.35s cubic-bezier(.36,.07,.19,.97); }
     .fever-5-active  #quiz-combo-badge { animation: feverTextGlow   0.7s ease-out; }
     .fever-10-active #quiz-combo-badge { animation: feverTextGlow10 0.7s ease-out; }
+
+    /* スマホでのタップ反応速度向上（300ms遅延・誤スクロール判定防止） */
+    button, a, input, select {
+      touch-action: manipulation;
+    }
+
+    /* ===== ダークモード（data-theme="dark" / .dark のとき） ===== */
+    html[data-theme="dark"], html.dark {
+      color-scheme: dark;
+    }
+    html[data-theme="dark"] body,
+    html.dark body {
+      background-color: #0b1120 !important;
+      color: #f1f5f9 !important;
+    }
+    html[data-theme="dark"] .bg-white,
+    html.dark .bg-white {
+      background-color: #1e293b !important;
+      color: #f1f5f9 !important;
+    }
+    html[data-theme="dark"] .bg-slate-50,
+    html.dark .bg-slate-50 {
+      background-color: #0f172a !important;
+    }
+    html[data-theme="dark"] .bg-slate-100,
+    html.dark .bg-slate-100 {
+      background-color: #334155 !important;
+      color: #f1f5f9 !important;
+    }
+    html[data-theme="dark"] .bg-slate-200,
+    html[data-theme="dark"] .bg-slate-200\/70,
+    html.dark .bg-slate-200,
+    html.dark .bg-slate-200\/70 {
+      background-color: #1e293b !important;
+    }
+    html[data-theme="dark"] .bg-emerald-50,
+    html.dark .bg-emerald-50 {
+      background-color: rgba(5, 150, 105, 0.18) !important;
+    }
+    html[data-theme="dark"] .bg-amber-50,
+    html.dark .bg-amber-50 {
+      background-color: rgba(217, 119, 6, 0.18) !important;
+    }
+    html[data-theme="dark"] .bg-rose-50,
+    html.dark .bg-rose-50 {
+      background-color: rgba(225, 29, 72, 0.18) !important;
+    }
+    html[data-theme="dark"] .text-slate-900,
+    html[data-theme="dark"] .text-slate-800,
+    html.dark .text-slate-900,
+    html.dark .text-slate-800 {
+      color: #f8fafc !important;
+    }
+    html[data-theme="dark"] .text-slate-700,
+    html[data-theme="dark"] .text-slate-600,
+    html.dark .text-slate-700,
+    html.dark .text-slate-600 {
+      color: #cbd5e1 !important;
+    }
+    html[data-theme="dark"] .text-slate-500,
+    html[data-theme="dark"] .text-slate-400,
+    html.dark .text-slate-500,
+    html.dark .text-slate-400 {
+      color: #94a3b8 !important;
+    }
+    html[data-theme="dark"] .border-slate-200,
+    html[data-theme="dark"] .border-slate-200\/80,
+    html[data-theme="dark"] .border-slate-300,
+    html[data-theme="dark"] .border-slate-100,
+    html.dark .border-slate-200,
+    html.dark .border-slate-200\/80,
+    html.dark .border-slate-300,
+    html.dark .border-slate-100 {
+      border-color: #334155 !important;
+    }
+    html[data-theme="dark"] header,
+    html.dark header {
+      border-color: #334155 !important;
+    }
+    html[data-theme="dark"] input,
+    html[data-theme="dark"] select,
+    html[data-theme="dark"] textarea,
+    html.dark input,
+    html.dark select,
+    html.dark textarea {
+      background-color: #1e293b !important;
+      color: #f8fafc !important;
+      border-color: #475569 !important;
+    }
+    html[data-theme="dark"] footer,
+    html.dark footer {
+      color: #64748b !important;
+    }
+    html[data-theme="dark"] #toast,
+    html.dark #toast {
+      background-color: #f8fafc !important;
+      color: #0f172a !important;
+    }
   </style>
   <!-- 実データ(1〜1000)の読み込み -->
   <script src="./words_data.js"></script>
@@ -72,24 +187,25 @@
 <body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col justify-between selection:bg-slate-200">
 
   <!-- ヘッダー -->
-  <header class="w-full max-w-xl mx-auto px-4 py-4 flex items-center justify-between border-b border-slate-200/80">
-    <div class="flex items-center gap-2 cursor-pointer" onclick="navigate('screen-home')">
+  <header class="w-full max-w-xl mx-auto px-3 sm:px-4 py-3 flex items-center justify-between border-b border-slate-200/80">
+    <div class="flex items-center gap-2 cursor-pointer select-none shrink-0" onclick="navigate('screen-home')">
       <span class="w-3 h-3 rounded-full bg-emerald-500"></span>
-      <h1 class="font-bold text-lg tracking-tight text-slate-900">LEAP Quiz</h1>
+      <h1 class="font-bold text-base sm:text-lg tracking-tight text-slate-900">LEAP Quiz</h1>
     </div>
-    <div class="flex items-center gap-3 text-sm">
-      <div class="bg-amber-50 border border-amber-200 px-3 py-1 rounded-full font-medium text-amber-800 flex items-center gap-1 shadow-sm">
+    <div class="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm">
+      <div class="bg-amber-50 border border-amber-200 px-2 sm:px-2.5 py-1 rounded-full font-bold text-amber-800 flex items-center gap-1 shadow-sm shrink-0">
         <span>🪙</span>
         <span id="header-coins">0</span>
       </div>
-      <div id="header-title" class="bg-slate-200 text-slate-700 font-semibold px-2.5 py-1 rounded-md text-xs max-w-[150px] truncate">
+      <div id="header-title" class="bg-slate-200 text-slate-700 font-semibold px-2 py-1 rounded-md text-[11px] sm:text-xs max-w-[95px] sm:max-w-[140px] truncate shrink-0">
         始まりのビギナー
       </div>
-            <div class="flex items-center gap-2">
-        <span id="achievement-badge" class="hidden text-emerald-600 font-extrabold bg-emerald-100 rounded-full w-6 h-6 flex items-center justify-center text-sm">🏆</span>
-        <span id="achievement-count" class="hidden text-xs font-bold bg-slate-200 px-2 py-0.5 rounded-full">0/0</span>
-        <button type="button" id="dark-toggle-btn" onclick="toggleDarkMode()" class="text-slate-500 hover:text-slate-800 text-sm p-1 rounded-lg transition cursor-pointer" title="ダークモード切替（☀️ライト / 🌙ダーク）">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z" /></svg>
+      <div class="flex items-center gap-1 shrink-0">
+        <button type="button" id="header-achievement-btn" onclick="openAchievementsModal()" class="w-8 h-8 rounded-lg flex items-center justify-center bg-slate-100 hover:bg-slate-200 border border-slate-200 transition cursor-pointer" title="実績・トロフィーを見る">
+          <span class="text-sm">🏆</span>
+        </button>
+        <button type="button" id="dark-toggle-btn" onclick="toggleDarkMode()" class="w-8 h-8 rounded-lg flex items-center justify-center bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-600 transition cursor-pointer" title="ダークモード切替（☀️ライト / 🌙ダーク）">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z" /></svg>
         </button>
       </div>
     </div>
@@ -530,7 +646,7 @@
 
       <div class="flex items-center justify-between border-b border-slate-100 pb-2">
         <span class="text-xs font-semibold text-slate-500">解禁済み</span>
-        <span id="achievement-count" class="text-xs font-bold bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full">0/0</span>
+        <span id="achievement-modal-count" class="text-xs font-bold bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full">0/7</span>
       </div>
       <div id="achievement-list" class="space-y-2 overflow-y-auto" style="max-height: 50vh;"></div>
 
@@ -836,38 +952,70 @@
 
 
     // ===== 実績・トロフィー =====
+    // condition(userData) が true になったら達成。userData の実フィールドだけを使う。
+    function _history(u) { return Array.isArray(u.scoreHistory) ? u.scoreHistory : []; }
+    function _totalCorrect(u) {
+      // EXPは正解1問で +10 なので、正解数の累計として使える
+      return Math.floor((Number(u.exp) || 0) / 10);
+    }
     const ACHIEVEMENTS = [
-      { id: "first_victory", name: "初勝利", icon: "🏆", desc: "初めてクイズに正解したら達成", price: 0 },
-      { id: "ten_combo", name: "10連勝", icon: "🔥", desc: "10連コンボを達成したら達成", price: 0 },
-      { id: "hundred_correct", name: "累計100問正解", icon: "✅", desc: "累計100問正解で達成（以降も蓄積）", price: 0 },
-      { id: "three_acquired", name: "称号を3つ購入", icon: "🛒", desc: "称号（前称号・後称号）を3つ取得したら達成", price: 0 },
-      { id: "daily_first_clear", name: "デイリー初クリア", icon: "🌟", desc: "デイリーチャレンジ初クリアで達成", price: 0 },
-      { id: "all_frames", name: "全フレームコンプリート", icon: "💎", desc: "全アバターフレーム27種を揃えたら達成", price: 0 },
-      { id: "complete_title_set", name: "称号制覇", icon: "📚", desc: "前称号・後称号すべてを所持したら達成", price: 0 }
+      { id: "first_correct", name: "はじめの一歩", icon: "🐣", desc: "クイズで初めて1問正解する", price: 50,
+        condition: (u) => (Number(u.exp) || 0) >= 10 },
+      { id: "first_victory", name: "初勝利", icon: "🏆", desc: "クイズを最後まで解き切る", price: 100,
+        condition: (u) => _history(u).length >= 1 },
+      { id: "combo_5", name: "5連コンボ", icon: "⚡", desc: "5問連続で正解する", price: 100,
+        condition: (u) => _history(u).some(h => Number(h.combo) >= 5) || (quizState && quizState.maxCombo >= 5) },
+      { id: "ten_combo", name: "10連コンボ", icon: "🔥", desc: "10問連続で正解する", price: 200,
+        condition: (u) => _history(u).some(h => Number(h.combo) >= 10) || (quizState && quizState.maxCombo >= 10) },
+      { id: "combo_20", name: "20連コンボ", icon: "🌟", desc: "20問連続で正解する", price: 400,
+        condition: (u) => _history(u).some(h => Number(h.combo) >= 20) || (quizState && quizState.maxCombo >= 20) },
+      { id: "perfect_clear", name: "完全無欠", icon: "🎯", desc: "正答率100%でクイズをクリアする", price: 300,
+        condition: (u) => _history(u).some(h => Number(h.accuracy) === 100 && Number(h.total) >= 10) },
+      { id: "ten_correct", name: "見習い単語王", icon: "📖", desc: "累計10問正解を達成する", price: 100,
+        condition: (u) => _totalCorrect(u) >= 10 },
+      { id: "fifty_correct", name: "努力の結晶", icon: "🎖️", desc: "累計50問正解を達成する", price: 250,
+        condition: (u) => _totalCorrect(u) >= 50 },
+      { id: "hundred_correct", name: "暗記の鬼", icon: "👑", desc: "累計100問正解を達成する", price: 500,
+        condition: (u) => _totalCorrect(u) >= 100 },
+      { id: "three_acquired", name: "称号コレクター", icon: "🛒", desc: "前称号・後称号を計3つ取得する", price: 150,
+        condition: (u) => (u.purchasedPrefixes || []).length + (u.purchasedSuffixes || []).length >= 3 },
+      { id: "ten_titles", name: "二つ名マスター", icon: "💎", desc: "前称号・後称号を計10個取得する", price: 600,
+        condition: (u) => (u.purchasedPrefixes || []).length + (u.purchasedSuffixes || []).length >= 10 },
+      { id: "two_frames", name: "おしゃれ入門", icon: "🖼️", desc: "アバターフレームを2種類以上所持する", price: 200,
+        condition: (u) => (u.ownedFrames || []).length >= 2 },
+      { id: "daily_first_clear", name: "日課の達人", icon: "🌅", desc: "デイリーチャレンジをクリアする", price: 200,
+        condition: (u) => !!u.lastDailyDate },
+      { id: "coin_rich", name: "貯蓄家", icon: "💰", desc: "所持コインが300を突破する", price: 150,
+        condition: (u) => Number(u.coins) >= 300 },
+      { id: "voice_listener", name: "リスニング派", icon: "🔊", desc: "音声読み上げ機能を活用する", price: 100,
+        condition: (u) => !!u.voiceEnabled && _history(u).length >= 1 }
     ];
 
     let unlockedAchievements = [];
     let achievementCallbacks = [];
 
-    function initAchievements() {
-      const stored = localStorage.getItem("LEAP_ACHIEVEMENTS_V1");
-      if (stored) {
-        try { unlockedAchievements = JSON.parse(stored); } catch (e) { unlockedAchievements = []; }
-      } else {
-        unlockedAchievements = [];
-      }
-      ACHIEVEMENTS.forEach(a => {
-        if (isAchievementDone(a.id, a.condition)) return;
-        const f = a.condition(userData);
-        const done = typeof f === "boolean" ? f : (f ? f(userData) : false);
-        if (done) unlockedAchievements.push(a.id);
-      });
-      saveAchievements();
-      updateAchievementCount();
+    function isAchievementDone(id) {
+      return unlockedAchievements.includes(id);
     }
 
-    function isAchievementDone(id, condition) {
-      return unlockedAchievements.includes(id);
+    function evalAchievement(a) {
+      try { return typeof a.condition === "function" ? !!a.condition(userData) : false; }
+      catch (e) { return false; }
+    }
+
+    function unlockIfMet(a) {
+      if (!isAchievementDone(a.id) && evalAchievement(a)) {
+        unlockedAchievements.push(a.id);
+        return true;
+      }
+      return false;
+    }
+
+    function initAchievements() {
+      loadAchievements();
+      ACHIEVEMENTS.forEach(unlockIfMet);
+      saveAchievements();
+      updateAchievementCount();
     }
 
     function getAchievementById(id) {
@@ -877,7 +1025,7 @@
     function getAchievementsList() {
       return ACHIEVEMENTS.map(a => ({
         ...a,
-        done: isAchievementDone(a.id, a.condition)
+        done: isAchievementDone(a.id)
       }));
     }
 
@@ -897,15 +1045,7 @@
 
     function checkAchievements() {
       const newly = [];
-      ACHIEVEMENTS.forEach(a => {
-        if (isAchievementDone(a.id, a.condition)) return;
-        const f = a.condition(userData);
-        const done = typeof f === "boolean" ? f : (f ? f(userData) : false);
-        if (done) {
-          isAchievementDone(a.id, done);
-          newly.push(a);
-        }
-      });
+      ACHIEVEMENTS.forEach(a => { if (unlockIfMet(a)) newly.push(a); });
       if (newly.length) {
         saveAchievements();
         updateAchievementCount();
@@ -925,19 +1065,17 @@
     }
 
     function updateAchievementCount() {
-      const cnt = document.getElementById("achievement-count");
-      if (cnt) cnt.textContent = `${unlockedAchievements.length}/${ACHIEVEMENTS.length}`;
+      const text = `${unlockedAchievements.length}/${ACHIEVEMENTS.length}`;
+      ["header-achievement-count", "shop-achievement-count", "achievement-modal-count"].forEach((id) => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = text;
+      });
     }
 
     function openAchievementsModal() {
       const modal = document.getElementById("achievements-modal");
       if (!modal) return;
-      ACHIEVEMENTS.forEach(a => {
-        if (isAchievementDone(a.id, a.condition)) return;
-        const f = a.condition(userData);
-        const done = typeof f === "boolean" ? f : (f ? f(userData) : false);
-        if (done && !unlockedAchievements.includes(a.id)) unlockedAchievements.push(a.id);
-      });
+      ACHIEVEMENTS.forEach(unlockIfMet);
       saveAchievements();
       updateAchievementCount();
       renderAchievementList();
@@ -953,17 +1091,45 @@
       const list = document.getElementById("achievement-list");
       if (!list) return;
       list.innerHTML = "";
+
+      const doneCount = unlockedAchievements.length;
+      const totalCount = ACHIEVEMENTS.length;
+      const pct = Math.round((doneCount / totalCount) * 100);
+
+      // 上部に進捗プログレスバー
+      const progDiv = document.createElement("div");
+      progDiv.className = "p-3 bg-emerald-50 rounded-2xl border border-emerald-200 mb-3";
+      progDiv.innerHTML = `
+        <div class="flex justify-between items-center text-xs font-bold text-emerald-800 mb-1">
+          <span>🏆 実績達成率</span>
+          <span>${doneCount} / ${totalCount} (${pct}%)</span>
+        </div>
+        <div class="w-full bg-emerald-200/60 h-2 rounded-full overflow-hidden">
+          <div class="bg-emerald-600 h-full rounded-full transition-all duration-300" style="width: ${pct}%"></div>
+        </div>
+      `;
+      list.appendChild(progDiv);
+
       ACHIEVEMENTS.forEach(a => {
-        const done = isAchievementDone(a.id, a.condition);
+        const done = isAchievementDone(a.id);
         const div = document.createElement("div");
-        div.className = `flex items-center gap-3 p-3 rounded-xl border transition-colors ${done ? "bg-emerald-50 border-emerald-200" : "bg-white border-slate-200 opacity-60"}`;
+        div.className = `flex items-center gap-3 p-3 rounded-2xl border transition-all ${
+          done
+            ? "bg-emerald-50/70 border-emerald-300 shadow-sm"
+            : "bg-white border-slate-200 opacity-60"
+        }`;
         div.innerHTML = `
-          <span class="text-2xl">${a.icon}</span>
+          <span class="text-2xl shrink-0 p-1.5 rounded-xl ${done ? "bg-emerald-100" : "bg-slate-100"}">${a.icon}</span>
           <div class="min-w-0 flex-1">
-            <div class="font-bold text-sm text-slate-800 truncate">${a.name}</div>
-            <div class="text-[10px] text-slate-400 truncate">${a.desc}</div>
+            <div class="font-extrabold text-xs sm:text-sm text-slate-800 flex items-center gap-1.5 truncate">
+              <span>${a.name}</span>
+              ${done ? '<span class="text-[10px] text-emerald-700 bg-emerald-200/80 px-1.5 py-0.2 rounded font-bold">達成！</span>' : ''}
+            </div>
+            <div class="text-[11px] text-slate-400 mt-0.5 truncate">${a.desc}</div>
           </div>
-          <span class="text-xs font-extrabold ${done ? "text-emerald-600" : "text-slate-300"}">${done ? "達成済み" : "未達成"}</span>
+          <div class="text-right shrink-0">
+            <span class="text-xs font-bold ${done ? "text-amber-600" : "text-slate-400"}">🪙 +${a.price}</span>
+          </div>
         `;
         list.appendChild(div);
       });
@@ -1004,7 +1170,7 @@
       if (!el) return;
       const frame = getFrameItem(frameId);
       el.className = `${sizeClass || "w-12 h-12 text-2xl"} rounded-2xl flex items-center justify-center shrink-0 ${frame.box}`;
-      el.textContent = frame.emoji;
+      el.textContent = frame.emoji || "🦉";
     }
 
     function loadUserData() {
@@ -1617,54 +1783,81 @@
     }
 
     function renderQuestion() {
-      const q = quizState.questions[quizState.currentIndex];
-      quizState.isAnswered = false;
-
-      const total = quizState.questions.length;
-      const current = quizState.currentIndex + 1;
-      const progText = document.getElementById("quiz-progress-text");
-      const progBar = document.getElementById("quiz-progress-bar");
-      if (progText) progText.textContent = `Q ${current} / ${total}`;
-      if (progBar) progBar.style.width = `${((current - 1) / total) * 100}%`;
-
-      const liveCoins = document.getElementById("quiz-live-coins");
-      if (liveCoins) liveCoins.textContent = `🪙 +${quizState.earnedCoins}`;
-
-      const comboBadge = document.getElementById("quiz-combo-badge");
-      if (comboBadge) {
-        if (quizState.combo >= 2) {
-          comboBadge.textContent = `🔥 ${quizState.combo} COMBO`;
-          comboBadge.classList.remove("hidden");
-        } else {
-          comboBadge.classList.add("hidden");
+      try {
+        if (!quizState.questions || quizState.questions.length === 0 || !quizState.questions[quizState.currentIndex]) {
+          console.warn("No question found at currentIndex", quizState.currentIndex);
+          finishQuiz(false);
+          return;
         }
+
+        const q = quizState.questions[quizState.currentIndex];
+        quizState.isAnswered = false;
+
+        const total = quizState.questions.length;
+        const current = quizState.currentIndex + 1;
+        const progText = document.getElementById("quiz-progress-text");
+        const progBar = document.getElementById("quiz-progress-bar");
+        if (progText) progText.textContent = `Q ${current} / ${total}`;
+        if (progBar) progBar.style.width = `${((current - 1) / total) * 100}%`;
+
+        const liveCoins = document.getElementById("quiz-live-coins");
+        if (liveCoins) liveCoins.textContent = `🪙 +${quizState.earnedCoins}`;
+
+        const comboBadge = document.getElementById("quiz-combo-badge");
+        if (comboBadge) {
+          if (quizState.combo >= 2) {
+            comboBadge.textContent = `🔥 ${quizState.combo} COMBO`;
+            comboBadge.classList.remove("hidden");
+          } else {
+            comboBadge.classList.add("hidden");
+          }
+        }
+
+        const wordIdEl = document.getElementById("quiz-word-id");
+        const wordEl = document.getElementById("quiz-word");
+        if (wordIdEl) wordIdEl.textContent = `ID: #${q.word.id}`;
+        if (wordEl) wordEl.textContent = q.word.word;
+
+        const container = document.getElementById("quiz-options-container");
+        if (!container) return;
+        container.innerHTML = "";
+
+        q.options.forEach((opt, idx) => {
+          const btn = document.createElement("button");
+          btn.type = "button";
+          // active:scale-[0.99] はスマホタッチ時にドラッグ判定されクリックを無効化する原因となるため排除
+          // touch-action: manipulation によりダブルタップ遅延を根絶
+          btn.className = "w-full text-left p-4 bg-white hover:bg-slate-50 active:bg-slate-100 border border-slate-200 rounded-xl font-medium text-slate-800 transition-colors flex items-center gap-3 cursor-pointer select-none";
+          btn.style.touchAction = "manipulation";
+          // 子要素に pointer-events-none を付与して確実にボタン本体でイベントを受け止める
+          btn.innerHTML = `<span class="w-6 h-6 rounded-md bg-slate-100 text-slate-500 text-xs font-bold flex items-center justify-center shrink-0 border border-slate-200 pointer-events-none">${idx + 1}</span><span class="text-sm leading-snug pointer-events-none">${opt.text}</span>`;
+
+          btn.addEventListener("click", (e) => {
+            e.preventDefault();
+            handleAnswer(opt, btn);
+          });
+          container.appendChild(btn);
+        });
+
+        // 音声読み上げは完全非同期化（万一Web Speech APIがブロック・失敗してもボタン操作に一切影響しない）
+        setTimeout(() => {
+          try { speakWord(); } catch(e) {}
+        }, 50);
+      } catch (err) {
+        console.error("renderQuestion error:", err);
+        quizState.isAnswered = false;
       }
-
-      const wordIdEl = document.getElementById("quiz-word-id");
-      const wordEl = document.getElementById("quiz-word");
-      if (wordIdEl) wordIdEl.textContent = `ID: #${q.word.id}`;
-      if (wordEl) wordEl.textContent = q.word.word;
-
-      const container = document.getElementById("quiz-options-container");
-      if (!container) return;
-      container.innerHTML = "";
-
-      q.options.forEach((opt, idx) => {
-        const btn = document.createElement("button");
-        btn.type = "button";
-        btn.className = "w-full text-left p-4 bg-white hover:bg-slate-50 border border-slate-200 rounded-xl font-medium text-slate-800 transition active:scale-[0.99] flex items-center gap-3 cursor-pointer";
-        btn.innerHTML = `<span class="w-6 h-6 rounded-md bg-slate-100 text-slate-500 text-xs font-bold flex items-center justify-center shrink-0 border border-slate-200">${idx + 1}</span><span class="text-sm leading-snug">${opt.text}</span>`;
-        btn.onclick = () => handleAnswer(opt, btn);
-        container.appendChild(btn);
-      });
-
-      // 音声読み上げ（新問題表示時に自動発音）
-      speakWord();
     }
 
     function handleAnswer(selectedOption, clickedBtn) {
       if (quizState.isAnswered) return;
       quizState.isAnswered = true;
+
+      // 回答中は全ボタンのクリックを即時無効化（誤連打・多重実行を完全防止）
+      const allOptionBtns = document.getElementById("quiz-options-container")?.querySelectorAll("button") || [];
+      allOptionBtns.forEach(b => {
+        b.style.pointerEvents = "none";
+      });
 
       const q = quizState.questions[quizState.currentIndex];
       const buttons = document.getElementById("quiz-options-container").querySelectorAll("button");
@@ -1838,6 +2031,7 @@
       }
 
       saveUserData();
+      checkAchievements();
 
       const rHead = document.getElementById("result-header-label");
       const rTitle = document.getElementById("result-title-name");
@@ -2054,17 +2248,21 @@
 
     // ===== 音声読み上げ(TTS) =====
     function speakWord() {
-      if (!userData.voiceEnabled) return;
-      if (!window.speechSynthesis) return;
-      const wordEl = document.getElementById("quiz-word");
-      const word = wordEl ? wordEl.textContent.trim() : "";
-      if (!word) return;
-      window.speechSynthesis.cancel();
-      const utter = new SpeechSynthesisUtterance(word);
-      utter.lang = "en-US";
-      utter.rate = 0.9;
-      utter.pitch = 1.0;
-      window.speechSynthesis.speak(utter);
+      try {
+        if (!userData.voiceEnabled) return;
+        if (!window.speechSynthesis) return;
+        const wordEl = document.getElementById("quiz-word");
+        const word = wordEl ? wordEl.textContent.trim() : "";
+        if (!word) return;
+        window.speechSynthesis.cancel();
+        const utter = new SpeechSynthesisUtterance(word);
+        utter.lang = "en-US";
+        utter.rate = 0.9;
+        utter.pitch = 1.0;
+        window.speechSynthesis.speak(utter);
+      } catch (e) {
+        console.warn("speechSynthesis error:", e);
+      }
     }
 
     function toggleVoice() {
@@ -2092,6 +2290,7 @@
       const next = !isDark;
       setDarkMode(next);
       applyDarkMode(next);
+      showToast(next ? "🌙 ダークモードに切り替えました" : "☀️ ライトモードに切り替えました");
     }
 
     function applyDarkMode(dark) {
@@ -2505,6 +2704,7 @@
         userData.purchasedSuffixes.sort((a, b) => a.price - b.price);
       }
       saveUserData();
+      checkAchievements();
       showToast(`「${name}」を購入し、装着しました！`);
       renderShop();
     }
@@ -2590,6 +2790,7 @@
 
     // 初期化
     window.addEventListener("DOMContentLoaded", () => {
+      initDarkMode();
       loadUserData();
       syncDataRangeUi();
       loadPartSelection();
@@ -2597,6 +2798,9 @@
       checkAndFetchData();
       checkIncomingChallenge();
       initAchievements();
+      if ("serviceWorker" in navigator) {
+        navigator.serviceWorker.register("./sw.js").catch(function () {});
+      }
     });
   </script>
 </body>
