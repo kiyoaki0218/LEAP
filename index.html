@@ -943,7 +943,10 @@
       exp: 0, // 累計EXP（正解1問 +10）
       level: 1,
       ownedFrames: ["frame_normal"],
-      equippedFrame: "frame_normal"
+      equippedFrame: "frame_normal",
+      totalQuizzes: 0,
+      maxComboEver: 0,
+      dictOpened: false
     };
 
     function getFullTitle() {
@@ -959,36 +962,95 @@
       return Math.floor((Number(u.exp) || 0) / 10);
     }
     const ACHIEVEMENTS = [
-      { id: "first_correct", name: "はじめの一歩", icon: "🐣", desc: "クイズで初めて1問正解する", price: 50,
+      // === はじめの一歩・基本機能 ===
+      { id: "first_correct", name: "はじめの一歩", icon: "🐣", category: "basic", desc: "クイズで初めて1問正解する", price: 50,
         condition: (u) => (Number(u.exp) || 0) >= 10 },
-      { id: "first_victory", name: "初勝利", icon: "🏆", desc: "クイズを最後まで解き切る", price: 100,
-        condition: (u) => _history(u).length >= 1 },
-      { id: "combo_5", name: "5連コンボ", icon: "⚡", desc: "5問連続で正解する", price: 100,
-        condition: (u) => _history(u).some(h => Number(h.combo) >= 5) || (quizState && quizState.maxCombo >= 5) },
-      { id: "ten_combo", name: "10連コンボ", icon: "🔥", desc: "10問連続で正解する", price: 200,
-        condition: (u) => _history(u).some(h => Number(h.combo) >= 10) || (quizState && quizState.maxCombo >= 10) },
-      { id: "combo_20", name: "20連コンボ", icon: "🌟", desc: "20問連続で正解する", price: 400,
-        condition: (u) => _history(u).some(h => Number(h.combo) >= 20) || (quizState && quizState.maxCombo >= 20) },
-      { id: "perfect_clear", name: "完全無欠", icon: "🎯", desc: "正答率100%でクイズをクリアする", price: 300,
-        condition: (u) => _history(u).some(h => Number(h.accuracy) === 100 && Number(h.total) >= 10) },
-      { id: "ten_correct", name: "見習い単語王", icon: "📖", desc: "累計10問正解を達成する", price: 100,
+      { id: "first_victory", name: "初勝利", icon: "🏆", category: "basic", desc: "クイズを最後まで解き切る", price: 100,
+        condition: (u) => (u.totalQuizzes || 0) >= 1 || _history(u).length >= 1 },
+      { id: "dict_explorer", name: "単語帳の探究者", icon: "📖", category: "basic", desc: "単語辞典を開いて閲覧する", price: 50,
+        condition: (u) => !!u.dictOpened },
+      { id: "night_owl", name: "夜の読書家", icon: "🌙", category: "basic", desc: "ダークモードを有効にする", price: 50,
+        condition: (u) => getDarkMode() === true },
+      { id: "voice_listener", name: "リスニング派", icon: "🔊", category: "basic", desc: "音声読み上げ機能を有効にしてプレイ", price: 80,
+        condition: (u) => !!u.voiceEnabled && ((u.totalQuizzes || 0) >= 1 || _history(u).length >= 1) },
+
+      // === 正解数・知識 ===
+      { id: "correct_10", name: "単語ルーキー", icon: "🥉", category: "correct", desc: "累計10問正解を達成する", price: 100,
         condition: (u) => _totalCorrect(u) >= 10 },
-      { id: "fifty_correct", name: "努力の結晶", icon: "🎖️", desc: "累計50問正解を達成する", price: 250,
+      { id: "correct_30", name: "単語ホープ", icon: "🥈", category: "correct", desc: "累計30問正解を達成する", price: 150,
+        condition: (u) => _totalCorrect(u) >= 30 },
+      { id: "correct_50", name: "努力の結晶", icon: "🥇", category: "correct", desc: "累計50問正解を達成する", price: 250,
         condition: (u) => _totalCorrect(u) >= 50 },
-      { id: "hundred_correct", name: "暗記の鬼", icon: "👑", desc: "累計100問正解を達成する", price: 500,
+      { id: "correct_100", name: "暗記マスター", icon: "🎖️", category: "correct", desc: "累計100問正解を達成する", price: 400,
         condition: (u) => _totalCorrect(u) >= 100 },
-      { id: "three_acquired", name: "称号コレクター", icon: "🛒", desc: "前称号・後称号を計3つ取得する", price: 150,
-        condition: (u) => (u.purchasedPrefixes || []).length + (u.purchasedSuffixes || []).length >= 3 },
-      { id: "ten_titles", name: "二つ名マスター", icon: "💎", desc: "前称号・後称号を計10個取得する", price: 600,
-        condition: (u) => (u.purchasedPrefixes || []).length + (u.purchasedSuffixes || []).length >= 10 },
-      { id: "two_frames", name: "おしゃれ入門", icon: "🖼️", desc: "アバターフレームを2種類以上所持する", price: 200,
-        condition: (u) => (u.ownedFrames || []).length >= 2 },
-      { id: "daily_first_clear", name: "日課の達人", icon: "🌅", desc: "デイリーチャレンジをクリアする", price: 200,
+      { id: "correct_200", name: "ボキャブラリー強者", icon: "👑", category: "correct", desc: "累計200問正解を達成する", price: 600,
+        condition: (u) => _totalCorrect(u) >= 200 },
+      { id: "correct_300", name: "英単語の達人", icon: "🏛️", category: "correct", desc: "累計300問正解を達成する", price: 800,
+        condition: (u) => _totalCorrect(u) >= 300 },
+      { id: "correct_500", name: "語彙の求道者", icon: "🌌", category: "correct", desc: "累計500問正解を達成する", price: 1200,
+        condition: (u) => _totalCorrect(u) >= 500 },
+      { id: "correct_1000", name: "語彙の神", icon: "🌟", category: "correct", desc: "累計1000問正解を達成する", price: 2500,
+        condition: (u) => _totalCorrect(u) >= 1000 },
+
+      // === レベルアップ ===
+      { id: "level_2", name: "レベルアップ！", icon: "🌸", category: "level", desc: "プレイヤーLv.2に到達する", price: 100,
+        condition: (u) => getLevelState(u.exp).level >= 2 },
+      { id: "level_5", name: "成長の兆し", icon: "🌱", category: "level", desc: "プレイヤーLv.5に到達する", price: 200,
+        condition: (u) => getLevelState(u.exp).level >= 5 },
+      { id: "level_10", name: "知識の開花", icon: "🌿", category: "level", desc: "プレイヤーLv.10に到達する", price: 400,
+        condition: (u) => getLevelState(u.exp).level >= 10 },
+      { id: "level_20", name: "そびえ立つ大樹", icon: "🌳", category: "level", desc: "プレイヤーLv.20に到達する", price: 800,
+        condition: (u) => getLevelState(u.exp).level >= 20 },
+      { id: "level_30", name: "学問の頂", icon: "🏔️", category: "level", desc: "プレイヤーLv.30に到達する", price: 1500,
+        condition: (u) => getLevelState(u.exp).level >= 30 },
+
+      // === コンボ・フィーバー ===
+      { id: "combo_3", name: "トリプルアンサー", icon: "⚡", category: "combo", desc: "3問連続で正解する", price: 50,
+        condition: (u) => (u.maxComboEver || 0) >= 3 || (quizState && quizState.maxCombo >= 3) || _history(u).some(h => Number(h.combo) >= 3) },
+      { id: "combo_5", name: "5連コンボ", icon: "🔥", category: "combo", desc: "5問連続で正解する", price: 100,
+        condition: (u) => (u.maxComboEver || 0) >= 5 || (quizState && quizState.maxCombo >= 5) || _history(u).some(h => Number(h.combo) >= 5) },
+      { id: "combo_10", name: "10連フィーバー！", icon: "💥", category: "combo", desc: "10問連続で正解する", price: 200,
+        condition: (u) => (u.maxComboEver || 0) >= 10 || (quizState && quizState.maxCombo >= 10) || _history(u).some(h => Number(h.combo) >= 10) },
+      { id: "combo_15", name: "疾風怒濤", icon: "🌠", category: "combo", desc: "15問連続で正解する", price: 350,
+        condition: (u) => (u.maxComboEver || 0) >= 15 || (quizState && quizState.maxCombo >= 15) || _history(u).some(h => Number(h.combo) >= 15) },
+      { id: "combo_20", name: "異次元の集中力", icon: "☄️", category: "combo", desc: "20問連続で正解する", price: 500,
+        condition: (u) => (u.maxComboEver || 0) >= 20 || (quizState && quizState.maxCombo >= 20) || _history(u).some(h => Number(h.combo) >= 20) },
+      { id: "combo_30", name: "ゾーン突入", icon: "🌌", category: "combo", desc: "30問連続で正解する", price: 1000,
+        condition: (u) => (u.maxComboEver || 0) >= 30 || (quizState && quizState.maxCombo >= 30) || _history(u).some(h => Number(h.combo) >= 30) },
+
+      // === クイズ精度・完走 ===
+      { id: "high_accuracy", name: "秀才の証", icon: "✨", category: "accuracy", desc: "正答率90%以上でクイズをクリアする", price: 150,
+        condition: (u) => _history(u).some(h => Number(h.accuracy) >= 90 && Number(h.total) >= 10) },
+      { id: "perfect_clear", name: "完全無欠", icon: "🎯", category: "accuracy", desc: "10問以上で正答率100%を達成する", price: 300,
+        condition: (u) => _history(u).some(h => Number(h.accuracy) === 100 && Number(h.total) >= 10) },
+      { id: "quiz_5_times", name: "反復学習", icon: "🔄", category: "accuracy", desc: "累計5回クイズを完走する", price: 150,
+        condition: (u) => (u.totalQuizzes || 0) >= 5 || _history(u).length >= 5 },
+      { id: "quiz_10_times", name: "学習習慣", icon: "📅", category: "accuracy", desc: "累計10回クイズを完走する", price: 300,
+        condition: (u) => (u.totalQuizzes || 0) >= 10 },
+      { id: "marathon_20", name: "ミニマラソン", icon: "🏃", category: "accuracy", desc: "20問以上のクイズを完走する", price: 150,
+        condition: (u) => _history(u).some(h => Number(h.total) >= 20) },
+      { id: "marathon_50", name: "ハーフマラソン", icon: "🚴", category: "accuracy", desc: "50問以上のクイズを完走する", price: 350,
+        condition: (u) => _history(u).some(h => Number(h.total) >= 50) },
+      { id: "marathon_100", name: "ウルトラマラソン", icon: "🚀", category: "accuracy", desc: "100問以上のクイズを完走する", price: 700,
+        condition: (u) => _history(u).some(h => Number(h.total) >= 100) },
+      { id: "daily_first_clear", name: "日課の達人", icon: "🌅", category: "accuracy", desc: "デイリーチャレンジをクリアする", price: 200,
         condition: (u) => !!u.lastDailyDate },
-      { id: "coin_rich", name: "貯蓄家", icon: "💰", desc: "所持コインが300を突破する", price: 150,
-        condition: (u) => Number(u.coins) >= 300 },
-      { id: "voice_listener", name: "リスニング派", icon: "🔊", desc: "音声読み上げ機能を活用する", price: 100,
-        condition: (u) => !!u.voiceEnabled && _history(u).length >= 1 }
+
+      // === コイン・コレクション ===
+      { id: "coin_100", name: "お小遣い", icon: "🪙", category: "collection", desc: "所持コインが100を突破する", price: 50,
+        condition: (u) => Number(u.coins) >= 100 },
+      { id: "coin_500", name: "貯蓄家", icon: "💰", category: "collection", desc: "所持コインが500を突破する", price: 200,
+        condition: (u) => Number(u.coins) >= 500 },
+      { id: "coin_1000", name: "富豪", icon: "💎", category: "collection", desc: "所持コインが1000を突破する", price: 400,
+        condition: (u) => Number(u.coins) >= 1000 },
+      { id: "coin_3000", name: "大富豪", icon: "👑", category: "collection", desc: "所持コインが3000を突破する", price: 1000,
+        condition: (u) => Number(u.coins) >= 3000 },
+      { id: "three_acquired", name: "称号コレクター", icon: "🏷️", category: "collection", desc: "前称号・後称号を計3つ以上取得する", price: 150,
+        condition: (u) => (u.purchasedPrefixes || []).length + (u.purchasedSuffixes || []).length >= 3 },
+      { id: "ten_titles", name: "二つ名マスター", icon: "🎖️", category: "collection", desc: "前称号・後称号を計10個以上取得する", price: 500,
+        condition: (u) => (u.purchasedPrefixes || []).length + (u.purchasedSuffixes || []).length >= 10 },
+      { id: "all_frames", name: "フレームコンプリート", icon: "🖼️", category: "collection", desc: "全アバターフレームを揃える", price: 600,
+        condition: (u) => (u.ownedFrames || []).length >= FRAME_ITEMS.length }
     ];
 
     let unlockedAchievements = [];
@@ -1087,6 +1149,13 @@
       if (modal) modal.classList.add("hidden");
     }
 
+    let currentAchievementTab = "all";
+
+    function setAchievementTab(tab) {
+      currentAchievementTab = tab;
+      renderAchievementList();
+    }
+
     function renderAchievementList() {
       const list = document.getElementById("achievement-list");
       if (!list) return;
@@ -1098,7 +1167,7 @@
 
       // 上部に進捗プログレスバー
       const progDiv = document.createElement("div");
-      progDiv.className = "p-3 bg-emerald-50 rounded-2xl border border-emerald-200 mb-3";
+      progDiv.className = "p-3 bg-emerald-50 rounded-2xl border border-emerald-200 mb-2";
       progDiv.innerHTML = `
         <div class="flex justify-between items-center text-xs font-bold text-emerald-800 mb-1">
           <span>🏆 実績達成率</span>
@@ -1110,10 +1179,39 @@
       `;
       list.appendChild(progDiv);
 
-      ACHIEVEMENTS.forEach(a => {
+      // カテゴリフィルタータブ
+      const tabs = [
+        { id: "all", label: "すべて" },
+        { id: "basic", label: "基本" },
+        { id: "correct", label: "正解数" },
+        { id: "combo", label: "コンボ" },
+        { id: "level", label: "レベル" },
+        { id: "accuracy", label: "クイズ" },
+        { id: "collection", label: "収集" }
+      ];
+      const tabContainer = document.createElement("div");
+      tabContainer.className = "flex gap-1.5 overflow-x-auto pb-2 scrollbar-none mb-1 text-[11px] font-bold";
+      tabs.forEach(t => {
+        const tBtn = document.createElement("button");
+        tBtn.type = "button";
+        const isActive = currentAchievementTab === t.id;
+        tBtn.className = `px-2.5 py-1 rounded-lg shrink-0 transition cursor-pointer ${
+          isActive
+            ? "bg-slate-900 text-white"
+            : "bg-slate-100 hover:bg-slate-200 text-slate-600"
+        }`;
+        tBtn.textContent = t.label;
+        tBtn.onclick = () => setAchievementTab(t.id);
+        tabContainer.appendChild(tBtn);
+      });
+      list.appendChild(tabContainer);
+
+      const filtered = ACHIEVEMENTS.filter(a => currentAchievementTab === "all" || a.category === currentAchievementTab);
+
+      filtered.forEach(a => {
         const done = isAchievementDone(a.id);
         const div = document.createElement("div");
-        div.className = `flex items-center gap-3 p-3 rounded-2xl border transition-all ${
+        div.className = `flex items-center gap-3 p-2.5 rounded-2xl border transition-all ${
           done
             ? "bg-emerald-50/70 border-emerald-300 shadow-sm"
             : "bg-white border-slate-200 opacity-60"
@@ -1201,6 +1299,9 @@
       if (!FRAME_ITEMS.some(f => f.id === userData.equippedFrame) || !userData.ownedFrames.includes(userData.equippedFrame)) {
         userData.equippedFrame = "frame_normal";
       }
+      if (typeof userData.totalQuizzes !== "number") userData.totalQuizzes = 0;
+      if (typeof userData.maxComboEver !== "number") userData.maxComboEver = 0;
+      if (typeof userData.dictOpened !== "boolean") userData.dictOpened = false;
       userData.level = getLevelState(userData.exp).level;
       updateUserUI();
     }
@@ -1339,6 +1440,9 @@
     let dictionaryFilter = { part: "all", start: "", end: "" };
 
     function openDictionary() {
+      userData.dictOpened = true;
+      saveUserData();
+      checkAchievements();
       renderDictionary();
       navigate("screen-dictionary");
     }
@@ -2015,6 +2119,8 @@
 
       // スコア履歴に追加（最大5件）
       if (!isAborted && totalQ > 0) {
+        userData.totalQuizzes = (userData.totalQuizzes || 0) + 1;
+        userData.maxComboEver = Math.max(userData.maxComboEver || 0, quizState.maxCombo || 0);
         if (!userData.scoreHistory) userData.scoreHistory = [];
         userData.scoreHistory.unshift({
           score: finalScore,
