@@ -8,6 +8,23 @@
   <meta property="og:type" content="website">
   <meta property="og:title" content="LEAP 4択英単語クイズ 挑戦状🔥">
   <meta property="og:description" content="大学受験英単語LEAPの4択クイズ！友達のスコア記録に挑んでみよう！">
+    <script>
+    // キャッシュ強制更新ロジック: 新バージョン検知時に古いServiceWorkerキャッシュを破棄
+    (function() {
+      const APP_VER = "leap-v3-39achievements";
+      try {
+        const storedVer = localStorage.getItem("LEAP_APP_CACHE_VER");
+        if (storedVer !== APP_VER) {
+          localStorage.setItem("LEAP_APP_CACHE_VER", APP_VER);
+          if ('caches' in window) {
+            caches.keys().then(names => {
+              names.forEach(name => caches.delete(name));
+            });
+          }
+        }
+      } catch (e) {}
+    })();
+  </script>
   <meta name="description" content="大学受験英単語LEAPの4択クイズ！友達のスコア記録に挑んでみよう！">
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -201,8 +218,9 @@
         始まりのビギナー
       </div>
       <div class="flex items-center gap-1 shrink-0">
-        <button type="button" id="header-achievement-btn" onclick="openAchievementsModal()" class="w-8 h-8 rounded-lg flex items-center justify-center bg-slate-100 hover:bg-slate-200 border border-slate-200 transition cursor-pointer" title="実績・トロフィーを見る">
+        <button type="button" id="header-achievement-btn" onclick="openAchievementsModal()" class="h-8 px-2 rounded-lg flex items-center gap-1 bg-slate-100 hover:bg-slate-200 border border-slate-200 transition cursor-pointer" title="実績・トロフィーを見る">
           <span class="text-sm">🏆</span>
+          <span id="header-achievement-count" class="text-[11px] font-bold text-emerald-700 bg-emerald-100 px-1.5 py-0.2 rounded-full">0/39</span>
         </button>
         <button type="button" id="dark-toggle-btn" onclick="toggleDarkMode()" class="w-8 h-8 rounded-lg flex items-center justify-center bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-600 transition cursor-pointer" title="ダークモード切替（☀️ライト / 🌙ダーク）">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z" /></svg>
@@ -292,6 +310,17 @@
           <span>📖 単語辞典（番号順）</span>
         </button>
 
+                <!-- 実績・トロフィーボタン -->
+        <button type="button" onclick="openAchievementsModal()" class="w-full py-3.5 bg-white hover:bg-slate-50 active:bg-slate-100 border border-slate-200 text-slate-700 font-semibold rounded-xl shadow-sm transition-all flex items-center justify-between px-4 cursor-pointer">
+          <div class="flex items-center gap-2">
+            <span class="text-lg">🏆</span>
+            <span class="text-sm font-bold text-slate-800">実績・トロフィー</span>
+          </div>
+          <div class="flex items-center gap-1.5">
+            <span class="text-xs text-slate-400 font-medium">達成状況:</span>
+            <span id="home-achievement-count-badge" class="text-xs font-extrabold bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full">0/39</span>
+          </div>
+        </button>
         <button type="button" onclick="navigate('screen-shop')" class="w-full py-3.5 bg-white hover:bg-slate-100 active:scale-[0.99] border border-slate-200 text-slate-700 font-semibold rounded-xl shadow-sm transition-all flex items-center justify-center gap-2 cursor-pointer">
           <span>🛍️ 称号・アバターショップ</span>
         </button>
@@ -646,7 +675,7 @@
 
       <div class="flex items-center justify-between border-b border-slate-100 pb-2">
         <span class="text-xs font-semibold text-slate-500">解禁済み</span>
-        <span id="achievement-modal-count" class="text-xs font-bold bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full">0/7</span>
+        <span id="achievement-modal-count" class="text-xs font-bold bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full">0/39</span>
       </div>
       <div id="achievement-list" class="space-y-2 overflow-y-auto" style="max-height: 50vh;"></div>
 
@@ -1128,7 +1157,7 @@
 
     function updateAchievementCount() {
       const text = `${unlockedAchievements.length}/${ACHIEVEMENTS.length}`;
-      ["header-achievement-count", "shop-achievement-count", "achievement-modal-count"].forEach((id) => {
+      ["header-achievement-count", "shop-achievement-count", "achievement-modal-count", "home-achievement-count-badge"].forEach((id) => {
         const el = document.getElementById(id);
         if (el) el.textContent = text;
       });
@@ -2905,7 +2934,20 @@
       checkIncomingChallenge();
       initAchievements();
       if ("serviceWorker" in navigator) {
-        navigator.serviceWorker.register("./sw.js").catch(function () {});
+        navigator.serviceWorker.register("./sw.js").then((reg) => {
+          reg.update(); // 常に最新のsw.jsをチェック
+          reg.onupdatefound = () => {
+            const installing = reg.installing;
+            if (installing) {
+              installing.onstatechange = () => {
+                if (installing.state === "installed" && navigator.serviceWorker.controller) {
+                  // 新しいバージョンが準備できたら即時反映
+                  window.location.reload();
+                }
+              };
+            }
+          };
+        }).catch(function () {});
       }
     });
   </script>
