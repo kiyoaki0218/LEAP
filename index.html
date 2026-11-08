@@ -145,6 +145,10 @@
           <span id="daily-badge" class="text-[11px] font-extrabold bg-white/25 px-2 py-0.5 rounded-full">1日1回 コイン2倍！</span>
         </button>
 
+        <button type="button" onclick="openDictionary()" class="w-full py-3.5 bg-white hover:bg-slate-100 active:scale-[0.99] border border-slate-200 text-slate-700 font-semibold rounded-xl shadow-sm transition-all flex items-center justify-center gap-2 cursor-pointer">
+          <span>📖 単語辞典（番号順）</span>
+        </button>
+
         <button type="button" onclick="navigate('screen-shop')" class="w-full py-3.5 bg-white hover:bg-slate-100 active:scale-[0.99] border border-slate-200 text-slate-700 font-semibold rounded-xl shadow-sm transition-all flex items-center justify-center gap-2 cursor-pointer">
           <span>🛍️ 称号カスタムショップ</span>
         </button>
@@ -384,6 +388,42 @@
       <div id="shop-grid-container" class="grid grid-cols-2 sm:grid-cols-3 gap-2.5 max-h-[460px] overflow-y-auto pr-1"></div>
     </section>
 
+    <!-- 単語辞典（番号順） -->
+    <section id="screen-dictionary" class="fade-in hidden space-y-4">
+      <div class="flex items-center justify-between pb-2 border-b border-slate-200">
+        <div>
+          <h2 class="text-xl font-bold text-slate-900">単語辞典</h2>
+          <p id="dictionary-count" class="text-xs text-slate-400 mt-0.5">番号順に並んでいます</p>
+        </div>
+        <button type="button" onclick="navigate('screen-home')" class="text-sm text-slate-500 hover:text-slate-800 font-medium">戻る</button>
+      </div>
+
+      <!-- 絞り込み（Part・番号範囲） -->
+      <div class="bg-white border border-slate-200 rounded-xl p-3 space-y-2 shadow-sm">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-bold text-slate-500">絞り込み</span>
+          <button type="button" onclick="resetDictionaryFilters()" class="text-[11px] text-emerald-600 hover:underline">リセット</button>
+        </div>
+        <div class="flex bg-slate-200/70 p-1 rounded-lg">
+          <button type="button" id="dict-filter-all" data-dict-part="all" onclick="setDictionaryPartFilter('all')" class="flex-1 py-1.5 text-xs font-bold rounded-md transition-all cursor-pointer">全て</button>
+          <button type="button" id="dict-filter-part1" data-dict-part="1" onclick="setDictionaryPartFilter('1')" class="flex-1 py-1.5 text-xs font-bold rounded-md transition-all cursor-pointer">Part 1</button>
+          <button type="button" id="dict-filter-part2" data-dict-part="2" onclick="setDictionaryPartFilter('2')" class="flex-1 py-1.5 text-xs font-bold rounded-md transition-all cursor-pointer">Part 2</button>
+        </div>
+        <div class="flex items-center gap-2">
+          <input type="number" id="dict-range-start" min="1" step="1" placeholder="開始ID" oninput="handleDictionaryRangeInput()" class="w-full p-2 border border-slate-300 rounded-lg text-xs font-bold text-slate-800 focus:outline-none focus:border-slate-800">
+          <span class="text-xs text-slate-400 font-bold">〜</span>
+          <input type="number" id="dict-range-end" min="1" step="1" placeholder="終了ID" oninput="handleDictionaryRangeInput()" class="w-full p-2 border border-slate-300 rounded-lg text-xs font-bold text-slate-800 focus:outline-none focus:border-slate-800">
+        </div>
+      </div>
+
+      <div class="sticky top-0 z-10 bg-slate-50/95 backdrop-blur-sm py-1">
+        <input type="search" id="dictionary-search" oninput="applyDictionaryFilters()" placeholder="番号・英語・日本語で検索（例: 1 / debate / 討論）" class="w-full p-3 bg-white border border-slate-300 rounded-xl text-sm font-medium text-slate-800 focus:outline-none focus:border-slate-800">
+      </div>
+
+      <div id="dictionary-list" class="space-y-1.5"></div>
+      <p id="dictionary-empty" class="hidden text-center text-sm text-slate-400 py-8">該当する単語がありません</p>
+    </section>
+
     <!-- 5. 結果画面 -->
     <section id="screen-result" class="fade-in hidden space-y-6">
       <!-- スコアカードUI -->
@@ -616,7 +656,7 @@
       if (!range.end) return;
       const statusEl = document.getElementById("data-status-text");
       if (statusEl) statusEl.textContent = `LEAP実データ (ID: ${range.start}〜${range.end}) 読込済`;
-      ["custom-start-id", "custom-end-id", "custom-qcount-input"].forEach(id => {
+      ["custom-start-id", "custom-end-id", "custom-qcount-input", "dict-range-start", "dict-range-end"].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.max = String(range.end);
       });
@@ -768,7 +808,7 @@
     }
 
     // 画面遷移
-    const SCREENS = ["screen-home", "screen-select", "screen-quiz", "screen-shop", "screen-result"];
+    const SCREENS = ["screen-home", "screen-select", "screen-quiz", "screen-shop", "screen-dictionary", "screen-result"];
     function navigate(screenId) {
       SCREENS.forEach(id => {
         const el = document.getElementById(id);
@@ -784,6 +824,153 @@
       });
       window.scrollTo(0, 0);
       if (screenId === "screen-shop") renderShop();
+    }
+
+    // ===== 単語辞典（番号順） =====
+    let dictionaryEntries = [];
+    const DICT_FILTER_KEY = "LEAP_DICTIONARY_FILTER_V1";
+    let dictionaryFilter = { part: "all", start: "", end: "" };
+
+    function openDictionary() {
+      renderDictionary();
+      navigate("screen-dictionary");
+    }
+
+    function renderDictionary() {
+      const list = document.getElementById("dictionary-list");
+      if (!list) return;
+      const words = [...ALL_WORDS].sort((a, b) => a.id - b.id);
+      const searchEl = document.getElementById("dictionary-search");
+      if (searchEl) searchEl.value = "";
+      dictionaryEntries = [];
+
+      const frag = document.createDocumentFragment();
+      words.forEach(w => {
+        const row = document.createElement("div");
+        row.className = "bg-white border border-slate-200 rounded-xl px-3 py-2.5 flex gap-3 items-start";
+
+        const idEl = document.createElement("span");
+        idEl.className = "text-[11px] font-bold text-slate-400 tabular-nums w-9 shrink-0 pt-0.5";
+        idEl.textContent = w.id;
+
+        const body = document.createElement("div");
+        body.className = "min-w-0";
+        const wordEl = document.createElement("div");
+        wordEl.className = "font-bold text-slate-900 text-sm break-words";
+        wordEl.textContent = w.word;
+        const meaningEl = document.createElement("div");
+        meaningEl.className = "text-xs text-slate-500 mt-0.5 break-words";
+        meaningEl.textContent = w.meaning;
+        body.appendChild(wordEl);
+        body.appendChild(meaningEl);
+
+        row.appendChild(idEl);
+        row.appendChild(body);
+        frag.appendChild(row);
+
+        dictionaryEntries.push({
+          el: row,
+          id: w.id,
+          part: String(w.part || 1),
+          idText: String(w.id),
+          word: String(w.word || "").toLowerCase(),
+          meaningNorm: String(w.meaning || "").normalize("NFKC").toLowerCase()
+        });
+      });
+
+      list.innerHTML = "";
+      list.appendChild(frag);
+
+      syncDictionaryFilterUi();
+      applyDictionaryFilters();
+    }
+
+    // ===== 辞典の絞り込み（Part・番号範囲） =====
+    function loadDictionaryFilter() {
+      try {
+        const saved = JSON.parse(localStorage.getItem(DICT_FILTER_KEY) || "null");
+        if (saved && typeof saved === "object") {
+          dictionaryFilter.part = ["all", "1", "2"].includes(String(saved.part)) ? String(saved.part) : "all";
+          dictionaryFilter.start = saved.start === undefined || saved.start === null ? "" : String(saved.start);
+          dictionaryFilter.end = saved.end === undefined || saved.end === null ? "" : String(saved.end);
+        }
+      } catch (e) { console.warn("dictionary filter load failed", e); }
+      syncDictionaryFilterUi();
+    }
+
+    function saveDictionaryFilter() {
+      try { localStorage.setItem(DICT_FILTER_KEY, JSON.stringify(dictionaryFilter)); } catch (e) {}
+    }
+
+    function syncDictionaryFilterUi() {
+      document.querySelectorAll("[data-dict-part]").forEach(btn => {
+        const active = btn.dataset.dictPart === dictionaryFilter.part;
+        btn.classList.toggle("bg-white", active);
+        btn.classList.toggle("shadow-sm", active);
+        btn.classList.toggle("text-slate-900", active);
+        btn.classList.toggle("text-slate-600", !active);
+      });
+      const startEl = document.getElementById("dict-range-start");
+      const endEl = document.getElementById("dict-range-end");
+      if (startEl && document.activeElement !== startEl) startEl.value = dictionaryFilter.start;
+      if (endEl && document.activeElement !== endEl) endEl.value = dictionaryFilter.end;
+    }
+
+    function setDictionaryPartFilter(part) {
+      dictionaryFilter.part = part;
+      saveDictionaryFilter();
+      syncDictionaryFilterUi();
+      applyDictionaryFilters();
+    }
+
+    function handleDictionaryRangeInput() {
+      dictionaryFilter.start = (document.getElementById("dict-range-start").value || "").trim();
+      dictionaryFilter.end = (document.getElementById("dict-range-end").value || "").trim();
+      saveDictionaryFilter();
+      applyDictionaryFilters();
+    }
+
+    function resetDictionaryFilters() {
+      dictionaryFilter = { part: "all", start: "", end: "" };
+      const searchEl = document.getElementById("dictionary-search");
+      if (searchEl) searchEl.value = "";
+      saveDictionaryFilter();
+      syncDictionaryFilterUi();
+      applyDictionaryFilters();
+    }
+
+    // 番号（部分一致）・英語・日本語を同じ入力欄でまとめて判定する
+    function applyDictionaryFilters() {
+      const searchEl = document.getElementById("dictionary-search");
+      const rawQuery = ((searchEl && searchEl.value) || "").trim();
+      const query = rawQuery.normalize ? rawQuery.normalize("NFKC").toLowerCase() : rawQuery.toLowerCase();
+      const startNum = dictionaryFilter.start === "" ? null : Number(dictionaryFilter.start);
+      const endNum = dictionaryFilter.end === "" ? null : Number(dictionaryFilter.end);
+      const hasRange = (startNum !== null && !Number.isNaN(startNum)) || (endNum !== null && !Number.isNaN(endNum));
+      const countEl = document.getElementById("dictionary-count");
+      const emptyEl = document.getElementById("dictionary-empty");
+
+      let shown = 0;
+      dictionaryEntries.forEach(entry => {
+        let hit = true;
+        if (dictionaryFilter.part !== "all" && entry.part !== dictionaryFilter.part) hit = false;
+        if (hit && startNum !== null && !Number.isNaN(startNum) && entry.id < startNum) hit = false;
+        if (hit && endNum !== null && !Number.isNaN(endNum) && entry.id > endNum) hit = false;
+        if (hit && query) {
+          hit = entry.idText.includes(query) || entry.word.includes(query) || entry.meaningNorm.includes(query);
+        }
+        entry.el.classList.toggle("hidden", !hit);
+        if (hit) shown++;
+      });
+
+      const total = dictionaryEntries.length;
+      const filtering = query !== "" || dictionaryFilter.part !== "all" || hasRange;
+      if (countEl) {
+        countEl.textContent = total === 0
+          ? "単語データが読み込まれていません"
+          : (filtering ? `表示 ${shown} 語 / 全 ${total} 語` : `全 ${total} 語を番号順に表示`);
+      }
+      if (emptyEl) emptyEl.classList.toggle("hidden", shown > 0 || total === 0);
     }
 
     // 範囲選択 ＆ 出題数
@@ -1721,6 +1908,7 @@
     window.addEventListener("DOMContentLoaded", () => {
       loadUserData();
       syncDataRangeUi();
+      loadDictionaryFilter();
       checkAndFetchData();
       checkIncomingChallenge();
     });
