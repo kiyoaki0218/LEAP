@@ -82,7 +82,7 @@
         <span>🪙</span>
         <span id="header-coins">0</span>
       </div>
-      <div id="header-title" class="bg-slate-200 text-slate-700 font-semibold px-2.5 py-1 rounded-md text-xs">
+      <div id="header-title" class="bg-slate-200 text-slate-700 font-semibold px-2.5 py-1 rounded-md text-xs max-w-[150px] truncate">
         始まりのビギナー
       </div>
     </div>
@@ -99,6 +99,26 @@
         </span>
         <h2 class="text-3xl font-extrabold tracking-tight text-slate-900">LEAP 4択英単語</h2>
         <p class="text-slate-500 text-sm">英語から日本語の語義を素早く答えるトレーニング</p>
+      </div>
+
+      <!-- プレイヤーカード（レベル・EXP・アバター） -->
+      <div id="home-player-card" class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
+        <div class="flex items-center gap-3">
+          <div id="home-avatar" class="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl shrink-0 bg-slate-100 ring-2 ring-slate-300">🦉</div>
+          <div class="min-w-0 flex-1">
+            <div class="flex items-center justify-between gap-2">
+              <div class="flex items-baseline gap-2 min-w-0">
+                <span id="home-level" class="text-lg font-extrabold text-slate-900 leading-none">Lv.1</span>
+                <span id="home-title-inline" class="text-xs font-bold text-emerald-600 truncate">始まりのビギナー</span>
+              </div>
+              <span id="home-exp-text" class="text-[11px] font-bold text-slate-400 shrink-0 tabular-nums">0 / 100 EXP</span>
+            </div>
+            <div class="mt-2 w-full bg-slate-200 h-2.5 rounded-full overflow-hidden">
+              <div id="home-exp-bar" class="h-full w-0 rounded-full bg-gradient-to-r from-emerald-400 to-emerald-600 transition-all duration-500"></div>
+            </div>
+            <p id="home-exp-next" class="text-[10px] text-slate-400 mt-1">次のレベルまであと 100 EXP（正解1問 +10 EXP）</p>
+          </div>
+        </div>
       </div>
 
       <!-- ステータスカード -->
@@ -150,7 +170,7 @@
         </button>
 
         <button type="button" onclick="navigate('screen-shop')" class="w-full py-3.5 bg-white hover:bg-slate-100 active:scale-[0.99] border border-slate-200 text-slate-700 font-semibold rounded-xl shadow-sm transition-all flex items-center justify-center gap-2 cursor-pointer">
-          <span>🛍️ 称号カスタムショップ</span>
+          <span>🛍️ 称号・アバターショップ</span>
         </button>
 
         <!-- 音声ON/OFFボタン -->
@@ -192,79 +212,17 @@
         <button type="button" id="tab-btn-custom" onclick="switchRangeMode('custom')" class="flex-1 py-2 text-sm font-semibold rounded-lg text-slate-600 hover:text-slate-900 transition-all">カスタム範囲指定</button>
       </div>
 
-      <!-- Part選択パネル -->
+      <!-- Part選択パネル（複数選択） -->
       <div id="panel-part" class="space-y-2.5">
-        <!-- Part 1 (実装済・プレイ可能) -->
-        <button type="button" onclick="selectPart(1, 1, 400)" class="w-full text-left p-4 bg-white hover:border-emerald-500 border-2 border-emerald-500/80 rounded-xl transition shadow-sm flex justify-between items-center group cursor-pointer">
-          <div>
-            <div class="font-bold text-slate-900 group-hover:text-emerald-600 transition flex items-center gap-2">
-              <span>Part 1</span>
-              <span class="text-[10px] bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded-full">プレイ可能</span>
-            </div>
-            <div class="text-xs text-slate-500 mt-0.5">重要・基礎単語 (ID: 1 〜 400)</div>
-          </div>
-          <span class="text-xs font-bold px-3 py-1 bg-emerald-50 text-emerald-700 rounded-md border border-emerald-200">400語</span>
-        </button>
-
-        <!-- Part 2 (実装済・プレイ可能) -->
-        <button type="button" onclick="selectPart(2, 401, 1000)" class="w-full text-left p-4 bg-white hover:border-emerald-500 border-2 border-emerald-500/80 rounded-xl transition shadow-sm flex justify-between items-center group cursor-pointer">
-          <div>
-            <div class="font-bold text-slate-900 group-hover:text-emerald-600 transition flex items-center gap-2">
-              <span>Part 2</span>
-              <span class="text-[10px] bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded-full">プレイ可能</span>
-            </div>
-            <div class="text-xs text-slate-500 mt-0.5">標準・頻出単語 (ID: 401 〜 1000)</div>
-          </div>
-          <span class="text-xs font-bold px-3 py-1 bg-emerald-50 text-emerald-700 rounded-md border border-emerald-200">600語</span>
-        </button>
-
-        <!-- Part 3 (未実装・Coming Soon) -->
-        <div class="relative w-full">
-          <button disabled type="button" class="w-full text-left p-4 bg-slate-100/70 border border-slate-200/70 rounded-xl flex justify-between items-center cursor-not-allowed opacity-50 select-none">
-            <div>
-              <div class="font-bold text-slate-500">Part 3</div>
-              <div class="text-xs text-slate-400 mt-0.5">応用・発展単語 (ID: 1001 〜 1400)</div>
-            </div>
-            <span class="text-xs font-semibold px-2.5 py-1 bg-slate-200/50 rounded-md text-slate-400">400語</span>
-          </button>
-          <div class="absolute inset-0 flex items-center justify-end pr-4 pointer-events-none">
-            <span class="bg-slate-900/85 backdrop-blur-sm text-amber-300 text-[11px] font-extrabold px-3 py-1 rounded-full tracking-wider shadow flex items-center gap-1.5 border border-slate-700">
-              <span>🔒</span> COMING SOON
-            </span>
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-bold text-slate-500">出題するPartを選択（複数OK）</span>
+          <div class="flex gap-1.5">
+            <button type="button" onclick="selectAllParts()" class="px-2.5 py-1 text-[11px] font-bold bg-slate-900 hover:bg-slate-800 text-white rounded-lg transition cursor-pointer">全選択</button>
+            <button type="button" onclick="clearAllParts()" class="px-2.5 py-1 text-[11px] font-bold bg-white hover:bg-slate-100 border border-slate-300 text-slate-600 rounded-lg transition cursor-pointer">全解除</button>
           </div>
         </div>
-
-        <!-- Part 4 (未実装・Coming Soon) -->
-        <div class="relative w-full">
-          <button disabled type="button" class="w-full text-left p-4 bg-slate-100/70 border border-slate-200/70 rounded-xl flex justify-between items-center cursor-not-allowed opacity-50 select-none">
-            <div>
-              <div class="font-bold text-slate-500">Part 4</div>
-              <div class="text-xs text-slate-400 mt-0.5">最難関・発展単語 (ID: 1401 〜 2000)</div>
-            </div>
-            <span class="text-xs font-semibold px-2.5 py-1 bg-slate-200/50 rounded-md text-slate-400">600語</span>
-          </button>
-          <div class="absolute inset-0 flex items-center justify-end pr-4 pointer-events-none">
-            <span class="bg-slate-900/85 backdrop-blur-sm text-amber-300 text-[11px] font-extrabold px-3 py-1 rounded-full tracking-wider shadow flex items-center gap-1.5 border border-slate-700">
-              <span>🔒</span> COMING SOON
-            </span>
-          </div>
-        </div>
-
-        <!-- ＋α 難単語 (未実装・Coming Soon) -->
-        <div class="relative w-full">
-          <button disabled type="button" class="w-full text-left p-4 bg-slate-100/70 border border-slate-200/70 rounded-xl flex justify-between items-center cursor-not-allowed opacity-50 select-none">
-            <div>
-              <div class="font-bold text-slate-500">+α 難単語</div>
-              <div class="text-xs text-slate-400 mt-0.5">プラスアルファ (ID: 2001 〜 2300)</div>
-            </div>
-            <span class="text-xs font-semibold px-2.5 py-1 bg-slate-200/50 rounded-md text-slate-400">300語</span>
-          </button>
-          <div class="absolute inset-0 flex items-center justify-end pr-4 pointer-events-none">
-            <span class="bg-slate-900/85 backdrop-blur-sm text-amber-300 text-[11px] font-extrabold px-3 py-1 rounded-full tracking-wider shadow flex items-center gap-1.5 border border-slate-700">
-              <span>🔒</span> COMING SOON
-            </span>
-          </div>
-        </div>
+        <p id="part-selected-summary" class="text-xs text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-lg px-3 py-2">選択中: <span class="font-bold">Part 1</span></p>
+        <div id="part-list" class="space-y-2.5"></div>
       </div>
 
       <!-- カスタム範囲指定パネル -->
@@ -356,31 +314,41 @@
     <section id="screen-shop" class="fade-in hidden space-y-5">
       <div class="flex items-center justify-between pb-2 border-b border-slate-200">
         <div>
-          <h2 class="text-xl font-bold text-slate-900">称号カスタムショップ</h2>
-          <p class="text-xs text-slate-400">前称号と後称号を組み合わせて自分だけの二つ名を作ろう</p>
+          <h2 class="text-xl font-bold text-slate-900">カスタムショップ</h2>
+          <p class="text-xs text-slate-400">称号とアバターフレームで自分だけの見た目に</p>
         </div>
         <button type="button" onclick="navigate('screen-home')" class="text-sm text-slate-500 hover:text-slate-800 font-medium">戻る</button>
       </div>
 
-      <!-- 現在の装着称号プレビューカード -->
-      <div class="bg-gradient-to-r from-slate-900 to-slate-800 text-white p-4 rounded-2xl shadow-sm text-center space-y-1.5 border border-slate-700">
-        <span class="text-[10px] font-bold uppercase tracking-widest text-emerald-400">CURRENT TITLE</span>
-        <div class="text-xl font-extrabold tracking-tight flex items-center justify-center gap-1">
-          <span id="shop-preview-prefix" class="text-emerald-300">始まりの</span>
-          <span id="shop-preview-suffix" class="text-white">ビギナー</span>
+      <!-- 現在の装着プレビューカード -->
+      <div class="bg-gradient-to-r from-slate-900 to-slate-800 text-white p-4 rounded-2xl shadow-sm border border-slate-700 space-y-2">
+        <div class="flex items-center gap-3">
+          <div id="shop-preview-avatar" class="w-12 h-12 rounded-xl flex items-center justify-center text-2xl shrink-0 bg-slate-100 ring-2 ring-slate-300">🦉</div>
+          <div class="min-w-0 text-left">
+            <span class="text-[10px] font-bold uppercase tracking-widest text-emerald-400">CURRENT LOOK</span>
+            <div class="text-lg font-extrabold tracking-tight flex items-center gap-1 truncate">
+              <span id="shop-preview-prefix" class="text-emerald-300">始まりの</span>
+              <span id="shop-preview-suffix" class="text-white">ビギナー</span>
+            </div>
+            <p id="shop-preview-level" class="text-[11px] text-slate-400">Lv.1 ・ フレーム: ノーマル</p>
+          </div>
         </div>
-        <p class="text-[11px] text-slate-400">下のボックスをタップして即時購入＆装着！</p>
+        <p class="text-[11px] text-slate-400 text-center">下のボックスをタップして即時購入＆装着！</p>
       </div>
 
-      <!-- 前称号 / 後称号 切替タブ -->
-      <div class="flex bg-slate-200/70 p-1 rounded-xl">
-        <button type="button" id="shop-tab-prefix" onclick="switchShopTab('prefix')" class="flex-1 py-2 text-xs font-bold rounded-lg bg-white shadow-sm text-slate-900 transition-all flex items-center justify-center gap-1 cursor-pointer">
-          <span>🏷️ 前称号（〇〇の）</span>
-          <span id="prefix-owned-count" class="text-[10px] bg-emerald-100 text-emerald-800 px-1.5 py-0.2 rounded-full">1/35</span>
+      <!-- 前称号 / 後称号 / アバター切替タブ -->
+      <div class="flex bg-slate-200/70 p-1 rounded-xl gap-1">
+        <button type="button" id="shop-tab-prefix" onclick="switchShopTab('prefix')" class="flex-1 py-2 text-[11px] font-bold rounded-lg bg-white shadow-sm text-slate-900 transition-all flex items-center justify-center gap-1 cursor-pointer">
+          <span>🏷️ 前称号</span>
+          <span id="prefix-owned-count" class="text-[10px] bg-emerald-100 text-emerald-800 px-1.5 py-0.2 rounded-full">1/70</span>
         </button>
-        <button type="button" id="shop-tab-suffix" onclick="switchShopTab('suffix')" class="flex-1 py-2 text-xs font-bold rounded-lg text-slate-600 hover:text-slate-900 transition-all flex items-center justify-center gap-1 cursor-pointer">
-          <span>🎖️ 後称号（〜〇〇）</span>
-          <span id="suffix-owned-count" class="text-[10px] bg-slate-200 text-slate-600 px-1.5 py-0.2 rounded-full">1/35</span>
+        <button type="button" id="shop-tab-suffix" onclick="switchShopTab('suffix')" class="flex-1 py-2 text-[11px] font-bold rounded-lg text-slate-600 hover:text-slate-900 transition-all flex items-center justify-center gap-1 cursor-pointer">
+          <span>🎖️ 後称号</span>
+          <span id="suffix-owned-count" class="text-[10px] bg-slate-200 text-slate-600 px-1.5 py-0.2 rounded-full">1/70</span>
+        </button>
+        <button type="button" id="shop-tab-frame" onclick="switchShopTab('frame')" class="flex-1 py-2 text-[11px] font-bold rounded-lg text-slate-600 hover:text-slate-900 transition-all flex items-center justify-center gap-1 cursor-pointer">
+          <span>🖼️ アバター</span>
+          <span id="frame-owned-count" class="text-[10px] bg-slate-200 text-slate-600 px-1.5 py-0.2 rounded-full">1/27</span>
         </button>
       </div>
 
@@ -439,6 +407,23 @@
           </p>
           <p id="result-history-compare" class="hidden text-xs font-semibold text-slate-500 mt-1"></p>
         </div>
+
+        <!-- プレイヤー情報（レベル・称号・アバター） -->
+        <div class="flex items-center gap-3 text-left">
+          <div id="result-avatar" class="w-12 h-12 rounded-xl flex items-center justify-center text-2xl shrink-0 bg-slate-100 ring-2 ring-slate-300">🦉</div>
+          <div class="min-w-0">
+            <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400">PLAYER</p>
+            <p class="text-sm font-extrabold text-slate-900 truncate">
+              <span id="result-player-level">Lv.1</span>
+              <span id="result-player-title" class="text-emerald-600">始まりのビギナー</span>
+            </p>
+          </div>
+          <div class="ml-auto text-right shrink-0">
+            <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400">獲得EXP</p>
+            <p id="result-exp-earned" class="text-sm font-extrabold text-indigo-600 tabular-nums">+0 EXP</p>
+          </div>
+        </div>
+        <p id="result-levelup" class="hidden text-xs font-extrabold text-amber-700 bg-amber-50 border border-amber-200 rounded-full py-1 px-3">🎉 レベルアップ！</p>
 
         <div class="py-4 border-y border-slate-100 flex items-center justify-around">
           <div>
@@ -591,7 +576,42 @@
       { id: "pre_mythic", name: "神話の", price: 3000 },
       { id: "pre_truth", name: "真理の", price: 3500 },
       { id: "pre_absolute", name: "絶対の", price: 4000 },
-      { id: "pre_ultimate", name: "究極の", price: 5000 }
+      { id: "pre_ultimate", name: "究極の", price: 5000 },
+      { id: "pre_dawn", name: "黎明の", price: 6000 },
+      { id: "pre_stargazer", name: "星詠みの", price: 6500 },
+      { id: "pre_moonshadow", name: "月影の", price: 7000 },
+      { id: "pre_daybreak", name: "暁の", price: 7500 },
+      { id: "pre_silence", name: "静寂の", price: 8000 },
+      { id: "pre_silver", name: "白銀の", price: 8500 },
+      { id: "pre_golden", name: "黄金の", price: 9000 },
+      { id: "pre_jade", name: "翡翠の", price: 9500 },
+      { id: "pre_lapis", name: "瑠璃の", price: 10000 },
+      { id: "pre_eternal", name: "永久の", price: 10500 },
+      { id: "pre_infinite", name: "無限の", price: 11000 },
+      { id: "pre_universe", name: "万象の", price: 11500 },
+      { id: "pre_vacuum", name: "真空の", price: 12000 },
+      { id: "pre_spacetime", name: "時空の", price: 12500 },
+      { id: "pre_karma", name: "因果の", price: 13000 },
+      { id: "pre_fate", name: "運命の", price: 13500 },
+      { id: "pre_revelation", name: "天啓の", price: 14000 },
+      { id: "pre_wisdom", name: "英知の", price: 14500 },
+      { id: "pre_seeking", name: "求道の", price: 15000 },
+      { id: "pre_pioneer", name: "開拓の", price: 15500 },
+      { id: "pre_ambition", name: "覇道の", price: 16000 },
+      { id: "pre_crown", name: "王冠の", price: 16500 },
+      { id: "pre_dragon", name: "竜脈の", price: 17000 },
+      { id: "pre_phoenix", name: "鳳凰の", price: 17500 },
+      { id: "pre_kirin", name: "麒麟の", price: 18000 },
+      { id: "pre_yatagarasu", name: "八咫烏の", price: 18500 },
+      { id: "pre_thunder", name: "神雷の", price: 19000 },
+      { id: "pre_freeze", name: "氷結の", price: 19500 },
+      { id: "pre_burn", name: "灼熱の", price: 20000 },
+      { id: "pre_starsea", name: "星海の", price: 21000 },
+      { id: "pre_galaxy", name: "銀河の", price: 22000 },
+      { id: "pre_cosmos", name: "宇宙の", price: 23000 },
+      { id: "pre_dimensional", name: "次元の", price: 24000 },
+      { id: "pre_allthings", name: "万物の", price: 26000 },
+      { id: "pre_onlyme", name: "唯我の", price: 30000 }
     ];
 
     const SUFFIX_TITLES = [
@@ -629,7 +649,82 @@
       { id: "suf_incarnation", name: "英単語の化身", price: 4500 },
       { id: "suf_god", name: "語彙の神", price: 5000 },
       { id: "suf_oracle", name: "神託", price: 5500 },
-      { id: "suf_concept", name: "概念", price: 6000 }
+      { id: "suf_concept", name: "概念", price: 6000 },
+      { id: "suf_apprentice", name: "単語見習い", price: 60 },
+      { id: "suf_vocab_king", name: "語彙王", price: 7000 },
+      { id: "suf_collector2", name: "単語蒐集家", price: 7500 },
+      { id: "suf_memory_keeper", name: "記憶の番人", price: 8000 },
+      { id: "suf_spelling_mage", name: "綴りの魔術師", price: 8500 },
+      { id: "suf_meaning_seeker", name: "意味の探求者", price: 9000 },
+      { id: "suf_quiz_master", name: "四択の達人", price: 9500 },
+      { id: "suf_combo_artisan", name: "コンボ職人", price: 10000 },
+      { id: "suf_streak_hunter", name: "連答の狩人", price: 10500 },
+      { id: "suf_accuracy99", name: "正答率99%", price: 11000 },
+      { id: "suf_all_correct", name: "全問正解者", price: 11500 },
+      { id: "suf_perfect", name: "パーフェクト", price: 12000 },
+      { id: "suf_unbroken", name: "不屈の受験生", price: 12500 },
+      { id: "suf_midnight", name: "深夜の学習者", price: 13000 },
+      { id: "suf_morning", name: "朝型の秀才", price: 13500 },
+      { id: "suf_commuter", name: "電車内の求道者", price: 14000 },
+      { id: "suf_wordbook", name: "単語帳の主", price: 14500 },
+      { id: "suf_dictionary", name: "辞書の愛好家", price: 15000 },
+      { id: "suf_etymology", name: "語源ハンター", price: 15500 },
+      { id: "suf_synonym", name: "類義語の使い手", price: 16000 },
+      { id: "suf_example", name: "例文マスター", price: 16500 },
+      { id: "suf_pronounce", name: "発音の申し子", price: 17000 },
+      { id: "suf_listening", name: "リスニングの鬼", price: 17500 },
+      { id: "suf_longtext", name: "長文の支配者", price: 18000 },
+      { id: "suf_translation", name: "和訳の求道者", price: 18500 },
+      { id: "suf_composition", name: "英作文の魔術師", price: 19000 },
+      { id: "suf_breaker", name: "難関突破者", price: 19500 },
+      { id: "suf_exam_child", name: "試験の申し子", price: 20000 },
+      { id: "suf_score_source", name: "得点源", price: 21000 },
+      { id: "suf_fullmark", name: "満点請負人", price: 22000 },
+      { id: "suf_alchemist", name: "語彙の錬金術師", price: 24000 },
+      { id: "suf_dominator", name: "単語の支配者", price: 26000 },
+      { id: "suf_transcender", name: "言語の超越者", price: 28000 },
+      { id: "suf_knowledge_king", name: "知識の王", price: 30000 },
+      { id: "suf_omniscient", name: "全知の存在", price: 35000 }
+    ];
+
+    // アバターフレーム（ショップで購入・装着）
+    const FRAME_ITEMS = [
+      { id: "frame_normal", name: "ノーマル", price: 0, emoji: "🦉", box: "bg-slate-100 ring-2 ring-slate-300" },
+      { id: "frame_silver", name: "シルバー", price: 150, emoji: "🥈", box: "bg-gradient-to-br from-slate-100 to-slate-400 ring-4 ring-slate-400 shadow-lg" },
+      { id: "frame_gold", name: "ゴールド", price: 300, emoji: "🦉", box: "bg-gradient-to-br from-amber-200 to-yellow-400 ring-4 ring-amber-400 shadow-lg" },
+      { id: "frame_emerald", name: "エメラルド", price: 450, emoji: "🍀", box: "bg-gradient-to-br from-emerald-200 to-teal-500 ring-4 ring-emerald-400 shadow-lg" },
+      { id: "frame_ruby", name: "ルビー", price: 600, emoji: "🌹", box: "bg-gradient-to-br from-rose-300 to-red-600 ring-4 ring-rose-400 shadow-lg" },
+      { id: "frame_sapphire", name: "サファイア", price: 750, emoji: "💧", box: "bg-gradient-to-br from-sky-200 to-blue-600 ring-4 ring-blue-400 shadow-lg" },
+      { id: "frame_galaxy", name: "宇宙柄", price: 800, emoji: "🌌", box: "bg-gradient-to-br from-indigo-900 via-purple-800 to-slate-900 ring-4 ring-indigo-400 shadow-lg" },
+      { id: "frame_aurora", name: "オーロラ", price: 1500, emoji: "✨", box: "bg-gradient-to-br from-teal-300 via-sky-400 to-fuchsia-400 ring-4 ring-teal-300 shadow-lg" },
+      { id: "frame_sakura", name: "サクラ", price: 2000, emoji: "🌸", box: "bg-gradient-to-br from-pink-200 via-rose-300 to-fuchsia-300 ring-4 ring-pink-400 shadow-lg" },
+      { id: "frame_ocean", name: "オーシャン", price: 2200, emoji: "🐬", box: "bg-gradient-to-br from-cyan-300 to-blue-700 ring-4 ring-cyan-400 shadow-lg" },
+      { id: "frame_thunder", name: "サンダー", price: 2600, emoji: "⚡", box: "bg-gradient-to-br from-yellow-200 to-indigo-600 ring-4 ring-yellow-400 shadow-lg" },
+      { id: "frame_flame", name: "フレイム", price: 2800, emoji: "🔥", box: "bg-gradient-to-br from-amber-300 to-red-600 ring-4 ring-orange-400 shadow-lg" },
+      { id: "frame_legend", name: "レジェンド", price: 3000, emoji: "👑", box: "bg-gradient-to-br from-rose-500 via-amber-400 to-yellow-300 ring-4 ring-rose-400 shadow-lg" },
+      { id: "frame_ice", name: "アイス", price: 3200, emoji: "❄️", box: "bg-gradient-to-br from-sky-100 to-cyan-400 ring-4 ring-cyan-300 shadow-lg" },
+      { id: "frame_forest", name: "フォレスト", price: 3500, emoji: "🌲", box: "bg-gradient-to-br from-lime-200 to-emerald-700 ring-4 ring-lime-400 shadow-lg" },
+      { id: "frame_desert", name: "デザート", price: 3800, emoji: "🌵", box: "bg-gradient-to-br from-amber-200 to-orange-500 ring-4 ring-amber-400 shadow-lg" },
+      { id: "frame_moon", name: "ムーン", price: 4200, emoji: "🌙", box: "bg-gradient-to-br from-slate-200 to-indigo-900 ring-4 ring-indigo-300 shadow-lg" },
+      { id: "frame_sun", name: "サン", price: 4600, emoji: "☀️", box: "bg-gradient-to-br from-yellow-200 to-orange-500 ring-4 ring-yellow-400 shadow-lg" },
+      { id: "frame_star", name: "スター", price: 5000, emoji: "⭐", box: "bg-gradient-to-br from-yellow-100 via-amber-300 to-orange-400 ring-4 ring-amber-300 shadow-lg" },
+      { id: "frame_dragon", name: "ドラゴン", price: 6000, emoji: "🐉", box: "bg-gradient-to-br from-emerald-400 via-teal-600 to-slate-900 ring-4 ring-emerald-500 shadow-lg" },
+      { id: "frame_unicorn", name: "ユニコーン", price: 7000, emoji: "🦄", box: "bg-gradient-to-br from-pink-200 via-purple-300 to-sky-300 ring-4 ring-purple-300 shadow-lg" },
+      { id: "frame_phoenix", name: "フェニックス", price: 8000, emoji: "🦅", box: "bg-gradient-to-br from-orange-300 via-rose-500 to-purple-700 ring-4 ring-rose-400 shadow-lg" },
+      { id: "frame_planet", name: "プラネット", price: 9000, emoji: "🪐", box: "bg-gradient-to-br from-indigo-400 via-purple-600 to-slate-900 ring-4 ring-purple-400 shadow-lg" },
+      { id: "frame_infinity", name: "インフィニティ", price: 12000, emoji: "♾️", box: "bg-gradient-to-br from-slate-800 via-indigo-600 to-cyan-400 ring-4 ring-cyan-300 shadow-lg" },
+      { id: "frame_ultimate", name: "アルティメット", price: 15000, emoji: "🌟", box: "bg-gradient-to-br from-amber-200 via-yellow-400 to-rose-400 ring-4 ring-amber-300 shadow-lg" },
+      { id: "frame_chaos", name: "カオス", price: 18000, emoji: "🌀", box: "bg-gradient-to-br from-fuchsia-500 via-purple-700 to-slate-900 ring-4 ring-fuchsia-400 shadow-lg" },
+      { id: "frame_god", name: "ゴッド", price: 25000, emoji: "👁️", box: "bg-gradient-to-br from-white via-amber-200 to-yellow-500 ring-4 ring-yellow-300 shadow-lg" }
+    ];
+
+    // Part定義（収録データに応じて利用可否を自動判定）
+    const PARTS = [
+      { id: 1, name: "Part 1", desc: "重要・基礎単語", start: 1, end: 400 },
+      { id: 2, name: "Part 2", desc: "標準・頻出単語", start: 401, end: 1000 },
+      { id: 3, name: "Part 3", desc: "応用・発展単語", start: 1001, end: 1400 },
+      { id: 4, name: "Part 4", desc: "最難関・発展単語", start: 1401, end: 2000 },
+      { id: 5, name: "+α 難単語", desc: "プラスアルファ", start: 2001, end: 2300 }
     ];
 
     // 実データ（LEAP_WORDS_DATA: words_data.js）
@@ -671,6 +766,7 @@
           if (Array.isArray(json) && json.length > 0) {
             ALL_WORDS = json;
             syncDataRangeUi();
+            renderPartSelectList();
           }
         }
       } catch (e) {
@@ -690,11 +786,40 @@
       weakWords: {}, // { id: { id, word, meaning, count } }
       scoreHistory: [], // 最近5回のスコア履歴
       lastDailyDate: "", // "YYYY-MM-DD"
-      voiceEnabled: true // 音声読み上げON/OFF
+      voiceEnabled: true, // 音声読み上げON/OFF
+      exp: 0, // 累計EXP（正解1問 +10）
+      level: 1,
+      ownedFrames: ["frame_normal"],
+      equippedFrame: "frame_normal"
     };
 
     function getFullTitle() {
       return (userData.prefix || "") + (userData.suffix || "ビギナー");
+    }
+
+    // ===== レベル・EXP =====
+    const EXP_PER_CORRECT = 10;
+    function expRequiredForLevel(level) {
+      return 100 + (Math.max(1, level) - 1) * 50;
+    }
+    function getLevelState(totalExp) {
+      let level = 1;
+      let rest = Math.max(0, Math.floor(Number(totalExp) || 0));
+      while (rest >= expRequiredForLevel(level) && level < 999) {
+        rest -= expRequiredForLevel(level);
+        level += 1;
+      }
+      return { level, intoLevel: rest, required: expRequiredForLevel(level) };
+    }
+
+    function getFrameItem(id) {
+      return FRAME_ITEMS.find(f => f.id === id) || FRAME_ITEMS[0];
+    }
+    function applyFrameStyle(el, frameId, sizeClass) {
+      if (!el) return;
+      const frame = getFrameItem(frameId);
+      el.className = `${sizeClass || "w-12 h-12 text-2xl"} rounded-2xl flex items-center justify-center shrink-0 ${frame.box}`;
+      el.textContent = frame.emoji;
     }
 
     function loadUserData() {
@@ -711,8 +836,21 @@
           if (!userData.scoreHistory) userData.scoreHistory = [];
           if (!userData.lastDailyDate) userData.lastDailyDate = "";
           if (userData.voiceEnabled === undefined) userData.voiceEnabled = true;
+          if (typeof userData.exp !== "number" || !isFinite(userData.exp) || userData.exp < 0) userData.exp = 0;
+          if (!Array.isArray(userData.ownedFrames) || userData.ownedFrames.length === 0) userData.ownedFrames = ["frame_normal"];
+          if (!userData.ownedFrames.includes("frame_normal")) userData.ownedFrames.unshift("frame_normal");
+          if (!FRAME_ITEMS.some(f => f.id === userData.equippedFrame) || !userData.ownedFrames.includes(userData.equippedFrame)) {
+            userData.equippedFrame = "frame_normal";
+          }
         }
       } catch (e) { console.error(e); }
+      if (typeof userData.exp !== "number" || !isFinite(userData.exp) || userData.exp < 0) userData.exp = 0;
+      if (!Array.isArray(userData.ownedFrames) || userData.ownedFrames.length === 0) userData.ownedFrames = ["frame_normal"];
+      if (!userData.ownedFrames.includes("frame_normal")) userData.ownedFrames.unshift("frame_normal");
+      if (!FRAME_ITEMS.some(f => f.id === userData.equippedFrame) || !userData.ownedFrames.includes(userData.equippedFrame)) {
+        userData.equippedFrame = "frame_normal";
+      }
+      userData.level = getLevelState(userData.exp).level;
       updateUserUI();
     }
 
@@ -736,6 +874,23 @@
       const spSuf = document.getElementById("shop-preview-suffix");
       if (spPre) spPre.textContent = userData.prefix;
       if (spSuf) spSuf.textContent = userData.suffix;
+
+      // レベル・EXP・アバターの反映
+      const levelState = getLevelState(userData.exp);
+      const hLevel = document.getElementById("home-level");
+      const hExpText = document.getElementById("home-exp-text");
+      const hExpBar = document.getElementById("home-exp-bar");
+      const hExpNext = document.getElementById("home-exp-next");
+      const hTitleInline = document.getElementById("home-title-inline");
+      if (hLevel) hLevel.textContent = `Lv.${levelState.level}`;
+      if (hTitleInline) hTitleInline.textContent = full;
+      if (hExpText) hExpText.textContent = `${levelState.intoLevel} / ${levelState.required} EXP`;
+      if (hExpBar) hExpBar.style.width = `${Math.min(100, Math.round((levelState.intoLevel / levelState.required) * 100))}%`;
+      if (hExpNext) hExpNext.textContent = `次のレベルまであと${Math.max(0, levelState.required - levelState.intoLevel)} EXP（正解1問 +${EXP_PER_CORRECT} EXP）`;
+      applyFrameStyle(document.getElementById("home-avatar"), userData.equippedFrame, "w-14 h-14 text-2xl");
+      applyFrameStyle(document.getElementById("shop-preview-avatar"), userData.equippedFrame, "w-12 h-12 text-2xl");
+      const spLevel = document.getElementById("shop-preview-level");
+      if (spLevel) spLevel.textContent = `Lv.${levelState.level} ・ フレーム: ${getFrameItem(userData.equippedFrame).name}`;
 
       // 苦手単語バナーの更新
       const weakKeys = Object.keys(userData.weakWords || {});
@@ -805,6 +960,7 @@
       });
       ALL_WORDS = Array.from(map.values()).sort((a, b) => a.id - b.id);
       syncDataRangeUi();
+      renderPartSelectList();
     }
 
     // 画面遷移
@@ -1026,11 +1182,139 @@
       }
     }
 
-    function selectPart(partNum, start, end) {
-      selectedRange = { start, end, label: `Part ${partNum}` };
-      isWeakMode = false;
-      isDailyMode = false;
-      startQuiz();
+    // ===== Partの複数選択 =====
+    const PART_STORAGE_KEY = "LEAP_SELECTED_PARTS_V1";
+    let selectedParts = [1];
+
+    function isPartAvailable(part) {
+      const range = getDataIdRange();
+      if (!part || !range.end) return false;
+      return part.start <= range.end && part.end >= range.start;
+    }
+    function partWordCount(part) {
+      return ALL_WORDS.filter(w => typeof w.id === "number" && w.id >= part.start && w.id <= part.end).length;
+    }
+    function getAvailableParts() {
+      return PARTS.filter(p => isPartAvailable(p));
+    }
+    function getSelectedPartList() {
+      return PARTS.filter(p => selectedParts.includes(p.id) && isPartAvailable(p));
+    }
+    function getPoolForParts(parts) {
+      return ALL_WORDS.filter(w => typeof w.id === "number" && parts.some(p => w.id >= p.start && w.id <= p.end));
+    }
+
+    function loadPartSelection() {
+      try {
+        const raw = JSON.parse(localStorage.getItem(PART_STORAGE_KEY) || "null");
+        if (Array.isArray(raw)) {
+          const hasData = getDataIdRange().end > 0;
+          const valid = raw.map(Number).filter(id => PARTS.some(p => p.id === id && (!hasData || isPartAvailable(p))));
+          selectedParts = Array.from(new Set(valid)).sort((a, b) => a - b);
+        }
+      } catch (e) { console.warn("part selection load failed", e); }
+      renderPartSelectList();
+    }
+
+    function savePartSelection() {
+      try { localStorage.setItem(PART_STORAGE_KEY, JSON.stringify(selectedParts)); } catch (e) {}
+    }
+
+    function togglePartSelection(partId) {
+      const part = PARTS.find(p => p.id === partId);
+      if (!isPartAvailable(part)) return;
+      if (selectedParts.includes(partId)) {
+        selectedParts = selectedParts.filter(id => id !== partId);
+      } else {
+        selectedParts = [...selectedParts, partId].sort((a, b) => a - b);
+      }
+      savePartSelection();
+      renderPartSelectList();
+    }
+
+    function selectAllParts() {
+      selectedParts = getAvailableParts().map(p => p.id);
+      savePartSelection();
+      renderPartSelectList();
+    }
+
+    function clearAllParts() {
+      selectedParts = [];
+      savePartSelection();
+      renderPartSelectList();
+    }
+
+    function updatePartSelectionSummary() {
+      const el = document.getElementById("part-selected-summary");
+      if (!el) return;
+      const parts = getSelectedPartList();
+      if (parts.length === 0) {
+        el.className = "text-xs text-rose-600 bg-rose-50 border border-rose-200 rounded-lg px-3 py-2 font-bold";
+        el.textContent = "Partが選択されていません（1つ以上選んでください）";
+        return;
+      }
+      const total = getPoolForParts(parts).length;
+      el.className = "text-xs text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-lg px-3 py-2";
+      el.innerHTML = `選択中: <span class="font-bold">${parts.map(p => p.name).join("・")}</span>（計 ${total} 語から出題）`;
+    }
+
+    function renderPartSelectList() {
+      const listEl = document.getElementById("part-list");
+      if (!listEl) return;
+      listEl.innerHTML = "";
+
+      PARTS.forEach(part => {
+        const available = isPartAvailable(part);
+        if (!available) {
+          listEl.insertAdjacentHTML("beforeend", `
+            <div class="relative w-full">
+              <div class="w-full text-left p-4 bg-slate-100/70 border border-slate-200/70 rounded-xl flex justify-between items-center opacity-50 select-none">
+                <div>
+                  <div class="font-bold text-slate-500">${part.name}</div>
+                  <div class="text-xs text-slate-400 mt-0.5">${part.desc} (ID: ${part.start} 〜 ${part.end})</div>
+                </div>
+                <span class="text-xs font-semibold px-2.5 py-1 bg-slate-200/50 rounded-md text-slate-400">${part.end - part.start + 1}語</span>
+              </div>
+              <div class="absolute inset-0 flex items-center justify-end pr-4 pointer-events-none">
+                <span class="bg-slate-900/85 backdrop-blur-sm text-amber-300 text-[11px] font-extrabold px-3 py-1 rounded-full tracking-wider shadow flex items-center gap-1.5 border border-slate-700">
+                  <span>🔒</span> COMING SOON
+                </span>
+              </div>
+            </div>
+          `);
+          return;
+        }
+
+        const selected = selectedParts.includes(part.id);
+        const count = partWordCount(part);
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.setAttribute("aria-pressed", selected ? "true" : "false");
+        btn.onclick = () => togglePartSelection(part.id);
+        btn.className = `w-full text-left p-4 border-2 rounded-xl transition shadow-sm flex justify-between items-center gap-2 group cursor-pointer ${
+          selected ? "border-emerald-500 bg-emerald-50/60" : "bg-white border-slate-200 hover:border-emerald-400"
+        }`;
+        btn.innerHTML = `
+          <div class="flex items-center gap-3 min-w-0">
+            <span class="w-5 h-5 rounded-md border-2 flex items-center justify-center text-[11px] font-extrabold shrink-0 ${
+              selected ? "bg-emerald-500 border-emerald-500 text-white" : "border-slate-300 text-transparent"
+            }">✓</span>
+            <div class="min-w-0">
+              <div class="font-bold text-slate-900 flex items-center gap-2 flex-wrap">
+                <span>${part.name}</span>
+                <span class="text-[10px] bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded-full">プレイ可能</span>
+              </div>
+              <div class="text-xs text-slate-500 mt-0.5">${part.desc} (ID: ${part.start} 〜 ${part.end})</div>
+            </div>
+          </div>
+          <span class="text-xs font-bold px-3 py-1 rounded-md border shrink-0 ${
+            selected ? "bg-emerald-500 text-white border-emerald-500" : "bg-emerald-50 text-emerald-700 border-emerald-200"
+          }">${count}語</span>
+        `;
+        listEl.appendChild(btn);
+      });
+
+      updatePartSelectionSummary();
     }
 
     function startCustomQuiz() {
@@ -1041,7 +1325,22 @@
         const end = parseInt(document.getElementById("custom-end-id").value) || 100;
         if (start > end) { alert("開始IDは終了ID以下にしてください。"); return; }
         selectedRange = { start, end, label: `ID: ${start}〜${end}` };
+        startQuiz();
+        return;
       }
+
+      const parts = getSelectedPartList();
+      if (parts.length === 0) {
+        alert("出題するPartを1つ以上選択してください。\n「全選択」で利用可能なPartをまとめて選べます。");
+        return;
+      }
+      const allAvailable = getAvailableParts().length;
+      selectedRange = {
+        start: Math.min(...parts.map(p => p.start)),
+        end: Math.max(...parts.map(p => p.end)),
+        partIds: parts.map(p => p.id),
+        label: parts.length === allAvailable ? "全Part" : parts.map(p => p.name).join("・")
+      };
       startQuiz();
     }
 
@@ -1067,6 +1366,7 @@
       maxCombo: 0,
       correctCount: 0,
       earnedCoins: 0,
+      earnedExp: 0,
       mistakes: [],
       isAnswered: false,
       isAborted: false
@@ -1081,7 +1381,12 @@
     }
 
     function startQuiz() {
-      let pool = ALL_WORDS.filter(w => w.id >= selectedRange.start && w.id <= selectedRange.end);
+      let pool;
+      if (Array.isArray(selectedRange.partIds) && selectedRange.partIds.length > 0) {
+        pool = getPoolForParts(PARTS.filter(p => selectedRange.partIds.includes(p.id)));
+      } else {
+        pool = ALL_WORDS.filter(w => w.id >= selectedRange.start && w.id <= selectedRange.end);
+      }
       if (pool.length === 0) {
         const range = getDataIdRange();
         alert(`指定された範囲（ID: ${selectedRange.start}〜${selectedRange.end}）に単語が存在しません。\n※ 現在はID: ${range.start}〜${range.end}に対応しています。`);
@@ -1111,9 +1416,11 @@
       quizState.maxCombo = 0;
       quizState.correctCount = 0;
       quizState.earnedCoins = 0;
+      quizState.earnedExp = 0;
       quizState.mistakes = [];
       quizState.isAnswered = false;
       quizState.isAborted = false;
+      quizState.startLevel = getLevelState(userData.exp).level;
 
       const rInfo = document.getElementById("quiz-range-info");
       if (rInfo) rInfo.textContent = selectedRange.label;
@@ -1188,7 +1495,14 @@
         else if (quizState.combo >= 3) coinBonus += 2;
 
         quizState.earnedCoins += coinBonus;
+        quizState.earnedExp += EXP_PER_CORRECT;
         quizState.score += (100 / quizState.questions.length);
+
+        // 1問ごとにコインとEXPを即時保存（途中で閉じても失われない）
+        userData.coins += coinBonus;
+        userData.exp = (userData.exp || 0) + EXP_PER_CORRECT;
+        userData.level = getLevelState(userData.exp).level;
+        saveUserData();
 
         // Feverアニメーション
         const comboBadge = document.getElementById("quiz-combo-badge");
@@ -1294,19 +1608,25 @@
       const accuracy = totalQ > 0 ? Math.round((quizState.correctCount / totalQ) * 100) : 0;
       const finalScore = Math.round(quizState.score);
 
-      // デイリーチャレンジ: コイン2倍
+      // デイリーチャレンジ: コイン2倍（獲得済みの同額を追加付与）
       let isDailyBonus = false;
       if (isDailyMode && !isAborted) {
         const today = getTodayString();
         if (userData.lastDailyDate !== today) {
           userData.lastDailyDate = today;
+          userData.coins += quizState.earnedCoins;
           quizState.earnedCoins = quizState.earnedCoins * 2;
           isDailyBonus = true;
         }
       }
 
-      // コインとハイスコアの永続保存
-      userData.coins += quizState.earnedCoins;
+      // EXPとコインは1問ごとに保存済み。ここではレベルアップ判定のみ行う
+      const gainedExp = quizState.earnedExp || 0;
+      const levelBefore = quizState.startLevel || getLevelState(userData.exp).level;
+      const levelAfter = getLevelState(userData.exp).level;
+      const leveledUp = levelAfter > levelBefore;
+      userData.level = levelAfter;
+
       if (!isAborted && finalScore > userData.highScore) {
         userData.highScore = finalScore;
       }
@@ -1380,6 +1700,25 @@
       document.getElementById("result-earned-coins").textContent = isDailyBonus
         ? `+${quizState.earnedCoins} Coin 獲得！(2倍ボーナス🌟)`
         : `+${quizState.earnedCoins} Coin 獲得！`;
+
+      // レベル・称号・アバター・EXPの反映
+      const rLevel = document.getElementById("result-player-level");
+      const rPlayerTitle = document.getElementById("result-player-title");
+      const rExp = document.getElementById("result-exp-earned");
+      const rLevelUp = document.getElementById("result-levelup");
+      if (rLevel) rLevel.textContent = `Lv.${userData.level}`;
+      if (rPlayerTitle) rPlayerTitle.textContent = getFullTitle();
+      if (rExp) rExp.textContent = `+${gainedExp} EXP`;
+      applyFrameStyle(document.getElementById("result-avatar"), userData.equippedFrame, "w-12 h-12 text-2xl");
+      if (rLevelUp) {
+        if (leveledUp) {
+          rLevelUp.textContent = `🎉 Lv.${levelBefore} → Lv.${levelAfter} にレベルアップ！`;
+          rLevelUp.classList.remove("hidden");
+        } else {
+          rLevelUp.classList.add("hidden");
+        }
+      }
+      if (leveledUp) showToast(`🎉 Lv.${levelAfter} にレベルアップ！`);
 
       // 間違えた単語リスト（復習用）
       const mistakeSection = document.getElementById("result-mistakes-section");
@@ -1787,15 +2126,17 @@
 
     function switchShopTab(tab) {
       currentShopTab = tab;
-      const tabPre = document.getElementById("shop-tab-prefix");
-      const tabSuf = document.getElementById("shop-tab-suffix");
-      if (tab === "prefix") {
-        if (tabPre) tabPre.className = "flex-1 py-2 text-xs font-bold rounded-lg bg-white shadow-sm text-slate-900 transition-all flex items-center justify-center gap-1 cursor-pointer";
-        if (tabSuf) tabSuf.className = "flex-1 py-2 text-xs font-bold rounded-lg text-slate-600 hover:text-slate-900 transition-all flex items-center justify-center gap-1 cursor-pointer";
-      } else {
-        if (tabSuf) tabSuf.className = "flex-1 py-2 text-xs font-bold rounded-lg bg-white shadow-sm text-slate-900 transition-all flex items-center justify-center gap-1 cursor-pointer";
-        if (tabPre) tabPre.className = "flex-1 py-2 text-xs font-bold rounded-lg text-slate-600 hover:text-slate-900 transition-all flex items-center justify-center gap-1 cursor-pointer";
-      }
+      const tabs = {
+        prefix: document.getElementById("shop-tab-prefix"),
+        suffix: document.getElementById("shop-tab-suffix"),
+        frame: document.getElementById("shop-tab-frame")
+      };
+      const activeClass = "flex-1 py-2 text-[11px] font-bold rounded-lg bg-white shadow-sm text-slate-900 transition-all flex items-center justify-center gap-1 cursor-pointer";
+      const idleClass = "flex-1 py-2 text-[11px] font-bold rounded-lg text-slate-600 hover:text-slate-900 transition-all flex items-center justify-center gap-1 cursor-pointer";
+      Object.keys(tabs).forEach(key => {
+        if (!tabs[key]) return;
+        tabs[key].className = key === tab ? activeClass : idleClass;
+      });
       renderShop();
     }
 
@@ -1808,6 +2149,49 @@
       const sufOwned = document.getElementById("suffix-owned-count");
       if (preOwned) preOwned.textContent = `${userData.purchasedPrefixes.length}/${PREFIX_TITLES.length}`;
       if (sufOwned) sufOwned.textContent = `${userData.purchasedSuffixes.length}/${SUFFIX_TITLES.length}`;
+
+      // アバターフレーム一覧
+      if (currentShopTab === "frame") {
+        const frameOwned = document.getElementById("frame-owned-count");
+        if (frameOwned) frameOwned.textContent = `${userData.ownedFrames.length}/${FRAME_ITEMS.length}`;
+
+        FRAME_ITEMS.forEach(frame => {
+          const isOwned = userData.ownedFrames.includes(frame.id);
+          const isEquipped = userData.equippedFrame === frame.id;
+
+          const box = document.createElement("div");
+          box.className = `p-3 rounded-2xl border transition-all text-center flex flex-col justify-between items-center min-h-[140px] relative ${
+            isEquipped
+              ? "bg-emerald-50 border-emerald-500 shadow-sm ring-1 ring-emerald-500/30"
+              : isOwned
+                ? "bg-white border-slate-200 hover:border-slate-400 cursor-pointer shadow-sm"
+                : "bg-white border-slate-200 hover:border-amber-400 cursor-pointer shadow-sm"
+          }`;
+
+          let statusBadge = "";
+          if (isEquipped) {
+            statusBadge = `<span class="text-[10px] font-extrabold bg-emerald-500 text-white px-2 py-0.5 rounded-full">装着中</span>`;
+          } else if (isOwned) {
+            statusBadge = `<button type="button" onclick="equipFrame('${frame.id}', '${frame.name}')" class="text-[10px] font-bold bg-slate-900 hover:bg-slate-800 text-white px-2.5 py-1 rounded-lg w-full transition cursor-pointer">装着する</button>`;
+          } else {
+            statusBadge = `<button type="button" onclick="buyFrame('${frame.id}', ${frame.price}, '${frame.name}')" class="text-[10px] font-bold bg-amber-500 hover:bg-amber-600 text-white px-2 py-1 rounded-lg w-full transition flex items-center justify-center gap-1 shadow-sm cursor-pointer"><span>🪙 ${frame.price}</span><span>購入</span></button>`;
+          }
+
+          box.innerHTML = `
+            <div class="w-full flex justify-between items-center text-[10px] text-slate-400 font-semibold mb-1">
+              <span>アバター</span>
+              ${isOwned ? '<span class="text-emerald-600">✓ 所持</span>' : ''}
+            </div>
+            <div class="my-auto flex justify-center">
+              <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl ${frame.box}">${frame.emoji}</div>
+            </div>
+            <div class="font-extrabold text-xs text-slate-900 mt-2 ${isEquipped ? 'text-emerald-700' : ''}">${frame.name}</div>
+            <div class="w-full mt-2">${statusBadge}</div>
+          `;
+          container.appendChild(box);
+        });
+        return;
+      }
 
       const isPrefix = currentShopTab === "prefix";
       const list = isPrefix ? PREFIX_TITLES : SUFFIX_TITLES;
@@ -1882,6 +2266,27 @@
       renderShop();
     }
 
+    function buyFrame(id, price, name) {
+      if (userData.coins < price) {
+        alert(`コインが足りません！（必要: 🪙 ${price} Coin / 現在所持: 🪙 ${userData.coins} Coin）\nクイズに正解してコインを貯めましょう！`);
+        return;
+      }
+      userData.coins -= price;
+      if (!userData.ownedFrames.includes(id)) userData.ownedFrames.push(id);
+      userData.equippedFrame = id;
+      saveUserData();
+      showToast(`フレーム「${name}」を購入し、装着しました！`);
+      renderShop();
+    }
+
+    function equipFrame(id, name) {
+      if (!userData.ownedFrames.includes(id)) return;
+      userData.equippedFrame = id;
+      saveUserData();
+      showToast(`フレーム「${name}」を装着しました`);
+      renderShop();
+    }
+
     // ユーティリティ
     function shuffleArray(arr) {
       const copy = [...arr];
@@ -1908,6 +2313,7 @@
     window.addEventListener("DOMContentLoaded", () => {
       loadUserData();
       syncDataRangeUi();
+      loadPartSelection();
       loadDictionaryFilter();
       checkAndFetchData();
       checkIncomingChallenge();
