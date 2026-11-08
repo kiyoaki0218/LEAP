@@ -2,7 +2,7 @@
   {
     "id": 1,
     "word": "agree",
-    "meaning": "賛成する",
+    "meaning": "賛成する、意見が一致する、(気候・食べ物が)合う",
     "part": 1
   },
   {
@@ -20,13 +20,13 @@
   {
     "id": 4,
     "word": "tip",
-    "meaning": "助言、ヒント",
+    "meaning": "助言・ヒント、チップ、先・先端",
     "part": 1
   },
   {
     "id": 5,
     "word": "discuss",
-    "meaning": "〜について話し合う、議論する",
+    "meaning": "〜について話し合う・議論する、〜を話題に出す",
     "part": 1
   },
   {
@@ -38,37 +38,37 @@
   {
     "id": 7,
     "word": "argue",
-    "meaning": "〜と主張する",
+    "meaning": "〜と主張する、言い争う",
     "part": 1
   },
   {
     "id": 8,
     "word": "claim",
-    "meaning": "〜と主張する",
+    "meaning": "〜と主張する、〜を要求する、主張・要求",
     "part": 1
   },
   {
     "id": 9,
     "word": "complain",
-    "meaning": "文句を言う、苦情を言う",
+    "meaning": "文句を言う・苦情を言う、(病気などを)訴える",
     "part": 1
   },
   {
     "id": 10,
     "word": "offer",
-    "meaning": "〜を申し出る",
+    "meaning": "〜を申し出る、申し出、値引き",
     "part": 1
   },
   {
     "id": 11,
     "word": "suggest",
-    "meaning": "〜を示唆する",
+    "meaning": "〜を示唆する、〜を提案する",
     "part": 1
   },
   {
     "id": 12,
     "word": "recommend",
-    "meaning": "〜を推薦する、勧める",
+    "meaning": "〜を推薦する・勧める",
     "part": 1
   },
   {
@@ -86,37 +86,37 @@
   {
     "id": 15,
     "word": "excuse",
-    "meaning": "言い訳",
+    "meaning": "言い訳、〜を許す、(BからAを)免除する",
     "part": 1
   },
   {
     "id": 16,
     "word": "celebrate",
-    "meaning": "〜を祝う",
+    "meaning": "〜を祝う、(儀式などを)挙行する",
     "part": 1
   },
   {
     "id": 17,
     "word": "congratulate",
-    "meaning": "〜を祝う、〜にお祝いを述べる",
+    "meaning": "〜を祝う・〜にお祝いを述べる",
     "part": 1
   },
   {
     "id": 18,
     "word": "admire",
-    "meaning": "〜を称賛する、〜に感心する",
+    "meaning": "〜を称賛する・〜に感心する",
     "part": 1
   },
   {
     "id": 19,
     "word": "impress",
-    "meaning": "〜に感銘を与える、〜を感心させる",
+    "meaning": "〜に感銘を与える・〜を感心させる",
     "part": 1
   },
   {
     "id": 20,
     "word": "award",
-    "meaning": "賞",
+    "meaning": "賞、〜を授与する",
     "part": 1
   },
   {
@@ -134,19 +134,19 @@
   {
     "id": 23,
     "word": "communicate",
-    "meaning": "意思の疎通をはかる",
+    "meaning": "意思の疎通をはかる、(考えや感情などを)伝える",
     "part": 1
   },
   {
     "id": 24,
     "word": "express",
-    "meaning": "〜を表現する",
+    "meaning": "〜を表現する、急行(列車・バス)",
     "part": 1
   },
   {
     "id": 25,
     "word": "promise",
-    "meaning": "約束",
+    "meaning": "約束、〜を約束する",
     "part": 1
   },
   {
@@ -164,13 +164,13 @@
   {
     "id": 28,
     "word": "research",
-    "meaning": "(学術)研究",
+    "meaning": "(学術)研究、〜を研究する",
     "part": 1
   },
   {
     "id": 29,
     "word": "material",
-    "meaning": "材料、生地",
+    "meaning": "材料・生地、資料・教材、物質的な、重大な",
     "part": 1
   },
   {
@@ -182,31 +182,31 @@
   {
     "id": 31,
     "word": "electric",
-    "meaning": "電気の、電動の",
+    "meaning": "電気の・電動の",
     "part": 1
   },
   {
     "id": 32,
     "word": "invent",
-    "meaning": "〜を発明する",
+    "meaning": "〜を発明する、(話などを)でっち上げる",
     "part": 1
   },
   {
     "id": 33,
     "word": "discover",
-    "meaning": "〜を発見する",
+    "meaning": "〜を発見する、(〜と)知る・気づく、(知るという意味で)出会う",
     "part": 1
   },
   {
     "id": 34,
     "word": "develop",
-    "meaning": "発達する",
+    "meaning": "発達する、〜を発達させる、〜を開発する、(考えなどを)発展させる、(病気に)かかる",
     "part": 1
   },
   {
     "id": 35,
     "word": "skill",
-    "meaning": "技術、力",
+    "meaning": "技術・力",
     "part": 1
   },
   {
@@ -230,7 +230,7 @@
   {
     "id": 39,
     "word": "practice",
-    "meaning": "練習",
+    "meaning": "練習、実践、習慣、〜を練習する、〜を実践する",
     "part": 1
   },
   {
@@ -242,133 +242,133 @@
   {
     "id": 41,
     "word": "manage",
-    "meaning": "何とかして〜する",
+    "meaning": "何とかして〜する、〜を経営する・管理する",
     "part": 1
   },
   {
     "id": 42,
     "word": "improve",
-    "meaning": "〜を改善する、磨く",
+    "meaning": "〜を改善する・磨く、よくなる",
     "part": 1
   },
   {
     "id": 43,
     "word": "produce",
-    "meaning": "〜を生産する、産出する",
+    "meaning": "〜を生産する・産出する、(見せるために)取り出す、農作物",
     "part": 1
   },
   {
     "id": 44,
     "word": "create",
-    "meaning": "〜を創造する",
+    "meaning": "〜を創造する、〜を引き起こす",
     "part": 1
   },
   {
     "id": 45,
     "word": "establish",
-    "meaning": "〜を確立する、定着させる",
+    "meaning": "〜を確立する・定着させる、〜を設立する",
     "part": 1
   },
   {
     "id": 46,
     "word": "form",
-    "meaning": "〜を形成する",
+    "meaning": "〜を形成する、形態、書式",
     "part": 1
   },
   {
     "id": 47,
     "word": "save",
-    "meaning": "手間を省く",
+    "meaning": "手間を省く、〜を貯金する、(命などを)救う、〜を除いて",
     "part": 1
   },
   {
     "id": 48,
     "word": "medicine",
-    "meaning": "薬",
+    "meaning": "薬、医学",
     "part": 1
   },
   {
     "id": 49,
     "word": "patient",
-    "meaning": "患者",
+    "meaning": "患者、忍耐強い",
     "part": 1
   },
   {
     "id": 50,
     "word": "condition",
-    "meaning": "状態、容態",
+    "meaning": "状態・容態、状況・条件",
     "part": 1
   },
   {
     "id": 51,
     "word": "medical",
-    "meaning": "医療の",
+    "meaning": "医療の、医学の",
     "part": 1
   },
   {
     "id": 52,
     "word": "stress",
-    "meaning": "ストレス",
+    "meaning": "ストレス、強調、〜を強調する",
     "part": 1
   },
   {
     "id": 53,
     "word": "suffer",
-    "meaning": "苦しむ",
+    "meaning": "苦しむ、(苦痛・損害を)経験する",
     "part": 1
   },
   {
     "id": 54,
     "word": "exercise",
-    "meaning": "運動",
+    "meaning": "運動、練習、運動する、〜を行使する",
     "part": 1
   },
   {
     "id": 55,
     "word": "breathe",
-    "meaning": "呼吸する、息をする",
+    "meaning": "呼吸する・息をする",
     "part": 1
   },
   {
     "id": 56,
     "word": "thirsty",
-    "meaning": "のどが渇いた",
+    "meaning": "のどが渇いた、切望して",
     "part": 1
   },
   {
     "id": 57,
     "word": "physical",
-    "meaning": "身体的な",
+    "meaning": "身体的な、物理的な、形ある",
     "part": 1
   },
   {
     "id": 58,
     "word": "fever",
-    "meaning": "熱",
+    "meaning": "熱、熱狂",
     "part": 1
   },
   {
     "id": 59,
     "word": "strength",
-    "meaning": "体力",
+    "meaning": "体力、力",
     "part": 1
   },
   {
     "id": 60,
     "word": "tear",
-    "meaning": "涙",
+    "meaning": "涙、〜を引き裂く",
     "part": 1
   },
   {
     "id": 61,
     "word": "taste",
-    "meaning": "〜の味がする",
+    "meaning": "〜の味がする、〜の味をみる、味、好み",
     "part": 1
   },
   {
     "id": 62,
     "word": "rule",
-    "meaning": "規則",
+    "meaning": "規則、〜を支配する",
     "part": 1
   },
   {
@@ -380,13 +380,13 @@
   {
     "id": 64,
     "word": "habit",
-    "meaning": "習慣、癖",
+    "meaning": "習慣・癖",
     "part": 1
   },
   {
     "id": 65,
     "word": "custom",
-    "meaning": "習慣",
+    "meaning": "習慣、税関・関税",
     "part": 1
   },
   {
@@ -398,13 +398,13 @@
   {
     "id": 67,
     "word": "society",
-    "meaning": "社会",
+    "meaning": "社会、協会",
     "part": 1
   },
   {
     "id": 68,
     "word": "law",
-    "meaning": "法律、国法",
+    "meaning": "法律・国法、法則",
     "part": 1
   },
   {
@@ -416,55 +416,55 @@
   {
     "id": 70,
     "word": "population",
-    "meaning": "人口、個体数",
+    "meaning": "人口・個体数、住民",
     "part": 1
   },
   {
     "id": 71,
     "word": "native",
-    "meaning": "母国の、その土地の",
+    "meaning": "母国の・その土地の、生まれの人",
     "part": 1
   },
   {
     "id": 72,
     "word": "abroad",
-    "meaning": "海外へ、海外で",
+    "meaning": "海外へ・海外で",
     "part": 1
   },
   {
     "id": 73,
     "word": "local",
-    "meaning": "その土地の、地元の",
+    "meaning": "その土地の・地元の、地方の、地元の自由人",
     "part": 1
   },
   {
     "id": 74,
     "word": "survey",
-    "meaning": "調査",
+    "meaning": "調査、〜を調査する",
     "part": 1
   },
   {
     "id": 75,
     "word": "value",
-    "meaning": "価値",
+    "meaning": "価値、価値観、お買い得品、〜を重んじる",
     "part": 1
   },
   {
     "id": 76,
     "word": "treasure",
-    "meaning": "財宝、宝",
+    "meaning": "財宝・宝、大事な物・人、(思い出など)を大切にする",
     "part": 1
   },
   {
     "id": 77,
     "word": "fashion",
-    "meaning": "流行",
+    "meaning": "流行、流儀・やり方、〜を作る",
     "part": 1
   },
   {
     "id": 78,
     "word": "public",
-    "meaning": "大衆",
+    "meaning": "大衆、公共の・公の",
     "part": 1
   },
   {
@@ -476,61 +476,61 @@
   {
     "id": 80,
     "word": "vote",
-    "meaning": "投票",
+    "meaning": "投票、投票する",
     "part": 1
   },
   {
     "id": 81,
     "word": "government",
-    "meaning": "政府",
+    "meaning": "政府、政治",
     "part": 1
   },
   {
     "id": 82,
     "word": "nation",
-    "meaning": "国家",
+    "meaning": "国家、国民",
     "part": 1
   },
   {
     "id": 83,
     "word": "capital",
-    "meaning": "首都",
+    "meaning": "首都、資本、重大な・死に値する",
     "part": 1
   },
   {
     "id": 84,
     "word": "state",
-    "meaning": "州",
+    "meaning": "州、状態、国家、〜を述べる",
     "part": 1
   },
   {
     "id": 85,
     "word": "political",
-    "meaning": "政治的な、政治の",
+    "meaning": "政治的な・政治の",
     "part": 1
   },
   {
     "id": 86,
     "word": "price",
-    "meaning": "価格",
+    "meaning": "価格、物価、代償",
     "part": 1
   },
   {
     "id": 87,
     "word": "sum",
-    "meaning": "金額",
+    "meaning": "金額、合計、計算、〜を要約する",
     "part": 1
   },
   {
     "id": 88,
     "word": "budget",
-    "meaning": "予算",
+    "meaning": "予算、安い",
     "part": 1
   },
   {
     "id": 89,
     "word": "fee",
-    "meaning": "料金",
+    "meaning": "料金、謝礼",
     "part": 1
   },
   {
@@ -542,37 +542,37 @@
   {
     "id": 91,
     "word": "bill",
-    "meaning": "勘定",
+    "meaning": "勘定、請求書、紙幣、法案",
     "part": 1
   },
   {
     "id": 92,
     "word": "trade",
-    "meaning": "貿易",
+    "meaning": "貿易、〜業、商売、〜を交換する",
     "part": 1
   },
   {
     "id": 93,
     "word": "wealth",
-    "meaning": "富、財産",
+    "meaning": "富・財産、豊富な〜",
     "part": 1
   },
   {
     "id": 94,
     "word": "economy",
-    "meaning": "経済",
+    "meaning": "経済、節約",
     "part": 1
   },
   {
     "id": 95,
     "word": "cost",
-    "meaning": "費用を要する、〜がかかる",
+    "meaning": "費用を要する・〜がかかる、〜を犠牲にする、費用・犠牲",
     "part": 1
   },
   {
     "id": 96,
     "word": "company",
-    "meaning": "会社",
+    "meaning": "会社、一緒にいること、仲間、来客",
     "part": 1
   },
   {
@@ -584,37 +584,37 @@
   {
     "id": 98,
     "word": "earn",
-    "meaning": "稼ぐ、もうける",
+    "meaning": "稼ぐ・もうける、(評判など)を得る",
     "part": 1
   },
   {
     "id": 99,
     "word": "hurt",
-    "meaning": "痛む",
+    "meaning": "痛む、〜を傷つける",
     "part": 1
   },
   {
     "id": 100,
     "word": "injure",
-    "meaning": "〜を痛める",
+    "meaning": "〜を痛める・けがさせる",
     "part": 1
   },
   {
     "id": 101,
     "word": "damage",
-    "meaning": "〜に損害を与える",
+    "meaning": "〜に損害を与える、損害・被害、賠償金",
     "part": 1
   },
   {
     "id": 102,
     "word": "destroy",
-    "meaning": "〜を破壊する",
+    "meaning": "〜を破壊する、〜を殺す・全滅させる",
     "part": 1
   },
   {
     "id": 103,
     "word": "ruin",
-    "meaning": "〜を台無しにする",
+    "meaning": "〜を台無しにする、〜を破滅させる、廃墟・荒廃",
     "part": 1
   },
   {
@@ -626,13 +626,13 @@
   {
     "id": 105,
     "word": "neighbor",
-    "meaning": "近所の人",
+    "meaning": "近所の人、隣の人",
     "part": 1
   },
   {
     "id": 106,
     "word": "audience",
-    "meaning": "聴衆、観客",
+    "meaning": "聴衆・観客",
     "part": 1
   },
   {
@@ -650,13 +650,13 @@
   {
     "id": 109,
     "word": "staff",
-    "meaning": "職員、従業員",
+    "meaning": "職員・従業員",
     "part": 1
   },
   {
     "id": 110,
     "word": "clerk",
-    "meaning": "店員",
+    "meaning": "店員、事務員",
     "part": 1
   },
   {
@@ -674,61 +674,61 @@
   {
     "id": 113,
     "word": "elderly",
-    "meaning": "年配の",
+    "meaning": "年配の、年配の人々",
     "part": 1
   },
   {
     "id": 114,
     "word": "female",
-    "meaning": "女性の",
+    "meaning": "女性の、雌の、女性・雌",
     "part": 1
   },
   {
     "id": 115,
     "word": "head",
-    "meaning": "向かう",
+    "meaning": "向かう、〜を率いる、頭・リーダー",
     "part": 1
   },
   {
     "id": 116,
     "word": "follow",
-    "meaning": "〜の後について行く、〜に続く",
+    "meaning": "〜の後について行く・〜に続く、(方針などに)従う",
     "part": 1
   },
   {
     "id": 117,
     "word": "wander",
-    "meaning": "歩き回る、さまよう",
+    "meaning": "歩き回る・さまよう",
     "part": 1
   },
   {
     "id": 118,
     "word": "travel",
-    "meaning": "旅行する、移動する",
+    "meaning": "旅行する・移動する、(光・音などが)進む",
     "part": 1
   },
   {
     "id": 119,
     "word": "pass",
-    "meaning": "〜を通り過ぎる",
+    "meaning": "〜を通り過ぎる、〜を抜く、(試験に)受かる、(AにBを)渡す、(時が)過ぎる、通行証",
     "part": 1
   },
   {
     "id": 120,
     "word": "likely",
-    "meaning": "〜しそうだ、可能性が高い",
+    "meaning": "〜しそうだ・可能性が高い、おそらく",
     "part": 1
   },
   {
     "id": 121,
     "word": "natural",
-    "meaning": "当然の",
+    "meaning": "当然の、自然の、生まれながらの",
     "part": 1
   },
   {
     "id": 122,
     "word": "certain",
-    "meaning": "確かな",
+    "meaning": "確かな、ある〜",
     "part": 1
   },
   {
@@ -740,7 +740,7 @@
   {
     "id": 124,
     "word": "face",
-    "meaning": "〜に直面する",
+    "meaning": "〜に直面する、〜向きである、顔・表面",
     "part": 1
   },
   {
@@ -758,43 +758,43 @@
   {
     "id": 127,
     "word": "trouble",
-    "meaning": "問題、ごたごた",
+    "meaning": "問題・ごたごた、〜を困らせる",
     "part": 1
   },
   {
     "id": 128,
     "word": "issue",
-    "meaning": "問題",
+    "meaning": "問題、(雑誌の)号、〜を発行する",
     "part": 1
   },
   {
     "id": 129,
     "word": "cheer",
-    "meaning": "〜に声援を送る",
+    "meaning": "〜に声援を送る、〜を励ます、声援、乾杯",
     "part": 1
   },
   {
     "id": 130,
     "word": "encourage",
-    "meaning": "促す、奨励する",
+    "meaning": "促す・奨励する、〜を励ます",
     "part": 1
   },
   {
     "id": 131,
     "word": "support",
-    "meaning": "〜を支持する",
+    "meaning": "〜を支持する、〜を養う、〜を立証する、支持・支援",
     "part": 1
   },
   {
     "id": 132,
     "word": "prevent",
-    "meaning": "〜を妨げる",
+    "meaning": "〜を妨げる、〜を予防する",
     "part": 1
   },
   {
     "id": 133,
     "word": "deny",
-    "meaning": "〜を否定する",
+    "meaning": "〜を否定する、〜を与えない",
     "part": 1
   },
   {
@@ -806,97 +806,97 @@
   {
     "id": 135,
     "word": "succeed",
-    "meaning": "成功する",
+    "meaning": "成功する、(家業などを)継ぐ",
     "part": 1
   },
   {
     "id": 136,
     "word": "miss",
-    "meaning": "〜を逃す",
+    "meaning": "〜を逃す、〜を休む、〜を恋しく思う",
     "part": 1
   },
   {
     "id": 137,
     "word": "fail",
-    "meaning": "失敗する",
+    "meaning": "失敗する、〜できない、(試験に)落ちる、(人の)役に立たない",
     "part": 1
   },
   {
     "id": 138,
     "word": "mistake",
-    "meaning": "間違い",
+    "meaning": "間違い、〜を間違える",
     "part": 1
   },
   {
     "id": 139,
     "word": "check",
-    "meaning": "〜を調べる",
+    "meaning": "〜を調べる、〜を阻止する、小切手、勘定書、検査・点検",
     "part": 1
   },
   {
     "id": 140,
     "word": "hide",
-    "meaning": "〜を隠す",
+    "meaning": "〜を隠す、隠れる",
     "part": 1
   },
   {
     "id": 141,
     "word": "draw",
-    "meaning": "描く",
+    "meaning": "描く、(注意などを)引く、〜を引っ張る",
     "part": 1
   },
   {
     "id": 142,
     "word": "join",
-    "meaning": "加わる",
+    "meaning": "加わる、〜をつなぐ、(食事などを)ともにする",
     "part": 1
   },
   {
     "id": 143,
     "word": "throw",
-    "meaning": "〜を投げる",
+    "meaning": "〜を投げる、〜を捨てる、(パーティなどを)催す",
     "part": 1
   },
   {
     "id": 144,
     "word": "operate",
-    "meaning": "操作する",
+    "meaning": "操作する、手術する、(機械などが)作動する・運営される",
     "part": 1
   },
   {
     "id": 145,
     "word": "repair",
-    "meaning": "〜を修理する",
+    "meaning": "〜を修理する、〜を修復する、修理・修復",
     "part": 1
   },
   {
     "id": 146,
     "word": "sew",
-    "meaning": "〜を縫う",
+    "meaning": "〜を縫う、(ボタンなどを)縫いつける",
     "part": 1
   },
   {
     "id": 147,
     "word": "raise",
-    "meaning": "〜を上げる",
+    "meaning": "〜を上げる、(子ども・作物を)育てる、(資金を)集める、(問題を)提起する、賃上げ・昇給",
     "part": 1
   },
   {
     "id": 148,
     "word": "serve",
-    "meaning": "出す",
+    "meaning": "出す、〜に役立つ、役立つ",
     "part": 1
   },
   {
     "id": 149,
     "word": "pour",
-    "meaning": "〜を注ぐ",
+    "meaning": "〜を注ぐ、降りそそぐ",
     "part": 1
   },
   {
     "id": 150,
     "word": "spill",
-    "meaning": "〜をこぼす",
+    "meaning": "〜をこぼす、流出",
     "part": 1
   },
   {
@@ -914,37 +914,37 @@
   {
     "id": 153,
     "word": "bear",
-    "meaning": "〜に耐える",
+    "meaning": "〜に耐える、〜を持つ・運ぶ、〜を産む",
     "part": 1
   },
   {
     "id": 154,
     "word": "explore",
-    "meaning": "〜を探検する",
+    "meaning": "〜を探検する・探索する、(問題などを)探る",
     "part": 1
   },
   {
     "id": 155,
     "word": "happen",
-    "meaning": "起こる",
+    "meaning": "起こる、たまたま〜する",
     "part": 1
   },
   {
     "id": 156,
     "word": "appear",
-    "meaning": "現れる",
+    "meaning": "現れる、〜のように思える",
     "part": 1
   },
   {
     "id": 157,
     "word": "remain",
-    "meaning": "〜のままでいる",
+    "meaning": "〜のままでいる、残る",
     "part": 1
   },
   {
     "id": 158,
     "word": "survive",
-    "meaning": "生き残る",
+    "meaning": "生き残る、〜から生き延びる",
     "part": 1
   },
   {
@@ -956,13 +956,13 @@
   {
     "id": 160,
     "word": "represent",
-    "meaning": "〜を代表する",
+    "meaning": "〜を代表する、〜を表す、〜を表現する",
     "part": 1
   },
   {
     "id": 161,
     "word": "base",
-    "meaning": "〜の基礎を置く",
+    "meaning": "〜の基礎を置く、基礎・基盤、基地",
     "part": 1
   },
   {
@@ -974,43 +974,43 @@
   {
     "id": 163,
     "word": "contain",
-    "meaning": "〜を含む",
+    "meaning": "〜を含む、〜を抑える",
     "part": 1
   },
   {
     "id": 164,
     "word": "own",
-    "meaning": "自分自身の",
+    "meaning": "自分自身の、自分自身のもの、〜を所有している",
     "part": 1
   },
   {
     "id": 165,
     "word": "share",
-    "meaning": "〜を共有する",
+    "meaning": "〜を共有する、(考えなどを)伝える、共有",
     "part": 1
   },
   {
     "id": 166,
     "word": "collect",
-    "meaning": "〜を集める",
+    "meaning": "〜を集める、〜を回収する",
     "part": 1
   },
   {
     "id": 167,
     "word": "gather",
-    "meaning": "〜を集める",
+    "meaning": "〜を集める、集まる",
     "part": 1
   },
   {
     "id": 168,
     "word": "history",
-    "meaning": "歴史",
+    "meaning": "歴史、履歴・病歴",
     "part": 1
   },
   {
     "id": 169,
     "word": "subject",
-    "meaning": "科目",
+    "meaning": "科目、話題、被験者、〜を受けやすい",
     "part": 1
   },
   {
@@ -1022,25 +1022,25 @@
   {
     "id": 171,
     "word": "knowledge",
-    "meaning": "知識、知っていること",
+    "meaning": "知識・知っていること",
     "part": 1
   },
   {
     "id": 172,
     "word": "uniform",
-    "meaning": "制服",
+    "meaning": "制服、同一の・一定の",
     "part": 1
   },
   {
     "id": 173,
     "word": "grade",
-    "meaning": "学年",
+    "meaning": "学年、等級、成績",
     "part": 1
   },
   {
     "id": 174,
     "word": "senior",
-    "meaning": "最上級生",
+    "meaning": "最上級生、高齢者、(地位が)上位の",
     "part": 1
   },
   {
@@ -1052,13 +1052,13 @@
   {
     "id": 176,
     "word": "decide",
-    "meaning": "決定する、決心する",
+    "meaning": "決定する・決心する、〜を決める",
     "part": 1
   },
   {
     "id": 177,
     "word": "judge",
-    "meaning": "〜を判断する",
+    "meaning": "〜を判断する、裁判官・審判",
     "part": 1
   },
   {
@@ -1070,13 +1070,13 @@
   {
     "id": 179,
     "word": "retire",
-    "meaning": "引退する、退職する",
+    "meaning": "引退する・退職する",
     "part": 1
   },
   {
     "id": 180,
     "word": "review",
-    "meaning": "再検討",
+    "meaning": "再検討、批評、復習",
     "part": 1
   },
   {
@@ -1094,13 +1094,13 @@
   {
     "id": 183,
     "word": "guess",
-    "meaning": "〜を推測する",
+    "meaning": "〜を推測する、推測",
     "part": 1
   },
   {
     "id": 184,
     "word": "expect",
-    "meaning": "〜を予期する",
+    "meaning": "〜を予期する、〜を期待する、身ごもっている",
     "part": 1
   },
   {
@@ -1112,25 +1112,25 @@
   {
     "id": 186,
     "word": "remember",
-    "meaning": "覚えている",
+    "meaning": "覚えている、(\\~することを)覚えている、よろしく伝える",
     "part": 1
   },
   {
     "id": 187,
     "word": "remind",
-    "meaning": "〜を思い出させる",
+    "meaning": "〜を思い出させる、(人に)念を押す",
     "part": 1
   },
   {
     "id": 188,
     "word": "realize",
-    "meaning": "〜を理解する",
+    "meaning": "〜を理解する、(夢などを)実現する",
     "part": 1
   },
   {
     "id": 189,
     "word": "appreciate",
-    "meaning": "〜を理解する",
+    "meaning": "〜を理解する、〜のよさがわかる、〜に感謝する",
     "part": 1
   },
   {
@@ -1142,19 +1142,19 @@
   {
     "id": 191,
     "word": "consider",
-    "meaning": "〜をよく考える、考慮する",
+    "meaning": "〜をよく考える・考慮する、(人の気持ちを)思いやる、〜とみなす",
     "part": 1
   },
   {
     "id": 192,
     "word": "mind",
-    "meaning": "気にする",
+    "meaning": "気にする、精神・頭脳、知性のある人",
     "part": 1
   },
   {
     "id": 193,
     "word": "wonder",
-    "meaning": "〜かなと思う",
+    "meaning": "〜かなと思う、〜に驚く",
     "part": 1
   },
   {
@@ -1166,91 +1166,91 @@
   {
     "id": 195,
     "word": "compare",
-    "meaning": "〜を比較する",
+    "meaning": "〜を比較する、〜を例える、匹敵する",
     "part": 1
   },
   {
     "id": 196,
     "word": "concentrate",
-    "meaning": "集中する",
+    "meaning": "集中する、〜を集中させる",
     "part": 1
   },
   {
     "id": 197,
     "word": "focus",
-    "meaning": "焦点を当てる、力を注ぐ",
+    "meaning": "焦点を当てる・力を注ぐ、焦点",
     "part": 1
   },
   {
     "id": 198,
     "word": "allow",
-    "meaning": "〜を許可する",
+    "meaning": "〜を許可する、〜を可能にする",
     "part": 1
   },
   {
     "id": 199,
     "word": "admit",
-    "meaning": "〜を認める",
+    "meaning": "〜を認める、〜の入場・入学を許可する",
     "part": 1
   },
   {
     "id": 200,
     "word": "ground",
-    "meaning": "地面",
+    "meaning": "地面、根拠",
     "part": 1
   },
   {
     "id": 201,
     "word": "pollution",
-    "meaning": "汚染、公害",
+    "meaning": "汚染・公害",
     "part": 1
   },
   {
     "id": 202,
     "word": "sight",
-    "meaning": "光景",
+    "meaning": "光景、視力",
     "part": 1
   },
   {
     "id": 203,
     "word": "view",
-    "meaning": "眺め、景色",
+    "meaning": "眺め・景色、見解・見方、〜とみなす",
     "part": 1
   },
   {
     "id": 204,
     "word": "landscape",
-    "meaning": "風景",
+    "meaning": "風景、(政治・社会の)情勢",
     "part": 1
   },
   {
     "id": 205,
     "word": "nature",
-    "meaning": "自然",
+    "meaning": "自然、性質",
     "part": 1
   },
   {
     "id": 206,
     "word": "seed",
-    "meaning": "種",
+    "meaning": "種、シード選手",
     "part": 1
   },
   {
     "id": 207,
     "word": "plant",
-    "meaning": "植物",
+    "meaning": "植物、工場・発電所、〜を植える",
     "part": 1
   },
   {
     "id": 208,
     "word": "bloom",
-    "meaning": "咲く",
+    "meaning": "咲く、開花",
     "part": 1
   },
   {
     "id": 209,
     "word": "harvest",
-    "meaning": "収穫",
+    "meaning": "収穫、〜を収穫する、(器官などを)摘出する",
     "part": 1
   },
   {
@@ -1268,31 +1268,31 @@
   {
     "id": 212,
     "word": "temperature",
-    "meaning": "温度、気温",
+    "meaning": "温度・気温、体温",
     "part": 1
   },
   {
     "id": 213,
     "word": "degree",
-    "meaning": "度",
+    "meaning": "度、程度、学位",
     "part": 1
   },
   {
     "id": 214,
     "word": "flood",
-    "meaning": "洪水",
+    "meaning": "洪水、〜を水浸しにする",
     "part": 1
   },
   {
     "id": 215,
     "word": "freeze",
-    "meaning": "凍る、凍りつく",
+    "meaning": "凍る・凍りつく、〜を凍らせる",
     "part": 1
   },
   {
     "id": 216,
     "word": "reflect",
-    "meaning": "〜を反射する",
+    "meaning": "〜を反射する、〜を反映する、熟考する",
     "part": 1
   },
   {
@@ -1304,7 +1304,7 @@
   {
     "id": 218,
     "word": "rude",
-    "meaning": "無礼な、不作法な",
+    "meaning": "無礼な・不作法な",
     "part": 1
   },
   {
@@ -1316,7 +1316,7 @@
   {
     "id": 220,
     "word": "lazy",
-    "meaning": "怠惰な、いい加減な",
+    "meaning": "怠惰な・いい加減な、くつろいだ",
     "part": 1
   },
   {
@@ -1334,7 +1334,7 @@
   {
     "id": 223,
     "word": "intelligent",
-    "meaning": "知的な、賢い",
+    "meaning": "知的な・賢い",
     "part": 1
   },
   {
@@ -1346,7 +1346,7 @@
   {
     "id": 225,
     "word": "nervous",
-    "meaning": "あがって、落ち着かない",
+    "meaning": "あがって・落ち着かない、神経質、(身体の)神経の",
     "part": 1
   },
   {
@@ -1358,37 +1358,37 @@
   {
     "id": 227,
     "word": "alone",
-    "meaning": "１人で",
+    "meaning": "１人で、〜だけ",
     "part": 1
   },
   {
     "id": 228,
     "word": "attitude",
-    "meaning": "態度、姿勢",
+    "meaning": "態度・姿勢",
     "part": 1
   },
   {
     "id": 229,
     "word": "character",
-    "meaning": "性格、特徴",
+    "meaning": "性格・特徴、登場人物、文字",
     "part": 1
   },
   {
     "id": 230,
     "word": "characteristic",
-    "meaning": "特徴",
+    "meaning": "特徴、特有の",
     "part": 1
   },
   {
     "id": 231,
     "word": "feature",
-    "meaning": "特徴",
+    "meaning": "特徴、特集記事、〜を特集する",
     "part": 1
   },
   {
     "id": 232,
     "word": "detail",
-    "meaning": "詳細",
+    "meaning": "詳細、細部",
     "part": 1
   },
   {
@@ -1400,31 +1400,31 @@
   {
     "id": 234,
     "word": "fault",
-    "meaning": "欠点、不具合",
+    "meaning": "欠点・不具合、責任、断層",
     "part": 1
   },
   {
     "id": 235,
     "word": "quality",
-    "meaning": "質",
+    "meaning": "質、資質",
     "part": 1
   },
   {
     "id": 236,
     "word": "correct",
-    "meaning": "正確な、正しい",
+    "meaning": "正確な・正しい、〜を訂正する",
     "part": 1
   },
   {
     "id": 237,
     "word": "ideal",
-    "meaning": "理想的な",
+    "meaning": "理想的な、理想",
     "part": 1
   },
   {
     "id": 238,
     "word": "fair",
-    "meaning": "公正な、公平な",
+    "meaning": "公正な・公平な、品評会・見本市",
     "part": 1
   },
   {
@@ -1442,31 +1442,31 @@
   {
     "id": 241,
     "word": "elementary",
-    "meaning": "初歩的な、基本の",
+    "meaning": "初歩的な・基本の",
     "part": 1
   },
   {
     "id": 242,
     "word": "major",
-    "meaning": "主要な",
+    "meaning": "主要な、専攻する、専攻",
     "part": 1
   },
   {
     "id": 243,
     "word": "matter",
-    "meaning": "重要である",
+    "meaning": "重要である、物質、事態・状況",
     "part": 1
   },
   {
     "id": 244,
     "word": "bright",
-    "meaning": "明るい",
+    "meaning": "明るい、賢い",
     "part": 1
   },
   {
     "id": 245,
     "word": "brilliant",
-    "meaning": "輝いている",
+    "meaning": "輝いている、すばらしい",
     "part": 1
   },
   {
@@ -1478,85 +1478,85 @@
   {
     "id": 247,
     "word": "comfortable",
-    "meaning": "快適な",
+    "meaning": "快適な、心地よい",
     "part": 1
   },
   {
     "id": 248,
     "word": "pleasant",
-    "meaning": "楽しい、心地よい",
+    "meaning": "楽しい・心地よい",
     "part": 1
   },
   {
     "id": 249,
     "word": "convenient",
-    "meaning": "都合がよい",
+    "meaning": "都合がよい、便利がよい",
     "part": 1
   },
   {
     "id": 250,
     "word": "false",
-    "meaning": "誤った",
+    "meaning": "誤った、偽の",
     "part": 1
   },
   {
     "id": 251,
     "word": "terrible",
-    "meaning": "ひどい",
+    "meaning": "ひどい、苦手で",
     "part": 1
   },
   {
     "id": 252,
     "word": "awful",
-    "meaning": "ひどい、不快な",
+    "meaning": "ひどい・不快な",
     "part": 1
   },
   {
     "id": 253,
     "word": "thin",
-    "meaning": "薄い",
+    "meaning": "薄い、やせた、(毛が)薄い",
     "part": 1
   },
   {
     "id": 254,
     "word": "tight",
-    "meaning": "引き締まった、きつい",
+    "meaning": "引き締まった・きつい、厳しい",
     "part": 1
   },
   {
     "id": 255,
     "word": "loose",
-    "meaning": "ゆるい",
+    "meaning": "ゆるい、解き放たれた",
     "part": 1
   },
   {
     "id": 256,
     "word": "raw",
-    "meaning": "生の、加工されていない",
+    "meaning": "生の・加工されていない",
     "part": 1
   },
   {
     "id": 257,
     "word": "empty",
-    "meaning": "空の、中身のない",
+    "meaning": "空の・中身のない、〜を空にする",
     "part": 1
   },
   {
     "id": 258,
     "word": "smooth",
-    "meaning": "滑らかな",
+    "meaning": "滑らかな、順調な、〜をのばす・なでつける",
     "part": 1
   },
   {
     "id": 259,
     "word": "direct",
-    "meaning": "直接的な",
+    "meaning": "直接的な、〜を指揮する、〜を向ける、道を教える",
     "part": 1
   },
   {
     "id": 260,
     "word": "familiar",
-    "meaning": "知られた",
+    "meaning": "知られた、(よく)知っている",
     "part": 1
   },
   {
@@ -1574,19 +1574,19 @@
   {
     "id": 263,
     "word": "vary",
-    "meaning": "さまざまだ、変わる",
+    "meaning": "さまざまだ・変わる",
     "part": 1
   },
   {
     "id": 264,
     "word": "specific",
-    "meaning": "特定の",
+    "meaning": "特定の、明確な・具体的な",
     "part": 1
   },
   {
     "id": 265,
     "word": "common",
-    "meaning": "普及した、普通の",
+    "meaning": "普及した・普通の、共通の",
     "part": 1
   },
   {
@@ -1598,169 +1598,169 @@
   {
     "id": 267,
     "word": "add",
-    "meaning": "〜を加える",
+    "meaning": "〜を加える、〜を増やす",
     "part": 1
   },
   {
     "id": 268,
     "word": "increase",
-    "meaning": "増える",
+    "meaning": "増える、〜を増やす、増加",
     "part": 1
   },
   {
     "id": 269,
     "word": "reduce",
-    "meaning": "〜を減らす",
+    "meaning": "〜を減らす、(AをBに)する",
     "part": 1
   },
   {
     "id": 270,
     "word": "divide",
-    "meaning": "〜を分割する",
+    "meaning": "〜を分割する、(数字を)割る",
     "part": 1
   },
   {
     "id": 271,
     "word": "count",
-    "meaning": "〜を数える",
+    "meaning": "〜を数える、数える、重要である、当てにする",
     "part": 1
   },
   {
     "id": 272,
     "word": "weigh",
-    "meaning": "〜の重さがある",
+    "meaning": "〜の重さがある、〜の重さを量る、(比較)検討する",
     "part": 1
   },
   {
     "id": 273,
     "word": "quarter",
-    "meaning": "４分の1",
+    "meaning": "４分の１・15分・25セント、地域",
     "part": 1
   },
   {
     "id": 274,
     "word": "lot",
-    "meaning": "多くの〜",
+    "meaning": "多くの〜、とても、状況・運命、土地",
     "part": 1
   },
   {
     "id": 275,
     "word": "pile",
-    "meaning": "積み重ね",
+    "meaning": "積み重ね・山、多量、〜を積み重ねる",
     "part": 1
   },
   {
     "id": 276,
     "word": "rate",
-    "meaning": "割合",
+    "meaning": "割合・速さ、料金、〜を評価する",
     "part": 1
   },
   {
     "id": 277,
     "word": "figure",
-    "meaning": "数字",
+    "meaning": "数字、人物、スタイル・体つき、図、目立つ",
     "part": 1
   },
   {
     "id": 278,
     "word": "lack",
-    "meaning": "不足",
+    "meaning": "不足、〜を欠いている",
     "part": 1
   },
   {
     "id": 279,
     "word": "extra",
-    "meaning": "余分な",
+    "meaning": "余分な・追加の・臨時の、余分なもの",
     "part": 1
   },
   {
     "id": 280,
     "word": "ready",
-    "meaning": "用意ができて",
+    "meaning": "用意ができて、進んで〜する",
     "part": 1
   },
   {
     "id": 281,
     "word": "prepare",
-    "meaning": "〜の準備をする",
+    "meaning": "〜の準備をする、準備をする",
     "part": 1
   },
   {
     "id": 282,
     "word": "adjust",
-    "meaning": "慣れる",
+    "meaning": "慣れる、〜を調整する",
     "part": 1
   },
   {
     "id": 283,
     "word": "apply",
-    "meaning": "当てはまる",
+    "meaning": "当てはまる、申し込む、〜を当てはめる・応用する、(薬などを)塗る",
     "part": 1
   },
   {
     "id": 284,
     "word": "suit",
-    "meaning": "適する",
+    "meaning": "適する・都合が良い、似合う、訴訟、スーツ",
     "part": 1
   },
   {
     "id": 285,
     "word": "case",
-    "meaning": "場合",
+    "meaning": "場合、事実、事件、症例、主張(する)",
     "part": 1
   },
   {
     "id": 286,
     "word": "scene",
-    "meaning": "場面",
+    "meaning": "場面、現場、〜界",
     "part": 1
   },
   {
     "id": 287,
     "word": "chance",
-    "meaning": "機会",
+    "meaning": "機会、可能性",
     "part": 1
   },
   {
     "id": 288,
     "word": "opportunity",
-    "meaning": "機会",
+    "meaning": "機会・好機",
     "part": 1
   },
   {
     "id": 289,
     "word": "experience",
-    "meaning": "経験",
+    "meaning": "経験、体験、〜を経験する",
     "part": 1
   },
   {
     "id": 290,
     "word": "time",
-    "meaning": "時間",
+    "meaning": "時間、回数、倍、情勢・時代",
     "part": 1
   },
   {
     "id": 291,
     "word": "spring",
-    "meaning": "泉",
+    "meaning": "泉・温泉、春、飛び出る",
     "part": 1
   },
   {
     "id": 292,
     "word": "minute",
-    "meaning": "分",
+    "meaning": "分、ちょっとの間、議事録、細かい",
     "part": 1
   },
   {
     "id": 293,
     "word": "age",
-    "meaning": "年齢",
+    "meaning": "年齢、時代、長い間、高齢化する",
     "part": 1
   },
   {
     "id": 294,
     "word": "generation",
-    "meaning": "世代",
+    "meaning": "世代、生み出すこと、発電",
     "part": 1
   },
   {
@@ -1778,19 +1778,19 @@
   {
     "id": 297,
     "word": "used",
-    "meaning": "以前は〜だった",
+    "meaning": "以前は〜だった、慣れている、中古の",
     "part": 1
   },
   {
     "id": 298,
     "word": "early",
-    "meaning": "早く",
+    "meaning": "早く・初期に、予定より早く、早い・初期の",
     "part": 1
   },
   {
     "id": 299,
     "word": "first",
-    "meaning": "第1の",
+    "meaning": "第１の、初めて、まず第１に、最初のうちは",
     "part": 1
   },
   {
@@ -1802,25 +1802,25 @@
   {
     "id": 301,
     "word": "modern",
-    "meaning": "現代の",
+    "meaning": "現代の、近代的な",
     "part": 1
   },
   {
     "id": 302,
     "word": "ancient",
-    "meaning": "古代の",
+    "meaning": "古代の、古びた",
     "part": 1
   },
   {
     "id": 303,
     "word": "spend",
-    "meaning": "費やす",
+    "meaning": "費やす、(お金を)使う",
     "part": 1
   },
   {
     "id": 304,
     "word": "delay",
-    "meaning": "〜を遅らせる",
+    "meaning": "〜を遅らせる、遅延・延期",
     "part": 1
   },
   {
@@ -1838,19 +1838,19 @@
   {
     "id": 307,
     "word": "rent",
-    "meaning": "〜を借りる",
+    "meaning": "〜を借りる、賃貸する、家賃・賃料",
     "part": 1
   },
   {
     "id": 308,
     "word": "provide",
-    "meaning": "供給する",
+    "meaning": "供給する・与える",
     "part": 1
   },
   {
     "id": 309,
     "word": "board",
-    "meaning": "板",
+    "meaning": "板、委員会、〜に乗る",
     "part": 1
   },
   {
@@ -1862,55 +1862,55 @@
   {
     "id": 311,
     "word": "item",
-    "meaning": "品物",
+    "meaning": "品物、点・個、(リストなどの)項目",
     "part": 1
   },
   {
     "id": 312,
     "word": "wheel",
-    "meaning": "車輪",
+    "meaning": "車輪、ハンドル、〜を動かす",
     "part": 1
   },
   {
     "id": 313,
     "word": "note",
-    "meaning": "メモ",
+    "meaning": "メモ、紙幣、〜を指摘する・注意を払う",
     "part": 1
   },
   {
     "id": 314,
     "word": "present",
-    "meaning": "プレゼント",
+    "meaning": "プレゼント、現在、現在の、出席して、〜を贈る・提示する",
     "part": 1
   },
   {
     "id": 315,
     "word": "bargain",
-    "meaning": "買い得品",
+    "meaning": "買い得品、交渉する",
     "part": 1
   },
   {
     "id": 316,
     "word": "stuff",
-    "meaning": "もの",
+    "meaning": "もの、〜を詰める",
     "part": 1
   },
   {
     "id": 317,
     "word": "string",
-    "meaning": "ひも",
+    "meaning": "ひも、一連の〜、弦",
     "part": 1
   },
   {
     "id": 318,
     "word": "leisure",
-    "meaning": "余暇",
+    "meaning": "余暇、余暇の",
     "part": 1
   },
   {
     "id": 319,
     "word": "diet",
-    "meaning": "食事",
+    "meaning": "食事、規定食、国会",
     "part": 1
   },
   {
@@ -1928,157 +1928,157 @@
   {
     "id": 322,
     "word": "traffic",
-    "meaning": "交通",
+    "meaning": "交通(量)",
     "part": 1
   },
   {
     "id": 323,
     "word": "sell",
-    "meaning": "〜を売る",
+    "meaning": "〜を売る、売れる",
     "part": 1
   },
   {
     "id": 324,
     "word": "pay",
-    "meaning": "支払う",
+    "meaning": "支払う、割に合う、給料",
     "part": 1
   },
   {
     "id": 325,
     "word": "wear",
-    "meaning": "〜を身につけている",
+    "meaning": "〜を身につけている、〜をすり減らす、すり減る",
     "part": 1
   },
   {
     "id": 326,
     "word": "clothes",
-    "meaning": "服",
+    "meaning": "服、衣服全般",
     "part": 1
   },
   {
     "id": 327,
     "word": "marry",
-    "meaning": "〜と結婚する",
+    "meaning": "〜と結婚する、結婚している",
     "part": 1
   },
   {
     "id": 328,
     "word": "greet",
-    "meaning": "〜に挨拶する",
+    "meaning": "〜に挨拶する・出迎える",
     "part": 1
   },
   {
     "id": 329,
     "word": "order",
-    "meaning": "〜を注文する",
+    "meaning": "〜を注文する、〜に命令する、注文、命令、順序、秩序",
     "part": 1
   },
   {
     "id": 330,
     "word": "room",
-    "meaning": "部屋",
+    "meaning": "部屋、余地・空間",
     "part": 1
   },
   {
     "id": 331,
     "word": "story",
-    "meaning": "階",
+    "meaning": "階、物語",
     "part": 1
   },
   {
     "id": 332,
     "word": "site",
-    "meaning": "用地",
+    "meaning": "用地、現場、跡",
     "part": 1
   },
   {
     "id": 333,
     "word": "yard",
-    "meaning": "庭",
+    "meaning": "庭、ヤード(=約0.9m)",
     "part": 1
   },
   {
     "id": 334,
     "word": "bottom",
-    "meaning": "底",
+    "meaning": "底、一番下・最下位、尻",
     "part": 1
   },
   {
     "id": 335,
     "word": "line",
-    "meaning": "列",
+    "meaning": "列、行、電話回線、セリフ、並ぶ",
     "part": 1
   },
   {
     "id": 336,
     "word": "row",
-    "meaning": "列",
+    "meaning": "列、(ボートを)こぐ",
     "part": 1
   },
   {
     "id": 337,
     "word": "background",
-    "meaning": "背景",
+    "meaning": "背景、経歴・生い立ち",
     "part": 1
   },
   {
     "id": 338,
     "word": "direction",
-    "meaning": "方向",
+    "meaning": "方向、道順、指示",
     "part": 1
   },
   {
     "id": 339,
     "word": "culture",
-    "meaning": "文化",
+    "meaning": "文化、培養・養殖、教養、〜を耕す",
     "part": 1
   },
   {
     "id": 340,
     "word": "art",
-    "meaning": "芸術",
+    "meaning": "芸術、技術、一般教養",
     "part": 1
   },
   {
     "id": 341,
     "word": "cartoon",
-    "meaning": "漫画",
+    "meaning": "漫画、アニメ作品",
     "part": 1
   },
   {
     "id": 342,
     "word": "novel",
-    "meaning": "小説",
+    "meaning": "小説、斬新な",
     "part": 1
   },
   {
     "id": 343,
     "word": "instrument",
-    "meaning": "器具",
+    "meaning": "器具、楽器",
     "part": 1
   },
   {
     "id": 344,
     "word": "tune",
-    "meaning": "曲",
+    "meaning": "曲、チャンネルを合わせる、〜の調子を合わせる",
     "part": 1
   },
   {
     "id": 345,
     "word": "sentence",
-    "meaning": "文",
+    "meaning": "文、判決、(AをBの刑に)処する",
     "part": 1
   },
   {
     "id": 346,
     "word": "article",
-    "meaning": "記事",
+    "meaning": "記事、品物、冠詞、条項",
     "part": 1
   },
   {
     "id": 347,
     "word": "passage",
-    "meaning": "一節",
+    "meaning": "一節、(時の)経過・移動",
     "part": 1
   },
   {
@@ -2096,49 +2096,49 @@
   {
     "id": 350,
     "word": "spell",
-    "meaning": "〜をつづる",
+    "meaning": "〜をつづる、呪文、(天候などの)一続きの期間",
     "part": 1
   },
   {
     "id": 351,
     "word": "pronounce",
-    "meaning": "発音する",
+    "meaning": "発音する、(判決などを)宣言する",
     "part": 1
   },
   {
     "id": 352,
     "word": "sign",
-    "meaning": "兆候",
+    "meaning": "兆候・印、標識・看板、〜に署名する",
     "part": 1
   },
   {
     "id": 353,
     "word": "mean",
-    "meaning": "〜を意味する",
+    "meaning": "〜を意味する、〜するつもりだ、意地悪い",
     "part": 1
   },
   {
     "id": 354,
     "word": "publish",
-    "meaning": "〜を出版する",
+    "meaning": "〜を出版する、(公式に)発表する",
     "part": 1
   },
   {
     "id": 355,
     "word": "display",
-    "meaning": "〜を展示する",
+    "meaning": "〜を展示する、(実力などを)発揮する、〜を見せる、展示・表現",
     "part": 1
   },
   {
     "id": 356,
     "word": "trust",
-    "meaning": "〜を信頼する",
+    "meaning": "〜を信頼する、信頼・信用",
     "part": 1
   },
   {
     "id": 357,
     "word": "depend",
-    "meaning": "次第である",
+    "meaning": "次第である、頼っている",
     "part": 1
   },
   {
@@ -2156,7 +2156,7 @@
   {
     "id": 360,
     "word": "beg",
-    "meaning": "〜を嘆願する",
+    "meaning": "〜を嘆願する、求む",
     "part": 1
   },
   {
@@ -2180,37 +2180,37 @@
   {
     "id": 364,
     "word": "worry",
-    "meaning": "心配する",
+    "meaning": "心配する、〜を心配させる、心配(事)",
     "part": 1
   },
   {
     "id": 365,
     "word": "anxious",
-    "meaning": "心配して",
+    "meaning": "心配して、切望して",
     "part": 1
   },
   {
     "id": 366,
     "word": "satisfy",
-    "meaning": "〜を満足させる",
+    "meaning": "〜を満足させる、(必要性・空腹などを)満たす",
     "part": 1
   },
   {
     "id": 367,
     "word": "annoy",
-    "meaning": "〜をいらだたせる",
+    "meaning": "〜をいらだたせる、むっとさせる",
     "part": 1
   },
   {
     "id": 368,
     "word": "bother",
-    "meaning": "〜に面倒をかける",
+    "meaning": "〜に面倒をかける、わざわざ〜する、面倒なもの",
     "part": 1
   },
   {
     "id": 369,
     "word": "disturb",
-    "meaning": "〜に迷惑をかける",
+    "meaning": "〜に迷惑をかける、(平和などを)乱す",
     "part": 1
   },
   {
@@ -2222,85 +2222,85 @@
   {
     "id": 371,
     "word": "regret",
-    "meaning": "〜を後悔する",
+    "meaning": "〜を後悔する、残念ながら〜しなければいけない、後悔",
     "part": 1
   },
   {
     "id": 372,
     "word": "favor",
-    "meaning": "親切な行為",
+    "meaning": "親切な行為、支持",
     "part": 1
   },
   {
     "id": 373,
     "word": "interest",
-    "meaning": "関心",
+    "meaning": "関心、(銀行などの)利子、利益",
     "part": 1
   },
   {
     "id": 374,
     "word": "pity",
-    "meaning": "残念なこと",
+    "meaning": "残念なこと、哀れみ",
     "part": 1
   },
   {
     "id": 375,
     "word": "due",
-    "meaning": "予定の",
+    "meaning": "予定の、(due to \\~)が原因で、締め切りの",
     "part": 1
   },
   {
     "id": 376,
     "word": "reason",
-    "meaning": "理由",
+    "meaning": "理由、理性、〜を推測する",
     "part": 1
   },
   {
     "id": 377,
     "word": "result",
-    "meaning": "結果",
+    "meaning": "結果、(as a result of \\~)の結果として",
     "part": 1
   },
   {
     "id": 378,
     "word": "effect",
-    "meaning": "効果",
+    "meaning": "効果、影響、結果",
     "part": 1
   },
   {
     "id": 379,
     "word": "influence",
-    "meaning": "影響",
+    "meaning": "影響(力)、〜に影響を与える",
     "part": 1
   },
   {
     "id": 380,
     "word": "end",
-    "meaning": "最後になる",
+    "meaning": "最後になる、(end up doing)結局〜することになる、目的",
     "part": 1
   },
   {
     "id": 381,
     "word": "cause",
-    "meaning": "〜を引き起こす",
+    "meaning": "〜を引き起こす、原因",
     "part": 1
   },
   {
     "id": 382,
     "word": "affect",
-    "meaning": "〜に影響を与える",
+    "meaning": "〜に影響を与える・作用する",
     "part": 1
   },
   {
     "id": 383,
     "word": "way",
-    "meaning": "方法",
+    "meaning": "方法、点、道、はるかに",
     "part": 1
   },
   {
     "id": 384,
     "word": "manner",
-    "meaning": "方法",
+    "meaning": "方法、流儀・態度、(-s)マナー",
     "part": 1
   },
   {
@@ -2312,19 +2312,19 @@
   {
     "id": 386,
     "word": "sake",
-    "meaning": "ため",
+    "meaning": "ため、日本酒",
     "part": 1
   },
   {
     "id": 387,
     "word": "right",
-    "meaning": "ちょうど",
+    "meaning": "ちょうど、正しい、右の、権利",
     "part": 1
   },
   {
     "id": 388,
     "word": "complete",
-    "meaning": "完全な",
+    "meaning": "完全な、〜を完成させる",
     "part": 1
   },
   {
@@ -2342,25 +2342,25 @@
   {
     "id": 391,
     "word": "partly",
-    "meaning": "ある程度",
+    "meaning": "ある程度・部分的に",
     "part": 1
   },
   {
     "id": 392,
     "word": "indeed",
-    "meaning": "本当に",
+    "meaning": "本当に、確かに",
     "part": 1
   },
   {
     "id": 393,
     "word": "even",
-    "meaning": "さえも",
+    "meaning": "さえも、さらに、ちょうど、同等で",
     "part": 1
   },
   {
     "id": 394,
     "word": "exactly",
-    "meaning": "正確に",
+    "meaning": "正確に、そのとおり",
     "part": 1
   },
   {
@@ -2390,7 +2390,7 @@
   {
     "id": 399,
     "word": "besides",
-    "meaning": "〜に加えて",
+    "meaning": "〜に加えて、おまけに",
     "part": 1
   },
   {
@@ -2398,5 +2398,3605 @@
     "word": "except",
     "meaning": "〜を除いて",
     "part": 1
+  },
+  {
+    "id": 401,
+    "word": "debate",
+    "meaning": "討論、〜を討論する",
+    "part": 2
+  },
+  {
+    "id": 402,
+    "word": "criticize",
+    "meaning": "〜を批判する",
+    "part": 2
+  },
+  {
+    "id": 403,
+    "word": "accuse",
+    "meaning": "〜を非難する、〜を告訴する",
+    "part": 2
+  },
+  {
+    "id": 404,
+    "word": "insist",
+    "meaning": "言い張る、強く主張する、〜と求める",
+    "part": 2
+  },
+  {
+    "id": 405,
+    "word": "object",
+    "meaning": "反対する、物、目的、対象",
+    "part": 2
+  },
+  {
+    "id": 406,
+    "word": "protest",
+    "meaning": "抗議する、抗議",
+    "part": 2
+  },
+  {
+    "id": 407,
+    "word": "controversial",
+    "meaning": "論争を招く、物議をかもす",
+    "part": 2
+  },
+  {
+    "id": 408,
+    "word": "bound",
+    "meaning": "きっと〜する、〜へ向かって",
+    "part": 2
+  },
+  {
+    "id": 409,
+    "word": "bet",
+    "meaning": "きっと〜だと思う、〜を賭ける",
+    "part": 2
+  },
+  {
+    "id": 410,
+    "word": "demand",
+    "meaning": "〜を強く要求する、要求、需要",
+    "part": 2
+  },
+  {
+    "id": 411,
+    "word": "desire",
+    "meaning": "願望、〜を強く望む",
+    "part": 2
+  },
+  {
+    "id": 412,
+    "word": "praise",
+    "meaning": "〜を褒める、称える、賞賛",
+    "part": 2
+  },
+  {
+    "id": 413,
+    "word": "honor",
+    "meaning": "名誉、栄誉、〜を敬う",
+    "part": 2
+  },
+  {
+    "id": 414,
+    "word": "chat",
+    "meaning": "おしゃべりする、おしゃべり",
+    "part": 2
+  },
+  {
+    "id": 415,
+    "word": "refer",
+    "meaning": "言及する、参照する、〜を示す",
+    "part": 2
+  },
+  {
+    "id": 416,
+    "word": "mention",
+    "meaning": "〜について述べる、言及する",
+    "part": 2
+  },
+  {
+    "id": 417,
+    "word": "convey",
+    "meaning": "〜を伝える、〜を運ぶ",
+    "part": 2
+  },
+  {
+    "id": 418,
+    "word": "demonstrate",
+    "meaning": "〜をはっきり示す、実証する",
+    "part": 2
+  },
+  {
+    "id": 419,
+    "word": "emphasize",
+    "meaning": "〜を強調する",
+    "part": 2
+  },
+  {
+    "id": 420,
+    "word": "exaggerate",
+    "meaning": "〜を誇張する、大げさに言う",
+    "part": 2
+  },
+  {
+    "id": 421,
+    "word": "reply",
+    "meaning": "返事をする、答える、返事、答え",
+    "part": 2
+  },
+  {
+    "id": 422,
+    "word": "respond",
+    "meaning": "返答する、対応する、反応する",
+    "part": 2
+  },
+  {
+    "id": 423,
+    "word": "whisper",
+    "meaning": "ささやく、ささやき",
+    "part": 2
+  },
+  {
+    "id": 424,
+    "word": "remark",
+    "meaning": "発言、〜と発言する",
+    "part": 2
+  },
+  {
+    "id": 425,
+    "word": "observe",
+    "meaning": "〜を観察する、〜と述べる、〜を遵守する、〜を祝う",
+    "part": 2
+  },
+  {
+    "id": 426,
+    "word": "theory",
+    "meaning": "理論、学説",
+    "part": 2
+  },
+  {
+    "id": 427,
+    "word": "analysis",
+    "meaning": "分析",
+    "part": 2
+  },
+  {
+    "id": 428,
+    "word": "phenomenon",
+    "meaning": "現象、特異なもの、天才",
+    "part": 2
+  },
+  {
+    "id": 429,
+    "word": "device",
+    "meaning": "装置",
+    "part": 2
+  },
+  {
+    "id": 430,
+    "word": "experiment",
+    "meaning": "実験、実験する",
+    "part": 2
+  },
+  {
+    "id": 431,
+    "word": "chemical",
+    "meaning": "化学物質、化学の",
+    "part": 2
+  },
+  {
+    "id": 432,
+    "word": "fuel",
+    "meaning": "燃料、〜を大きくする",
+    "part": 2
+  },
+  {
+    "id": 433,
+    "word": "nuclear",
+    "meaning": "原子力の、核の",
+    "part": 2
+  },
+  {
+    "id": 434,
+    "word": "statistics",
+    "meaning": "統計値、統計学",
+    "part": 2
+  },
+  {
+    "id": 435,
+    "word": "pursue",
+    "meaning": "〜を追求する、続ける、〜を追跡する",
+    "part": 2
+  },
+  {
+    "id": 436,
+    "word": "accomplish",
+    "meaning": "〜をやり遂げる",
+    "part": 2
+  },
+  {
+    "id": 437,
+    "word": "overcome",
+    "meaning": "〜を克服する",
+    "part": 2
+  },
+  {
+    "id": 438,
+    "word": "fulfill",
+    "meaning": "〜を果たす、〜を満たす",
+    "part": 2
+  },
+  {
+    "id": 439,
+    "word": "devote",
+    "meaning": "〜をささげる",
+    "part": 2
+  },
+  {
+    "id": 440,
+    "word": "strive",
+    "meaning": "努力する",
+    "part": 2
+  },
+  {
+    "id": 441,
+    "word": "aim",
+    "meaning": "狙う、〜向けだ、狙い、目的",
+    "part": 2
+  },
+  {
+    "id": 442,
+    "word": "challenge",
+    "meaning": "難問、課題、〜に異議を唱える",
+    "part": 2
+  },
+  {
+    "id": 443,
+    "word": "trial",
+    "meaning": "試み、裁判、試練",
+    "part": 2
+  },
+  {
+    "id": 444,
+    "word": "dizzy",
+    "meaning": "めまいがして",
+    "part": 2
+  },
+  {
+    "id": 445,
+    "word": "appetite",
+    "meaning": "食欲",
+    "part": 2
+  },
+  {
+    "id": 446,
+    "word": "starve",
+    "meaning": "餓死する、とてもお腹が空いている",
+    "part": 2
+  },
+  {
+    "id": 447,
+    "word": "mental",
+    "meaning": "精神の、知力の",
+    "part": 2
+  },
+  {
+    "id": 448,
+    "word": "rest",
+    "meaning": "休憩、残り、休む、〜次第だ、〜を休ませる",
+    "part": 2
+  },
+  {
+    "id": 449,
+    "word": "surgery",
+    "meaning": "手術、外科",
+    "part": 2
+  },
+  {
+    "id": 450,
+    "word": "disease",
+    "meaning": "病気",
+    "part": 2
+  },
+  {
+    "id": 451,
+    "word": "stomachache",
+    "meaning": "腹痛",
+    "part": 2
+  },
+  {
+    "id": 452,
+    "word": "symptom",
+    "meaning": "症状、兆候",
+    "part": 2
+  },
+  {
+    "id": 453,
+    "word": "cancer",
+    "meaning": "がん、かに座",
+    "part": 2
+  },
+  {
+    "id": 454,
+    "word": "ambulance",
+    "meaning": "救急車",
+    "part": 2
+  },
+  {
+    "id": 455,
+    "word": "recover",
+    "meaning": "回復する、〜を取り戻す",
+    "part": 2
+  },
+  {
+    "id": 456,
+    "word": "sore",
+    "meaning": "痛い、触れてほしくない、心が痛む",
+    "part": 2
+  },
+  {
+    "id": 457,
+    "word": "swell",
+    "meaning": "腫れる、膨らむ",
+    "part": 2
+  },
+  {
+    "id": 458,
+    "word": "cough",
+    "meaning": "咳をする、咳",
+    "part": 2
+  },
+  {
+    "id": 459,
+    "word": "bleed",
+    "meaning": "出血する",
+    "part": 2
+  },
+  {
+    "id": 460,
+    "word": "faint",
+    "meaning": "かすかな、気絶する、気絶",
+    "part": 2
+  },
+  {
+    "id": 461,
+    "word": "exhaust",
+    "meaning": "〜を疲れ果てさせる、〜を使い果たす、排気ガス",
+    "part": 2
+  },
+  {
+    "id": 462,
+    "word": "cure",
+    "meaning": "〜を治療する、治療法",
+    "part": 2
+  },
+  {
+    "id": 463,
+    "word": "disabled",
+    "meaning": "障がいのある、障がいのある人",
+    "part": 2
+  },
+  {
+    "id": 464,
+    "word": "stiff",
+    "meaning": "凝った、痛い、堅い",
+    "part": 2
+  },
+  {
+    "id": 465,
+    "word": "muscle",
+    "meaning": "筋肉",
+    "part": 2
+  },
+  {
+    "id": 466,
+    "word": "tongue",
+    "meaning": "舌、言語、言葉、話し方",
+    "part": 2
+  },
+  {
+    "id": 467,
+    "word": "sense",
+    "meaning": "感覚、分別、意味、〜を感じる",
+    "part": 2
+  },
+  {
+    "id": 468,
+    "word": "sweat",
+    "meaning": "汗、汗をかく",
+    "part": 2
+  },
+  {
+    "id": 469,
+    "word": "gender",
+    "meaning": "性、性別",
+    "part": 2
+  },
+  {
+    "id": 470,
+    "word": "nationality",
+    "meaning": "国籍",
+    "part": 2
+  },
+  {
+    "id": 471,
+    "word": "citizen",
+    "meaning": "市民、国民",
+    "part": 2
+  },
+  {
+    "id": 472,
+    "word": "civil",
+    "meaning": "市民の、国内の、礼儀正しい",
+    "part": 2
+  },
+  {
+    "id": 473,
+    "word": "racial",
+    "meaning": "人種の、民族の",
+    "part": 2
+  },
+  {
+    "id": 474,
+    "word": "rural",
+    "meaning": "田舎の",
+    "part": 2
+  },
+  {
+    "id": 475,
+    "word": "domestic",
+    "meaning": "国内の、家庭内の",
+    "part": 2
+  },
+  {
+    "id": 476,
+    "word": "global",
+    "meaning": "全世界的な",
+    "part": 2
+  },
+  {
+    "id": 477,
+    "word": "suburb",
+    "meaning": "郊外",
+    "part": 2
+  },
+  {
+    "id": 478,
+    "word": "border",
+    "meaning": "国境、境界、〜を縁取る",
+    "part": 2
+  },
+  {
+    "id": 479,
+    "word": "burden",
+    "meaning": "重荷、負担",
+    "part": 2
+  },
+  {
+    "id": 480,
+    "word": "impact",
+    "meaning": "影響、衝撃、影響を及ぼす",
+    "part": 2
+  },
+  {
+    "id": 481,
+    "word": "status",
+    "meaning": "地位、状況",
+    "part": 2
+  },
+  {
+    "id": 482,
+    "word": "equal",
+    "meaning": "等しい、平等な、〜に等しい",
+    "part": 2
+  },
+  {
+    "id": 483,
+    "word": "relationship",
+    "meaning": "関係、親密な関係",
+    "part": 2
+  },
+  {
+    "id": 484,
+    "word": "reputation",
+    "meaning": "評判",
+    "part": 2
+  },
+  {
+    "id": 485,
+    "word": "trend",
+    "meaning": "風潮、傾向、流行",
+    "part": 2
+  },
+  {
+    "id": 486,
+    "word": "service",
+    "meaning": "事業、制度、便、サービス、接客",
+    "part": 2
+  },
+  {
+    "id": 487,
+    "word": "religion",
+    "meaning": "宗教",
+    "part": 2
+  },
+  {
+    "id": 488,
+    "word": "moral",
+    "meaning": "道徳的な、教訓、道徳",
+    "part": 2
+  },
+  {
+    "id": 489,
+    "word": "standard",
+    "meaning": "基準、水準、標準の",
+    "part": 2
+  },
+  {
+    "id": 490,
+    "word": "prosperity",
+    "meaning": "繁栄",
+    "part": 2
+  },
+  {
+    "id": 491,
+    "word": "crisis",
+    "meaning": "危機",
+    "part": 2
+  },
+  {
+    "id": 492,
+    "word": "prejudice",
+    "meaning": "偏見、先入観、〜に偏見をもたせる",
+    "part": 2
+  },
+  {
+    "id": 493,
+    "word": "discrimination",
+    "meaning": "差別、識別",
+    "part": 2
+  },
+  {
+    "id": 494,
+    "word": "charity",
+    "meaning": "慈善、慈善団体、慈善のための",
+    "part": 2
+  },
+  {
+    "id": 495,
+    "word": "benefit",
+    "meaning": "恩恵、手当、恩恵を得る、〜に恩恵を与える",
+    "part": 2
+  },
+  {
+    "id": 496,
+    "word": "welfare",
+    "meaning": "福祉、幸福、生活保護",
+    "part": 2
+  },
+  {
+    "id": 497,
+    "word": "community",
+    "meaning": "社会、共同体",
+    "part": 2
+  },
+  {
+    "id": 498,
+    "word": "individual",
+    "meaning": "個人、個体、個人の、個々の",
+    "part": 2
+  },
+  {
+    "id": 499,
+    "word": "official",
+    "meaning": "役人、役員、公式の",
+    "part": 2
+  },
+  {
+    "id": 500,
+    "word": "immigrant",
+    "meaning": "移民",
+    "part": 2
+  },
+  {
+    "id": 501,
+    "word": "volunteer",
+    "meaning": "ボランティア、〜することを申し出る",
+    "part": 2
+  },
+  {
+    "id": 502,
+    "word": "interact",
+    "meaning": "交流する、相互作用する",
+    "part": 2
+  },
+  {
+    "id": 503,
+    "word": "contribute",
+    "meaning": "貢献する、一因となる、〜を寄付する、提供する",
+    "part": 2
+  },
+  {
+    "id": 504,
+    "word": "abolish",
+    "meaning": "〜を廃止する",
+    "part": 2
+  },
+  {
+    "id": 505,
+    "word": "impose",
+    "meaning": "〜を課す、押しつける",
+    "part": 2
+  },
+  {
+    "id": 506,
+    "word": "access",
+    "meaning": "利用する権利、接近方法",
+    "part": 2
+  },
+  {
+    "id": 507,
+    "word": "duty",
+    "meaning": "義務、関税",
+    "part": 2
+  },
+  {
+    "id": 508,
+    "word": "responsible",
+    "meaning": "責任がある、原因となっている",
+    "part": 2
+  },
+  {
+    "id": 509,
+    "word": "policy",
+    "meaning": "政策、方針、保険契約",
+    "part": 2
+  },
+  {
+    "id": 510,
+    "word": "elect",
+    "meaning": "〜を選ぶ",
+    "part": 2
+  },
+  {
+    "id": 511,
+    "word": "industry",
+    "meaning": "工業、産業、業界、勤勉",
+    "part": 2
+  },
+  {
+    "id": 512,
+    "word": "income",
+    "meaning": "収入",
+    "part": 2
+  },
+  {
+    "id": 513,
+    "word": "profit",
+    "meaning": "利益、利潤",
+    "part": 2
+  },
+  {
+    "id": 514,
+    "word": "tax",
+    "meaning": "税金",
+    "part": 2
+  },
+  {
+    "id": 515,
+    "word": "expense",
+    "meaning": "費用、経費、〜を犠牲にして",
+    "part": 2
+  },
+  {
+    "id": 516,
+    "word": "debt",
+    "meaning": "借金",
+    "part": 2
+  },
+  {
+    "id": 517,
+    "word": "deposit",
+    "meaning": "預金、頭金、保証金、堆積物、〜を預ける",
+    "part": 2
+  },
+  {
+    "id": 518,
+    "word": "charge",
+    "meaning": "料金、責任、管理、非難、告訴、〜を請求する、〜を告訴する、〜を充電する",
+    "part": 2
+  },
+  {
+    "id": 519,
+    "word": "wage",
+    "meaning": "賃金、〜を行う",
+    "part": 2
+  },
+  {
+    "id": 520,
+    "word": "recession",
+    "meaning": "不況、不景気",
+    "part": 2
+  },
+  {
+    "id": 521,
+    "word": "consume",
+    "meaning": "〜を消費する",
+    "part": 2
+  },
+  {
+    "id": 522,
+    "word": "waste",
+    "meaning": "〜を浪費する、浪費、無駄、廃棄物",
+    "part": 2
+  },
+  {
+    "id": 523,
+    "word": "invest",
+    "meaning": "〜を投資する、〜を与える",
+    "part": 2
+  },
+  {
+    "id": 524,
+    "word": "import",
+    "meaning": "〜を輸入する、輸入、輸入品",
+    "part": 2
+  },
+  {
+    "id": 525,
+    "word": "financial",
+    "meaning": "財政的な、金銭的な",
+    "part": 2
+  },
+  {
+    "id": 526,
+    "word": "hire",
+    "meaning": "〜を雇う、〜を借りる",
+    "part": 2
+  },
+  {
+    "id": 527,
+    "word": "employ",
+    "meaning": "〜を雇う、〜を用いる",
+    "part": 2
+  },
+  {
+    "id": 528,
+    "word": "resign",
+    "meaning": "辞職する、〜を辞める",
+    "part": 2
+  },
+  {
+    "id": 529,
+    "word": "qualify",
+    "meaning": "資格がある、資格を得る、〜に資格を与える",
+    "part": 2
+  },
+  {
+    "id": 530,
+    "word": "assign",
+    "meaning": "〜を割り当てる、〜を配属する",
+    "part": 2
+  },
+  {
+    "id": 531,
+    "word": "occupation",
+    "meaning": "職業、占有、占領",
+    "part": 2
+  },
+  {
+    "id": 532,
+    "word": "career",
+    "meaning": "職業、経歴",
+    "part": 2
+  },
+  {
+    "id": 533,
+    "word": "profession",
+    "meaning": "職業、同業者集団",
+    "part": 2
+  },
+  {
+    "id": 534,
+    "word": "unemployment",
+    "meaning": "失業、失業率、失業者数",
+    "part": 2
+  },
+  {
+    "id": 535,
+    "word": "document",
+    "meaning": "書類、資料、〜を記録する",
+    "part": 2
+  },
+  {
+    "id": 536,
+    "word": "department",
+    "meaning": "部門、課、学科、省",
+    "part": 2
+  },
+  {
+    "id": 537,
+    "word": "branch",
+    "meaning": "支店、支局、部門、枝",
+    "part": 2
+  },
+  {
+    "id": 538,
+    "word": "retail",
+    "meaning": "小売り、小売りされている",
+    "part": 2
+  },
+  {
+    "id": 539,
+    "word": "colleague",
+    "meaning": "同僚",
+    "part": 2
+  },
+  {
+    "id": 540,
+    "word": "system",
+    "meaning": "制度、組織、体系",
+    "part": 2
+  },
+  {
+    "id": 541,
+    "word": "structure",
+    "meaning": "構造",
+    "part": 2
+  },
+  {
+    "id": 542,
+    "word": "architecture",
+    "meaning": "建築、建築様式",
+    "part": 2
+  },
+  {
+    "id": 543,
+    "word": "construction",
+    "meaning": "建設",
+    "part": 2
+  },
+  {
+    "id": 544,
+    "word": "function",
+    "meaning": "機能、機能する",
+    "part": 2
+  },
+  {
+    "id": 545,
+    "word": "surface",
+    "meaning": "表面、表面化する",
+    "part": 2
+  },
+  {
+    "id": 546,
+    "word": "aspect",
+    "meaning": "側面",
+    "part": 2
+  },
+  {
+    "id": 547,
+    "word": "edge",
+    "meaning": "端、刃、優位",
+    "part": 2
+  },
+  {
+    "id": 548,
+    "word": "makeup",
+    "meaning": "構成、構造、資質、化粧、追試験",
+    "part": 2
+  },
+  {
+    "id": 549,
+    "word": "consist",
+    "meaning": "〜で構成されている、〜にある",
+    "part": 2
+  },
+  {
+    "id": 550,
+    "word": "compose",
+    "meaning": "〜を構成する、〜を作曲する、〜を落ち着かせる",
+    "part": 2
+  },
+  {
+    "id": 551,
+    "word": "attach",
+    "meaning": "〜をくっつける、添付する、〜に愛着を持たせる",
+    "part": 2
+  },
+  {
+    "id": 552,
+    "word": "connect",
+    "meaning": "〜をつなげる、〜に関連づける、つながる",
+    "part": 2
+  },
+  {
+    "id": 553,
+    "word": "relate",
+    "meaning": "〜に関連づける、〜を話す、理解を示す",
+    "part": 2
+  },
+  {
+    "id": 554,
+    "word": "associate",
+    "meaning": "〜に関連づける、付き合う、同僚、共同経営者",
+    "part": 2
+  },
+  {
+    "id": 555,
+    "word": "stick",
+    "meaning": "〜を貼り付ける、出す、固執する",
+    "part": 2
+  },
+  {
+    "id": 556,
+    "word": "thief",
+    "meaning": "泥棒",
+    "part": 2
+  },
+  {
+    "id": 557,
+    "word": "crime",
+    "meaning": "犯罪",
+    "part": 2
+  },
+  {
+    "id": 558,
+    "word": "motive",
+    "meaning": "動機",
+    "part": 2
+  },
+  {
+    "id": 559,
+    "word": "punish",
+    "meaning": "〜を罰する",
+    "part": 2
+  },
+  {
+    "id": 560,
+    "word": "violate",
+    "meaning": "〜に違反する、〜を侵害する",
+    "part": 2
+  },
+  {
+    "id": 561,
+    "word": "legal",
+    "meaning": "合法の、法律の、法的な",
+    "part": 2
+  },
+  {
+    "id": 562,
+    "word": "enemy",
+    "meaning": "敵、敵の",
+    "part": 2
+  },
+  {
+    "id": 563,
+    "word": "conflict",
+    "meaning": "対立、紛争、葛藤、〜と矛盾する",
+    "part": 2
+  },
+  {
+    "id": 564,
+    "word": "compete",
+    "meaning": "競争する、参加する",
+    "part": 2
+  },
+  {
+    "id": 565,
+    "word": "defeat",
+    "meaning": "〜を打ち負かす、敗北",
+    "part": 2
+  },
+  {
+    "id": 566,
+    "word": "victim",
+    "meaning": "犠牲者",
+    "part": 2
+  },
+  {
+    "id": 567,
+    "word": "obstacle",
+    "meaning": "障害",
+    "part": 2
+  },
+  {
+    "id": 568,
+    "word": "harm",
+    "meaning": "害、〜に害を与える",
+    "part": 2
+  },
+  {
+    "id": 569,
+    "word": "invade",
+    "meaning": "〜を侵害する、〜に侵入する",
+    "part": 2
+  },
+  {
+    "id": 570,
+    "word": "endanger",
+    "meaning": "〜を危険にさらす",
+    "part": 2
+  },
+  {
+    "id": 571,
+    "word": "interrupt",
+    "meaning": "〜を中断する、〜を遮る、人の話を遮る",
+    "part": 2
+  },
+  {
+    "id": 572,
+    "word": "spoil",
+    "meaning": "〜を台無しにする、〜を甘やかす",
+    "part": 2
+  },
+  {
+    "id": 573,
+    "word": "spectator",
+    "meaning": "観客",
+    "part": 2
+  },
+  {
+    "id": 574,
+    "word": "relative",
+    "meaning": "親戚、相対的な",
+    "part": 2
+  },
+  {
+    "id": 575,
+    "word": "departure",
+    "meaning": "出発、逸脱",
+    "part": 2
+  },
+  {
+    "id": 576,
+    "word": "destination",
+    "meaning": "目的地、観光地、旅行先",
+    "part": 2
+  },
+  {
+    "id": 577,
+    "word": "transportation",
+    "meaning": "交通機関",
+    "part": 2
+  },
+  {
+    "id": 578,
+    "word": "vehicle",
+    "meaning": "車両、伝達手段",
+    "part": 2
+  },
+  {
+    "id": 579,
+    "word": "baggage",
+    "meaning": "手荷物",
+    "part": 2
+  },
+  {
+    "id": 580,
+    "word": "via",
+    "meaning": "〜経由で、〜によって",
+    "part": 2
+  },
+  {
+    "id": 581,
+    "word": "lead",
+    "meaning": "〜に至る、〜させる、〜な生活を送る、鉛",
+    "part": 2
+  },
+  {
+    "id": 582,
+    "word": "rise",
+    "meaning": "上がる、昇る、上昇",
+    "part": 2
+  },
+  {
+    "id": 583,
+    "word": "flow",
+    "meaning": "流れる、流れ",
+    "part": 2
+  },
+  {
+    "id": 584,
+    "word": "burst",
+    "meaning": "破裂する、爆発する、突然〜し始める",
+    "part": 2
+  },
+  {
+    "id": 585,
+    "word": "melt",
+    "meaning": "溶ける、〜を溶かす",
+    "part": 2
+  },
+  {
+    "id": 586,
+    "word": "commute",
+    "meaning": "通勤する、通学する、通勤",
+    "part": 2
+  },
+  {
+    "id": 587,
+    "word": "accompany",
+    "meaning": "〜と一緒に行く、〜に伴う",
+    "part": 2
+  },
+  {
+    "id": 588,
+    "word": "emit",
+    "meaning": "〜を排出する",
+    "part": 2
+  },
+  {
+    "id": 589,
+    "word": "progress",
+    "meaning": "進歩、前進、進歩する、進む",
+    "part": 2
+  },
+  {
+    "id": 590,
+    "word": "advance",
+    "meaning": "進歩、前進、進歩する、事前の",
+    "part": 2
+  },
+  {
+    "id": 591,
+    "word": "deal",
+    "meaning": "〜を扱う、取引",
+    "part": 2
+  },
+  {
+    "id": 592,
+    "word": "handle",
+    "meaning": "〜を扱う、触れる、取っ手",
+    "part": 2
+  },
+  {
+    "id": 593,
+    "word": "treat",
+    "meaning": "〜を扱う、〜を治療する、〜におごる、楽しみ",
+    "part": 2
+  },
+  {
+    "id": 594,
+    "word": "clue",
+    "meaning": "手がかり",
+    "part": 2
+  },
+  {
+    "id": 595,
+    "word": "restrict",
+    "meaning": "〜を制限する",
+    "part": 2
+  },
+  {
+    "id": 596,
+    "word": "limit",
+    "meaning": "〜を制限する、制限",
+    "part": 2
+  },
+  {
+    "id": 597,
+    "word": "forbid",
+    "meaning": "〜を禁じる",
+    "part": 2
+  },
+  {
+    "id": 598,
+    "word": "ban",
+    "meaning": "禁止、〜を禁止する",
+    "part": 2
+  },
+  {
+    "id": 599,
+    "word": "refuse",
+    "meaning": "〜するのを拒む、〜を断る",
+    "part": 2
+  },
+  {
+    "id": 600,
+    "word": "reject",
+    "meaning": "〜を拒絶する、〜を除け者にする",
+    "part": 2
+  },
+  {
+    "id": 601,
+    "word": "persuade",
+    "meaning": "〜を説得して〜させる",
+    "part": 2
+  },
+  {
+    "id": 602,
+    "word": "convince",
+    "meaning": "〜に確信させる、〜を説得して〜させる",
+    "part": 2
+  },
+  {
+    "id": 603,
+    "word": "inspire",
+    "meaning": "〜を奮起させる、〜にヒントを与える",
+    "part": 2
+  },
+  {
+    "id": 604,
+    "word": "discourage",
+    "meaning": "〜のやる気をなくさせる、落胆させる",
+    "part": 2
+  },
+  {
+    "id": 605,
+    "word": "promote",
+    "meaning": "〜を促進する、出世する、昇進する",
+    "part": 2
+  },
+  {
+    "id": 606,
+    "word": "boost",
+    "meaning": "〜を促進させる、増大させる",
+    "part": 2
+  },
+  {
+    "id": 607,
+    "word": "expand",
+    "meaning": "拡大する、膨張する、〜を拡大する",
+    "part": 2
+  },
+  {
+    "id": 608,
+    "word": "extend",
+    "meaning": "〜を延長する、広げる、伸びる",
+    "part": 2
+  },
+  {
+    "id": 609,
+    "word": "broaden",
+    "meaning": "〜を広げる、広がる",
+    "part": 2
+  },
+  {
+    "id": 610,
+    "word": "spread",
+    "meaning": "〜を広げる、広がる、広がり",
+    "part": 2
+  },
+  {
+    "id": 611,
+    "word": "tie",
+    "meaning": "〜を縛る、〜を結ぶ、ネクタイ、きずな",
+    "part": 2
+  },
+  {
+    "id": 612,
+    "word": "fasten",
+    "meaning": "〜を固定する、〜を留める",
+    "part": 2
+  },
+  {
+    "id": 613,
+    "word": "fix",
+    "meaning": "〜を固定する、〜を修理する、食事を作る",
+    "part": 2
+  },
+  {
+    "id": 614,
+    "word": "install",
+    "meaning": "〜を設置する、〜をインストールする",
+    "part": 2
+  },
+  {
+    "id": 615,
+    "word": "resist",
+    "meaning": "〜を我慢する、〜に抵抗する",
+    "part": 2
+  },
+  {
+    "id": 616,
+    "word": "obey",
+    "meaning": "〜に従う",
+    "part": 2
+  },
+  {
+    "id": 617,
+    "word": "engage",
+    "meaning": "従事する、関与する、〜を引く",
+    "part": 2
+  },
+  {
+    "id": 618,
+    "word": "bump",
+    "meaning": "〜にぶつかる、〜に偶然出会う",
+    "part": 2
+  },
+  {
+    "id": 619,
+    "word": "bend",
+    "meaning": "身をかがめる、〜を曲げる、カーブ",
+    "part": 2
+  },
+  {
+    "id": 620,
+    "word": "hug",
+    "meaning": "〜を抱きしめる、抱擁",
+    "part": 2
+  },
+  {
+    "id": 621,
+    "word": "stare",
+    "meaning": "じっと見つめる、凝視",
+    "part": 2
+  },
+  {
+    "id": 622,
+    "word": "gaze",
+    "meaning": "見つめる、視線、凝視",
+    "part": 2
+  },
+  {
+    "id": 623,
+    "word": "glance",
+    "meaning": "ちらりと見る、ちらりと見ること",
+    "part": 2
+  },
+  {
+    "id": 624,
+    "word": "glimpse",
+    "meaning": "〜がちらりと見える、ちらりと見えること",
+    "part": 2
+  },
+  {
+    "id": 625,
+    "word": "stretch",
+    "meaning": "〜を伸ばす、広げる、伸びる、広がり",
+    "part": 2
+  },
+  {
+    "id": 626,
+    "word": "stumble",
+    "meaning": "つまずく、〜に偶然出会う",
+    "part": 2
+  },
+  {
+    "id": 627,
+    "word": "press",
+    "meaning": "〜を押す、〜を押しつける、報道機関、出版",
+    "part": 2
+  },
+  {
+    "id": 628,
+    "word": "drag",
+    "meaning": "〜を引きずる",
+    "part": 2
+  },
+  {
+    "id": 629,
+    "word": "lean",
+    "meaning": "寄りかかる、身を乗り出す、痩せている",
+    "part": 2
+  },
+  {
+    "id": 630,
+    "word": "scratch",
+    "meaning": "〜をひっかく、かく、ひっかき傷",
+    "part": 2
+  },
+  {
+    "id": 631,
+    "word": "bow",
+    "meaning": "おじぎする、おじぎ",
+    "part": 2
+  },
+  {
+    "id": 632,
+    "word": "nod",
+    "meaning": "うなずく、うたた寝する、うなずき、会釈",
+    "part": 2
+  },
+  {
+    "id": 633,
+    "word": "sigh",
+    "meaning": "ため息をつく、ため息",
+    "part": 2
+  },
+  {
+    "id": 634,
+    "word": "yawn",
+    "meaning": "あくびをする、あくび",
+    "part": 2
+  },
+  {
+    "id": 635,
+    "word": "sneeze",
+    "meaning": "くしゃみをする",
+    "part": 2
+  },
+  {
+    "id": 636,
+    "word": "bury",
+    "meaning": "〜を埋める、〜を埋葬する",
+    "part": 2
+  },
+  {
+    "id": 637,
+    "word": "perform",
+    "meaning": "〜を遂行する、〜を演じる、演奏する、やる",
+    "part": 2
+  },
+  {
+    "id": 638,
+    "word": "adopt",
+    "meaning": "〜を採用する、〜を養子にする、引き取る",
+    "part": 2
+  },
+  {
+    "id": 639,
+    "word": "escape",
+    "meaning": "逃れる、〜を避ける、逃亡",
+    "part": 2
+  },
+  {
+    "id": 640,
+    "word": "scatter",
+    "meaning": "〜をまき散らす、散る",
+    "part": 2
+  },
+  {
+    "id": 641,
+    "word": "fold",
+    "meaning": "〜を折る、〜を折りたたむ、腕を組む",
+    "part": 2
+  },
+  {
+    "id": 642,
+    "word": "hang",
+    "meaning": "〜を掛ける、〜を絞首刑にする、ぶら下がる",
+    "part": 2
+  },
+  {
+    "id": 643,
+    "word": "release",
+    "meaning": "〜を解放する、〜を発表する、〜を放出する、解放、発売",
+    "part": 2
+  },
+  {
+    "id": 644,
+    "word": "strike",
+    "meaning": "〜を打つ、〜を襲う、思い浮かぶ、ストライキ",
+    "part": 2
+  },
+  {
+    "id": 645,
+    "word": "beat",
+    "meaning": "〜を打つ、〜に勝つ",
+    "part": 2
+  },
+  {
+    "id": 646,
+    "word": "protect",
+    "meaning": "〜を守る、保護する",
+    "part": 2
+  },
+  {
+    "id": 647,
+    "word": "twist",
+    "meaning": "〜を曲げる、〜をひねる",
+    "part": 2
+  },
+  {
+    "id": 648,
+    "word": "skip",
+    "meaning": "〜をサボる、抜かす",
+    "part": 2
+  },
+  {
+    "id": 649,
+    "word": "expose",
+    "meaning": "〜をさらす、〜を暴露する",
+    "part": 2
+  },
+  {
+    "id": 650,
+    "word": "stir",
+    "meaning": "〜を混ぜる、〜を呼び覚ます",
+    "part": 2
+  },
+  {
+    "id": 651,
+    "word": "shake",
+    "meaning": "〜を振る、〜を揺さぶる、震える",
+    "part": 2
+  },
+  {
+    "id": 652,
+    "word": "polish",
+    "meaning": "〜を磨く",
+    "part": 2
+  },
+  {
+    "id": 653,
+    "word": "attend",
+    "meaning": "〜に出席する、〜に注意を向ける、〜を世話する",
+    "part": 2
+  },
+  {
+    "id": 654,
+    "word": "imitate",
+    "meaning": "〜をまねる",
+    "part": 2
+  },
+  {
+    "id": 655,
+    "word": "conduct",
+    "meaning": "〜を行う、〜を伝える、行為",
+    "part": 2
+  },
+  {
+    "id": 656,
+    "word": "struggle",
+    "meaning": "苦闘する、もがく、苦闘",
+    "part": 2
+  },
+  {
+    "id": 657,
+    "word": "burn",
+    "meaning": "焼ける、〜を燃やす",
+    "part": 2
+  },
+  {
+    "id": 658,
+    "word": "cheat",
+    "meaning": "ごまかす、〜をだます",
+    "part": 2
+  },
+  {
+    "id": 659,
+    "word": "participate",
+    "meaning": "参加する",
+    "part": 2
+  },
+  {
+    "id": 660,
+    "word": "exist",
+    "meaning": "存在する",
+    "part": 2
+  },
+  {
+    "id": 661,
+    "word": "arise",
+    "meaning": "生じる",
+    "part": 2
+  },
+  {
+    "id": 662,
+    "word": "occur",
+    "meaning": "生じる、思いつく",
+    "part": 2
+  },
+  {
+    "id": 663,
+    "word": "involve",
+    "meaning": "巻き込まれる、参加する、〜を伴う",
+    "part": 2
+  },
+  {
+    "id": 664,
+    "word": "require",
+    "meaning": "〜を必要とする",
+    "part": 2
+  },
+  {
+    "id": 665,
+    "word": "counterpart",
+    "meaning": "〜に対応する人、物",
+    "part": 2
+  },
+  {
+    "id": 666,
+    "word": "advent",
+    "meaning": "到来、キリストの降臨",
+    "part": 2
+  },
+  {
+    "id": 667,
+    "word": "maintain",
+    "meaning": "〜を維持する、〜を強く主張する",
+    "part": 2
+  },
+  {
+    "id": 668,
+    "word": "last",
+    "meaning": "続く、長持ちする、この前の、最後の、ついに",
+    "part": 2
+  },
+  {
+    "id": 669,
+    "word": "persist",
+    "meaning": "持続する、残る、〜を貫く",
+    "part": 2
+  },
+  {
+    "id": 670,
+    "word": "examine",
+    "meaning": "〜を調査する、〜を検査する",
+    "part": 2
+  },
+  {
+    "id": 671,
+    "word": "gain",
+    "meaning": "〜を増す、〜を得る、利益、増加",
+    "part": 2
+  },
+  {
+    "id": 672,
+    "word": "obtain",
+    "meaning": "〜を得る",
+    "part": 2
+  },
+  {
+    "id": 673,
+    "word": "acquire",
+    "meaning": "〜を習得する、〜を獲得する、〜を買収する",
+    "part": 2
+  },
+  {
+    "id": 674,
+    "word": "search",
+    "meaning": "〜を捜す、検索、調査",
+    "part": 2
+  },
+  {
+    "id": 675,
+    "word": "logical",
+    "meaning": "論理的な",
+    "part": 2
+  },
+  {
+    "id": 676,
+    "word": "scholarship",
+    "meaning": "奨学金、学問",
+    "part": 2
+  },
+  {
+    "id": 677,
+    "word": "instruction",
+    "meaning": "指示、取扱説明書",
+    "part": 2
+  },
+  {
+    "id": 678,
+    "word": "determine",
+    "meaning": "〜を決める、〜することを決意している、〜を特定する",
+    "part": 2
+  },
+  {
+    "id": 679,
+    "word": "conclude",
+    "meaning": "〜と結論を下す",
+    "part": 2
+  },
+  {
+    "id": 680,
+    "word": "distinguish",
+    "meaning": "〜を区別する",
+    "part": 2
+  },
+  {
+    "id": 681,
+    "word": "classify",
+    "meaning": "〜を分類する",
+    "part": 2
+  },
+  {
+    "id": 682,
+    "word": "estimate",
+    "meaning": "〜を推定する、見積もる、見積もり",
+    "part": 2
+  },
+  {
+    "id": 683,
+    "word": "organize",
+    "meaning": "〜をまとめる、〜を組織化する",
+    "part": 2
+  },
+  {
+    "id": 684,
+    "word": "recognize",
+    "meaning": "〜が誰だかわかる、〜を認識する",
+    "part": 2
+  },
+  {
+    "id": 685,
+    "word": "suppose",
+    "meaning": "〜することになっている、〜と思う、仮定する",
+    "part": 2
+  },
+  {
+    "id": 686,
+    "word": "assume",
+    "meaning": "〜と思い込む、決めつける、〜を引き受ける",
+    "part": 2
+  },
+  {
+    "id": 687,
+    "word": "care",
+    "meaning": "気にする、世話をする、世話、心配",
+    "part": 2
+  },
+  {
+    "id": 688,
+    "word": "approve",
+    "meaning": "〜を認める、承認する",
+    "part": 2
+  },
+  {
+    "id": 689,
+    "word": "notice",
+    "meaning": "〜に気がついている、通知、掲示、注意",
+    "part": 2
+  },
+  {
+    "id": 690,
+    "word": "aware",
+    "meaning": "気づいている",
+    "part": 2
+  },
+  {
+    "id": 691,
+    "word": "conscious",
+    "meaning": "意識している、気づいている、意識がある",
+    "part": 2
+  },
+  {
+    "id": 692,
+    "word": "concerned",
+    "meaning": "関心を持っている、〜を扱っている、〜を懸念している",
+    "part": 2
+  },
+  {
+    "id": 693,
+    "word": "regard",
+    "meaning": "〜を〜とみなす、〜を評価する、点、よろしくという挨拶",
+    "part": 2
+  },
+  {
+    "id": 694,
+    "word": "commit",
+    "meaning": "〜に専念する、〜を委ねる、〜を犯す",
+    "part": 2
+  },
+  {
+    "id": 695,
+    "word": "doubt",
+    "meaning": "〜を疑う、〜とは思わない、疑い",
+    "part": 2
+  },
+  {
+    "id": 696,
+    "word": "memorize",
+    "meaning": "〜を暗記する",
+    "part": 2
+  },
+  {
+    "id": 697,
+    "word": "forgive",
+    "meaning": "〜を許す",
+    "part": 2
+  },
+  {
+    "id": 698,
+    "word": "grant",
+    "meaning": "〜を当然のことと思う、〜を与える、交付、補助金",
+    "part": 2
+  },
+  {
+    "id": 699,
+    "word": "recall",
+    "meaning": "〜と思い出す、〜を回収する、リコールする",
+    "part": 2
+  },
+  {
+    "id": 700,
+    "word": "outlook",
+    "meaning": "考え方、見通し",
+    "part": 2
+  },
+  {
+    "id": 701,
+    "word": "perspective",
+    "meaning": "視点、見方、遠近法",
+    "part": 2
+  },
+  {
+    "id": 702,
+    "word": "abandon",
+    "meaning": "〜を捨てる、放棄する",
+    "part": 2
+  },
+  {
+    "id": 703,
+    "word": "eliminate",
+    "meaning": "〜を排除する、敗退する",
+    "part": 2
+  },
+  {
+    "id": 704,
+    "word": "rid",
+    "meaning": "〜を処分する、〜を取り除く",
+    "part": 2
+  },
+  {
+    "id": 705,
+    "word": "remove",
+    "meaning": "〜を取り除く、〜を脱ぐ",
+    "part": 2
+  },
+  {
+    "id": 706,
+    "word": "resource",
+    "meaning": "資源、財産、困難に立ち向かう力、頼みの手段",
+    "part": 2
+  },
+  {
+    "id": 707,
+    "word": "conservation",
+    "meaning": "保護、保存",
+    "part": 2
+  },
+  {
+    "id": 708,
+    "word": "preserve",
+    "meaning": "〜を保護する、〜を保つ",
+    "part": 2
+  },
+  {
+    "id": 709,
+    "word": "disaster",
+    "meaning": "災害、大失敗",
+    "part": 2
+  },
+  {
+    "id": 710,
+    "word": "planet",
+    "meaning": "惑星、地球",
+    "part": 2
+  },
+  {
+    "id": 711,
+    "word": "environment",
+    "meaning": "環境、周囲の状況",
+    "part": 2
+  },
+  {
+    "id": 712,
+    "word": "horizon",
+    "meaning": "水平線、地平線、視野",
+    "part": 2
+  },
+  {
+    "id": 713,
+    "word": "layer",
+    "meaning": "層",
+    "part": 2
+  },
+  {
+    "id": 714,
+    "word": "agriculture",
+    "meaning": "農業",
+    "part": 2
+  },
+  {
+    "id": 715,
+    "word": "crop",
+    "meaning": "作物、収穫高、生じる",
+    "part": 2
+  },
+  {
+    "id": 716,
+    "word": "soil",
+    "meaning": "土、土壌",
+    "part": 2
+  },
+  {
+    "id": 717,
+    "word": "weed",
+    "meaning": "雑草、海草、〜の雑草を抜く",
+    "part": 2
+  },
+  {
+    "id": 718,
+    "word": "pollen",
+    "meaning": "花粉",
+    "part": 2
+  },
+  {
+    "id": 719,
+    "word": "drown",
+    "meaning": "溺れ死ぬ",
+    "part": 2
+  },
+  {
+    "id": 720,
+    "word": "leak",
+    "meaning": "漏れる、〜を漏らす、漏れ",
+    "part": 2
+  },
+  {
+    "id": 721,
+    "word": "climate",
+    "meaning": "気候、状況",
+    "part": 2
+  },
+  {
+    "id": 722,
+    "word": "atmosphere",
+    "meaning": "大気、雰囲気、大気圏",
+    "part": 2
+  },
+  {
+    "id": 723,
+    "word": "forecast",
+    "meaning": "予報、〜を予報する",
+    "part": 2
+  },
+  {
+    "id": 724,
+    "word": "humid",
+    "meaning": "湿気が多い",
+    "part": 2
+  },
+  {
+    "id": 725,
+    "word": "tropical",
+    "meaning": "熱帯の",
+    "part": 2
+  },
+  {
+    "id": 726,
+    "word": "solar",
+    "meaning": "太陽の",
+    "part": 2
+  },
+  {
+    "id": 727,
+    "word": "species",
+    "meaning": "種",
+    "part": 2
+  },
+  {
+    "id": 728,
+    "word": "pesticide",
+    "meaning": "殺虫剤、駆除剤",
+    "part": 2
+  },
+  {
+    "id": 729,
+    "word": "extinct",
+    "meaning": "絶滅した",
+    "part": 2
+  },
+  {
+    "id": 730,
+    "word": "feed",
+    "meaning": "〜にえさを与える、〜を養う、〜を常食とする",
+    "part": 2
+  },
+  {
+    "id": 731,
+    "word": "energetic",
+    "meaning": "活発な",
+    "part": 2
+  },
+  {
+    "id": 732,
+    "word": "greedy",
+    "meaning": "貪欲な",
+    "part": 2
+  },
+  {
+    "id": 733,
+    "word": "brave",
+    "meaning": "勇敢な",
+    "part": 2
+  },
+  {
+    "id": 734,
+    "word": "generous",
+    "meaning": "気前のよい、寛大な",
+    "part": 2
+  },
+  {
+    "id": 735,
+    "word": "intellectual",
+    "meaning": "知的な",
+    "part": 2
+  },
+  {
+    "id": 736,
+    "word": "curious",
+    "meaning": "好奇心が強い、奇妙な",
+    "part": 2
+  },
+  {
+    "id": 737,
+    "word": "imaginative",
+    "meaning": "想像力豊かな",
+    "part": 2
+  },
+  {
+    "id": 738,
+    "word": "afford",
+    "meaning": "〜する余裕がある、〜を与える",
+    "part": 2
+  },
+  {
+    "id": 739,
+    "word": "eager",
+    "meaning": "熱心な",
+    "part": 2
+  },
+  {
+    "id": 740,
+    "word": "selfish",
+    "meaning": "利己的な、自分勝手な",
+    "part": 2
+  },
+  {
+    "id": 741,
+    "word": "aggressive",
+    "meaning": "攻撃的な、積極的な",
+    "part": 2
+  },
+  {
+    "id": 742,
+    "word": "cruel",
+    "meaning": "残酷な",
+    "part": 2
+  },
+  {
+    "id": 743,
+    "word": "addicted",
+    "meaning": "〜の中毒になっている、のめり込んでいる",
+    "part": 2
+  },
+  {
+    "id": 744,
+    "word": "stubborn",
+    "meaning": "頑固な",
+    "part": 2
+  },
+  {
+    "id": 745,
+    "word": "bold",
+    "meaning": "大胆な",
+    "part": 2
+  },
+  {
+    "id": 746,
+    "word": "guilty",
+    "meaning": "申し訳なく思う、罪を犯した、有罪の",
+    "part": 2
+  },
+  {
+    "id": 747,
+    "word": "innocent",
+    "meaning": "無実の、無邪気な",
+    "part": 2
+  },
+  {
+    "id": 748,
+    "word": "sincere",
+    "meaning": "誠実な、心からの、偽りのない",
+    "part": 2
+  },
+  {
+    "id": 749,
+    "word": "modest",
+    "meaning": "謙虚な、大きくない、高くない",
+    "part": 2
+  },
+  {
+    "id": 750,
+    "word": "stupid",
+    "meaning": "ばかな",
+    "part": 2
+  },
+  {
+    "id": 751,
+    "word": "indifferent",
+    "meaning": "無関心で",
+    "part": 2
+  },
+  {
+    "id": 752,
+    "word": "punctual",
+    "meaning": "時間を守る",
+    "part": 2
+  },
+  {
+    "id": 753,
+    "word": "coward",
+    "meaning": "臆病者",
+    "part": 2
+  },
+  {
+    "id": 754,
+    "word": "precise",
+    "meaning": "正確な、精密な",
+    "part": 2
+  },
+  {
+    "id": 755,
+    "word": "accurate",
+    "meaning": "正確な",
+    "part": 2
+  },
+  {
+    "id": 756,
+    "word": "proper",
+    "meaning": "適切な",
+    "part": 2
+  },
+  {
+    "id": 757,
+    "word": "tidy",
+    "meaning": "きちんとした、整然とした、〜を整頓する",
+    "part": 2
+  },
+  {
+    "id": 758,
+    "word": "efficient",
+    "meaning": "能率的な、無駄がない、有能な",
+    "part": 2
+  },
+  {
+    "id": 759,
+    "word": "reasonable",
+    "meaning": "理のかなった、手ごろな",
+    "part": 2
+  },
+  {
+    "id": 760,
+    "word": "significant",
+    "meaning": "重要な、有意な、かなりの",
+    "part": 2
+  },
+  {
+    "id": 761,
+    "word": "precious",
+    "meaning": "貴重な、高価な",
+    "part": 2
+  },
+  {
+    "id": 762,
+    "word": "essential",
+    "meaning": "不可欠な、不可欠なもの",
+    "part": 2
+  },
+  {
+    "id": 763,
+    "word": "fundamental",
+    "meaning": "根本的な、基本的な、基本事項",
+    "part": 2
+  },
+  {
+    "id": 764,
+    "word": "outweigh",
+    "meaning": "〜に勝る",
+    "part": 2
+  },
+  {
+    "id": 765,
+    "word": "critical",
+    "meaning": "重大な、批判的な",
+    "part": 2
+  },
+  {
+    "id": 766,
+    "word": "serious",
+    "meaning": "深刻な、真剣な、本気の",
+    "part": 2
+  },
+  {
+    "id": 767,
+    "word": "complex",
+    "meaning": "複雑な、複合体、強迫観念",
+    "part": 2
+  },
+  {
+    "id": 768,
+    "word": "complicated",
+    "meaning": "複雑な、ややこしい",
+    "part": 2
+  },
+  {
+    "id": 769,
+    "word": "delicate",
+    "meaning": "繊細な、微妙な、虚弱な",
+    "part": 2
+  },
+  {
+    "id": 770,
+    "word": "plain",
+    "meaning": "明白な、わかりやすい、質素な、平野、原野",
+    "part": 2
+  },
+  {
+    "id": 771,
+    "word": "obvious",
+    "meaning": "明白な",
+    "part": 2
+  },
+  {
+    "id": 772,
+    "word": "remarkable",
+    "meaning": "注目すべき、素晴らしい",
+    "part": 2
+  },
+  {
+    "id": 773,
+    "word": "outstanding",
+    "meaning": "傑出した、目立った",
+    "part": 2
+  },
+  {
+    "id": 774,
+    "word": "various",
+    "meaning": "さまざまな",
+    "part": 2
+  },
+  {
+    "id": 775,
+    "word": "diversity",
+    "meaning": "多様性",
+    "part": 2
+  },
+  {
+    "id": 776,
+    "word": "sort",
+    "meaning": "種、種類、多少、〜を分類する",
+    "part": 2
+  },
+  {
+    "id": 777,
+    "word": "marvelous",
+    "meaning": "驚くべき、素晴らしい",
+    "part": 2
+  },
+  {
+    "id": 778,
+    "word": "active",
+    "meaning": "積極的な、活発な",
+    "part": 2
+  },
+  {
+    "id": 779,
+    "word": "positive",
+    "meaning": "前向きな、積極的な、確信している",
+    "part": 2
+  },
+  {
+    "id": 780,
+    "word": "pure",
+    "meaning": "純粋な、澄んだ",
+    "part": 2
+  },
+  {
+    "id": 781,
+    "word": "steady",
+    "meaning": "着実な、一定の",
+    "part": 2
+  },
+  {
+    "id": 782,
+    "word": "flexible",
+    "meaning": "柔軟な、融通のきく",
+    "part": 2
+  },
+  {
+    "id": 783,
+    "word": "ripe",
+    "meaning": "熟した",
+    "part": 2
+  },
+  {
+    "id": 784,
+    "word": "stable",
+    "meaning": "安定した、馬小屋、きゅう舎",
+    "part": 2
+  },
+  {
+    "id": 785,
+    "word": "negative",
+    "meaning": "否定的な、否定の",
+    "part": 2
+  },
+  {
+    "id": 786,
+    "word": "vague",
+    "meaning": "曖昧な、漠然とした",
+    "part": 2
+  },
+  {
+    "id": 787,
+    "word": "weird",
+    "meaning": "変な",
+    "part": 2
+  },
+  {
+    "id": 788,
+    "word": "rough",
+    "meaning": "粗い、おおざっぱな、荒れている",
+    "part": 2
+  },
+  {
+    "id": 789,
+    "word": "severe",
+    "meaning": "厳しい、ひどい",
+    "part": 2
+  },
+  {
+    "id": 790,
+    "word": "passive",
+    "meaning": "受動的な、消極的な",
+    "part": 2
+  },
+  {
+    "id": 791,
+    "word": "vain",
+    "meaning": "無駄に、無駄な、うぬぼれの強い",
+    "part": 2
+  },
+  {
+    "id": 792,
+    "word": "fake",
+    "meaning": "偽の、偽造の、偽造品",
+    "part": 2
+  },
+  {
+    "id": 793,
+    "word": "risky",
+    "meaning": "危険な、危うい",
+    "part": 2
+  },
+  {
+    "id": 794,
+    "word": "odd",
+    "meaning": "奇妙な、奇数の、半端な、雑多な、可能性",
+    "part": 2
+  },
+  {
+    "id": 795,
+    "word": "ignorant",
+    "meaning": "無知の",
+    "part": 2
+  },
+  {
+    "id": 796,
+    "word": "contrast",
+    "meaning": "対比、〜を対比する、対照をなす",
+    "part": 2
+  },
+  {
+    "id": 797,
+    "word": "valid",
+    "meaning": "妥当な、正当な、有効な",
+    "part": 2
+  },
+  {
+    "id": 798,
+    "word": "rare",
+    "meaning": "珍しい",
+    "part": 2
+  },
+  {
+    "id": 799,
+    "word": "casual",
+    "meaning": "気楽な、ふとした、何気ない",
+    "part": 2
+  },
+  {
+    "id": 800,
+    "word": "available",
+    "meaning": "手に入る、利用できる、空いている",
+    "part": 2
+  },
+  {
+    "id": 801,
+    "word": "practical",
+    "meaning": "現実的な、実際の、実用的な",
+    "part": 2
+  },
+  {
+    "id": 802,
+    "word": "abstract",
+    "meaning": "抽象的な、要旨",
+    "part": 2
+  },
+  {
+    "id": 803,
+    "word": "brand-new",
+    "meaning": "新品の、真新しい",
+    "part": 2
+  },
+  {
+    "id": 804,
+    "word": "secondhand",
+    "meaning": "中古の、間接的な",
+    "part": 2
+  },
+  {
+    "id": 805,
+    "word": "rapid",
+    "meaning": "急速な",
+    "part": 2
+  },
+  {
+    "id": 806,
+    "word": "urgent",
+    "meaning": "緊急の、差し迫った",
+    "part": 2
+  },
+  {
+    "id": 807,
+    "word": "shallow",
+    "meaning": "浅い、浅はかな",
+    "part": 2
+  },
+  {
+    "id": 808,
+    "word": "sharp",
+    "meaning": "急激な、きつい、鋭い、きっちりで",
+    "part": 2
+  },
+  {
+    "id": 809,
+    "word": "calm",
+    "meaning": "落ち着いた、落ち着く、〜を落ち着かせる",
+    "part": 2
+  },
+  {
+    "id": 810,
+    "word": "naked",
+    "meaning": "裸の、むき出しの",
+    "part": 2
+  },
+  {
+    "id": 811,
+    "word": "independent",
+    "meaning": "独立した、無所属の、無所属の人",
+    "part": 2
+  },
+  {
+    "id": 812,
+    "word": "tense",
+    "meaning": "張り詰めた、緊張した、時制",
+    "part": 2
+  },
+  {
+    "id": 813,
+    "word": "narrow",
+    "meaning": "狭い、〜を狭くする、細める",
+    "part": 2
+  },
+  {
+    "id": 814,
+    "word": "vacant",
+    "meaning": "空いている、使用されていない",
+    "part": 2
+  },
+  {
+    "id": 815,
+    "word": "vivid",
+    "meaning": "鮮明な、生き生きとした",
+    "part": 2
+  },
+  {
+    "id": 816,
+    "word": "awkward",
+    "meaning": "ぎこちない、気まずい、扱いにくい",
+    "part": 2
+  },
+  {
+    "id": 817,
+    "word": "objective",
+    "meaning": "客観的な、目標",
+    "part": 2
+  },
+  {
+    "id": 818,
+    "word": "manual",
+    "meaning": "手を使う、身体を使う、手動の、手引き書",
+    "part": 2
+  },
+  {
+    "id": 819,
+    "word": "alike",
+    "meaning": "似ている、同様に",
+    "part": 2
+  },
+  {
+    "id": 820,
+    "word": "alien",
+    "meaning": "異質な、外国の、地球圏外の",
+    "part": 2
+  },
+  {
+    "id": 821,
+    "word": "tend",
+    "meaning": "〜する傾向にある",
+    "part": 2
+  },
+  {
+    "id": 822,
+    "word": "deserve",
+    "meaning": "〜に値する",
+    "part": 2
+  },
+  {
+    "id": 823,
+    "word": "fragment",
+    "meaning": "破片",
+    "part": 2
+  },
+  {
+    "id": 824,
+    "word": "range",
+    "meaning": "範囲、〜の範囲に及ぶ",
+    "part": 2
+  },
+  {
+    "id": 825,
+    "word": "scale",
+    "meaning": "規模、体重計、うろこ",
+    "part": 2
+  },
+  {
+    "id": 826,
+    "word": "unique",
+    "meaning": "特有の、独自の、独特の",
+    "part": 2
+  },
+  {
+    "id": 827,
+    "word": "particular",
+    "meaning": "ある特定の、特有の、好みがうるさい、特に",
+    "part": 2
+  },
+  {
+    "id": 828,
+    "word": "typical",
+    "meaning": "典型的な",
+    "part": 2
+  },
+  {
+    "id": 829,
+    "word": "general",
+    "meaning": "一般的な、全体の、大将、将軍",
+    "part": 2
+  },
+  {
+    "id": 830,
+    "word": "ordinary",
+    "meaning": "平凡な、普通の",
+    "part": 2
+  },
+  {
+    "id": 831,
+    "word": "account",
+    "meaning": "占める、説明する、説明、口座",
+    "part": 2
+  },
+  {
+    "id": 832,
+    "word": "calculate",
+    "meaning": "〜を計算する",
+    "part": 2
+  },
+  {
+    "id": 833,
+    "word": "measure",
+    "meaning": "〜を測る、〜の寸法がある、手段",
+    "part": 2
+  },
+  {
+    "id": 834,
+    "word": "decline",
+    "meaning": "減る、衰退する、〜を断る、衰退、減少",
+    "part": 2
+  },
+  {
+    "id": 835,
+    "word": "split",
+    "meaning": "〜を割る、〜を分裂させる、分裂する、分裂、裂け目",
+    "part": 2
+  },
+  {
+    "id": 836,
+    "word": "volume",
+    "meaning": "容積、体積、ボリューム、音量、1巻",
+    "part": 2
+  },
+  {
+    "id": 837,
+    "word": "proportion",
+    "meaning": "比率、部分、規模、大きさ",
+    "part": 2
+  },
+  {
+    "id": 838,
+    "word": "dozen",
+    "meaning": "ダース、数十の",
+    "part": 2
+  },
+  {
+    "id": 839,
+    "word": "amount",
+    "meaning": "量、〜に達する、結局〜になる",
+    "part": 2
+  },
+  {
+    "id": 840,
+    "word": "mass",
+    "meaning": "大量、大衆、かたまり、質量",
+    "part": 2
+  },
+  {
+    "id": 841,
+    "word": "shortage",
+    "meaning": "不足",
+    "part": 2
+  },
+  {
+    "id": 842,
+    "word": "enormous",
+    "meaning": "莫大な、巨大な",
+    "part": 2
+  },
+  {
+    "id": 843,
+    "word": "spare",
+    "meaning": "余分な、予備の、〜を割く、〜を惜しむ",
+    "part": 2
+  },
+  {
+    "id": 844,
+    "word": "arrange",
+    "meaning": "〜を手配する、段取りをつける、〜を整理する",
+    "part": 2
+  },
+  {
+    "id": 845,
+    "word": "adapt",
+    "meaning": "適応する、〜に適応させる",
+    "part": 2
+  },
+  {
+    "id": 846,
+    "word": "match",
+    "meaning": "〜と調和する、〜に匹敵する、釣り合う人、物",
+    "part": 2
+  },
+  {
+    "id": 847,
+    "word": "fit",
+    "meaning": "合う、健康な、適した",
+    "part": 2
+  },
+  {
+    "id": 848,
+    "word": "emergency",
+    "meaning": "緊急事態、緊急の",
+    "part": 2
+  },
+  {
+    "id": 849,
+    "word": "occasion",
+    "meaning": "場合、行事、祝い事",
+    "part": 2
+  },
+  {
+    "id": 850,
+    "word": "accidental",
+    "meaning": "偶然の、偶発的な",
+    "part": 2
+  },
+  {
+    "id": 851,
+    "word": "current",
+    "meaning": "最新の、今の、流通して、流れ、風潮",
+    "part": 2
+  },
+  {
+    "id": 852,
+    "word": "temporary",
+    "meaning": "一時的な",
+    "part": 2
+  },
+  {
+    "id": 853,
+    "word": "permanent",
+    "meaning": "永久的な",
+    "part": 2
+  },
+  {
+    "id": 854,
+    "word": "previous",
+    "meaning": "前の",
+    "part": 2
+  },
+  {
+    "id": 855,
+    "word": "former",
+    "meaning": "前者、元の、旧〜",
+    "part": 2
+  },
+  {
+    "id": 856,
+    "word": "contemporary",
+    "meaning": "現代の、同時代の、同時代の人",
+    "part": 2
+  },
+  {
+    "id": 857,
+    "word": "lately",
+    "meaning": "最近",
+    "part": 2
+  },
+  {
+    "id": 858,
+    "word": "immediately",
+    "meaning": "すぐに、直接に",
+    "part": 2
+  },
+  {
+    "id": 859,
+    "word": "deadline",
+    "meaning": "締め切り",
+    "part": 2
+  },
+  {
+    "id": 860,
+    "word": "decade",
+    "meaning": "10年",
+    "part": 2
+  },
+  {
+    "id": 861,
+    "word": "supply",
+    "meaning": "〜を供給する、供給",
+    "part": 2
+  },
+  {
+    "id": 862,
+    "word": "replace",
+    "meaning": "〜に取って代わる、〜に取り替える",
+    "part": 2
+  },
+  {
+    "id": 863,
+    "word": "exchange",
+    "meaning": "〜を交換する、交換",
+    "part": 2
+  },
+  {
+    "id": 864,
+    "word": "substitute",
+    "meaning": "〜を代わりにする、〜の代わりになる、代わりの、代理人",
+    "part": 2
+  },
+  {
+    "id": 865,
+    "word": "submit",
+    "meaning": "〜を提出する、服従する",
+    "part": 2
+  },
+  {
+    "id": 866,
+    "word": "alternative",
+    "meaning": "代わりのもの、選択肢、代わりの",
+    "part": 2
+  },
+  {
+    "id": 867,
+    "word": "deliver",
+    "meaning": "〜を配達する、〜をする",
+    "part": 2
+  },
+  {
+    "id": 868,
+    "word": "enclose",
+    "meaning": "〜を同封する、〜を囲む、閉じ込める",
+    "part": 2
+  },
+  {
+    "id": 869,
+    "word": "envelope",
+    "meaning": "封筒",
+    "part": 2
+  },
+  {
+    "id": 870,
+    "word": "trick",
+    "meaning": "いたずら、手口、策略、芸、手品、秘けつ、〜をだます",
+    "part": 2
+  },
+  {
+    "id": 871,
+    "word": "load",
+    "meaning": "荷物、〜を積む",
+    "part": 2
+  },
+  {
+    "id": 872,
+    "word": "content",
+    "meaning": "中身、内容、〜に満足して",
+    "part": 2
+  },
+  {
+    "id": 873,
+    "word": "household",
+    "meaning": "世帯、家庭、家庭の",
+    "part": 2
+  },
+  {
+    "id": 874,
+    "word": "good",
+    "meaning": "商品、利益、かなりの",
+    "part": 2
+  },
+  {
+    "id": 875,
+    "word": "luxury",
+    "meaning": "高級品、ぜいたく品、豪華な、ぜいたくな",
+    "part": 2
+  },
+  {
+    "id": 876,
+    "word": "credit",
+    "meaning": "クレジットカード、功績、手柄、単位、〜の功績を認める",
+    "part": 2
+  },
+  {
+    "id": 877,
+    "word": "questionnaire",
+    "meaning": "アンケート",
+    "part": 2
+  },
+  {
+    "id": 878,
+    "word": "reservation",
+    "meaning": "予約、慎重な姿勢",
+    "part": 2
+  },
+  {
+    "id": 879,
+    "word": "fuss",
+    "meaning": "大騒ぎ",
+    "part": 2
+  },
+  {
+    "id": 880,
+    "word": "reward",
+    "meaning": "報酬、褒美、〜に褒美を与える、報いる",
+    "part": 2
+  },
+  {
+    "id": 881,
+    "word": "farewell",
+    "meaning": "別れ",
+    "part": 2
+  },
+  {
+    "id": 882,
+    "word": "reception",
+    "meaning": "もてなし、歓迎会、フロント、受信状況",
+    "part": 2
+  },
+  {
+    "id": 883,
+    "word": "portion",
+    "meaning": "1盛り、1人前、一部",
+    "part": 2
+  },
+  {
+    "id": 884,
+    "word": "laundry",
+    "meaning": "洗濯、洗濯物、クリーニング店",
+    "part": 2
+  },
+  {
+    "id": 885,
+    "word": "nap",
+    "meaning": "昼寝、仮眠、昼寝をする、仮眠をとる",
+    "part": 2
+  },
+  {
+    "id": 886,
+    "word": "wake",
+    "meaning": "目が覚める、〜を起こす",
+    "part": 2
+  },
+  {
+    "id": 887,
+    "word": "vending machine",
+    "meaning": "自動販売機",
+    "part": 2
+  },
+  {
+    "id": 888,
+    "word": "grocery",
+    "meaning": "食料雑貨店",
+    "part": 2
+  },
+  {
+    "id": 889,
+    "word": "appointment",
+    "meaning": "予約、約束、任命、指名",
+    "part": 2
+  },
+  {
+    "id": 890,
+    "word": "consult",
+    "meaning": "〜に相談する、〜を引く、相談する",
+    "part": 2
+  },
+  {
+    "id": 891,
+    "word": "register",
+    "meaning": "〜を登録する、記録する、登録する、記帳する、登録簿",
+    "part": 2
+  },
+  {
+    "id": 892,
+    "word": "dye",
+    "meaning": "〜を染める、染料",
+    "part": 2
+  },
+  {
+    "id": 893,
+    "word": "subscribe",
+    "meaning": "定期購読する、支持する",
+    "part": 2
+  },
+  {
+    "id": 894,
+    "word": "guarantee",
+    "meaning": "〜を保証する、保証",
+    "part": 2
+  },
+  {
+    "id": 895,
+    "word": "wipe",
+    "meaning": "〜を拭く、〜を一掃する",
+    "part": 2
+  },
+  {
+    "id": 896,
+    "word": "sweep",
+    "meaning": "〜を掃く、〜を押し流す",
+    "part": 2
+  },
+  {
+    "id": 897,
+    "word": "transfer",
+    "meaning": "乗り換える、転勤する、転校する、〜を転勤させる、〜を振り込む",
+    "part": 2
+  },
+  {
+    "id": 898,
+    "word": "divorce",
+    "meaning": "離婚する、〜と離婚する、離婚",
+    "part": 2
+  },
+  {
+    "id": 899,
+    "word": "fate",
+    "meaning": "運命、宿命",
+    "part": 2
+  },
+  {
+    "id": 900,
+    "word": "destiny",
+    "meaning": "運命",
+    "part": 2
+  },
+  {
+    "id": 901,
+    "word": "flavor",
+    "meaning": "風味、味",
+    "part": 2
+  },
+  {
+    "id": 902,
+    "word": "perfume",
+    "meaning": "香り、香水",
+    "part": 2
+  },
+  {
+    "id": 903,
+    "word": "ingredient",
+    "meaning": "材料、要因、成分",
+    "part": 2
+  },
+  {
+    "id": 904,
+    "word": "bitter",
+    "meaning": "苦い、つらい、憤慨して",
+    "part": 2
+  },
+  {
+    "id": 905,
+    "word": "aisle",
+    "meaning": "通路",
+    "part": 2
+  },
+  {
+    "id": 906,
+    "word": "track",
+    "meaning": "足跡、小道、線路、プラットホーム、〜を追跡する",
+    "part": 2
+  },
+  {
+    "id": 907,
+    "word": "district",
+    "meaning": "地区",
+    "part": 2
+  },
+  {
+    "id": 908,
+    "word": "facility",
+    "meaning": "施設、設備、能力、器用さ",
+    "part": 2
+  },
+  {
+    "id": 909,
+    "word": "height",
+    "meaning": "高さ、高い所、最盛期",
+    "part": 2
+  },
+  {
+    "id": 910,
+    "word": "distant",
+    "meaning": "遠い",
+    "part": 2
+  },
+  {
+    "id": 911,
+    "word": "locate",
+    "meaning": "〜に位置している、〜の場所を見つける",
+    "part": 2
+  },
+  {
+    "id": 912,
+    "word": "occupy",
+    "meaning": "〜を占める",
+    "part": 2
+  },
+  {
+    "id": 913,
+    "word": "surround",
+    "meaning": "〜を取り囲む、包囲する",
+    "part": 2
+  },
+  {
+    "id": 914,
+    "word": "classical",
+    "meaning": "クラシックの、古典的な",
+    "part": 2
+  },
+  {
+    "id": 915,
+    "word": "civilization",
+    "meaning": "文明",
+    "part": 2
+  },
+  {
+    "id": 916,
+    "word": "heritage",
+    "meaning": "遺産",
+    "part": 2
+  },
+  {
+    "id": 917,
+    "word": "script",
+    "meaning": "台本、脚本、文字",
+    "part": 2
+  },
+  {
+    "id": 918,
+    "word": "tale",
+    "meaning": "話",
+    "part": 2
+  },
+  {
+    "id": 919,
+    "word": "literature",
+    "meaning": "文学、文献",
+    "part": 2
+  },
+  {
+    "id": 920,
+    "word": "tragedy",
+    "meaning": "悲劇",
+    "part": 2
+  },
+  {
+    "id": 921,
+    "word": "poetry",
+    "meaning": "詩",
+    "part": 2
+  },
+  {
+    "id": 922,
+    "word": "biography",
+    "meaning": "伝記",
+    "part": 2
+  },
+  {
+    "id": 923,
+    "word": "term",
+    "meaning": "用語、言葉、期間、学期、任期、間柄、条件、〜と称する",
+    "part": 2
+  },
+  {
+    "id": 924,
+    "word": "proverb",
+    "meaning": "諺",
+    "part": 2
+  },
+  {
+    "id": 925,
+    "word": "dialect",
+    "meaning": "方言",
+    "part": 2
+  },
+  {
+    "id": 926,
+    "word": "fluent",
+    "meaning": "流暢な",
+    "part": 2
+  },
+  {
+    "id": 927,
+    "word": "translate",
+    "meaning": "〜を翻訳する、〜に変わる",
+    "part": 2
+  },
+  {
+    "id": 928,
+    "word": "define",
+    "meaning": "〜を定義する、〜を規定する",
+    "part": 2
+  },
+  {
+    "id": 929,
+    "word": "interpret",
+    "meaning": "〜を解釈する、〜を通訳する、通訳する",
+    "part": 2
+  },
+  {
+    "id": 930,
+    "word": "quote",
+    "meaning": "〜を引用する、〜に価格を提示する、引用文、提示価格",
+    "part": 2
+  },
+  {
+    "id": 931,
+    "word": "literally",
+    "meaning": "文字どおりに",
+    "part": 2
+  },
+  {
+    "id": 932,
+    "word": "indicate",
+    "meaning": "〜を示す、〜を指し示す",
+    "part": 2
+  },
+  {
+    "id": 933,
+    "word": "reveal",
+    "meaning": "〜を明らかにする、暴露する",
+    "part": 2
+  },
+  {
+    "id": 934,
+    "word": "announce",
+    "meaning": "〜を発表する",
+    "part": 2
+  },
+  {
+    "id": 935,
+    "word": "broadcast",
+    "meaning": "〜を放送する、放送",
+    "part": 2
+  },
+  {
+    "id": 936,
+    "word": "prove",
+    "meaning": "〜を証明する、〜だと判明する",
+    "part": 2
+  },
+  {
+    "id": 937,
+    "word": "advertise",
+    "meaning": "〜を宣伝する",
+    "part": 2
+  },
+  {
+    "id": 938,
+    "word": "clarify",
+    "meaning": "〜を明らかにする",
+    "part": 2
+  },
+  {
+    "id": 939,
+    "word": "seek",
+    "meaning": "〜を求める、〜しようと努める",
+    "part": 2
+  },
+  {
+    "id": 940,
+    "word": "entertain",
+    "meaning": "〜を楽しませる、〜をもてなす",
+    "part": 2
+  },
+  {
+    "id": 941,
+    "word": "amuse",
+    "meaning": "〜を楽しませる",
+    "part": 2
+  },
+  {
+    "id": 942,
+    "word": "attract",
+    "meaning": "〜を引きつける、魅了する",
+    "part": 2
+  },
+  {
+    "id": 943,
+    "word": "fascinate",
+    "meaning": "〜を魅了する、〜にとても興味をもたせる",
+    "part": 2
+  },
+  {
+    "id": 944,
+    "word": "absorb",
+    "meaning": "〜に没頭する、〜を吸収する",
+    "part": 2
+  },
+  {
+    "id": 945,
+    "word": "fond",
+    "meaning": "〜が好きだ、懐かしい",
+    "part": 2
+  },
+  {
+    "id": 946,
+    "word": "scare",
+    "meaning": "〜を怯えさせる",
+    "part": 2
+  },
+  {
+    "id": 947,
+    "word": "alarm",
+    "meaning": "〜をぎょっとさせる、恐怖、不安",
+    "part": 2
+  },
+  {
+    "id": 948,
+    "word": "amaze",
+    "meaning": "〜を驚かせる",
+    "part": 2
+  },
+  {
+    "id": 949,
+    "word": "irritate",
+    "meaning": "〜をいらいらさせる",
+    "part": 2
+  },
+  {
+    "id": 950,
+    "word": "upset",
+    "meaning": "〜を動揺させる、〜を乱す、動揺して",
+    "part": 2
+  },
+  {
+    "id": 951,
+    "word": "puzzle",
+    "meaning": "〜を当惑させる、難問、パズル",
+    "part": 2
+  },
+  {
+    "id": 952,
+    "word": "confuse",
+    "meaning": "〜を混乱させる、困惑させる、〜を混同する",
+    "part": 2
+  },
+  {
+    "id": 953,
+    "word": "bore",
+    "meaning": "〜をうんざりさせる、退屈させる",
+    "part": 2
+  },
+  {
+    "id": 954,
+    "word": "frustrate",
+    "meaning": "〜を欲求不満にさせる、〜を挫折させる",
+    "part": 2
+  },
+  {
+    "id": 955,
+    "word": "disappoint",
+    "meaning": "〜を失望させる",
+    "part": 2
+  },
+  {
+    "id": 956,
+    "word": "embarrass",
+    "meaning": "〜に恥ずかしい思いをさせる、困惑させる",
+    "part": 2
+  },
+  {
+    "id": 957,
+    "word": "ashamed",
+    "meaning": "恥ずかしい",
+    "part": 2
+  },
+  {
+    "id": 958,
+    "word": "uneasy",
+    "meaning": "不安な、胸騒ぎがする",
+    "part": 2
+  },
+  {
+    "id": 959,
+    "word": "hesitate",
+    "meaning": "ためらう",
+    "part": 2
+  },
+  {
+    "id": 960,
+    "word": "reluctant",
+    "meaning": "〜するのは気が進まない",
+    "part": 2
+  },
+  {
+    "id": 961,
+    "word": "tremble",
+    "meaning": "震える",
+    "part": 2
+  },
+  {
+    "id": 962,
+    "word": "boast",
+    "meaning": "自慢する、〜を誇りにしている",
+    "part": 2
+  },
+  {
+    "id": 963,
+    "word": "jealous",
+    "meaning": "〜に嫉妬した",
+    "part": 2
+  },
+  {
+    "id": 964,
+    "word": "envy",
+    "meaning": "〜を羨ましく思う、羨望",
+    "part": 2
+  },
+  {
+    "id": 965,
+    "word": "yell",
+    "meaning": "叫ぶ、大声をあげる、叫び、わめき声",
+    "part": 2
+  },
+  {
+    "id": 966,
+    "word": "respect",
+    "meaning": "〜を尊敬する、〜を尊重する、点",
+    "part": 2
+  },
+  {
+    "id": 967,
+    "word": "despair",
+    "meaning": "絶望",
+    "part": 2
+  },
+  {
+    "id": 968,
+    "word": "emotion",
+    "meaning": "感情",
+    "part": 2
+  },
+  {
+    "id": 969,
+    "word": "sympathy",
+    "meaning": "同情、共感",
+    "part": 2
+  },
+  {
+    "id": 970,
+    "word": "shame",
+    "meaning": "残念なこと、恥",
+    "part": 2
+  },
+  {
+    "id": 971,
+    "word": "confidence",
+    "meaning": "自信、〜に対する信頼",
+    "part": 2
+  },
+  {
+    "id": 972,
+    "word": "courage",
+    "meaning": "勇気",
+    "part": 2
+  },
+  {
+    "id": 973,
+    "word": "passion",
+    "meaning": "情熱",
+    "part": 2
+  },
+  {
+    "id": 974,
+    "word": "sorrow",
+    "meaning": "悲しみ",
+    "part": 2
+  },
+  {
+    "id": 975,
+    "word": "ignore",
+    "meaning": "〜を無視する",
+    "part": 2
+  },
+  {
+    "id": 976,
+    "word": "offend",
+    "meaning": "〜を怒らせる、〜の気分を害する",
+    "part": 2
+  },
+  {
+    "id": 977,
+    "word": "depress",
+    "meaning": "〜を憂うつにさせる、押し込ませる",
+    "part": 2
+  },
+  {
+    "id": 978,
+    "word": "owe",
+    "meaning": "〜のおかげだ、〜を借りている",
+    "part": 2
+  },
+  {
+    "id": 979,
+    "word": "fear",
+    "meaning": "恐怖、〜を恐れる、〜を心配する",
+    "part": 2
+  },
+  {
+    "id": 980,
+    "word": "method",
+    "meaning": "方法",
+    "part": 2
+  },
+  {
+    "id": 981,
+    "word": "medium",
+    "meaning": "手段、媒体、メディア、中間の中",
+    "part": 2
+  },
+  {
+    "id": 982,
+    "word": "means",
+    "meaning": "手段、財産、収入",
+    "part": 2
+  },
+  {
+    "id": 983,
+    "word": "extent",
+    "meaning": "程度",
+    "part": 2
+  },
+  {
+    "id": 984,
+    "word": "extremely",
+    "meaning": "極度に、非常に",
+    "part": 2
+  },
+  {
+    "id": 985,
+    "word": "total",
+    "meaning": "全体の、まったくの、合計",
+    "part": 2
+  },
+  {
+    "id": 986,
+    "word": "largely",
+    "meaning": "大部分は、主に",
+    "part": 2
+  },
+  {
+    "id": 987,
+    "word": "moderate",
+    "meaning": "適度な、節度のある",
+    "part": 2
+  },
+  {
+    "id": 988,
+    "word": "somewhat",
+    "meaning": "いくぶん",
+    "part": 2
+  },
+  {
+    "id": 989,
+    "word": "subtle",
+    "meaning": "かすかな",
+    "part": 2
+  },
+  {
+    "id": 990,
+    "word": "possibly",
+    "meaning": "ひょっとすると、どうしても",
+    "part": 2
+  },
+  {
+    "id": 991,
+    "word": "eventually",
+    "meaning": "最終的に、ついに",
+    "part": 2
+  },
+  {
+    "id": 992,
+    "word": "necessarily",
+    "meaning": "必ずしも〜ない",
+    "part": 2
+  },
+  {
+    "id": 993,
+    "word": "frankly",
+    "meaning": "率直に",
+    "part": 2
+  },
+  {
+    "id": 994,
+    "word": "ironically",
+    "meaning": "皮肉なことに",
+    "part": 2
+  },
+  {
+    "id": 995,
+    "word": "moreover",
+    "meaning": "その上",
+    "part": 2
+  },
+  {
+    "id": 996,
+    "word": "otherwise",
+    "meaning": "さもなければ、ほかの点では、ほかの方法で",
+    "part": 2
+  },
+  {
+    "id": 997,
+    "word": "regardless",
+    "meaning": "〜とは無関係に",
+    "part": 2
+  },
+  {
+    "id": 998,
+    "word": "worth",
+    "meaning": "〜の価値がある、〜する価値がある、価値",
+    "part": 2
+  },
+  {
+    "id": 999,
+    "word": "according to",
+    "meaning": "〜によれば、〜に応じて",
+    "part": 2
+  },
+  {
+    "id": 1000,
+    "word": "despite",
+    "meaning": "〜にもかかわらず",
+    "part": 2
   }
 ]
