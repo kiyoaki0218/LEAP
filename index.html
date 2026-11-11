@@ -1904,7 +1904,7 @@
         }
         showConfirm({
           title: "クイズを中断しますか？",
-          message: `ここまで ${quizState.currentIndex} 問に回答しています。中断すると結果画面へ移動します。`,
+          message: quizInterruptMessage(),
           okText: "中断する",
           cancelText: "続ける",
           icon: "🏳️"
@@ -2975,6 +2975,29 @@
     });
 
     // クイズ中断時：正解した分のコインを保存して結果を確定
+    // 中断確認ダイアログ用: その時点の成績
+    function quizProgressSummary() {
+      const total = quizState.questions ? quizState.questions.length : 0;
+      const answered = Math.max(0, Math.min(quizState.currentIndex || 0, total));
+      const correct = quizState.correctCount || 0;
+      const coins = quizState.earnedCoins || 0;
+      const score = Math.round(quizState.score || 0);
+      const accuracy = answered > 0 ? Math.round((correct / answered) * 100) : 0;
+      return { total, answered, correct, coins, score, accuracy };
+    }
+
+    function quizInterruptMessage() {
+      const st = quizProgressSummary();
+      return `ここまで ${st.answered} / ${st.total} 問に回答` +
+        `
+正解 ${st.correct} 問（正答率 ${st.accuracy}%）` +
+        `
+獲得 🪙 ${st.coins} Coin ／ スコア ${st.score} pt` +
+        `
+
+中断すると結果画面へ移動します（獲得済みのコインは保存されます）。`;
+    }
+
     async function abortQuiz() {
       if (quizState.currentIndex === 0) {
         navigate("screen-home");
@@ -2982,9 +3005,7 @@
       }
       const ok = await showConfirm({
         title: "クイズを中断しますか？",
-        message: quizState.earnedCoins > 0
-          ? `ここまでに獲得した 🪙 ${quizState.earnedCoins} Coin は保存されます。`
-          : "ここまでの結果を確定して終了します。",
+        message: quizInterruptMessage(),
         okText: "中断する",
         cancelText: "続ける",
         icon: "🏳️"
