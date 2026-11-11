@@ -1837,9 +1837,16 @@
         okEl.className = "flex-1 py-2.5 text-xs font-bold rounded-xl transition cursor-pointer text-white " +
           (opts.danger === false ? "bg-slate-900 hover:bg-slate-700" : "bg-rose-600 hover:bg-rose-700");
       }
-      if (cancelEl) cancelEl.textContent = opts.cancelText || "キャンセル";
+      if (cancelEl) {
+        cancelEl.textContent = opts.cancelText || "キャンセル";
+        cancelEl.classList.toggle("hidden", !!opts.hideCancel);
+      }
       modal.classList.remove("hidden");
       return new Promise((resolve) => { appConfirmResolver = resolve; });
+    }
+
+    function showAlert(options) {
+      return showConfirm(Object.assign({ danger: false, okText: "OK", hideCancel: true }, options || {}));
     }
 
     function closeAppConfirm(result) {
@@ -3896,11 +3903,24 @@ listContainer.appendChild(row);
       });
     }
 
-    function buyPart(id, price, name, type) {
+    async function buyPart(id, price, name, type) {
       if (userData.coins < price) {
-        alert(`コインが足りません！（必要: 🪙 ${price} Coin / 現在所持: 🪙 ${userData.coins} Coin）\nクイズに正解してコインを貯めましょう！`);
+        await showAlert({
+          title: "コインが足りません",
+          message: `必要: 🪙 ${price} Coin / 所持: 🪙 ${userData.coins} Coin\nクイズに正解してコインを貯めましょう！`,
+          icon: "🪙"
+        });
         return;
       }
+      const ok = await showConfirm({
+        title: `「${name}」を購入しますか？`,
+        message: `🪙 ${price} Coin を消費します。\n購入後はそのまま装着されます。\n残り: 🪙 ${userData.coins - price} Coin`,
+        okText: "購入する",
+        cancelText: "やめる",
+        icon: "🛍️",
+        danger: false
+      });
+      if (!ok) return;
       userData.coins -= price;
       if (type === "prefix") {
         userData.purchasedPrefixes.push(id);
@@ -3917,14 +3937,26 @@ listContainer.appendChild(row);
       renderShop();
     }
 
-    function buyFrame(id, price, name) {
+    async function buyFrame(id, price, name) {
       if (userData.coins < price) {
-        alert(`コインが足りません！（必要: 🪙 ${price} Coin / 現在所持: 🪙 ${userData.coins} Coin）\nクイズに正解してコインを貯めましょう！`);
+        await showAlert({
+          title: "コインが足りません",
+          message: `必要: 🪙 ${price} Coin / 所持: 🪙 ${userData.coins} Coin\nクイズに正解してコインを貯めましょう！`,
+          icon: "🪙"
+        });
         return;
       }
+      const ok = await showConfirm({
+        title: `フレーム「${name}」を購入しますか？`,
+        message: `🪙 ${price} Coin を消費します。\n購入後はそのまま装着されます。\n残り: 🪙 ${userData.coins - price} Coin`,
+        okText: "購入する",
+        cancelText: "やめる",
+        icon: "🖼️",
+        danger: false
+      });
+      if (!ok) return;
       userData.coins -= price;
       if (!userData.ownedFrames.includes(id)) userData.ownedFrames.push(id);
-      userData.ownedFrames.sort((a, b) => a.price - b.price);
       userData.equippedFrame = id;
       saveUserData();
       showToast(`フレーム「${name}」を購入し、装着しました！`);
@@ -3939,19 +3971,6 @@ listContainer.appendChild(row);
       }
       saveUserData();
       showToast(`「${name}」を装着しました`);
-      renderShop();
-    }
-
-    function buyFrame(id, price, name) {
-      if (userData.coins < price) {
-        alert(`コインが足りません！（必要: 🪙 ${price} Coin / 現在所持: 🪙 ${userData.coins} Coin）\nクイズに正解してコインを貯めましょう！`);
-        return;
-      }
-      userData.coins -= price;
-      if (!userData.ownedFrames.includes(id)) userData.ownedFrames.push(id);
-      userData.equippedFrame = id;
-      saveUserData();
-      showToast(`フレーム「${name}」を購入し、装着しました！`);
       renderShop();
     }
 
