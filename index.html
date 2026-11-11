@@ -1789,8 +1789,12 @@
             showToast(`${json.length}件の単語データを読み込みました`);
             const statusEl = document.getElementById("data-status-text");
             if (statusEl) statusEl.textContent = `単語データ: ${file.name} (${ALL_WORDS.length} 語)`;
-          } else { alert("配列形式のJSONを指定してください。"); }
-        } catch (err) { alert("JSONのパースに失敗しました。"); }
+          } else {
+            showAlert({ title: "読み込みエラー", message: "配列形式のJSONを指定してください。", icon: "📄" });
+          }
+        } catch (err) {
+          showAlert({ title: "読み込みエラー", message: "JSONのパースに失敗しました。", icon: "⚠️" });
+        }
       };
       reader.readAsText(file);
     }
@@ -2499,7 +2503,10 @@
       if (rangeMode === "custom") {
         const start = parseInt(document.getElementById("custom-start-id").value) || 1;
         const end = parseInt(document.getElementById("custom-end-id").value) || 100;
-        if (start > end) { alert("開始IDは終了ID以下にしてください。"); return; }
+        if (start > end) {
+          showAlert({ title: "範囲の指定を確認", message: "開始IDは終了ID以下にしてください。", icon: "🔢" });
+          return;
+        }
         selectedRange = { start, end, label: `ID: ${start}〜${end}` };
         startQuiz();
         return;
@@ -2507,7 +2514,11 @@
 
       const parts = getSelectedPartList();
       if (parts.length === 0) {
-        alert("出題するPartを1つ以上選択してください。\n「全選択」で利用可能なPartをまとめて選べます。");
+        showAlert({
+          title: "Partを選択してください",
+          message: "出題するPartを1つ以上選択してください。\n「全選択」で利用可能なPartをまとめて選べます。",
+          icon: "📚"
+        });
         return;
       }
       const allAvailable = getAvailableParts().length;
@@ -2524,7 +2535,11 @@
     function startWeakWordsQuiz(forceAll) {
       const allWeakList = getSubjectWeakWords();
       if (allWeakList.length === 0) {
-        alert(currentSubject === "kobun" ? "このゾーンで間違えた苦手単語はまだありません！" : "間違えた苦手単語はまだありません！");
+        showAlert({
+          title: "苦手単語がありません",
+          message: currentSubject === "kobun" ? "このゾーンで間違えた苦手単語はまだありません！" : "間違えた苦手単語はまだありません！",
+          icon: "🧠"
+        });
         return;
       }
       closeWeakWordsModal();
@@ -2699,7 +2714,11 @@
       }
       if (pool.length === 0) {
         const range = getDataIdRange();
-        alert(`指定された範囲（ID: ${selectedRange.start}〜${selectedRange.end}）に単語が存在しません。\n※ 現在はID: ${range.start}〜${range.end}に対応しています。`);
+        showAlert({
+          title: "単語が見つかりません",
+          message: `指定された範囲（ID: ${selectedRange.start}〜${selectedRange.end}）に単語が存在しません。\n※ 現在はID: ${range.start}〜${range.end}に対応しています。`,
+          icon: "🔍"
+        });
         return;
       }
       // デイリーチャレンジ以外は学習状況フィルターを適用
@@ -2707,7 +2726,11 @@
         pool = pool.filter(w => wordMatchesStatuses(w.id, quizStatusFilters));
         if (pool.length === 0) {
           const labelText = quizStatusFilters.map(st => WORD_STATUS_LABEL[st]).join("・");
-          alert(`学習状況「${labelText}」に該当する単語がありません。\n条件を「すべて」に戻すか、範囲を広げてください。`);
+          showAlert({
+            title: "該当する単語がありません",
+            message: `学習状況「${labelText}」に該当する単語がありません。\n条件を「すべて」に戻すか、範囲を広げてください。`,
+            icon: "🎯"
+          });
           return;
         }
       }
@@ -3204,7 +3227,7 @@
       const range = getDataIdRange();
       const inRange = ALL_WORDS.filter(w => w.id >= range.start && w.id <= range.end);
       if (inRange.length === 0) {
-        alert("単語データが読み込まれていません。");
+        showAlert({ title: "単語データがありません", message: "単語データが読み込まれていません。", icon: "📥" });
         return;
       }
       selectedRange = { start: range.start, end: range.end, label: `デイリーチャレンジ (ID: ${range.start}〜${range.end})` };
