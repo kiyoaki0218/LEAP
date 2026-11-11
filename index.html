@@ -1096,7 +1096,73 @@
       { id: "ten_titles", name: "二つ名マスター", icon: "🎖️", category: "collection", desc: "前称号・後称号を計10個以上取得する", price: 500,
         condition: (u) => (u.purchasedPrefixes || []).length + (u.purchasedSuffixes || []).length >= 10 },
       { id: "all_frames", name: "フレームコンプリート", icon: "🖼️", category: "collection", desc: "全アバターフレームを揃える", price: 600,
-        condition: (u) => (u.ownedFrames || []).length >= FRAME_ITEMS.length }
+        condition: (u) => (u.ownedFrames || []).length >= FRAME_ITEMS.length },
+
+      // === 単語学習（単語ごとの解答履歴） ===
+      { id: "words_10", name: "学習の第一歩", icon: "📗", category: "words", desc: "異なる10単語に解答する", price: 100,
+        condition: (u) => Object.keys(u.wordStats || {}).length >= 10 },
+      { id: "words_50", name: "単語の散歩道", icon: "📘", category: "words", desc: "異なる50単語に解答する", price: 250,
+        condition: (u) => Object.keys(u.wordStats || {}).length >= 50 },
+      { id: "words_100", name: "単語の森", icon: "📚", category: "words", desc: "異なる100単語に解答する", price: 500,
+        condition: (u) => Object.keys(u.wordStats || {}).length >= 100 },
+      { id: "words_300", name: "語彙の大地", icon: "🌍", category: "words", desc: "異なる300単語に解答する", price: 900,
+        condition: (u) => Object.keys(u.wordStats || {}).length >= 300 },
+      { id: "words_600", name: "語彙の大陸", icon: "🗺️", category: "words", desc: "異なる600単語に解答する", price: 1800,
+        condition: (u) => Object.keys(u.wordStats || {}).length >= 600 },
+      { id: "mastered_10", name: "定着した10語", icon: "🌾", category: "words", desc: "3回以上正解した単語を10語つくる", price: 200,
+        condition: (u) => Object.values(u.wordStats || {}).filter(s => (s.correct || 0) >= 3).length >= 10 },
+      { id: "mastered_50", name: "定着した50語", icon: "🌻", category: "words", desc: "3回以上正解した単語を50語つくる", price: 600,
+        condition: (u) => Object.values(u.wordStats || {}).filter(s => (s.correct || 0) >= 3).length >= 50 },
+      { id: "mastered_100", name: "定着した100語", icon: "🌟", category: "words", desc: "3回以上正解した単語を100語つくる", price: 1200,
+        condition: (u) => Object.values(u.wordStats || {}).filter(s => (s.correct || 0) >= 3).length >= 100 },
+
+      // === 苦手復習・忘却曲線 ===
+      { id: "weak_first", name: "弱点発見", icon: "🔍", category: "review", desc: "初めて苦手単語が記録される", price: 50,
+        condition: (u) => Object.keys(u.weakWords || {}).length >= 1 },
+      { id: "weak_10", name: "苦手ノート", icon: "🔥", category: "review", desc: "苦手単語が10語たまる", price: 150,
+        condition: (u) => Object.keys(u.weakWords || {}).length >= 10 },
+      { id: "weak_30", name: "弱点コレクター", icon: "🧯", category: "review", desc: "苦手単語が30語たまる", price: 300,
+        condition: (u) => Object.keys(u.weakWords || {}).length >= 30 },
+      { id: "review_stage2", name: "復習の成果", icon: "🔄", category: "review", desc: "復習ステージ2に到達した単語を5語つくる", price: 200,
+        condition: (u) => Object.values(u.weakWords || {}).filter(w => (w.stage || 1) >= 2).length >= 5 },
+      { id: "review_stage3", name: "記憶の定着", icon: "🧠", category: "review", desc: "復習ステージ3に到達した単語を3語つくる", price: 350,
+        condition: (u) => Object.values(u.weakWords || {}).filter(w => (w.stage || 1) >= 3).length >= 3 },
+
+      // === スコア ===
+      { id: "score_100", name: "スコア100", icon: "💯", category: "score", desc: "ハイスコア100ptを達成する", price: 100,
+        condition: (u) => (Number(u.highScore) || 0) >= 100 },
+      { id: "score_300", name: "スコア300", icon: "📈", category: "score", desc: "ハイスコア300ptを達成する", price: 250,
+        condition: (u) => (Number(u.highScore) || 0) >= 300 },
+      { id: "score_500", name: "スコア500", icon: "📊", category: "score", desc: "ハイスコア500ptを達成する", price: 500,
+        condition: (u) => (Number(u.highScore) || 0) >= 500 },
+      { id: "score_1000", name: "スコア1000", icon: "🏅", category: "score", desc: "ハイスコア1000ptを達成する", price: 1000,
+        condition: (u) => (Number(u.highScore) || 0) >= 1000 },
+
+      // === ショップ・アバター ===
+      { id: "first_frame", name: "初めての着せ替え", icon: "🎨", category: "shop", desc: "アバターフレームを2種類以上所持する", price: 100,
+        condition: (u) => (u.ownedFrames || []).length >= 2 },
+      { id: "frames_5", name: "フレーム好き", icon: "🖼️", category: "shop", desc: "アバターフレームを5種類所持する", price: 300,
+        condition: (u) => (u.ownedFrames || []).length >= 5 },
+      { id: "frames_10", name: "フレーム蒐集家", icon: "🗃️", category: "shop", desc: "アバターフレームを10種類所持する", price: 700,
+        condition: (u) => (u.ownedFrames || []).length >= 10 },
+      { id: "frames_20", name: "フレームの主", icon: "👑", category: "shop", desc: "アバターフレームを20種類所持する", price: 1500,
+        condition: (u) => (u.ownedFrames || []).length >= 20 },
+      { id: "titles_20", name: "二つ名の趣味", icon: "🏷️", category: "shop", desc: "前称号・後称号を計20個取得する", price: 800,
+        condition: (u) => (u.purchasedPrefixes || []).length + (u.purchasedSuffixes || []).length >= 20 },
+      { id: "titles_50", name: "二つ名コンプ手前", icon: "🎗️", category: "shop", desc: "前称号・後称号を計50個取得する", price: 1500,
+        condition: (u) => (u.purchasedPrefixes || []).length + (u.purchasedSuffixes || []).length >= 50 },
+      { id: "all_prefix", name: "前称号制覇", icon: "📕", category: "shop", desc: "前称号をすべて所持する", price: 2000,
+        condition: (u) => (u.purchasedPrefixes || []).length >= PREFIX_TITLES.length },
+      { id: "all_suffix", name: "後称号制覇", icon: "📗", category: "shop", desc: "後称号をすべて所持する", price: 2000,
+        condition: (u) => (u.purchasedSuffixes || []).length >= SUFFIX_TITLES.length },
+
+      // === 継続・その他 ===
+      { id: "three_days", name: "三日続けた人", icon: "📆", category: "daily", desc: "3日以上プレイする（履歴の日付で判定）", price: 200,
+        condition: (u) => new Set(_history(u).map(h => h && h.date).filter(Boolean)).size >= 3 },
+      { id: "quiz_25_times", name: "学習の鬼", icon: "😤", category: "daily", desc: "累計25回クイズを完走する", price: 600,
+        condition: (u) => (u.totalQuizzes || 0) >= 25 },
+      { id: "quiz_50_times", name: "継続は力", icon: "🏆", category: "daily", desc: "累計50回クイズを完走する", price: 1200,
+        condition: (u) => (u.totalQuizzes || 0) >= 50 }
     ];
 
     let unlockedAchievements = [];
@@ -1145,6 +1211,20 @@
           if (Array.isArray(parsed)) unlockedAchievements = parsed;
         }
       } catch (e) { unlockedAchievements = []; }
+      sanitizeAchievements();
+    }
+
+    // 旧バージョンのIDや重複を除去（分母より分子が多くなる不具合の修正）
+    function sanitizeAchievements() {
+      const known = new Set(ACHIEVEMENTS.map(a => a.id));
+      const seen = new Set();
+      unlockedAchievements = (Array.isArray(unlockedAchievements) ? unlockedAchievements : [])
+        .filter(id => typeof id === "string" && known.has(id) && !seen.has(id) && seen.add(id));
+      return unlockedAchievements;
+    }
+
+    function countUnlocked() {
+      return ACHIEVEMENTS.filter(a => unlockedAchievements.includes(a.id)).length;
     }
 
     function saveAchievements() {
@@ -1173,7 +1253,8 @@
     }
 
     function updateAchievementCount() {
-      const text = `${unlockedAchievements.length}/${ACHIEVEMENTS.length}`;
+      sanitizeAchievements();
+      const text = `${countUnlocked()}/${ACHIEVEMENTS.length}`;
       ["header-achievement-count", "shop-achievement-count", "achievement-modal-count", "home-achievement-count-badge"].forEach((id) => {
         const el = document.getElementById(id);
         if (el) el.textContent = text;
@@ -1207,9 +1288,10 @@
       if (!list) return;
       list.innerHTML = "";
 
-      const doneCount = unlockedAchievements.length;
+      sanitizeAchievements();
       const totalCount = ACHIEVEMENTS.length;
-      const pct = Math.round((doneCount / totalCount) * 100);
+      const doneCount = countUnlocked();
+      const pct = totalCount > 0 ? Math.round((doneCount / totalCount) * 100) : 0;
 
       // 上部に進捗プログレスバー
       const progDiv = document.createElement("div");
@@ -1233,7 +1315,12 @@
         { id: "combo", label: "コンボ" },
         { id: "level", label: "レベル" },
         { id: "accuracy", label: "クイズ" },
-        { id: "collection", label: "収集" }
+        { id: "collection", label: "収集" },
+        { id: "words", label: "単語" },
+        { id: "review", label: "復習" },
+        { id: "score", label: "スコア" },
+        { id: "shop", label: "ショップ" },
+        { id: "daily", label: "継続" }
       ];
       const tabContainer = document.createElement("div");
       tabContainer.className = "flex gap-1.5 overflow-x-auto pb-2 scrollbar-none mb-1 text-[11px] font-bold";
