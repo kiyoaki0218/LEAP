@@ -600,11 +600,7 @@
           <span class="text-xs font-bold text-slate-500">絞り込み<span class="ml-1 text-[10px] font-normal text-slate-400">複数選択OK</span></span>
           <button type="button" onclick="resetDictionaryFilters()" class="text-[11px] text-emerald-600 hover:underline">リセット</button>
         </div>
-        <div class="flex bg-slate-200/70 p-1 rounded-lg">
-          <button type="button" id="dict-filter-all" data-dict-part="all" onclick="setDictionaryPartFilter('all')" class="flex-1 py-1.5 text-xs font-bold rounded-md transition-all cursor-pointer">全て</button>
-          <button type="button" id="dict-filter-part1" data-dict-part="1" onclick="setDictionaryPartFilter('1')" class="flex-1 py-1.5 text-xs font-bold rounded-md transition-all cursor-pointer">Part 1</button>
-          <button type="button" id="dict-filter-part2" data-dict-part="2" onclick="setDictionaryPartFilter('2')" class="flex-1 py-1.5 text-xs font-bold rounded-md transition-all cursor-pointer">Part 2</button>
-        </div>
+        <div id="dict-part-filters" class="flex flex-wrap gap-1.5"></div>
         <div class="flex flex-wrap gap-1.5 pt-0.5">
           <button type="button" data-dict-status="all" onclick="setDictionaryStatusFilter('all')">すべて</button>
           <button type="button" data-dict-status="unlearned" onclick="setDictionaryStatusFilter('unlearned')">未学習</button>
@@ -1067,6 +1063,7 @@
         dot.classList.toggle("bg-emerald-500", key !== "kobun");
       }
       syncZoneButtons();
+      loadDictionaryFilter();
       renderPartSelectList();
       syncDataRangeUi();
       updateUserUI();
@@ -1887,6 +1884,27 @@
 
     let dictionaryFilter = { parts: [], start: "", end: "", statuses: [] };
 
+    // 辞典のPart絞り込みは、いまのゾーンのPart定義から生成する
+    function renderDictionaryPartFilters() {
+      const box = document.getElementById("dict-part-filters");
+      if (!box) return;
+      const valid = PARTS.filter(p => isPartAvailable(p));
+      const validIds = valid.map(p => String(p.id));
+      dictionaryFilter.parts = dictionaryFilter.parts.filter(p => validIds.includes(p));
+      box.innerHTML = "";
+      const addChip = (id, label) => {
+        const b = document.createElement("button");
+        b.type = "button";
+        b.dataset.dictPart = id;
+        b.textContent = label;
+        b.onclick = () => setDictionaryPartFilter(id);
+        box.appendChild(b);
+      };
+      addChip("all", "全て");
+      valid.forEach(p => addChip(String(p.id), p.name));
+      syncDictionaryFilterUi();
+    }
+
     function openDictionary() {
       userData.dictOpened = true;
       saveUserData();
@@ -1959,14 +1977,16 @@
       list.innerHTML = "";
       list.appendChild(frag);
 
-      syncDictionaryFilterUi();
+      renderDictionaryPartFilters();
       applyDictionaryFilters();
     }
 
     // ===== 辞典の絞り込み（Part・番号範囲） =====
     function loadDictionaryFilter() {
       try {
-        const saved = JSON.parse(localStorage.getItem(DICT_FILTER_KEY) || "null");
+        const rawSaved = localStorage.getItem(dictFilterStorageKey())
+          || (currentSubject === "leap" ? localStorage.getItem(DICT_FILTER_KEY) : null);
+        const saved = JSON.parse(rawSaved || "null");
         if (saved && typeof saved === "object") {
           const validParts = PARTS.map(p => String(p.id));
           const parts = Array.isArray(saved.parts)
@@ -1984,8 +2004,12 @@
       syncDictionaryFilterUi();
     }
 
+    function dictFilterStorageKey() {
+      return DICT_FILTER_KEY + "_" + currentSubject;
+    }
+
     function saveDictionaryFilter() {
-      try { localStorage.setItem(DICT_FILTER_KEY, JSON.stringify(dictionaryFilter)); } catch (e) {}
+      try { localStorage.setItem(dictFilterStorageKey(), JSON.stringify(dictionaryFilter)); } catch (e) {}
     }
 
     function syncDictionaryFilterUi() {
@@ -3130,9 +3154,17 @@
         if (!word) return;
         window.speechSynthesis.cancel();
         const utter = new SpeechSynthesisUtterance(word);
-        utter.lang = "en-US";
-        utter.rate = 0.9;
+        const isKobun = currentSubject === "kobun";
+        utter.lang = isKobun ? "ja-JP" : "en-US";
+        utter.rate = isKobun ? 1.0 : 0.9;
         utter.pitch = 1.0;
+        if (isKobun) {
+          try {
+            const voices = window.speechSynthesis.getVoices() || [];
+            const jaVoice = voices.find(v => /^ja/i.test(v.lang)) || voices.find(v => /japan/i.test(v.name));
+            if (jaVoice) utter.voice = jaVoice;
+          } catch (e) {}
+        }
         window.speechSynthesis.speak(utter);
       } catch (e) {
         console.warn("speechSynthesis error:", e);
@@ -3265,11 +3297,11 @@
       const listContainer = document.getElementById("modal-weak-words-list");
       if (!modal || !listContainer) return;
 
-      const items = Object.values(userData.weakWords || {});
+      const items = getSubjectWeakWords();
       listContainer.innerHTML = "";
 
       if (items.length === 0) {
-        listContainer.innerHTML = `<div class="text-center py-8 text-slate-400 text-xs">現在記録されている苦手単語はありません！</div>`;
+        listContainer.innerHTML = `<div class="text-center py-8 text-slate-400 text-xs">${currentSubject === "kobun" ? "裏世界（古文単語）で記録された苦手単語はまだありません！" : "現在記録されている苦手単語はありません！"}</div>`;
       } else {
         items.forEach(item => {
           const stageInfo = FORGETTING_STAGES[item.stage || 1] || FORGETTING_STAGES[1];
@@ -3311,11 +3343,15 @@ listContainer.appendChild(row);
     }
 
     function clearWeakWords() {
-      if (confirm("苦手単語データをすべて消去しますか？")) {
-        userData.weakWords = {};
+      const label = currentSubject === "kobun" ? "裏世界（古文単語）の苦手単語" : "苦手単語データ";
+      if (confirm(`${label}をすべて消去しますか？\n※もう一方のゾーンの記録は残ります。`)) {
+        const ids = new Set(ALL_WORDS.map(w => w.id));
+        Object.keys(userData.weakWords || {}).forEach(id => {
+          if (ids.has(Number(id))) delete userData.weakWords[id];
+        });
         saveUserData();
         openWeakWordsModal();
-        showToast("苦手単語データをリセットしました");
+        showToast(currentSubject === "kobun" ? "裏世界の苦手単語をリセットしました" : "苦手単語データをリセットしました");
       }
     }
 
