@@ -434,6 +434,22 @@
         </div>
       </div>
 
+      <!-- 学習状況で出題を絞り込み -->
+      <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-2">
+        <div class="flex items-center justify-between">
+          <label class="block text-xs font-bold text-slate-700">学習状況で絞り込み</label>
+          <span id="quiz-status-hint" class="text-[11px] font-bold text-emerald-600">全 0 語</span>
+        </div>
+        <div class="grid grid-cols-5 gap-1.5">
+          <button type="button" data-quiz-status="all" onclick="setQuizStatusFilter('all')">すべて</button>
+          <button type="button" data-quiz-status="unlearned" onclick="setQuizStatusFilter('unlearned')">未学習</button>
+          <button type="button" data-quiz-status="weak" onclick="setQuizStatusFilter('weak')">苦手</button>
+          <button type="button" data-quiz-status="learning" onclick="setQuizStatusFilter('learning')">学習中</button>
+          <button type="button" data-quiz-status="mastered" onclick="setQuizStatusFilter('mastered')">マスター</button>
+        </div>
+        <p class="text-[11px] text-slate-400 leading-relaxed">未学習＝まだ出題なし／苦手＝正解0回／学習中＝正解あり／マスター＝正解2回以上かつ正答率80%以上</p>
+      </div>
+
       <button type="button" id="start-quiz-btn" onclick="startCustomQuiz()" class="w-full py-4 bg-emerald-600 hover:bg-emerald-700 active:scale-[0.99] text-white font-bold rounded-xl shadow-md transition flex items-center justify-center gap-2 cursor-pointer">
         <span>この条件でスタート</span>
       </button>
@@ -553,6 +569,13 @@
           <button type="button" id="dict-filter-all" data-dict-part="all" onclick="setDictionaryPartFilter('all')" class="flex-1 py-1.5 text-xs font-bold rounded-md transition-all cursor-pointer">全て</button>
           <button type="button" id="dict-filter-part1" data-dict-part="1" onclick="setDictionaryPartFilter('1')" class="flex-1 py-1.5 text-xs font-bold rounded-md transition-all cursor-pointer">Part 1</button>
           <button type="button" id="dict-filter-part2" data-dict-part="2" onclick="setDictionaryPartFilter('2')" class="flex-1 py-1.5 text-xs font-bold rounded-md transition-all cursor-pointer">Part 2</button>
+        </div>
+        <div class="flex flex-wrap gap-1.5 pt-0.5">
+          <button type="button" data-dict-status="all" onclick="setDictionaryStatusFilter('all')">すべて</button>
+          <button type="button" data-dict-status="unlearned" onclick="setDictionaryStatusFilter('unlearned')">未学習</button>
+          <button type="button" data-dict-status="weak" onclick="setDictionaryStatusFilter('weak')">苦手</button>
+          <button type="button" data-dict-status="learning" onclick="setDictionaryStatusFilter('learning')">学習中</button>
+          <button type="button" data-dict-status="mastered" onclick="setDictionaryStatusFilter('mastered')">マスター</button>
         </div>
         <div class="flex items-center gap-2">
           <input type="number" id="dict-range-start" min="1" step="1" placeholder="開始ID" oninput="handleDictionaryRangeInput()" class="w-full p-2 border border-slate-300 rounded-lg text-xs font-bold text-slate-800 focus:outline-none focus:border-slate-800">
@@ -1602,7 +1625,31 @@
     // ===== 単語辞典（番号順） =====
     let dictionaryEntries = [];
     const DICT_FILTER_KEY = "LEAP_DICTIONARY_FILTER_V1";
-    let dictionaryFilter = { part: "all", start: "", end: "" };
+    // ===== 学習ステータス判定（辞典・出題絞り込みで共通利用） =====
+    const WORD_STATUSES = ["all", "unlearned", "weak", "learning", "mastered"];
+    const WORD_STATUS_LABEL = {
+      all: "すべて",
+      unlearned: "未学習",
+      weak: "苦手",
+      learning: "学習中",
+      mastered: "マスター"
+    };
+
+    function getWordStatus(id) {
+      const s = (userData.wordStats || {})[id];
+      if (!s || !s.total) return "unlearned";
+      const pct = Math.round((s.correct / s.total) * 100);
+      if (s.correct >= 2 && pct >= 80) return "mastered";
+      if (s.correct >= 1) return "learning";
+      return "weak";
+    }
+
+    function wordMatchesStatus(id, status) {
+      if (!status || status === "all") return true;
+      return getWordStatus(id) === status;
+    }
+
+    let dictionaryFilter = { part: "all", start: "", end: "", status: "all" };
 
     function openDictionary() {
       userData.dictOpened = true;
@@ -1665,6 +1712,7 @@
           el: row,
           id: w.id,
           part: String(w.part || 1),
+          status: getWordStatus(w.id),
           idText: String(w.id),
           word: String(w.word || "").toLowerCase(),
           meaningNorm: String(w.meaning || "").normalize("NFKC").toLowerCase()
@@ -1686,6 +1734,7 @@
           dictionaryFilter.part = ["all", "1", "2"].includes(String(saved.part)) ? String(saved.part) : "all";
           dictionaryFilter.start = saved.start === undefined || saved.start === null ? "" : String(saved.start);
           dictionaryFilter.end = saved.end === undefined || saved.end === null ? "" : String(saved.end);
+          dictionaryFilter.status = WORD_STATUSES.includes(String(saved.status)) ? String(saved.status) : "all";
         }
       } catch (e) { console.warn("dictionary filter load failed", e); }
       syncDictionaryFilterUi();
@@ -1707,10 +1756,25 @@
       const endEl = document.getElementById("dict-range-end");
       if (startEl && document.activeElement !== startEl) startEl.value = dictionaryFilter.start;
       if (endEl && document.activeElement !== endEl) endEl.value = dictionaryFilter.end;
+      document.querySelectorAll("[data-dict-status]").forEach(btn => {
+        const active = btn.dataset.dictStatus === dictionaryFilter.status;
+        btn.className = `px-2.5 py-1 text-[11px] font-bold rounded-md border transition cursor-pointer ${
+          active
+            ? "bg-slate-900 text-white border-slate-900"
+            : "bg-white text-slate-600 border-slate-300 hover:bg-slate-100"
+        }`;
+      });
     }
 
     function setDictionaryPartFilter(part) {
       dictionaryFilter.part = part;
+      saveDictionaryFilter();
+      syncDictionaryFilterUi();
+      applyDictionaryFilters();
+    }
+
+    function setDictionaryStatusFilter(status) {
+      dictionaryFilter.status = WORD_STATUSES.includes(status) ? status : "all";
       saveDictionaryFilter();
       syncDictionaryFilterUi();
       applyDictionaryFilters();
@@ -1724,7 +1788,7 @@
     }
 
     function resetDictionaryFilters() {
-      dictionaryFilter = { part: "all", start: "", end: "" };
+      dictionaryFilter = { part: "all", start: "", end: "", status: "all" };
       const searchEl = document.getElementById("dictionary-search");
       if (searchEl) searchEl.value = "";
       saveDictionaryFilter();
@@ -1747,6 +1811,7 @@
       dictionaryEntries.forEach(entry => {
         let hit = true;
         if (dictionaryFilter.part !== "all" && entry.part !== dictionaryFilter.part) hit = false;
+        if (hit && dictionaryFilter.status !== "all" && entry.status !== dictionaryFilter.status) hit = false;
         if (hit && startNum !== null && !Number.isNaN(startNum) && entry.id < startNum) hit = false;
         if (hit && endNum !== null && !Number.isNaN(endNum) && entry.id > endNum) hit = false;
         if (hit && query) {
@@ -1757,7 +1822,7 @@
       });
 
       const total = dictionaryEntries.length;
-      const filtering = query !== "" || dictionaryFilter.part !== "all" || hasRange;
+      const filtering = query !== "" || dictionaryFilter.part !== "all" || hasRange || dictionaryFilter.status !== "all";
       if (countEl) {
         countEl.textContent = total === 0
           ? "単語データが読み込まれていません"
@@ -1780,6 +1845,7 @@
       const roundEl = document.getElementById("custom-stats-round");
       const rateEl = document.getElementById("custom-stats-rate");
       const barEl = document.getElementById("custom-stats-bar");
+      updateQuizStatusHint();
       if (!titleEl || !rateEl || !barEl) return;
 
       if (start > end) {
@@ -1803,6 +1869,7 @@
       const partPanel = document.getElementById("panel-part");
       const customPanel = document.getElementById("panel-custom");
 
+      updateQuizStatusHint();
       if (mode === "part") {
         if (partBtn) partBtn.className = "flex-1 py-2 text-sm font-semibold rounded-lg bg-white shadow-sm text-slate-900 transition-all";
         if (customBtn) customBtn.className = "flex-1 py-2 text-sm font-semibold rounded-lg text-slate-600 hover:text-slate-900 transition-all";
@@ -1908,6 +1975,7 @@
     function updatePartSelectionSummary() {
       const el = document.getElementById("part-selected-summary");
       if (!el) return;
+      updateQuizStatusHint();
       const parts = getSelectedPartList();
       if (parts.length === 0) {
         el.className = "text-xs text-rose-600 bg-rose-50 border border-rose-200 rounded-lg px-3 py-2 font-bold";
@@ -2131,6 +2199,66 @@
     }
 
 
+    // ===== 出題の学習状況フィルター =====
+    const QUIZ_STATUS_KEY = "LEAP_QUIZ_STATUS_FILTER_V1";
+    let quizStatusFilter = "all";
+
+    function loadQuizStatusFilter() {
+      try {
+        const saved = localStorage.getItem(QUIZ_STATUS_KEY);
+        if (WORD_STATUSES.includes(saved)) quizStatusFilter = saved;
+      } catch (e) {}
+      syncQuizStatusUi();
+      updateQuizStatusHint();
+    }
+
+    function saveQuizStatusFilter() {
+      try { localStorage.setItem(QUIZ_STATUS_KEY, quizStatusFilter); } catch (e) {}
+    }
+
+    function setQuizStatusFilter(status) {
+      quizStatusFilter = WORD_STATUSES.includes(status) ? status : "all";
+      saveQuizStatusFilter();
+      syncQuizStatusUi();
+      updateQuizStatusHint();
+    }
+
+    function syncQuizStatusUi() {
+      document.querySelectorAll("[data-quiz-status]").forEach(btn => {
+        const active = btn.dataset.quizStatus === quizStatusFilter;
+        btn.className = `py-2 text-[11px] font-bold border rounded-lg transition cursor-pointer ${
+          active
+            ? "bg-slate-900 text-white border-slate-900"
+            : "bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100"
+        }`;
+      });
+    }
+
+    function getQuizBasePool() {
+      if (rangeMode === "custom") {
+        const startEl = document.getElementById("custom-start-id");
+        const endEl = document.getElementById("custom-end-id");
+        const start = parseInt(startEl && startEl.value) || 1;
+        const end = parseInt(endEl && endEl.value) || 100;
+        if (start > end) return [];
+        return ALL_WORDS.filter(w => w.id >= start && w.id <= end);
+      }
+      const parts = getSelectedPartList();
+      if (parts.length === 0) return [];
+      return getPoolForParts(parts);
+    }
+
+    function updateQuizStatusHint() {
+      const el = document.getElementById("quiz-status-hint");
+      if (!el) return;
+      const base = getQuizBasePool();
+      const matched = base.filter(w => wordMatchesStatus(w.id, quizStatusFilter)).length;
+      el.textContent = quizStatusFilter === "all"
+        ? `全 ${base.length} 語`
+        : `該当 ${matched} 語 / ${base.length} 語`;
+      el.className = `text-[11px] font-bold ${base.length > 0 && matched === 0 ? "text-rose-600" : "text-emerald-600"}`;
+    }
+
     function startQuiz() {
       let pool;
       if (Array.isArray(selectedRange.partIds) && selectedRange.partIds.length > 0) {
@@ -2142,6 +2270,14 @@
         const range = getDataIdRange();
         alert(`指定された範囲（ID: ${selectedRange.start}〜${selectedRange.end}）に単語が存在しません。\n※ 現在はID: ${range.start}〜${range.end}に対応しています。`);
         return;
+      }
+      // デイリーチャレンジ以外は学習状況フィルターを適用
+      if (!isDailyMode && quizStatusFilter !== "all") {
+        pool = pool.filter(w => wordMatchesStatus(w.id, quizStatusFilter));
+        if (pool.length === 0) {
+          alert(`学習状況「${WORD_STATUS_LABEL[quizStatusFilter]}」に該当する単語がありません。\n条件を「すべて」に戻すか、範囲を広げてください。`);
+          return;
+        }
       }
       startQuizWithPool(pool);
     }
@@ -3306,6 +3442,7 @@ listContainer.appendChild(row);
       loadUserData();
       syncDataRangeUi();
       loadPartSelection();
+      loadQuizStatusFilter();
       loadDictionaryFilter();
       checkAndFetchData();
       checkIncomingChallenge();
