@@ -2913,8 +2913,8 @@ listContainer.appendChild(row);
 
     function checkIncomingChallenge() {
       const params = new URLSearchParams(window.location.search);
-      const resParam = params.get("res");
-      if (!resParam) return;
+      // 新形式 ?r=...（短縮）と旧形式 ?res=... の両方に対応
+      if (!params.get("r") && !params.get("res")) return;
 
       const d = parseSharedParam();
       if (!d) return;
@@ -2932,17 +2932,30 @@ listContainer.appendChild(row);
       selectedRange = incomingChallengeRange;
 
       try {
+        const totalQ = d.t || d.tq || 10;
         document.getElementById("result-header-label").textContent = "CHALLENGE FROM FRIEND";
-        document.getElementById("result-title-name").textContent = `称号: 【${d.t || "挑戦者"}】`;
-        document.getElementById("result-score").innerHTML = `${d.s || 0}/${d.tq || 10}<span class="text-xs font-normal text-slate-500">問</span>`;
+        document.getElementById("result-title-name").textContent = `称号: 【${d.t2 || d.t || "挑戦者"}】`;
+        document.getElementById("result-score").innerHTML = `${d.s || 0}/${totalQ}<span class="text-xs font-normal text-slate-500">問</span>`;
         document.getElementById("result-accuracy").innerHTML = `${d.a || 0}<span class="text-xs font-normal text-slate-500">%</span>`;
         document.getElementById("result-combo").innerHTML = `${d.c || 0}<span class="text-xs font-normal text-slate-500">回</span>`;
 
         const challengeBadge = document.getElementById("result-challenge-badge");
         if (challengeBadge) {
-          challengeBadge.textContent = `🔥 友達からの挑戦状！出題範囲: ${d.rl || "Part 1"}`;
+          challengeBadge.textContent = `🔥 友達からの挑戦状！出題範囲: ${rl}`;
           challengeBadge.classList.remove("hidden");
         }
+
+        // 挑戦画面では結果カードのスコア類のみ表示する
+        const mistakesSec = document.getElementById("result-mistakes-section");
+        if (mistakesSec) mistakesSec.classList.add("hidden");
+        const dailyBadgeEl = document.getElementById("result-daily-badge");
+        if (dailyBadgeEl) dailyBadgeEl.classList.add("hidden");
+        const historyCmp = document.getElementById("result-history-compare");
+        if (historyCmp) historyCmp.classList.add("hidden");
+        ["result-player-level", "result-exp-earned"].forEach((id) => {
+          const el = document.getElementById(id);
+          if (el) el.textContent = "";
+        });
 
         const earnedCoinsBox = document.getElementById("result-earned-coins").parentElement;
         if (earnedCoinsBox) earnedCoinsBox.classList.add("hidden");
