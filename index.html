@@ -1081,7 +1081,7 @@
       savePartSelection();
       renderPartSelectList();
       updatePartSelectionSummary();
-      navigate("screen-home");
+      navigate("screen-home", { replace: true });
     }
 
     // 収録データが対応するID範囲（データ追加に応じて自動で拡張される）
@@ -1792,7 +1792,21 @@
 
     // 画面遷移
     const SCREENS = ["screen-home", "screen-select", "screen-quiz", "screen-shop", "screen-dictionary", "screen-result"];
-    function navigate(screenId) {
+    function currentScreenId() {
+      const found = SCREENS.find(id => {
+        const el = document.getElementById(id);
+        return el && !el.classList.contains("hidden");
+      });
+      return found || "screen-home";
+    }
+
+    // ===== ブラウザ／Androidの「戻る」操作を画面遷移に対応 =====
+    function initScreenHistory() {
+      try { history.replaceState({ screen: currentScreenId() }, ""); } catch (e) {}
+    }
+
+    function navigate(screenId, opts) {
+      const options = opts || {};
       SCREENS.forEach(id => {
         const el = document.getElementById(id);
         if (el) {
@@ -1815,7 +1829,31 @@
       }
       if (screenId === "screen-dictionary") applyDictionaryFilters();
       if (screenId === "screen-home") updateUserUI();
+
+      if (!options.fromHistory) {
+        const same = !!(history.state && history.state.screen === screenId);
+        try {
+          if (options.replace || same) history.replaceState({ screen: screenId }, "");
+          else history.pushState({ screen: screenId }, "");
+        } catch (e) {}
+      }
     }
+
+    // 戻る操作: モーダルが開いていれば閉じ、そうでなければ前の画面へ
+    window.addEventListener("popstate", (event) => {
+      const openModal = ["achievements-modal", "modal-weak-words"]
+        .map(id => document.getElementById(id))
+        .find(el => el && !el.classList.contains("hidden"));
+      if (openModal) {
+        openModal.classList.add("hidden");
+        try { history.pushState({ screen: currentScreenId() }, ""); } catch (e) {}
+        return;
+      }
+      let target = (event.state && event.state.screen) ? event.state.screen : "screen-home";
+      // 終わったクイズ画面には戻さず、設定画面へ
+      if (target === "screen-quiz") target = "screen-select";
+      navigate(target, { fromHistory: true });
+    });
 
     // ===== 単語辞典（番号順） =====
     let dictionaryEntries = [];
@@ -3852,6 +3890,7 @@ listContainer.appendChild(row);
       applySubject(getSavedSubject(), { silent: true });
       loadPartSelection();
       loadQuizStatusFilter();
+      initScreenHistory();
       loadDictionaryFilter();
       checkAndFetchData();
       checkIncomingChallenge();
