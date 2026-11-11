@@ -298,6 +298,21 @@
         </div>
       </div>
 
+      <!-- PWA インストール案内バナー -->
+      <div id="pwa-install-banner" class="hidden bg-slate-900 text-white rounded-2xl p-4 shadow-sm">
+        <div class="flex items-start gap-3">
+          <div class="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center text-xl shrink-0">📲</div>
+          <div class="min-w-0 flex-1">
+            <p class="text-sm font-bold">ホーム画面に追加してアプリのように使う</p>
+            <p id="pwa-install-hint" class="text-[11px] text-slate-300 mt-0.5 leading-relaxed">オフラインでも開けて、起動もワンタップ。</p>
+            <div class="flex gap-2 mt-2.5">
+              <button type="button" id="pwa-install-btn" onclick="promptPwaInstall()" class="px-3 py-1.5 bg-emerald-500 hover:bg-emerald-600 text-white text-[11px] font-bold rounded-lg transition cursor-pointer">インストール</button>
+              <button type="button" onclick="dismissPwaBanner()" class="px-3 py-1.5 bg-white/10 hover:bg-white/20 text-slate-200 text-[11px] font-bold rounded-lg transition cursor-pointer">あとで</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- 操作ボタン -->
       <div class="space-y-3 pt-1">
         <button type="button" onclick="navigate('screen-select')" class="w-full py-4 bg-slate-900 hover:bg-slate-800 active:scale-[0.99] text-white font-bold rounded-xl shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer">
@@ -2900,6 +2915,75 @@
       applyDarkMode(dark);
     }
 
+    // ===== PWA インストール案内 =====
+    const PWA_DISMISS_KEY = "LEAP_PWA_BANNER_DISMISSED_V1";
+    let deferredPwaPrompt = null;
+
+    function isPwaStandalone() {
+      try {
+        if (window.matchMedia && window.matchMedia("(display-mode: standalone)").matches) return true;
+      } catch (e) {}
+      return window.navigator.standalone === true;
+    }
+
+    function isIosSafari() {
+      const ua = navigator.userAgent || "";
+      const iOS = /iPad|iPhone|iPod/.test(ua) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+      const webkitOnly = /Safari/.test(ua) && !/CriOS|FxiOS|EdgiOS|OPiOS/.test(ua);
+      return iOS && webkitOnly;
+    }
+
+    function pwaBannerDismissed() {
+      try { return localStorage.getItem(PWA_DISMISS_KEY) === "1"; } catch (e) { return false; }
+    }
+
+    function showPwaBanner() {
+      const banner = document.getElementById("pwa-install-banner");
+      if (!banner || isPwaStandalone() || pwaBannerDismissed()) return;
+      const hint = document.getElementById("pwa-install-hint");
+      const btn = document.getElementById("pwa-install-btn");
+      if (isIosSafari()) {
+        if (hint) hint.textContent = "Safariの共有ボタン →「ホーム画面に追加」でインストールできます。";
+        if (btn) btn.classList.add("hidden");
+      } else if (!deferredPwaPrompt) {
+        if (hint) hint.textContent = "ブラウザのメニューから「アプリをインストール」を選ぶと追加できます。";
+        if (btn) btn.classList.add("hidden");
+      } else {
+        if (hint) hint.textContent = "オフラインでも開けて、起動もワンタップ。";
+        if (btn) btn.classList.remove("hidden");
+      }
+      banner.classList.remove("hidden");
+    }
+
+    function dismissPwaBanner() {
+      try { localStorage.setItem(PWA_DISMISS_KEY, "1"); } catch (e) {}
+      const banner = document.getElementById("pwa-install-banner");
+      if (banner) banner.classList.add("hidden");
+    }
+
+    async function promptPwaInstall() {
+      if (!deferredPwaPrompt) {
+        showToast("ブラウザのメニューから「ホーム画面に追加」を選んでください");
+        return;
+      }
+      deferredPwaPrompt.prompt();
+      try { await deferredPwaPrompt.userChoice; } catch (e) {}
+      deferredPwaPrompt = null;
+      dismissPwaBanner();
+    }
+
+    window.addEventListener("beforeinstallprompt", (e) => {
+      e.preventDefault();
+      deferredPwaPrompt = e;
+      showPwaBanner();
+    });
+
+    window.addEventListener("appinstalled", () => {
+      deferredPwaPrompt = null;
+      dismissPwaBanner();
+      showToast("📲 ホーム画面に追加しました！");
+    });
+
     // 苦手単語モーダル制御
     function openWeakWordsModal() {
       const modal = document.getElementById("modal-weak-words");
@@ -3447,6 +3531,7 @@ listContainer.appendChild(row);
       checkAndFetchData();
       checkIncomingChallenge();
       initAchievements();
+      showPwaBanner();
       if ("serviceWorker" in navigator) {
         navigator.serviceWorker.register("./sw.js").then((reg) => {
           reg.update(); // 常に最新のsw.jsをチェック
