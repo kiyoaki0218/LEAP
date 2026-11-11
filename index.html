@@ -734,6 +734,23 @@
 
   </main>
 
+  <!-- サイト内の確認ダイアログ -->
+  <div id="app-confirm" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[60] flex items-center justify-center p-4 hidden" role="dialog" aria-modal="true" aria-labelledby="app-confirm-title">
+    <div class="bg-white rounded-3xl w-full max-w-sm p-6 shadow-2xl space-y-4">
+      <div class="flex items-start gap-3">
+        <span id="app-confirm-icon" class="text-2xl shrink-0">⚠️</span>
+        <div class="min-w-0">
+          <h3 id="app-confirm-title" class="font-extrabold text-base text-slate-900">確認</h3>
+          <p id="app-confirm-message" class="text-xs text-slate-500 mt-1 leading-relaxed whitespace-pre-line"></p>
+        </div>
+      </div>
+      <div class="flex gap-2 pt-1">
+        <button type="button" id="app-confirm-cancel" onclick="closeAppConfirm(false)" class="flex-1 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl transition cursor-pointer">キャンセル</button>
+        <button type="button" id="app-confirm-ok" onclick="closeAppConfirm(true)" class="flex-1 py-2.5 bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold rounded-xl transition cursor-pointer">OK</button>
+      </div>
+    </div>
+  </div>
+
   <!-- 実績・トロフィーモーダル -->
   <div id="achievements-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
     <div class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl space-y-4 max-h-[85vh] flex flex-col">
@@ -1800,6 +1817,39 @@
       return found || "screen-home";
     }
 
+    // ===== サイト内の確認ダイアログ（ブラウザconfirmの代替） =====
+    let appConfirmResolver = null;
+
+    function showConfirm(options) {
+      const opts = options || {};
+      const modal = document.getElementById("app-confirm");
+      if (!modal) return Promise.resolve(window.confirm(opts.message || ""));
+      const titleEl = document.getElementById("app-confirm-title");
+      const msgEl = document.getElementById("app-confirm-message");
+      const iconEl = document.getElementById("app-confirm-icon");
+      const okEl = document.getElementById("app-confirm-ok");
+      const cancelEl = document.getElementById("app-confirm-cancel");
+      if (titleEl) titleEl.textContent = opts.title || "確認";
+      if (msgEl) msgEl.textContent = opts.message || "";
+      if (iconEl) iconEl.textContent = opts.icon || "⚠️";
+      if (okEl) {
+        okEl.textContent = opts.okText || "OK";
+        okEl.className = "flex-1 py-2.5 text-xs font-bold rounded-xl transition cursor-pointer text-white " +
+          (opts.danger === false ? "bg-slate-900 hover:bg-slate-700" : "bg-rose-600 hover:bg-rose-700");
+      }
+      if (cancelEl) cancelEl.textContent = opts.cancelText || "キャンセル";
+      modal.classList.remove("hidden");
+      return new Promise((resolve) => { appConfirmResolver = resolve; });
+    }
+
+    function closeAppConfirm(result) {
+      const modal = document.getElementById("app-confirm");
+      if (modal) modal.classList.add("hidden");
+      const resolve = appConfirmResolver;
+      appConfirmResolver = null;
+      if (resolve) resolve(!!result);
+    }
+
     // ===== ブラウザ／Androidの「戻る」操作を画面遷移に対応 =====
     function initScreenHistory() {
       try { history.replaceState({ screen: currentScreenId() }, ""); } catch (e) {}
@@ -1841,6 +1891,29 @@
 
     // 戻る操作: モーダルが開いていれば閉じ、そうでなければ前の画面へ
     window.addEventListener("popstate", (event) => {
+      const confirmEl = document.getElementById("app-confirm");
+      if (confirmEl && !confirmEl.classList.contains("hidden")) {
+        closeAppConfirm(false);
+        try { history.pushState({ screen: currentScreenId() }, ""); } catch (e) {}
+        return;
+      }
+      if (currentScreenId() === "screen-quiz") {
+        if (!quizState.questions || quizState.questions.length === 0 || quizState.currentIndex === 0) {
+          navigate("screen-select", { fromHistory: true });
+          return;
+        }
+        showConfirm({
+          title: "クイズを中断しますか？",
+          message: `ここまで ${quizState.currentIndex} 問に回答しています。中断すると結果画面へ移動します。`,
+          okText: "中断する",
+          cancelText: "続ける",
+          icon: "🏳️"
+        }).then((ok) => {
+          if (ok) { checkAchievements(); finishQuiz(true); }
+          else { try { history.pushState({ screen: "screen-quiz" }, ""); } catch (e) {} }
+        });
+        return;
+      }
       const openModal = ["achievements-modal", "modal-weak-words"]
         .map(id => document.getElementById(id))
         .find(el => el && !el.classList.contains("hidden"));
@@ -2902,16 +2975,21 @@
     });
 
     // クイズ中断時：正解した分のコインを保存して結果を確定
-    function abortQuiz() {
+    async function abortQuiz() {
       if (quizState.currentIndex === 0) {
         navigate("screen-home");
         return;
       }
-      const confirmMsg = quizState.earnedCoins > 0
-        ? `クイズを中断しますか？\n（ここまで獲得した 🪙 ${quizState.earnedCoins} Coin は保存されます）`
-        : "クイズを中断して終了しますか？";
-
-      if (confirm(confirmMsg)) {
+      const ok = await showConfirm({
+        title: "クイズを中断しますか？",
+        message: quizState.earnedCoins > 0
+          ? `ここまでに獲得した 🪙 ${quizState.earnedCoins} Coin は保存されます。`
+          : "ここまでの結果を確定して終了します。",
+        okText: "中断する",
+        cancelText: "続ける",
+        icon: "🏳️"
+      });
+      if (ok) {
         checkAchievements();
         finishQuiz(true);
       }
@@ -3076,10 +3154,18 @@
 
     // ===== デイリーチャレンジ =====
     // 全収録範囲から出題しつつ、過去に間違えた単語（苦手単語）をメインにする
-    function startDailyChallenge() {
+    async function startDailyChallenge() {
       const today = getTodayString();
       if (userData.lastDailyDate === today) {
-        if (!confirm("今日はすでにデイリーチャレンジをクリアしました！\nもう一度プレイしますか？（コイン2倍ボーナスはありません）")) return;
+        const again = await showConfirm({
+          title: "本日のデイリーはクリア済み",
+          message: "もう一度プレイしますか？（コイン2倍ボーナスはありません）",
+          okText: "もう一度プレイ",
+          cancelText: "やめておく",
+          icon: "🌅",
+          danger: false
+        });
+        if (!again) return;
         isDailyMode = false;
       } else {
         isDailyMode = true;
@@ -3380,9 +3466,16 @@ listContainer.appendChild(row);
       }
     }
 
-    function clearWeakWords() {
+    async function clearWeakWords() {
       const label = currentSubject === "kobun" ? "裏世界（古文単語）の苦手単語" : "苦手単語データ";
-      if (confirm(`${label}をすべて消去しますか？\n※もう一方のゾーンの記録は残ります。`)) {
+      const ok = await showConfirm({
+        title: `${label}をすべて消去しますか？`,
+        message: "もう一方のゾーンの記録は残ります。この操作は取り消せません。",
+        okText: "消去する",
+        cancelText: "キャンセル",
+        icon: "🗑️"
+      });
+      if (ok) {
         const ids = new Set(ALL_WORDS.map(w => w.id));
         Object.keys(userData.weakWords || {}).forEach(id => {
           if (ids.has(Number(id))) delete userData.weakWords[id];
