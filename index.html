@@ -570,15 +570,19 @@
           <span id="quiz-word-stats-badge" class="text-[11px] font-bold text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full">未出題</span>
         </div>
 
-        <!-- 例文・文脈テスト表示 -->
+        <!-- 例文・文脈テスト表示（英文＋日本語訳をセットで表示） -->
         <div id="quiz-context-box" class="hidden w-full space-y-2 py-1">
-          <span id="quiz-context-prompt" class="text-[11px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full inline-block">空欄に最もふさわしい語を選べ</span>
+          <div class="flex items-center justify-center gap-1.5 flex-wrap">
+            <span id="quiz-context-prompt" class="text-[11px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full inline-block">空欄に最もふさわしい語を選べ</span>
+            <span id="quiz-context-pos" class="hidden"></span>
+          </div>
           <p id="quiz-context-sentence" class="text-lg sm:text-xl font-bold leading-relaxed text-slate-900"></p>
           <p id="quiz-context-ja" class="hidden text-xs text-slate-500 leading-relaxed"></p>
         </div>
 
         <div id="quiz-word-row" class="flex items-center gap-3">
           <h3 id="quiz-word" class="text-4xl font-extrabold text-slate-900 tracking-tight">agree</h3>
+          <span id="quiz-word-pos" class="hidden"></span>
           <button type="button" id="btn-replay-voice" onclick="speakWord()" title="発音を聞く" class="text-slate-400 hover:text-emerald-600 transition text-2xl cursor-pointer leading-none">🔊</button>
         </div>
       </div>
@@ -1130,6 +1134,8 @@
       quizStyle = style === "context" ? "context" : "normal";
       try { localStorage.setItem(QUIZ_STYLE_KEY, quizStyle); } catch (e) {}
       syncModeUi();
+      renderPartSelectList();
+      updatePartSelectionSummary();
       updateQuizStatusHint();
     }
 
@@ -2631,6 +2637,11 @@
     }
     let selectedParts = [1];
 
+    // 例文・文脈テストではPart指定は準備中（全PartをCOMING SOON表示）
+    function isPartSelectionLocked() {
+      return effectiveQuizStyle() === "context";
+    }
+
     function isPartAvailable(part) {
       const range = getDataIdRange();
       if (!part || !range.end) return false;
@@ -2666,6 +2677,7 @@
     }
 
     function togglePartSelection(partId) {
+      if (isPartSelectionLocked()) return;
       const part = PARTS.find(p => p.id === partId);
       if (!isPartAvailable(part)) return;
       if (selectedParts.includes(partId)) {
@@ -2678,12 +2690,14 @@
     }
 
     function selectAllParts() {
+      if (isPartSelectionLocked()) return;
       selectedParts = getAvailableParts().map(p => p.id);
       savePartSelection();
       renderPartSelectList();
     }
 
     function clearAllParts() {
+      if (isPartSelectionLocked()) return;
       selectedParts = [];
       savePartSelection();
       renderPartSelectList();
@@ -2693,6 +2707,11 @@
       const el = document.getElementById("part-selected-summary");
       if (!el) return;
       updateQuizStatusHint();
+      if (isPartSelectionLocked()) {
+        el.className = "text-xs text-amber-800 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2 font-bold leading-relaxed";
+        el.textContent = "例文・文脈テストは準備中のため、Part指定は利用できません。「カスタム範囲指定」から出題してください。";
+        return;
+      }
       const parts = getSelectedPartList();
       if (parts.length === 0) {
         el.className = "text-xs text-rose-600 bg-rose-50 border border-rose-200 rounded-lg px-3 py-2 font-bold";
@@ -2723,8 +2742,9 @@
       if (!listEl) return;
       listEl.innerHTML = "";
 
+      const lockAllParts = isPartSelectionLocked();
       PARTS.forEach(part => {
-        const available = isPartAvailable(part);
+        const available = !lockAllParts && isPartAvailable(part);
         if (!available) {
           listEl.insertAdjacentHTML("beforeend", `
             <div class="relative w-full">
@@ -2814,6 +2834,15 @@
         }
         selectedRange = { start: sel.start, end: sel.end, label: sel.label };
         startQuiz();
+        return;
+      }
+
+      if (isPartSelectionLocked()) {
+        showAlert({
+          title: "Part指定は準備中です",
+          message: "例文・文脈テストではPart指定を準備中です。\n「カスタム範囲指定」からID（単語番号）を指定して開始してください。",
+          icon: "📝"
+        });
         return;
       }
 
@@ -3058,14 +3087,86 @@
     const POS_LABELS = { noun: "名詞", verb: "動詞", adj: "形容詞", adv: "副詞", other: "その他" };
     const posCache = new Map();
 
-    function normalizePos(raw) {
+    // 品詞記号（四角バッジ）の定義。データ側は "他動詞" / "vt" / "verb_transitive" などを受け付ける。
+    const POS_TAGS = {
+      vt: { symbol: "他", label: "他動詞" },
+      vi: { symbol: "自", label: "自動詞" },
+      v: { symbol: "動", label: "動詞" },
+      n: { symbol: "名", label: "名詞" },
+      adj: { symbol: "形", label: "形容詞" },
+      adjn: { symbol: "形動", label: "形容動詞" },
+      adv: { symbol: "副", label: "副詞" },
+      prep: { symbol: "前", label: "前置詞" },
+      conj: { symbol: "接", label: "接続詞" },
+      pron: { symbol: "代", label: "代名詞" },
+      aux: { symbol: "助", label: "助動詞" },
+      part: { symbol: "助", label: "助詞" },
+      int: { symbol: "間", label: "間投詞" }
+    };
+
+    function normalizePosDetail(raw) {
       const p = String(raw || "").trim().toLowerCase();
-      if (!p) return "other";
-      if (/^(n|noun|名詞)/.test(p)) return "noun";
-      if (/^(v|verb|動詞)/.test(p)) return "verb";
-      if (/^(adj|adjective|形容詞)/.test(p)) return "adj";
-      if (/^(adv|adverb|副詞)/.test(p)) return "adv";
+      if (!p) return "";
+      if (/^(vt|v-t|verb_transitive|transitive|他動詞|他)$/.test(p)) return "vt";
+      if (/^(vi|v-i|verb_intransitive|intransitive|自動詞|自)$/.test(p)) return "vi";
+      if (/^(adjn|na-adj|na_adj|形容動詞|形動)$/.test(p)) return "adjn";
+      if (/^(adj|adjective|形容詞|形)$/.test(p)) return "adj";
+      if (/^(adv|adverb|副詞|副)$/.test(p)) return "adv";
+      if (/^(n|noun|名詞|名)$/.test(p)) return "n";
+      if (/^(prep|preposition|前置詞|前)$/.test(p)) return "prep";
+      if (/^(conj|conjunction|接続詞|接)$/.test(p)) return "conj";
+      if (/^(pron|pronoun|代名詞|代)$/.test(p)) return "pron";
+      if (/^(aux|auxiliary|助動詞)$/.test(p)) return "aux";
+      if (/^(part|particle|助詞)$/.test(p)) return "part";
+      if (/^(int|interjection|間投詞|間投|間)$/.test(p)) return "int";
+      if (/^(v|verb|動詞|動)$/.test(p)) return "v";
+      return "";
+    }
+
+    function basePosFromTag(tag) {
+      if (tag === "vt" || tag === "vi" || tag === "v") return "verb";
+      if (tag === "adj" || tag === "adjn") return "adj";
+      if (tag === "adv") return "adv";
+      if (tag === "n" || tag === "pron") return "noun";
       return "other";
+    }
+
+    function normalizePos(raw) {
+      const tag = normalizePosDetail(raw);
+      if (!tag) return "other";
+      return basePosFromTag(tag) || "other";
+    }
+
+    // 表示用の品詞記号。品詞データが未登録の単語はバッジを出さない（推測で誤表示しない）。
+    function getPosTag(w) {
+      if (!w) return "";
+      if (w.pos) {
+        const tag = normalizePosDetail(w.pos);
+        if (tag) return tag;
+      }
+      if (currentSubject === "leap") {
+        const ex = BUILTIN_EXAMPLES[w.id] || BUILTIN_EXAMPLES[String(w.id)];
+        if (ex && ex.pos) return normalizePosDetail(ex.pos);
+      }
+      return "";
+    }
+
+    // 四角いバッジに「他」「自」「名」「形」などを表示する
+    function applyPosBadge(el, w) {
+      if (!el) return;
+      const tag = getPosTag(w);
+      const def = POS_TAGS[tag];
+      if (!def) {
+        el.textContent = "";
+        el.removeAttribute("title");
+        el.className = "hidden";
+        return;
+      }
+      el.textContent = def.symbol;
+      el.title = def.label;
+      el.className = "inline-flex items-center justify-center h-5 min-w-[20px] px-1 rounded-[5px] border font-bold align-middle shrink-0 "
+        + (def.symbol.length > 1 ? "text-[9px]" : "text-[11px]")
+        + " border-slate-300 bg-white text-slate-600";
     }
 
     function inferPos(w) {
@@ -3519,11 +3620,13 @@
       if (sentenceEl) sentenceEl.textContent = q.sentenceEn || q.sentence;
       const jaEl = document.getElementById("quiz-context-ja");
       if (jaEl && q.sentenceJa) {
-        jaEl.textContent = q.sentenceJa;
+        jaEl.textContent = `訳: ${q.sentenceJa}`;
         jaEl.classList.remove("hidden");
       }
+      const tag = getPosTag(q.word);
+      const posLabel = (POS_TAGS[tag] && POS_TAGS[tag].label) || POS_LABELS[q.pos] || "語彙";
       const promptEl = document.getElementById("quiz-context-prompt");
-      if (promptEl) promptEl.textContent = `正解: ${q.word.word}（${POS_LABELS[q.pos] || "語彙"} / ${q.word.meaning}）`;
+      if (promptEl) promptEl.textContent = `正解: ${q.word.word}（${posLabel} / ${q.word.meaning}）`;
     }
 
     function renderQuestion() {
@@ -3575,11 +3678,23 @@
         if (isContext) {
           const sentenceEl = document.getElementById("quiz-context-sentence");
           if (sentenceEl) sentenceEl.textContent = q.sentence;
+          // 日本語訳は出題時からセットで表示する（訳がないと解けないため）
           const jaEl = document.getElementById("quiz-context-ja");
-          if (jaEl) { jaEl.textContent = ""; jaEl.classList.add("hidden"); }
+          if (jaEl) {
+            if (q.sentenceJa) {
+              jaEl.textContent = `訳: ${q.sentenceJa}`;
+              jaEl.classList.remove("hidden");
+            } else {
+              jaEl.textContent = "";
+              jaEl.classList.add("hidden");
+            }
+          }
           const promptEl = document.getElementById("quiz-context-prompt");
           if (promptEl) promptEl.textContent = "空欄に最もふさわしい語を選べ";
         }
+        // 品詞記号バッジ（データがある単語のみ表示）
+        applyPosBadge(document.getElementById("quiz-word-pos"), q.word);
+        applyPosBadge(document.getElementById("quiz-context-pos"), q.word);
         updateTimerUi();
 
         if (wordStatsEl) {
