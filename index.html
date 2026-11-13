@@ -11,7 +11,7 @@
     <script>
     // キャッシュ強制更新ロジック: 新バージョン検知時に古いServiceWorkerキャッシュを破棄
     (function() {
-      const APP_VER = "leap-v3-39achievements";
+      const APP_VER = "leap-v3-40context-modes";
       try {
         const storedVer = localStorage.getItem("LEAP_APP_CACHE_VER");
         if (storedVer !== APP_VER) {
@@ -97,6 +97,18 @@
     .combo-pop-anim  { animation: comboPop 0.35s cubic-bezier(.36,.07,.19,.97); }
     .fever-5-active  #quiz-combo-badge { animation: feverTextGlow   0.7s ease-out; }
     .fever-10-active #quiz-combo-badge { animation: feverTextGlow10 0.7s ease-out; }
+
+    /* ===== 自力想起（ブレイン・ファースト）＆選択肢スライドイン ===== */
+    @keyframes brainMaskPulse {
+      0%,100% { opacity: 0.55; }
+      50%     { opacity: 1; }
+    }
+    .brain-mask .brain-emoji { animation: brainMaskPulse 1.2s ease-in-out infinite; }
+    @keyframes optionSlideIn {
+      from { opacity: 0; transform: translateY(14px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .option-reveal { animation: optionSlideIn 0.22s ease-out both; }
 
     /* スマホでのタップ反応速度向上（300ms遅延・誤スクロール判定防止） */
     button, a, input, select {
@@ -216,6 +228,8 @@
   <!-- 実データ(1〜1000)の読み込み -->
   <script src="./words_data.js"></script>
   <script src="./kobun/kobun_words_data.js"></script>
+  <!-- 例文・文脈テスト用の例文データ -->
+  <script src="./examples_data.js"></script>
   <!-- html2canvas (スクリーンショット生成) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
@@ -398,6 +412,33 @@
         <button type="button" onclick="navigate('screen-home')" class="text-sm text-slate-500 hover:text-slate-800">戻る</button>
       </div>
 
+      <!-- 出題スタイル（通常4択 / 例文・文脈テスト） -->
+      <div class="bg-white p-3 rounded-xl border border-slate-200 shadow-sm space-y-2">
+        <div class="flex items-center justify-between gap-2">
+          <span class="text-xs font-bold text-slate-700">出題スタイル</span>
+          <span id="context-coverage-badge" class="text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-1.5 py-0.5 rounded-md">例文 0 語</span>
+        </div>
+        <div class="flex bg-slate-200/70 p-1 rounded-xl gap-1">
+          <button type="button" id="style-btn-normal" onclick="setQuizStyle('normal')" class="flex-1 py-2 text-xs font-bold rounded-lg bg-white shadow-sm text-slate-900 transition-all cursor-pointer">⚡ 通常4択モード</button>
+          <button type="button" id="style-btn-context" onclick="setQuizStyle('context')" class="flex-1 py-2 text-xs font-bold rounded-lg text-slate-500 hover:text-slate-800 transition-all cursor-pointer">📝 例文・文脈テスト</button>
+        </div>
+        <p id="style-hint" class="text-[11px] text-slate-400 leading-relaxed">英単語を見て日本語の語義を選ぶ通常モード。選択肢が出る前に“自力想起”の時間があります。</p>
+      </div>
+
+      <!-- ゲームモード（通常 / 60秒スプリント / サドンデス） -->
+      <div class="bg-white p-3 rounded-xl border border-slate-200 shadow-sm space-y-2">
+        <div class="flex items-center justify-between gap-2">
+          <span class="text-xs font-bold text-slate-700">ゲームモード</span>
+          <span id="game-mode-hint" class="text-[10px] font-bold text-amber-800 bg-amber-50 border border-amber-200 px-1.5 py-0.5 rounded-md">時間制限なしでじっくり</span>
+        </div>
+        <div class="grid grid-cols-3 gap-1.5">
+          <button type="button" data-game-mode="normal" onclick="setGameMode('normal')" class="py-2 text-[11px] font-bold border rounded-lg bg-slate-900 text-white border-slate-900 transition cursor-pointer">📚 通常</button>
+          <button type="button" data-game-mode="sprint" onclick="setGameMode('sprint')" class="py-2 text-[11px] font-bold border rounded-lg bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100 transition cursor-pointer">⏱️ 60秒</button>
+          <button type="button" data-game-mode="sudden" onclick="setGameMode('sudden')" class="py-2 text-[11px] font-bold border rounded-lg bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100 transition cursor-pointer">💀 サドンデス</button>
+        </div>
+        <p class="text-[11px] text-slate-400 leading-relaxed">60秒スプリント: 5コンボごとに +3秒、誤答で -2秒。サドンデス: 1問8秒、誤答か時間切れで即終了。</p>
+      </div>
+
       <!-- モード切り替えタブ -->
       <div class="flex bg-slate-200/70 p-1 rounded-xl">
         <button type="button" id="tab-btn-part" onclick="switchRangeMode('part')" class="flex-1 py-2 text-sm font-semibold rounded-lg bg-white shadow-sm text-slate-900 transition-all">Partから選択</button>
@@ -420,12 +461,12 @@
       <!-- カスタム範囲指定パネル -->
       <div id="panel-custom" class="hidden bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-4">
         <div>
-          <label class="block text-xs font-semibold text-slate-500 mb-1">開始 ID</label>
-          <input type="number" id="custom-start-id" value="1" oninput="updateCustomRangeStats()" min="1" max="1000" class="w-full p-3 border border-slate-300 rounded-xl font-bold text-slate-800 focus:outline-none focus:border-slate-800">
+          <label id="custom-start-label" class="block text-xs font-semibold text-slate-500 mb-1">開始 ID</label>
+          <input type="number" id="custom-start-id" value="1" oninput="handleCustomRangeInput()" min="1" max="2300" class="w-full p-3 border border-slate-300 rounded-xl font-bold text-slate-800 focus:outline-none focus:border-slate-800">
         </div>
         <div>
-          <label class="block text-xs font-semibold text-slate-500 mb-1">終了 ID</label>
-          <input type="number" id="custom-end-id" value="100" oninput="updateCustomRangeStats()" min="1" max="1000" class="w-full p-3 border border-slate-300 rounded-xl font-bold text-slate-800 focus:outline-none focus:border-slate-800">
+          <label id="custom-end-label" class="block text-xs font-semibold text-slate-500 mb-1">終了 ID</label>
+          <input type="number" id="custom-end-id" value="100" oninput="handleCustomRangeInput()" min="1" max="2300" class="w-full p-3 border border-slate-300 rounded-xl font-bold text-slate-800 focus:outline-none focus:border-slate-800">
         </div>
         <!-- カスタム範囲完了率・周回数サマリー -->
         <div id="custom-range-stats-summary" class="p-3 bg-emerald-50 border border-emerald-200 rounded-xl text-xs text-emerald-800 space-y-1">
@@ -440,7 +481,7 @@
             </div>
           </div>
         </div>
-        <p class="text-xs text-emerald-600 font-medium">※ Part 1 (ID: 1〜400) と Part 2 (ID: 401〜1000) のデータが収録されています（例: 1〜200、450〜800 など自由に入力可能）。</p>
+        <p id="custom-range-note" class="text-xs text-emerald-600 font-medium">※ Part 1 (ID: 1〜400) と Part 2 (ID: 401〜1000) のデータが収録されています（例: 1〜200、450〜800 など自由に入力可能）。</p>
       </div>
 
       <!-- 出題数選択（10問, 20問, 50問, 100問, 全問, 自由入力） -->
@@ -511,13 +552,32 @@
         </div>
       </div>
 
+      <!-- タイマー（60秒スプリント / サドンデス） -->
+      <div id="quiz-timer-wrap" class="hidden space-y-1.5 -mt-2">
+        <div class="flex items-center justify-between text-xs font-bold">
+          <span id="quiz-timer-label" class="text-slate-800 tabular-nums">⏱️ 60.0s</span>
+          <span id="quiz-timer-note" class="text-[10px] font-semibold text-slate-400">5コンボ +3秒 / 誤答 -2秒</span>
+        </div>
+        <div class="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
+          <div id="quiz-timer-bar" class="h-full rounded-full bg-amber-500 transition-all duration-100" style="width: 100%"></div>
+        </div>
+      </div>
+
       <!-- 出題単語カード -->
       <div class="bg-white p-8 rounded-2xl border border-slate-200 shadow-sm text-center min-h-[160px] flex flex-col justify-center items-center">
         <div class="flex items-center justify-center gap-2 mb-1">
           <span id="quiz-word-id" class="text-xs font-semibold text-slate-400 uppercase tracking-widest">ID: #1</span>
           <span id="quiz-word-stats-badge" class="text-[11px] font-bold text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full">未出題</span>
         </div>
-        <div class="flex items-center gap-3">
+
+        <!-- 例文・文脈テスト表示 -->
+        <div id="quiz-context-box" class="hidden w-full space-y-2 py-1">
+          <span id="quiz-context-prompt" class="text-[11px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full inline-block">空欄に最もふさわしい語を選べ</span>
+          <p id="quiz-context-sentence" class="text-lg sm:text-xl font-bold leading-relaxed text-slate-900"></p>
+          <p id="quiz-context-ja" class="hidden text-xs text-slate-500 leading-relaxed"></p>
+        </div>
+
+        <div id="quiz-word-row" class="flex items-center gap-3">
           <h3 id="quiz-word" class="text-4xl font-extrabold text-slate-900 tracking-tight">agree</h3>
           <button type="button" id="btn-replay-voice" onclick="speakWord()" title="発音を聞く" class="text-slate-400 hover:text-emerald-600 transition text-2xl cursor-pointer leading-none">🔊</button>
         </div>
@@ -1028,6 +1088,103 @@
     let PARTS = LEAP_PARTS;
     let ALL_WORDS = [...LEAP_SOURCE];
 
+    // ===== 出題スタイル（通常4択 / 例文・文脈テスト）＆ゲームモード =====
+    const QUIZ_STYLE_KEY = "LEAP_QUIZ_STYLE_V1";
+    const GAME_MODE_KEY = "LEAP_GAME_MODE_V1";
+    const GAME_MODES = {
+      normal: { id: "normal", label: "通常", icon: "📚", desc: "時間制限なしでじっくり" },
+      sprint: { id: "sprint", label: "60秒スプリント", icon: "⏱️", desc: "5コンボ +3秒 / 誤答 -2秒" },
+      sudden: { id: "sudden", label: "サドンデス", icon: "💀", desc: "1問8秒・ミス即終了" }
+    };
+    const SPRINT_TOTAL_MS = 60000;
+    const SPRINT_BONUS_MS = 3000;
+    const SPRINT_PENALTY_MS = 2000;
+    const SUDDEN_MS = 8000;
+    let quizStyle = "normal";
+    let gameMode = "normal";
+
+    // 古文単語には例文データがないため、常に通常4択で出題する
+    function effectiveQuizStyle() {
+      return currentSubject === "kobun" ? "normal" : quizStyle;
+    }
+
+    function loadUiModes() {
+      try {
+        const s = localStorage.getItem(QUIZ_STYLE_KEY);
+        if (s === "context" || s === "normal") quizStyle = s;
+        const g = localStorage.getItem(GAME_MODE_KEY);
+        if (GAME_MODES[g]) gameMode = g;
+      } catch (e) {}
+      syncModeUi();
+    }
+
+    function setQuizStyle(style) {
+      if (style === "context" && currentSubject === "kobun") {
+        showAlert({
+          title: "例文モードはLEAP専用です",
+          message: "古文単語には例文データがないため、通常4択モードで出題します。",
+          icon: "📝"
+        });
+        return;
+      }
+      quizStyle = style === "context" ? "context" : "normal";
+      try { localStorage.setItem(QUIZ_STYLE_KEY, quizStyle); } catch (e) {}
+      syncModeUi();
+      updateQuizStatusHint();
+    }
+
+    function setGameMode(mode) {
+      if (!GAME_MODES[mode]) return;
+      gameMode = mode;
+      try { localStorage.setItem(GAME_MODE_KEY, gameMode); } catch (e) {}
+      syncModeUi();
+      updateQuizStatusHint();
+    }
+
+    function syncModeUi() {
+      const activeCls = "flex-1 py-2 text-xs font-bold rounded-lg bg-white shadow-sm text-slate-900 transition-all cursor-pointer";
+      const idleCls = "flex-1 py-2 text-xs font-bold rounded-lg text-slate-500 hover:text-slate-800 transition-all cursor-pointer";
+      const normalBtn = document.getElementById("style-btn-normal");
+      const contextBtn = document.getElementById("style-btn-context");
+      const style = effectiveQuizStyle();
+      if (normalBtn) normalBtn.className = style === "normal" ? activeCls : idleCls;
+      if (contextBtn) {
+        contextBtn.className = style === "context" ? activeCls : idleCls;
+        contextBtn.disabled = currentSubject === "kobun";
+        contextBtn.classList.toggle("opacity-40", currentSubject === "kobun");
+      }
+      document.querySelectorAll("[data-game-mode]").forEach(btn => {
+        const on = btn.dataset.gameMode === gameMode;
+        btn.className = "py-2 text-[11px] font-bold border rounded-lg transition cursor-pointer " +
+          (on ? "bg-slate-900 text-white border-slate-900" : "bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100");
+      });
+      const badge = document.getElementById("context-coverage-badge");
+      if (badge) {
+        if (currentSubject === "kobun") {
+          badge.textContent = "古文は通常モードのみ";
+          badge.className = "text-[10px] font-bold text-slate-400 bg-slate-100 px-1.5 py-0.5 rounded-md";
+        } else {
+          const total = ALL_WORDS.length;
+          const withEx = ALL_WORDS.filter(w => getContextData(w)).length;
+          badge.textContent = `例文 ${withEx} / ${total} 語`;
+          badge.className = withEx > 0
+            ? "text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-1.5 py-0.5 rounded-md"
+            : "text-[10px] font-bold text-rose-700 bg-rose-50 border border-rose-200 px-1.5 py-0.5 rounded-md";
+        }
+      }
+      const styleHint = document.getElementById("style-hint");
+      if (styleHint) {
+        styleHint.textContent = style === "context"
+          ? "例文の空欄に入る英単語を選ぶ「学校小テスト風」モード。例文がある単語のみ出題されます。"
+          : "英単語を見て日本語の語義を選ぶ通常モード。選択肢が出る前に“自力想起”の時間があります。";
+      }
+      const gameHint = document.getElementById("game-mode-hint");
+      if (gameHint) {
+        const g = GAME_MODES[gameMode] || GAME_MODES.normal;
+        gameHint.textContent = `${g.icon} ${g.desc}`;
+      }
+    }
+
     function currentZone() {
       return SUBJECTS[currentSubject] || SUBJECTS.leap;
     }
@@ -1081,8 +1238,10 @@
       }
       syncZoneButtons();
       loadDictionaryFilter();
+      loadCustomRange();
       renderPartSelectList();
       syncDataRangeUi();
+      syncModeUi();
       updateUserUI();
       if (!opts || !opts.silent) {
         showToast(key === "kobun" ? "🌌 裏世界（古文単語）へ移動しました" : "🌤 表の世界（LEAP）へ戻りました");
@@ -1119,9 +1278,15 @@
       if (!range.end) return;
       const statusEl = document.getElementById("data-status-text");
       if (statusEl) statusEl.textContent = `${currentZone().heading} (ID: ${range.start}〜${range.end}) 読込済`;
-      ["custom-start-id", "custom-end-id", "custom-qcount-input", "dict-range-start", "dict-range-end"].forEach(id => {
+      ["custom-qcount-input", "dict-range-start", "dict-range-end"].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.max = String(range.end);
+      });
+      // カスタム範囲は「単語番号」基準（古文は 1〜150、LEAPは ID = 単語番号）
+      const numRange = subjectNumberRange();
+      ["custom-start-id", "custom-end-id"].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) { el.min = String(numRange.min); el.max = String(numRange.max); }
       });
     }
 
@@ -1785,10 +1950,12 @@
         try {
           const json = JSON.parse(event.target.result);
           if (Array.isArray(json)) {
-            mergeWords(json);
-            showToast(`${json.length}件の単語データを読み込みました`);
+            const exCount = mergeWords(json);
+            showToast(`${json.length}件のデータを読み込みました${exCount ? `（例文 ${exCount}件）` : ""}`);
             const statusEl = document.getElementById("data-status-text");
             if (statusEl) statusEl.textContent = `単語データ: ${file.name} (${ALL_WORDS.length} 語)`;
+            syncModeUi();
+            updateQuizStatusHint();
           } else {
             showAlert({ title: "読み込みエラー", message: "配列形式のJSONを指定してください。", icon: "📄" });
           }
@@ -1799,16 +1966,32 @@
       reader.readAsText(file);
     }
 
+    // 読み込んだJSONを取り込む。単語データに加えて pos / example / examples も保持する。
+    // 例文のみのエントリ（{ id, example } や { word, examples: [...] }）も受け付ける。
     function mergeWords(newWords) {
       const map = new Map();
       ALL_WORDS.forEach(w => map.set(w.id, w));
+      let exampleCount = 0;
       newWords.forEach(w => {
-        let part = w.part || 1;
-        map.set(w.id, { id: w.id, word: w.word, meaning: w.meaning, part });
+        if (!w || typeof w !== "object") return;
+        if (typeof w.id !== "number" || typeof w.word !== "string") {
+          if (registerExampleEntry(w)) exampleCount++;
+          return;
+        }
+        const prev = map.get(w.id) || {};
+        const merged = Object.assign({}, prev, w);
+        merged.id = w.id;
+        merged.word = w.word || prev.word;
+        merged.meaning = w.meaning || prev.meaning;
+        merged.part = w.part || prev.part || 1;
+        map.set(w.id, merged);
+        if (registerExampleEntry(w)) exampleCount++;
       });
       ALL_WORDS = Array.from(map.values()).sort((a, b) => a.id - b.id);
+      posCache.clear();
       syncDataRangeUi();
       renderPartSelectList();
+      return exampleCount;
     }
 
     // 画面遷移
@@ -1868,6 +2051,8 @@
 
     function navigate(screenId, opts) {
       const options = opts || {};
+      // クイズ画面を離れるときはタイマーを止める（背後で時間が進み続けるのを防ぐ）
+      if (screenId !== "screen-quiz") stopQuizTimers();
       SCREENS.forEach(id => {
         const el = document.getElementById(id);
         if (el) {
@@ -1883,9 +2068,11 @@
       window.scrollTo(0, 0);
       if (screenId === "screen-shop") renderShop();
       if (screenId === "screen-select") {
+        loadCustomRange();
         renderPartSelectList();
         updatePartSelectionSummary();
         updateCustomRangeStats();
+        syncModeUi();
         updateQuizStatusHint();
       }
       if (screenId === "screen-dictionary") applyDictionaryFilters();
@@ -2251,9 +2438,117 @@
     let isWeakMode = false;
 
     
+    // ===== カスタム範囲（LEAP と 古文単語で別々に保存・番号基準） =====
+    const CUSTOM_RANGE_KEYS = { leap: "LEAP_CUSTOM_RANGE_V1", kobun: "LEAP_KOBUN_CUSTOM_RANGE_V1" };
+    let customRangeDraft = { start: 1, end: 100 };
+
+    function isKobunZone() { return currentSubject === "kobun"; }
+
+    function wordNumber(w) {
+      return (w && typeof w.num === "number") ? w.num : (w ? w.id : 0);
+    }
+
+    function subjectNumberRange() {
+      const nums = ALL_WORDS.map(wordNumber).filter(n => typeof n === "number" && isFinite(n));
+      if (!nums.length) return { min: 1, max: 1 };
+      return { min: Math.min.apply(null, nums), max: Math.max.apply(null, nums) };
+    }
+
+    function clampNumber(value, min, max) {
+      const n = Number(value);
+      if (!isFinite(n)) return min;
+      return Math.min(max, Math.max(min, Math.round(n)));
+    }
+
+    // 単語番号 → 単語ID（LEAPは ID = 番号、古文は 10001〜 のIDを番号に変換）
+    function numberToWordId(num) {
+      if (!isKobunZone()) {
+        const n = Number(num);
+        return isFinite(n) ? n : null;
+      }
+      const hit = ALL_WORDS.find(w => wordNumber(w) === Number(num));
+      return hit ? hit.id : null;
+    }
+
+    function customRangeStorageKey() {
+      return isKobunZone() ? CUSTOM_RANGE_KEYS.kobun : CUSTOM_RANGE_KEYS.leap;
+    }
+
+    // 保存された範囲はゾーンごとに独立（LEAPで1〜300を入れても古文には影響しない）
+    function loadCustomRange() {
+      const numRange = subjectNumberRange();
+      let draft = { start: numRange.min, end: numRange.max };
+      try {
+        const saved = JSON.parse(localStorage.getItem(customRangeStorageKey()) || "null");
+        if (saved && isFinite(Number(saved.start)) && isFinite(Number(saved.end))) {
+          draft = {
+            start: clampNumber(saved.start, numRange.min, numRange.max),
+            end: clampNumber(saved.end, numRange.min, numRange.max)
+          };
+        }
+      } catch (e) {}
+      customRangeDraft = draft;
+
+      const startEl = document.getElementById("custom-start-id");
+      const endEl = document.getElementById("custom-end-id");
+      if (startEl) { startEl.value = String(draft.start); startEl.min = String(numRange.min); startEl.max = String(numRange.max); }
+      if (endEl) { endEl.value = String(draft.end); endEl.min = String(numRange.min); endEl.max = String(numRange.max); }
+
+      const startLabel = document.getElementById("custom-start-label");
+      const endLabel = document.getElementById("custom-end-label");
+      if (startLabel) startLabel.textContent = isKobunZone() ? "開始 単語番号" : "開始 ID";
+      if (endLabel) endLabel.textContent = isKobunZone() ? "終了 単語番号" : "終了 ID";
+
+      const note = document.getElementById("custom-range-note");
+      if (note) {
+        note.textContent = isKobunZone()
+          ? `※ 古文単語は「単語番号」1〜${numRange.max} で指定できます（辞典の番号と同じ）。`
+          : `※ LEAPは ID（単語番号）1〜${numRange.max} で指定できます（例: 1〜200、450〜800）。`;
+      }
+      updateCustomRangeStats();
+    }
+
+    function handleCustomRangeInput() {
+      const numRange = subjectNumberRange();
+      const startEl = document.getElementById("custom-start-id");
+      const endEl = document.getElementById("custom-end-id");
+      const start = parseInt(startEl && startEl.value);
+      const end = parseInt(endEl && endEl.value);
+      customRangeDraft = {
+        start: isFinite(start) ? clampNumber(start, numRange.min, numRange.max) : numRange.min,
+        end: isFinite(end) ? clampNumber(end, numRange.min, numRange.max) : numRange.max
+      };
+      try { localStorage.setItem(customRangeStorageKey(), JSON.stringify(customRangeDraft)); } catch (e) {}
+      updateCustomRangeStats();
+    }
+
+    // 入力された単語番号から実際の出題範囲（ID範囲＋プール）を組み立てる
+    function getCustomRangeSelection() {
+      const numRange = subjectNumberRange();
+      const startEl = document.getElementById("custom-start-id");
+      const endEl = document.getElementById("custom-end-id");
+      const startNumRaw = parseInt(startEl && startEl.value);
+      const endNumRaw = parseInt(endEl && endEl.value);
+      const startNum = clampNumber(isFinite(startNumRaw) ? startNumRaw : numRange.min, numRange.min, numRange.max);
+      const endNum = clampNumber(isFinite(endNumRaw) ? endNumRaw : numRange.max, numRange.min, numRange.max);
+      if (startNum > endNum) return { valid: false, error: "range", startNum, endNum };
+
+      const startId = numberToWordId(startNum);
+      const endId = numberToWordId(endNum);
+      if (startId === null || endId === null) return { valid: false, error: "missing", startNum, endNum };
+
+      const idStart = Math.min(startId, endId);
+      const idEnd = Math.max(startId, endId);
+      const pool = ALL_WORDS.filter(w => typeof w.id === "number" && w.id >= idStart && w.id <= idEnd);
+      return {
+        valid: true,
+        startNum, endNum,
+        start: idStart, end: idEnd, pool,
+        label: isKobunZone() ? `単語番号: ${startNum}〜${endNum}` : `ID: ${startNum}〜${endNum}`
+      };
+    }
+
     function updateCustomRangeStats() {
-      const start = parseInt(document.getElementById("custom-start-id")?.value) || 1;
-      const end = parseInt(document.getElementById("custom-end-id")?.value) || 100;
       const titleEl = document.getElementById("custom-stats-title");
       const roundEl = document.getElementById("custom-stats-round");
       const rateEl = document.getElementById("custom-stats-rate");
@@ -2261,15 +2556,20 @@
       updateQuizStatusHint();
       if (!titleEl || !rateEl || !barEl) return;
 
-      if (start > end) {
-        titleEl.textContent = "開始IDは終了ID以下にしてください";
+      const sel = getCustomRangeSelection();
+      if (!sel.valid) {
+        titleEl.textContent = sel.error === "missing"
+          ? "その番号の単語が見つかりません"
+          : "開始番号は終了番号以下にしてください";
         rateEl.textContent = "-";
         barEl.style.width = "0%";
         return;
       }
 
-      const stats = getRangeStats(start, end);
-      titleEl.textContent = `指定範囲: ID ${start} 〜 ${end}`;
+      const stats = getRangeStats(sel.start, sel.end, sel.pool);
+      titleEl.textContent = isKobunZone()
+        ? `指定範囲: 単語番号 ${sel.startNum} 〜 ${sel.endNum}`
+        : `指定範囲: ID ${sel.startNum} 〜 ${sel.endNum}`;
       if (roundEl) roundEl.textContent = `${stats.round}周目`;
       rateEl.textContent = `完了率: ${stats.rate}% (${stats.learnedCount}/${stats.totalWords}語)`;
       barEl.style.width = `${stats.rate}%`;
@@ -2501,13 +2801,18 @@
       isWeakMode = false;
       isDailyMode = false;
       if (rangeMode === "custom") {
-        const start = parseInt(document.getElementById("custom-start-id").value) || 1;
-        const end = parseInt(document.getElementById("custom-end-id").value) || 100;
-        if (start > end) {
-          showAlert({ title: "範囲の指定を確認", message: "開始IDは終了ID以下にしてください。", icon: "🔢" });
+        const sel = getCustomRangeSelection();
+        if (!sel.valid) {
+          showAlert({
+            title: "範囲の指定を確認",
+            message: sel.error === "missing"
+              ? "指定した単語番号の単語が見つかりません。番号を確認してください。"
+              : "開始番号は終了番号以下にしてください。",
+            icon: "🔢"
+          });
           return;
         }
-        selectedRange = { start, end, label: `ID: ${start}〜${end}` };
+        selectedRange = { start: sel.start, end: sel.end, label: sel.label };
         startQuiz();
         return;
       }
@@ -2567,8 +2872,13 @@
       earnedCoins: 0,
       earnedExp: 0,
       mistakes: [],
+      answeredCount: 0,
       isAnswered: false,
-      isAborted: false
+      isMasked: false,
+      isAborted: false,
+      endReason: "",
+      timeLeftMs: SPRINT_TOTAL_MS,
+      questionTimeLeftMs: SUDDEN_MS
     };
 
     // デイリーチャレンジモードフラグ（startDailyChallenge() でtrue/false制御）
@@ -2682,12 +2992,8 @@
 
     function getQuizBasePool() {
       if (rangeMode === "custom") {
-        const startEl = document.getElementById("custom-start-id");
-        const endEl = document.getElementById("custom-end-id");
-        const start = parseInt(startEl && startEl.value) || 1;
-        const end = parseInt(endEl && endEl.value) || 100;
-        if (start > end) return [];
-        return ALL_WORDS.filter(w => w.id >= start && w.id <= end);
+        const sel = getCustomRangeSelection();
+        return sel.valid ? sel.pool : [];
       }
       const parts = getSelectedPartList();
       if (parts.length === 0) return [];
@@ -2699,6 +3005,16 @@
       if (!el) return;
       const base = getQuizBasePool();
       const matched = base.filter(w => wordMatchesStatuses(w.id, quizStatusFilters)).length;
+
+      if (effectiveQuizStyle() === "context") {
+        const withExample = base.filter(w => getContextData(w)).length;
+        el.textContent = withExample === 0
+          ? `例文データのある単語がありません（0 / ${base.length} 語）`
+          : `例文あり ${withExample} 語 / ${base.length} 語`;
+        el.className = `text-[11px] font-bold ${withExample === 0 ? "text-rose-600" : "text-emerald-600"}`;
+        return;
+      }
+
       el.textContent = quizStatusFilters.length === 0
         ? `全 ${base.length} 語`
         : `該当 ${matched} 語 / ${base.length} 語`;
@@ -2737,20 +3053,261 @@
       startQuizWithPool(pool);
     }
 
+    // ===== 品詞（POS）推定 =====
+    // 単語データに pos があればそれを優先し、なければ英語の語尾 → 日本語語義の順で推定する。
+    const POS_LABELS = { noun: "名詞", verb: "動詞", adj: "形容詞", adv: "副詞", other: "その他" };
+    const posCache = new Map();
+
+    function normalizePos(raw) {
+      const p = String(raw || "").trim().toLowerCase();
+      if (!p) return "other";
+      if (/^(n|noun|名詞)/.test(p)) return "noun";
+      if (/^(v|verb|動詞)/.test(p)) return "verb";
+      if (/^(adj|adjective|形容詞)/.test(p)) return "adj";
+      if (/^(adv|adverb|副詞)/.test(p)) return "adv";
+      return "other";
+    }
+
+    function inferPos(w) {
+      if (!w) return "other";
+      if (w.pos) return normalizePos(w.pos);
+      const cacheKey = currentSubject + ":" + w.id;
+      if (posCache.has(cacheKey)) return posCache.get(cacheKey);
+
+      let pos = "other";
+      const rawWord = String(w.word || "");
+      const lw = rawWord.toLowerCase();
+
+      // 例文データに品詞が付いている場合はそれを優先
+      if (currentSubject === "leap") {
+        const ex = BUILTIN_EXAMPLES[w.id] || BUILTIN_EXAMPLES[String(w.id)];
+        if (ex && ex.pos) pos = normalizePos(ex.pos);
+      }
+      if (pos === "other" && currentSubject !== "kobun" && /^[a-z][a-z-]*$/.test(lw)) {
+        if (/ly$/.test(lw)) pos = "adv";
+        else if (/(ous|ful|less|ive|able|ible|ical|al|ic|ant|ent|ary|ory)$/.test(lw)) pos = "adj";
+        else if (/(tion|sion|ment|ness|ity|ance|ence|ism|ship|hood|dom|ure)$/.test(lw)) pos = "noun";
+        else if (/(ize|ise|ify)$/.test(lw)) pos = "verb";
+      }
+      if (pos === "other") {
+        const segs = String(w.meaning || "").split(/[、,]/).map(s => s.trim()).filter(Boolean);
+        const first = segs.length ? segs[0] : "";
+        const startsTransitive = segs.some(s => /^〜[をにとの]/.test(s));
+        if (/(ている|でいる|いた|かった|しい|ない|い|な)$/.test(first) && !/(する|した|られる)$/.test(first) && !startsTransitive) {
+          pos = "adj";
+        } else if (/(する|した)$/.test(String(w.meaning || "")) || /(される|られる|なる)$/.test(String(w.meaning || "")) || startsTransitive) {
+          pos = "verb";
+        } else if (/(に|へ|で)$/.test(first) && !/の$/.test(first)) {
+          pos = "adv";
+        } else {
+          pos = "noun";
+        }
+      }
+      posCache.set(cacheKey, pos);
+      return pos;
+    }
+
+    // ===== 例文データ（内蔵 + 読み込み） =====
+    const BUILTIN_EXAMPLES = (typeof LEAP_EXAMPLE_DATA !== "undefined" && LEAP_EXAMPLE_DATA) ? LEAP_EXAMPLE_DATA : {};
+    const extraExamples = {};
+
+    function registerExampleEntry(raw) {
+      if (!raw || typeof raw !== "object") return false;
+      const en = typeof raw.example === "string" ? raw.example
+        : typeof raw.sentence === "string" ? raw.sentence
+        : (Array.isArray(raw.examples) && typeof raw.examples[0] === "string") ? raw.examples[0]
+        : (Array.isArray(raw.examples) && raw.examples[0] && typeof raw.examples[0].en === "string") ? raw.examples[0].en
+        : "";
+      if (!en) return false;
+      let id = typeof raw.id === "number" ? raw.id : null;
+      if (id === null && typeof raw.word === "string") {
+        const hit = ALL_WORDS.find(w => String(w.word).toLowerCase() === raw.word.toLowerCase());
+        if (hit) id = hit.id;
+      }
+      if (id === null) return false;
+      const ja = typeof raw.example_ja === "string" ? raw.example_ja
+        : typeof raw.exampleJa === "string" ? raw.exampleJa
+        : (Array.isArray(raw.examples) && raw.examples[0] && typeof raw.examples[0].ja === "string") ? raw.examples[0].ja
+        : "";
+      extraExamples[id] = { en, ja };
+      return true;
+    }
+
+    function getExampleFor(w) {
+      if (!w || typeof w.id !== "number") return null;
+      if (typeof w.example === "string" && w.example) return { en: w.example, ja: w.example_ja || "" };
+      if (Array.isArray(w.examples) && w.examples.length) {
+        const first = w.examples[0];
+        if (typeof first === "string") return { en: first, ja: "" };
+        if (first && typeof first.en === "string") return { en: first.en, ja: first.ja || "" };
+      }
+      if (extraExamples[w.id] && extraExamples[w.id].en) return extraExamples[w.id];
+      if (currentSubject === "leap") {
+        const builtin = BUILTIN_EXAMPLES[w.id] || BUILTIN_EXAMPLES[String(w.id)];
+        if (builtin && typeof builtin.en === "string") return { en: builtin.en, ja: builtin.ja || "" };
+      }
+      return null;
+    }
+
+    // 例文中の対象単語を [ ____ ] に置き換える（活用形 s/es/ed/d/ing/ly にも対応）
+    function buildCloze(sentence, word) {
+      const src = String(sentence || "");
+      const target = String(word || "").trim();
+      if (!src || !target) return null;
+      const escaped = target.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      const re = new RegExp("\\b" + escaped + "(?:s|es|ed|d|ing|ly)?\\b", "i");
+      const m = src.match(re);
+      if (!m) return null;
+      return {
+        prompt: src.slice(0, m.index) + "[ ____ ]" + src.slice(m.index + m[0].length),
+        form: m[0]
+      };
+    }
+
+    function getContextData(w) {
+      const ex = getExampleFor(w);
+      if (!ex) return null;
+      const cloze = buildCloze(ex.en, w.word);
+      if (!cloze) return null;
+      return { en: ex.en, ja: ex.ja || "", prompt: cloze.prompt, form: cloze.form };
+    }
+
+    // ===== インテリジェントなダミー選択肢 =====
+    function sharedPrefixLength(a, b) {
+      const n = Math.min(a.length, b.length);
+      let i = 0;
+      while (i < n && a[i] === b[i]) i++;
+      return i;
+    }
+
+    // target と同じ品詞を優先し、苦手単語・スペル類似語を混ぜる。
+    // blocked には「クイズセット内の他の正解」を渡し、メタ読みを防ぐ。
+    function pickDistractorWords(target, mode, usedKeys, blocked, count) {
+      const need = count || 3;
+      const pos = inferPos(target);
+      const weakIds = new Set(Object.keys(userData.weakWords || {}).map(Number));
+      const targetWord = String(target.word || "").toLowerCase();
+      const targetMeaning = String(target.meaning || "");
+      const samePos = { weak: [], trap: [], plain: [] };
+      const rest = [];
+
+      ALL_WORDS.forEach(w => {
+        if (!w || w.id === target.id) return;
+        if (!w.word && !w.meaning) return;
+        const key = mode === "word" ? String(w.word || "") : String(w.meaning || "");
+        if (!key || usedKeys.has(key) || blocked.has(key)) return;
+        if (String(w.meaning || "") === targetMeaning) return;
+        if (mode === "word" && String(w.word || "").toLowerCase() === targetWord) return;
+        const item = { key, word: w };
+        if (inferPos(w) === pos) {
+          samePos.plain.push(item);
+          if (weakIds.has(w.id)) samePos.weak.push(item);
+          if (mode === "word" && sharedPrefixLength(String(w.word || "").toLowerCase(), targetWord) >= 3) samePos.trap.push(item);
+        } else {
+          rest.push(item);
+        }
+      });
+
+      const picked = [];
+      const pickedKeys = new Set();
+      const take = (list, max) => {
+        let taken = 0;
+        for (const item of shuffleArray(list)) {
+          if (picked.length >= need || taken >= max) break;
+          if (pickedKeys.has(item.key)) continue;
+          picked.push(item.word);
+          pickedKeys.add(item.key);
+          taken++;
+        }
+      };
+
+      // 1) 苦手単語  2) スペル・接頭辞が似たトラップ  3) 同品詞  4) 不足分は全体から
+      take(samePos.weak, 1);
+      take(samePos.trap, 1);
+      take(samePos.plain, need - picked.length);
+      if (picked.length < need) take(rest, need - picked.length);
+      return picked;
+    }
+
     function startQuizWithPool(pool) {
-      pool = shuffleArray([...pool]);
-      let qCount = questionLimit === 0 ? pool.length : Math.min(questionLimit, pool.length);
-      const selectedWords = pool.slice(0, qCount);
+      const style = effectiveQuizStyle();
+      const mode = gameMode;
+      let candidates = shuffleArray([...pool]);
+
+      if (style === "context") {
+        candidates = candidates.filter(w => getContextData(w));
+        if (candidates.length === 0) {
+          showAlert({
+            title: "例文データがありません",
+            message: "この範囲には例文データが登録されていません。\n\n・別の範囲を選ぶ\n・ホームの「[+] 追加のJSONファイルを読み込む」から例文入りデータを追加\n　形式: [{\"id\": 61, \"example\": \"...\", \"example_ja\": \"...\"}]\n\nのいずれかをお試しください。",
+            icon: "📝"
+          });
+          return;
+        }
+      }
+      if (candidates.length === 0) {
+        showAlert({ title: "単語が見つかりません", message: "指定された範囲に単語が存在しません。", icon: "🔍" });
+        return;
+      }
+
+      let targetCount;
+      if (mode === "sprint") {
+        targetCount = Math.min(80, Math.max(30, candidates.length));
+      } else {
+        targetCount = questionLimit === 0 ? candidates.length : Math.min(questionLimit, candidates.length);
+      }
+
+      const selectedWords = [];
+      if (mode === "sprint") {
+        // 60秒で解ける問題数を確保するため、語数が少ない場合は周回して補充する
+        let guard = 0;
+        while (selectedWords.length < targetCount && guard < 200) {
+          const round = shuffleArray(candidates);
+          for (const w of round) {
+            if (selectedWords.length >= targetCount) break;
+            if (selectedWords.length && candidates.length > 1 && selectedWords[selectedWords.length - 1].id === w.id) continue;
+            selectedWords.push(w);
+          }
+          guard++;
+        }
+      } else {
+        selectedWords.push(...candidates.slice(0, targetCount));
+      }
+
+      // ディレクターズ・カット方式: セット内の正解はダミーに使わない
+      const blockedMeanings = new Set(selectedWords.map(w => String(w.meaning || "")));
+      const blockedWords = new Set(selectedWords.map(w => String(w.word || "")));
 
       quizState.questions = selectedWords.map(targetWord => {
-        let candidates = ALL_WORDS.filter(w => w.id !== targetWord.id);
-        candidates = shuffleArray(candidates).slice(0, 3);
+        const contextData = style === "context" ? getContextData(targetWord) : null;
+        const optionMode = contextData ? "word" : "meaning";
+        const correctText = optionMode === "word" ? String(targetWord.word || "") : String(targetWord.meaning || "");
+        const usedKeys = new Set([correctText]);
+        const blocked = optionMode === "word" ? blockedWords : blockedMeanings;
+        const distractors = pickDistractorWords(targetWord, optionMode, usedKeys, blocked, 3);
         const options = shuffleArray([
-          { text: targetWord.meaning, isCorrect: true },
-          ...candidates.map(c => ({ text: c.meaning, isCorrect: false }))
+          { text: correctText, isCorrect: true },
+          ...distractors.map(w => ({
+            text: optionMode === "word" ? String(w.word || "") : String(w.meaning || ""),
+            isCorrect: false
+          }))
         ]);
-        return { word: targetWord, options: options };
+        return {
+          word: targetWord,
+          type: optionMode,
+          sentence: contextData ? contextData.prompt : "",
+          sentenceEn: contextData ? contextData.en : "",
+          sentenceJa: contextData ? contextData.ja : "",
+          pos: inferPos(targetWord),
+          options
+        };
       });
+
+      quizState.questions = quizState.questions.filter(q => q.options.length >= 4);
+      if (quizState.questions.length === 0) {
+        showAlert({ title: "出題できません", message: "選択肢を作れるだけの単語データがありません。", icon: "📚" });
+        return;
+      }
 
       quizState.currentIndex = 0;
       quizState.score = 0;
@@ -2761,16 +3318,212 @@
       quizState.earnedExp = 0;
       quizState.mistakes = [];
       quizState.isAnswered = false;
+      quizState.isMasked = false;
       quizState.isAborted = false;
+      quizState.answeredCount = 0;
+      quizState.endReason = "";
+      quizState.timeLeftMs = SPRINT_TOTAL_MS;
+      quizState.questionTimeLeftMs = SUDDEN_MS;
       quizState.startLevel = getLevelState(userData.exp).level;
 
       const rInfo = document.getElementById("quiz-range-info");
-      if (rInfo) rInfo.textContent = selectedRange.label;
+      if (rInfo) {
+        const modeTag = mode === "normal" ? "" : ` ・ ${GAME_MODES[mode].icon}${GAME_MODES[mode].label}`;
+        const styleTag = style === "context" ? " ・ 📝例文" : "";
+        rInfo.textContent = `${selectedRange.label}${styleTag}${modeTag}`;
+      }
       const liveCoins = document.getElementById("quiz-live-coins");
       if (liveCoins) liveCoins.textContent = `🪙 +0`;
 
       navigate("screen-quiz");
+      setupQuizClock();
       renderQuestion();
+    }
+
+    // ===== タイマー（60秒スプリント / サドンデス）=====
+    let brainFirstTimer = null;
+    let quizClockTimer = null;
+
+    function brainFirstDelayMs() {
+      return gameMode === "sprint" ? 800 : 1200;
+    }
+
+    function clearBrainTimer() {
+      if (brainFirstTimer) { clearTimeout(brainFirstTimer); brainFirstTimer = null; }
+    }
+
+    function stopQuizClock() {
+      if (quizClockTimer) { clearInterval(quizClockTimer); quizClockTimer = null; }
+    }
+
+    function stopQuizTimers() {
+      clearBrainTimer();
+      stopQuizClock();
+      quizState.isMasked = false;
+    }
+
+    function setupQuizClock() {
+      stopQuizClock();
+      const wrap = document.getElementById("quiz-timer-wrap");
+      if (gameMode === "normal") {
+        if (wrap) wrap.classList.add("hidden");
+        return;
+      }
+      if (wrap) wrap.classList.remove("hidden");
+      if (gameMode === "sprint") {
+        quizState.timeLeftMs = SPRINT_TOTAL_MS;
+        startSprintClock();
+      } else {
+        quizState.questionTimeLeftMs = SUDDEN_MS;
+      }
+      updateTimerUi();
+    }
+
+    function startSprintClock() {
+      stopQuizClock();
+      quizClockTimer = setInterval(() => {
+        if (quizState.isMasked || quizState.isAnswered) return;
+        quizState.timeLeftMs -= 100;
+        if (quizState.timeLeftMs <= 0) {
+          quizState.timeLeftMs = 0;
+          updateTimerUi();
+          finishQuiz(false, "timeup");
+          return;
+        }
+        updateTimerUi();
+      }, 100);
+    }
+
+    function startSuddenClock() {
+      stopQuizClock();
+      quizState.questionTimeLeftMs = SUDDEN_MS;
+      updateTimerUi();
+      quizClockTimer = setInterval(() => {
+        if (quizState.isAnswered || quizState.isMasked) return;
+        quizState.questionTimeLeftMs -= 100;
+        if (quizState.questionTimeLeftMs <= 0) {
+          quizState.questionTimeLeftMs = 0;
+          updateTimerUi();
+          handleSuddenTimeout();
+          return;
+        }
+        updateTimerUi();
+      }, 100);
+    }
+
+    function startQuestionClock() {
+      if (gameMode === "sprint") {
+        if (!quizClockTimer) startSprintClock();
+      } else if (gameMode === "sudden") {
+        startSuddenClock();
+      }
+    }
+
+    function updateTimerUi() {
+      const wrap = document.getElementById("quiz-timer-wrap");
+      if (!wrap || gameMode === "normal") return;
+      const bar = document.getElementById("quiz-timer-bar");
+      const label = document.getElementById("quiz-timer-label");
+      const note = document.getElementById("quiz-timer-note");
+      const urgentClass = "h-full rounded-full bg-rose-500 transition-all duration-100";
+      const normalClass = "h-full rounded-full bg-amber-500 transition-all duration-100";
+      if (gameMode === "sprint") {
+        const left = Math.max(0, quizState.timeLeftMs || 0);
+        if (label) label.textContent = `⏱️ 60秒スプリント: ${(left / 1000).toFixed(1)}s`;
+        if (bar) { bar.style.width = `${Math.min(100, (left / SPRINT_TOTAL_MS) * 100)}%`; bar.className = left <= 10000 ? urgentClass : normalClass; }
+        if (note) note.textContent = "5コンボ +3秒 / 誤答 -2秒";
+      } else {
+        const left = Math.max(0, quizState.questionTimeLeftMs || 0);
+        if (label) label.textContent = `💀 サドンデス: 残り ${(left / 1000).toFixed(1)}s`;
+        if (bar) { bar.style.width = `${(left / SUDDEN_MS) * 100}%`; bar.className = left <= 2500 ? urgentClass : normalClass; }
+        if (note) note.textContent = "誤答・時間切れで即終了";
+      }
+    }
+
+    function handleSuddenTimeout() {
+      if (quizState.isAnswered) return;
+      const q = quizState.questions[quizState.currentIndex];
+      quizState.isAnswered = true;
+      if (q) {
+        quizState.answeredCount = (quizState.answeredCount || 0) + 1;
+        registerWrongAnswer(q);
+      }
+      showToast("⏰ 時間切れ…");
+      finishQuiz(false, "sudden");
+    }
+
+    function escapeHtml(str) {
+      return String(str == null ? "" : str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
+
+    // 自力想起ステップ: 選択肢の代わりにマスクを表示
+    function renderOptionMask() {
+      const container = document.getElementById("quiz-options-container");
+      if (!container) return;
+      container.innerHTML = "";
+      const hint = effectiveQuizStyle() === "context"
+        ? "空欄に入りそうな単語を想像してみよう…"
+        : "日本語の語義を思い出してみよう…";
+      const mask = document.createElement("div");
+      mask.className = "brain-mask rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-6 text-center space-y-2";
+      mask.innerHTML = `
+        <div class="brain-emoji text-3xl">🧠</div>
+        <p class="text-sm font-bold text-slate-700">まず頭の中で思い出そう</p>
+        <p class="text-[11px] text-slate-400 leading-relaxed">${escapeHtml(hint)}</p>
+        <div class="w-full max-w-[220px] mx-auto bg-slate-200 h-1 rounded-full overflow-hidden">
+          <div id="brain-mask-bar" class="h-full bg-emerald-500" style="width:0%"></div>
+        </div>
+      `;
+      container.appendChild(mask);
+      const bar = document.getElementById("brain-mask-bar");
+      if (bar) {
+        requestAnimationFrame(() => {
+          bar.style.transition = `width ${brainFirstDelayMs()}ms linear`;
+          bar.style.width = "100%";
+        });
+      }
+    }
+
+    function renderOptions(q) {
+      const container = document.getElementById("quiz-options-container");
+      if (!container || !q) return;
+      container.innerHTML = "";
+      q.options.forEach((opt, idx) => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        // active:scale-[0.99] はスマホタッチ時にドラッグ判定されクリックを無効化する原因となるため排除
+        btn.className = "option-reveal w-full text-left p-4 bg-white hover:bg-slate-50 active:bg-slate-100 border border-slate-200 rounded-xl font-medium text-slate-800 transition-colors flex items-center gap-3 cursor-pointer select-none";
+        btn.style.touchAction = "manipulation";
+        btn.style.animationDelay = `${idx * 60}ms`;
+        // 子要素に pointer-events-none を付与して確実にボタン本体でイベントを受け止める
+        btn.innerHTML = `<span class="w-6 h-6 rounded-md bg-slate-100 text-slate-500 text-xs font-bold flex items-center justify-center shrink-0 border border-slate-200 pointer-events-none">${idx + 1}</span><span class="text-sm leading-snug pointer-events-none">${escapeHtml(opt.text)}</span>`;
+        btn.addEventListener("click", (e) => {
+          e.preventDefault();
+          handleAnswer(opt, btn);
+        });
+        container.appendChild(btn);
+      });
+    }
+
+    function revealContextAnswer(q) {
+      if (!q || q.type !== "word") return;
+      const wordRow = document.getElementById("quiz-word-row");
+      if (wordRow) wordRow.classList.remove("hidden");
+      const wordEl = document.getElementById("quiz-word");
+      if (wordEl) wordEl.textContent = q.word.word;
+      const sentenceEl = document.getElementById("quiz-context-sentence");
+      if (sentenceEl) sentenceEl.textContent = q.sentenceEn || q.sentence;
+      const jaEl = document.getElementById("quiz-context-ja");
+      if (jaEl && q.sentenceJa) {
+        jaEl.textContent = q.sentenceJa;
+        jaEl.classList.remove("hidden");
+      }
+      const promptEl = document.getElementById("quiz-context-prompt");
+      if (promptEl) promptEl.textContent = `正解: ${q.word.word}（${POS_LABELS[q.pos] || "語彙"} / ${q.word.meaning}）`;
     }
 
     function renderQuestion() {
@@ -2783,6 +3536,8 @@
 
         const q = quizState.questions[quizState.currentIndex];
         quizState.isAnswered = false;
+        clearBrainTimer();
+        if (gameMode === "sudden") stopQuizClock();
 
         const total = quizState.questions.length;
         const current = quizState.currentIndex + 1;
@@ -2811,6 +3566,22 @@
         if (wordIdEl) wordIdEl.textContent = `ID: #${q.word.id}`;
         if (wordEl) wordEl.textContent = q.word.word;
 
+        // 例文・文脈テストでは単語と語義を隠し、例文の空欄を見せる
+        const isContext = q.type === "word";
+        const wordRow = document.getElementById("quiz-word-row");
+        const contextBox = document.getElementById("quiz-context-box");
+        if (wordRow) wordRow.classList.toggle("hidden", isContext);
+        if (contextBox) contextBox.classList.toggle("hidden", !isContext);
+        if (isContext) {
+          const sentenceEl = document.getElementById("quiz-context-sentence");
+          if (sentenceEl) sentenceEl.textContent = q.sentence;
+          const jaEl = document.getElementById("quiz-context-ja");
+          if (jaEl) { jaEl.textContent = ""; jaEl.classList.add("hidden"); }
+          const promptEl = document.getElementById("quiz-context-prompt");
+          if (promptEl) promptEl.textContent = "空欄に最もふさわしい語を選べ";
+        }
+        updateTimerUi();
+
         if (wordStatsEl) {
           const st = (userData.wordStats || {})[q.word.id];
           if (st && st.total > 0) {
@@ -2830,38 +3601,66 @@
 
         const container = document.getElementById("quiz-options-container");
         if (!container) return;
-        container.innerHTML = "";
 
-        q.options.forEach((opt, idx) => {
-          const btn = document.createElement("button");
-          btn.type = "button";
-          // active:scale-[0.99] はスマホタッチ時にドラッグ判定されクリックを無効化する原因となるため排除
-          // touch-action: manipulation によりダブルタップ遅延を根絶
-          btn.className = "w-full text-left p-4 bg-white hover:bg-slate-50 active:bg-slate-100 border border-slate-200 rounded-xl font-medium text-slate-800 transition-colors flex items-center gap-3 cursor-pointer select-none";
-          btn.style.touchAction = "manipulation";
-          // 子要素に pointer-events-none を付与して確実にボタン本体でイベントを受け止める
-          btn.innerHTML = `<span class="w-6 h-6 rounded-md bg-slate-100 text-slate-500 text-xs font-bold flex items-center justify-center shrink-0 border border-slate-200 pointer-events-none">${idx + 1}</span><span class="text-sm leading-snug pointer-events-none">${opt.text}</span>`;
-
-          btn.addEventListener("click", (e) => {
-            e.preventDefault();
-            handleAnswer(opt, btn);
-          });
-          container.appendChild(btn);
-        });
-
-        // 音声読み上げは完全非同期化（万一Web Speech APIがブロック・失敗してもボタン操作に一切影響しない）
-        setTimeout(() => {
-          try { speakWord(); } catch(e) {}
-        }, 50);
+        // ブレイン・ファースト: 1〜1.2秒は選択肢を隠して自力想起を促す
+        quizState.isMasked = true;
+        renderOptionMask();
+        brainFirstTimer = setTimeout(() => {
+          brainFirstTimer = null;
+          quizState.isMasked = false;
+          if (quizState.isAnswered) return;
+          renderOptions(q);
+          startQuestionClock();
+          updateTimerUi();
+          // 例文モードでは読み上げが正解のヒントになるため行わない
+          if (!isContext) {
+            setTimeout(() => { try { speakWord(); } catch (e) {} }, 30);
+          }
+        }, brainFirstDelayMs());
       } catch (err) {
         console.error("renderQuestion error:", err);
         quizState.isAnswered = false;
       }
     }
 
+    // 不正解時の記録（学習履歴・忘却曲線・ミス一覧）
+    function registerWrongAnswer(q) {
+      if (!q || !q.word) return;
+      quizState.combo = 0;
+      if (!quizState.mistakes.some(m => m.id === q.word.id)) quizState.mistakes.push(q.word);
+
+      if (!userData.wordStats) userData.wordStats = {};
+      if (!userData.wordStats[q.word.id]) userData.wordStats[q.word.id] = { correct: 0, total: 0 };
+      userData.wordStats[q.word.id].total++;
+
+      // 忘却曲線システム: 不正解時はステージ1（翌日復習）に登録/リセット
+      if (!userData.weakWords) userData.weakWords = {};
+      const today = getTodayString();
+      const nextDate = addDaysToDate(today, 1);
+      const existing = userData.weakWords[q.word.id];
+      if (!existing) {
+        userData.weakWords[q.word.id] = {
+          id: q.word.id,
+          word: q.word.word,
+          meaning: q.word.meaning,
+          count: 1,
+          stage: 1,
+          nextReview: nextDate,
+          lastReviewed: today
+        };
+      } else {
+        existing.count = (existing.count || 1) + 1;
+        existing.stage = 1;
+        existing.nextReview = nextDate;
+        existing.lastReviewed = today;
+      }
+      saveUserData();
+    }
+
     function handleAnswer(selectedOption, clickedBtn) {
       if (quizState.isAnswered) return;
       quizState.isAnswered = true;
+      quizState.answeredCount = (quizState.answeredCount || 0) + 1;
 
       // 回答中は全ボタンのクリックを即時無効化（誤連打・多重実行を完全防止）
       const allOptionBtns = document.getElementById("quiz-options-container")?.querySelectorAll("button") || [];
@@ -2870,17 +3669,17 @@
       });
 
       const q = quizState.questions[quizState.currentIndex];
-      const buttons = document.getElementById("quiz-options-container").querySelectorAll("button");
+      const container = document.getElementById("quiz-options-container");
+      const buttons = container ? container.querySelectorAll("button") : [];
 
-      
       // 単語ごとの学習履歴データ (userData.wordStats) を蓄積
       if (!userData.wordStats) userData.wordStats = {};
       if (!userData.wordStats[q.word.id]) {
         userData.wordStats[q.word.id] = { correct: 0, total: 0 };
       }
-      userData.wordStats[q.word.id].total++;
 
       if (selectedOption.isCorrect) {
+        userData.wordStats[q.word.id].total++;
         userData.wordStats[q.word.id].correct++;
         quizState.correctCount++;
         quizState.combo++;
@@ -2893,7 +3692,14 @@
 
         quizState.earnedCoins += coinBonus;
         quizState.earnedExp += EXP_PER_CORRECT;
-        quizState.score += (100 / quizState.questions.length);
+        quizState.score += gameMode === "normal" ? (100 / quizState.questions.length) : 10;
+
+        // 60秒スプリント: 5コンボごとに +3秒
+        if (gameMode === "sprint" && quizState.combo > 0 && quizState.combo % 5 === 0) {
+          quizState.timeLeftMs = (quizState.timeLeftMs || 0) + SPRINT_BONUS_MS;
+          updateTimerUi();
+          showToast("⏱ コンボボーナス +3秒！");
+        }
 
         // 1問ごとにコインとEXPを即時保存（途中で閉じても失われない）
         userData.coins += coinBonus;
@@ -2948,31 +3754,15 @@
         clickedBtn.classList.remove("bg-white", "hover:bg-slate-50", "border-slate-200");
         clickedBtn.classList.add("bg-emerald-50", "border-emerald-500", "text-emerald-900");
       } else {
-        quizState.combo = 0;
-        quizState.mistakes.push(q.word);
+        registerWrongAnswer(q);
 
-        // 忘却曲線システム: 不正解時はステージ1（翌日復習）に登録/リセット
-        if (!userData.weakWords) userData.weakWords = {};
-        const today = getTodayString();
-        const nextDate = addDaysToDate(today, 1); // 翌日復習
-        if (!userData.weakWords[q.word.id]) {
-          userData.weakWords[q.word.id] = {
-            id: q.word.id,
-            word: q.word.word,
-            meaning: q.word.meaning,
-            count: 1,
-            stage: 1,
-            nextReview: nextDate,
-            lastReviewed: today
-          };
-        } else {
-          userData.weakWords[q.word.id].count = (userData.weakWords[q.word.id].count || 1) + 1;
-          userData.weakWords[q.word.id].stage = 1; // ステージ1にリセット
-          userData.weakWords[q.word.id].nextReview = nextDate;
-          userData.weakWords[q.word.id].lastReviewed = today;
+        if (gameMode === "sprint") {
+          quizState.timeLeftMs = Math.max(0, (quizState.timeLeftMs || 0) - SPRINT_PENALTY_MS);
+          updateTimerUi();
+          showToast("⏱ 誤答ペナルティ -2秒");
+          if (quizState.timeLeftMs <= 0) quizState.endReason = "timeup";
         }
-        saveUserData();
-
+        if (gameMode === "sudden") quizState.endReason = "sudden";
 
         clickedBtn.classList.remove("bg-white", "hover:bg-slate-50", "border-slate-200");
         clickedBtn.classList.add("bg-rose-50", "border-rose-400", "text-rose-900");
@@ -2981,22 +3771,29 @@
         });
       }
 
+      if (q.type === "word") revealContextAnswer(q);
+
       const liveCoins = document.getElementById("quiz-live-coins");
       if (liveCoins) liveCoins.textContent = `🪙 +${quizState.earnedCoins}`;
 
+      const feedbackDelay = q.type === "word" ? 1100 : 700;
       setTimeout(() => {
+        if (quizState.endReason) {
+          finishQuiz(false, quizState.endReason);
+          return;
+        }
         quizState.currentIndex++;
         if (quizState.currentIndex < quizState.questions.length) {
           renderQuestion();
         } else {
           finishQuiz(false);
         }
-      }, 700);
+      }, feedbackDelay);
     }
 
     window.addEventListener("keydown", (e) => {
       const quizScreen = document.getElementById("screen-quiz");
-      if (!quizScreen || quizScreen.classList.contains("hidden") || quizState.isAnswered) return;
+      if (!quizScreen || quizScreen.classList.contains("hidden") || quizState.isAnswered || quizState.isMasked) return;
       if (["1", "2", "3", "4"].includes(e.key)) {
         const buttons = document.getElementById("quiz-options-container").querySelectorAll("button");
         const idx = parseInt(e.key) - 1;
@@ -3046,10 +3843,14 @@
       }
     }
 
-    function finishQuiz(isAborted) {
+    function finishQuiz(isAborted, endReason) {
+      stopQuizTimers();
       quizState.isAborted = !!isAborted;
-      const answeredCount = isAborted ? quizState.currentIndex : quizState.questions.length;
-      const totalQ = isAborted ? answeredCount : quizState.questions.length;
+      quizState.endReason = endReason || quizState.endReason || "";
+      const reason = quizState.endReason;
+      const endedEarly = !!isAborted || reason === "timeup" || reason === "sudden";
+      const answeredSoFar = Math.max(quizState.answeredCount || 0, 0);
+      const totalQ = endedEarly ? answeredSoFar : quizState.questions.length;
       const accuracy = totalQ > 0 ? Math.round((quizState.correctCount / totalQ) * 100) : 0;
       const finalScore = Math.round(quizState.score);
 
@@ -3088,7 +3889,9 @@
           accuracy: accuracy,
           combo: quizState.maxCombo,
           coins: quizState.earnedCoins,
-          range: selectedRange.label,
+          range: selectedRange.label
+            + (gameMode === "normal" ? "" : ` ・ ${GAME_MODES[gameMode].icon}${GAME_MODES[gameMode].label}`)
+            + (quizState.questions[0] && quizState.questions[0].type === "word" ? " ・ 📝例文" : ""),
           date: getTodayString(),
           isDaily: isDailyBonus
         });
@@ -3107,7 +3910,13 @@
       const actBtns = document.getElementById("result-action-buttons");
       const chActs = document.getElementById("result-challenge-action");
 
-      if (rHead) rHead.textContent = isAborted ? "QUIZ ABORTED (中断結果)" : "QUIZ RESULT";
+      if (rHead) {
+        if (isAborted) rHead.textContent = "QUIZ ABORTED (中断結果)";
+        else if (reason === "timeup") rHead.textContent = "⏱ TIME ATTACK RESULT";
+        else if (reason === "sudden") rHead.textContent = "💀 SUDDEN DEATH RESULT";
+        else if (quizState.questions[0] && quizState.questions[0].type === "word") rHead.textContent = "📝 CONTEXT TEST RESULT";
+        else rHead.textContent = "QUIZ RESULT";
+      }
       if (rTitle) rTitle.textContent = getFullTitle();
       if (chBadge) chBadge.classList.add("hidden");
       if (ecBox) ecBox.classList.remove("hidden");
@@ -4042,6 +4851,7 @@ listContainer.appendChild(row);
     window.addEventListener("DOMContentLoaded", () => {
       initDarkMode();
       loadUserData();
+      loadUiModes();
       syncDataRangeUi();
       applySubject(getSavedSubject(), { silent: true });
       loadPartSelection();
