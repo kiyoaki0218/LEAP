@@ -59,7 +59,11 @@
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;500;700&display=swap');
     body { font-family: 'Inter', 'Noto Sans JP', sans-serif; }
-    .fade-in { animation: fadeIn 0.2s ease-in-out forwards; }
+    /* forwards を付けない: 終了後も transform が残ると中の position: sticky がずれるため */
+    .fade-in { animation: fadeIn 0.2s ease-in-out; }
+    /* 辞典は中に sticky な絞り込みバーがあるため、transform を使わないフェードにする */
+    #screen-dictionary.fade-in { animation-name: fadeInFlat; }
+    @keyframes fadeInFlat { from { opacity: 0; } to { opacity: 1; } }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
 
     /* ===== Fever演出アニメーション ===== */
@@ -659,16 +663,25 @@
 
     <!-- 単語辞典（番号順） -->
     <section id="screen-dictionary" class="fade-in hidden space-y-4">
-      <div class="sticky top-0 z-20 -mx-4 px-4 py-2 bg-slate-50/95 backdrop-blur-sm flex items-center justify-between border-b border-slate-200">
-        <div>
+      <!-- 見出し・絞り込み・検索をまとめて上部に固定 -->
+      <div class="sticky top-0 z-30 -mx-4 px-4 pt-2 pb-1 bg-slate-50/95 backdrop-blur-sm border-b border-slate-200 space-y-2">
+      <div class="flex items-center justify-between gap-2">
+        <div class="min-w-0">
           <h2 class="text-xl font-bold text-slate-900">単語辞典</h2>
-          <p id="dictionary-count" class="text-xs text-slate-400 mt-0.5">番号順に並んでいます</p>
+          <p id="dictionary-count" class="text-xs text-slate-400 mt-0.5 truncate">番号順に並んでいます</p>
         </div>
-        <button type="button" onclick="navigate('screen-home')" class="text-sm text-slate-500 hover:text-slate-800 font-medium">戻る</button>
+        <div class="flex items-center gap-2 shrink-0">
+          <button type="button" id="dict-filter-toggle" onclick="toggleDictFilterPanel()" class="px-2.5 py-1.5 rounded-lg border border-slate-300 bg-white hover:bg-slate-100 text-[11px] font-bold text-slate-600 flex items-center gap-1 shrink-0 transition cursor-pointer">
+            <span>⚙ 絞り込み</span>
+            <span id="dict-filter-active-count" class="hidden text-[10px] font-extrabold bg-emerald-100 text-emerald-800 px-1.5 py-0.2 rounded-full">0</span>
+            <span id="dict-filter-chevron" class="text-[9px]">▼</span>
+          </button>
+          <button type="button" onclick="navigate('screen-home')" class="text-sm text-slate-500 hover:text-slate-800 font-medium">戻る</button>
+        </div>
       </div>
 
-      <!-- 絞り込み（Part・番号範囲） -->
-      <div class="bg-white border border-slate-200 rounded-xl p-3 space-y-2 shadow-sm">
+      <!-- 絞り込み（Part・番号範囲）※ 折りたたみ式 -->
+      <div id="dict-filter-panel" class="hidden bg-white border border-slate-200 rounded-xl p-3 space-y-2 shadow-sm">
         <div class="flex items-center justify-between">
           <span class="text-xs font-bold text-slate-500">絞り込み<span class="ml-1 text-[10px] font-normal text-slate-400">複数選択OK</span></span>
           <button type="button" onclick="resetDictionaryFilters()" class="text-[11px] text-emerald-600 hover:underline">リセット</button>
@@ -688,8 +701,9 @@
         </div>
       </div>
 
-      <div class="sticky top-0 z-10 bg-slate-50/95 backdrop-blur-sm py-1">
+      <div class="pb-1">
         <input type="search" id="dictionary-search" oninput="applyDictionaryFilters()" placeholder="番号・英語・日本語で検索（例: 1 / debate / 討論）" class="w-full p-3 bg-white border border-slate-300 rounded-xl text-sm font-medium text-slate-800 focus:outline-none focus:border-slate-800">
+      </div>
       </div>
 
       <div id="dictionary-list" class="space-y-1.5"></div>
@@ -2100,7 +2114,11 @@
         syncModeUi();
         updateQuizStatusHint();
       }
-      if (screenId === "screen-dictionary") applyDictionaryFilters();
+      if (screenId === "screen-dictionary") {
+        applyDictFilterPanelState();
+        updateDictFilterBadge();
+        applyDictionaryFilters();
+      }
       if (screenId === "screen-home") updateUserUI();
 
       if (!options.fromHistory) {
@@ -2154,6 +2172,41 @@
     // ===== 単語辞典（番号順） =====
     let dictionaryEntries = [];
     const DICT_FILTER_KEY = "LEAP_DICTIONARY_FILTER_V1";
+    const DICT_FILTER_OPEN_KEY = "LEAP_DICT_FILTER_OPEN_V1";
+    let dictFilterOpen = false;
+
+    // 絞り込みパネルの開閉（スマホで固定バーが高くなりすぎないよう既定は閉じる）
+    function loadDictFilterOpenState() {
+      try { dictFilterOpen = localStorage.getItem(DICT_FILTER_OPEN_KEY) === "1"; }
+      catch (e) { dictFilterOpen = false; }
+      applyDictFilterPanelState();
+    }
+
+    function applyDictFilterPanelState() {
+      const panel = document.getElementById("dict-filter-panel");
+      const chevron = document.getElementById("dict-filter-chevron");
+      if (panel) panel.classList.toggle("hidden", !dictFilterOpen);
+      if (chevron) chevron.textContent = dictFilterOpen ? "▲" : "▼";
+    }
+
+    function toggleDictFilterPanel() {
+      dictFilterOpen = !dictFilterOpen;
+      try { localStorage.setItem(DICT_FILTER_OPEN_KEY, dictFilterOpen ? "1" : "0"); } catch (e) {}
+      applyDictFilterPanelState();
+    }
+
+    // 適用中の絞り込み数をバッジ表示
+    function updateDictFilterBadge() {
+      const badge = document.getElementById("dict-filter-active-count");
+      if (!badge) return;
+      const f = dictionaryFilter || {};
+      const active = (Array.isArray(f.parts) ? f.parts.length : 0)
+        + (Array.isArray(f.statuses) ? f.statuses.length : 0)
+        + (f.start !== "" && f.start != null ? 1 : 0)
+        + (f.end !== "" && f.end != null ? 1 : 0);
+      badge.textContent = String(active);
+      badge.classList.toggle("hidden", active === 0);
+    }
     // ===== 学習ステータス判定（辞典・出題絞り込みで共通利用） =====
     const WORD_STATUSES = ["all", "unlearned", "weak", "learning", "mastered"];
     const WORD_STATUS_LABEL = {
@@ -2347,6 +2400,7 @@
     }
 
     function syncDictionaryFilterUi() {
+      updateDictFilterBadge();
       const dictChip = (active) => "px-2.5 py-1 text-[11px] font-bold rounded-md border transition cursor-pointer " +
         (active ? "bg-slate-900 text-white border-slate-900" : "bg-white text-slate-600 border-slate-300 hover:bg-slate-100");
       document.querySelectorAll("[data-dict-part]").forEach(btn => {
@@ -4991,6 +5045,7 @@ listContainer.appendChild(row);
       loadQuizStatusFilter();
       initScreenHistory();
       loadDictionaryFilter();
+      loadDictFilterOpenState();
       checkAndFetchData();
       checkIncomingChallenge();
       initAchievements();
