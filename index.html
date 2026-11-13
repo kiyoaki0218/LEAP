@@ -460,6 +460,7 @@
 
       <!-- カスタム範囲指定パネル -->
       <div id="panel-custom" class="hidden bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+        <div id="custom-range-body" class="space-y-4">
         <div>
           <label id="custom-start-label" class="block text-xs font-semibold text-slate-500 mb-1">開始 ID</label>
           <input type="number" id="custom-start-id" value="1" oninput="handleCustomRangeInput()" min="1" max="2300" class="w-full p-3 border border-slate-300 rounded-xl font-bold text-slate-800 focus:outline-none focus:border-slate-800">
@@ -482,6 +483,14 @@
           </div>
         </div>
         <p id="custom-range-note" class="text-xs text-emerald-600 font-medium">※ Part 1 (ID: 1〜400) と Part 2 (ID: 401〜1000) のデータが収録されています（例: 1〜200、450〜800 など自由に入力可能）。</p>
+        </div>
+
+        <!-- 例文・文脈テスト選択中はカスタム範囲指定もロック -->
+        <div id="custom-range-locked" class="hidden text-center space-y-2 py-6">
+          <div class="text-3xl">🔒</div>
+          <p class="text-sm font-extrabold text-slate-600 tracking-wider">COMING SOON</p>
+          <p class="text-[11px] text-slate-400 leading-relaxed">例文・文脈テストは現在準備中です。<br>通常4択モードをお使いください。</p>
+        </div>
       </div>
 
       <!-- 出題数選択（10問, 20問, 50問, 100問, 全問, 自由入力） -->
@@ -1181,7 +1190,7 @@
       const styleHint = document.getElementById("style-hint");
       if (styleHint) {
         styleHint.textContent = style === "context"
-          ? "例文の空欄に入る英単語を選ぶ「学校小テスト風」モード。例文がある単語のみ出題されます。"
+          ? "例文の空欄に入る英単語を選ぶ「学校小テスト風」モード（現在準備中）。公開までは通常4択モードをお使いください。"
           : "英単語を見て日本語の語義を選ぶ通常モード。選択肢が出る前に“自力想起”の時間があります。";
       }
       const gameHint = document.getElementById("game-mode-hint");
@@ -1189,6 +1198,16 @@
         const g = GAME_MODES[gameMode] || GAME_MODES.normal;
         gameHint.textContent = `${g.icon} ${g.desc}`;
       }
+      syncCustomRangeLockUi();
+    }
+
+    // 例文・文脈テストではカスタム範囲指定もロック表示にする
+    function syncCustomRangeLockUi() {
+      const isLocked = effectiveQuizStyle() === "context";
+      const body = document.getElementById("custom-range-body");
+      const lockedNotice = document.getElementById("custom-range-locked");
+      if (body) body.classList.toggle("hidden", isLocked);
+      if (lockedNotice) lockedNotice.classList.toggle("hidden", !isLocked);
     }
 
     function currentZone() {
@@ -2637,8 +2656,8 @@
     }
     let selectedParts = [1];
 
-    // 例文・文脈テストではPart指定は準備中（全PartをCOMING SOON表示）
-    function isPartSelectionLocked() {
+    // 例文・文脈テストは準備中のため、Part指定もカスタム範囲指定もロックする
+    function isRangeSelectionLocked() {
       return effectiveQuizStyle() === "context";
     }
 
@@ -2677,7 +2696,7 @@
     }
 
     function togglePartSelection(partId) {
-      if (isPartSelectionLocked()) return;
+      if (isRangeSelectionLocked()) return;
       const part = PARTS.find(p => p.id === partId);
       if (!isPartAvailable(part)) return;
       if (selectedParts.includes(partId)) {
@@ -2690,14 +2709,14 @@
     }
 
     function selectAllParts() {
-      if (isPartSelectionLocked()) return;
+      if (isRangeSelectionLocked()) return;
       selectedParts = getAvailableParts().map(p => p.id);
       savePartSelection();
       renderPartSelectList();
     }
 
     function clearAllParts() {
-      if (isPartSelectionLocked()) return;
+      if (isRangeSelectionLocked()) return;
       selectedParts = [];
       savePartSelection();
       renderPartSelectList();
@@ -2707,9 +2726,9 @@
       const el = document.getElementById("part-selected-summary");
       if (!el) return;
       updateQuizStatusHint();
-      if (isPartSelectionLocked()) {
+      if (isRangeSelectionLocked()) {
         el.className = "text-xs text-amber-800 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2 font-bold leading-relaxed";
-        el.textContent = "例文・文脈テストは準備中のため、Part指定は利用できません。「カスタム範囲指定」から出題してください。";
+        el.textContent = "例文・文脈テストは準備中のため、範囲指定は利用できません。通常4択モードでお試しください。";
         return;
       }
       const parts = getSelectedPartList();
@@ -2742,7 +2761,7 @@
       if (!listEl) return;
       listEl.innerHTML = "";
 
-      const lockAllParts = isPartSelectionLocked();
+      const lockAllParts = isRangeSelectionLocked();
       PARTS.forEach(part => {
         const available = !lockAllParts && isPartAvailable(part);
         if (!available) {
@@ -2820,6 +2839,14 @@
     function startCustomQuiz() {
       isWeakMode = false;
       isDailyMode = false;
+      if (isRangeSelectionLocked()) {
+        showAlert({
+          title: "例文・文脈テストは準備中です",
+          message: "このモードは現在準備中です。通常4択モードでお試しください。",
+          icon: "📝"
+        });
+        return;
+      }
       if (rangeMode === "custom") {
         const sel = getCustomRangeSelection();
         if (!sel.valid) {
@@ -2834,15 +2861,6 @@
         }
         selectedRange = { start: sel.start, end: sel.end, label: sel.label };
         startQuiz();
-        return;
-      }
-
-      if (isPartSelectionLocked()) {
-        showAlert({
-          title: "Part指定は準備中です",
-          message: "例文・文脈テストではPart指定を準備中です。\n「カスタム範囲指定」からID（単語番号）を指定して開始してください。",
-          icon: "📝"
-        });
         return;
       }
 
