@@ -127,12 +127,21 @@ function parseExampleLine(line, word) {
     en = t.slice(0, firstJp).trim();
     ja = t.slice(firstJp).trim();
   }
-  // 「30％」のように数字が英文側に残るケースを日本語側へ戻す
-  if (/^[％%]/.test(ja)) {
-    const num = en.match(/(\d+)[\s\u3000]*$/);
-    if (num) {
-      ja = num[1] + ja;
-      en = en.slice(0, num.index);
+  // 和訳の先頭にある数字が英文側に取り残されるケースを戻す
+  // 例: 「by 5　5時までに」「pay a debt of 100 dollars　100ドルの…」
+  if (ja) {
+    if (/^[＝=]/.test(ja)) {
+      const math = en.match(/[\d\s+÷×=.,/-]+$/);
+      if (math && /\d/.test(math[0])) {
+        ja = math[0].trim() + ja;
+        en = en.slice(0, math.index);
+      }
+    } else if (!/^\d/.test(ja)) {
+      const num = en.match(/(\d[\d,.]*)\s*$/);
+      if (num) {
+        ja = num[1] + ja;
+        en = en.slice(0, num.index);
+      }
     }
   }
   en = cleanEnglish(en).replace(/^[①-⑳]+[\s\u3000]*/, "");

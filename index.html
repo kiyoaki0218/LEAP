@@ -11,7 +11,7 @@
     <script>
     // キャッシュ強制更新ロジック: 新バージョン検知時に古いServiceWorkerキャッシュを破棄
     (function() {
-      const APP_VER = "leap-v3-42highlight";
+      const APP_VER = "leap-v3-44example-audio";
       try {
         const storedVer = localStorage.getItem("LEAP_APP_CACHE_VER");
         if (storedVer !== APP_VER) {
@@ -593,6 +593,7 @@
           <div class="flex items-center justify-center gap-1.5 flex-wrap">
             <span id="quiz-context-prompt" class="text-[11px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full inline-block">空欄に最もふさわしい語を選べ</span>
             <span id="quiz-context-pos" class="hidden"></span>
+            <button type="button" onclick="speakQuizExample()" title="例文を読み上げ" class="w-7 h-7 rounded-full bg-white border border-slate-200 text-slate-500 hover:text-emerald-600 hover:border-emerald-300 flex items-center justify-center text-sm transition cursor-pointer shrink-0">🔊</button>
           </div>
           <p id="quiz-context-sentence" class="text-lg sm:text-xl font-bold leading-relaxed text-slate-900"></p>
           <p id="quiz-context-ja" class="hidden w-full text-left text-sm text-slate-600 leading-relaxed bg-slate-50 border border-slate-200 rounded-xl px-3 py-2"></p>
@@ -2540,7 +2541,8 @@
           return `<li class="rounded-xl border border-slate-200 bg-slate-50/70 px-3 py-2.5 space-y-1.5">`
             + `<div class="flex gap-2 items-start">`
             + `<span class="shrink-0 mt-0.5 w-5 h-5 rounded-md bg-white border border-slate-200 text-slate-500 text-[10px] font-bold flex items-center justify-center">${i + 1}</span>`
-            + `<p class="text-[13px] font-semibold text-slate-800 leading-relaxed break-words">${en}</p>`
+            + `<p class="flex-1 text-[13px] font-semibold text-slate-800 leading-relaxed break-words">${en}</p>`
+            + `<button type="button" onclick="speakDetailExample(${i})" title="例文を読み上げ" class="shrink-0 mt-0.5 w-7 h-7 rounded-full bg-white border border-slate-200 text-slate-400 hover:text-emerald-600 hover:border-emerald-300 flex items-center justify-center text-[13px] transition cursor-pointer">🔊</button>`
             + `</div>`
             + (ja ? `<p class="pl-7 text-xs text-slate-600 leading-relaxed break-words"><span class="inline-block text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 rounded px-1 py-0.5 mr-1 align-[1px]">訳</span>${ja}</p>` : "")
             + `</li>`;
@@ -4083,10 +4085,11 @@
       }
       const idx = text.indexOf(best);
       // 「開発」→「開発する」、「発」→「発展する」のように語尾まで広げて強調する
-      best = expandJapaneseWord(text, idx, best.length);
-      return escapeHtml(text.slice(0, idx))
+      const range = expandJapaneseWord(text, idx, best.length);
+      best = text.slice(range.start, range.end);
+      return escapeHtml(text.slice(0, range.start))
         + `<mark class="bg-emerald-100 text-emerald-900 font-bold px-0.5 rounded" title="空欄に入る語の意味">${escapeHtml(best)}</mark>`
-        + escapeHtml(text.slice(idx + best.length));
+        + escapeHtml(text.slice(range.end));
     }
 
     function expandJapaneseWord(text, start, len) {
@@ -4099,7 +4102,7 @@
       while (s > 0 && (isKanji(text[s - 1]) || isKata(text[s - 1]))) s--;
       while (e < text.length && (isKanji(text[e]) || isKata(text[e]))) e++;
       while (e < text.length && isHira(text[e]) && !particles.includes(text[e])) e++;
-      return text.slice(s, e);
+      return { start: s, end: e };
     }
 
     function contextJaHtml(w, ja, forcedMark) {
@@ -4809,6 +4812,23 @@
     function speakDetailWord() {
       if (!currentDetailWord) return;
       speakEnglish(currentDetailWord.word);
+    }
+
+    // 例文クイズの例文読み上げ（回答前は空欄を飛ばして読む）
+    function speakQuizExample() {
+      const q = quizState.questions && quizState.questions[quizState.currentIndex];
+      if (!q || q.type !== "word") return;
+      const text = quizState.isAnswered ? (q.sentenceEn || q.sentence) : q.sentence;
+      const spoken = String(text || "").replace(/\[\s*_{2,}\s*\]/g, ", ");
+      speakEnglish(spoken);
+    }
+
+    // 単語詳細シートの各例文の読み上げ
+    function speakDetailExample(index) {
+      const d = currentDetailWord && currentDetailWord.detail;
+      const ex = d && d.examples && d.examples[index];
+      if (!ex) return;
+      speakEnglish(ex.plain || ex.en || "");
     }
 
     function speakWord() {
