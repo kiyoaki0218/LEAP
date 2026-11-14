@@ -11,7 +11,7 @@
     <script>
     // キャッシュ強制更新ロジック: 新バージョン検知時に古いServiceWorkerキャッシュを破棄
     (function() {
-      const APP_VER = "leap-v3-44example-audio";
+      const APP_VER = "leap-v3-46part5data";
       try {
         const storedVer = localStorage.getItem("LEAP_APP_CACHE_VER");
         if (storedVer !== APP_VER) {
@@ -2587,6 +2587,78 @@
     }
 
     let referenceTab = 0;
+    let referenceQuizItems = [];
+    const referenceQuizState = {};
+
+    // 第5部の「20問」を問題・選択肢・正解に分解する
+    function parseReferenceQuiz(blocks) {
+      const items = [];
+      let section = "";
+      let cur = null;
+      (blocks || []).forEach(raw => {
+        const t = String(raw || "").trim();
+        if (!t) return;
+        if (/^■/.test(t)) { section = t.replace(/^■\s*/, ""); return; }
+        let m = t.match(/^\((\d+)\)\s*(.+)$/);
+        if (m) { cur = { no: m[1], ja: m[2], section: section }; return; }
+        if (cur && !cur.raw && /[①-⑳]/.test(t) && /\/\s*\[?[①-⑳]/.test(t)) { cur.raw = t; return; }
+        m = t.match(/^★正解[:：]\s*([①-⑳])\s*(.*)$/);
+        if (m && cur && cur.raw) {
+          const labels = cur.raw.match(/[①-⑳]/g) || [];
+          cur.answerLabel = m[1];
+          cur.answerText = m[2];
+          cur.correct = labels.indexOf(m[1]);
+          cur.choices = labels;
+          // 正解を示す括弧を外して、回答前は答えが分からないようにする
+          cur.en = cur.raw.replace(/\[([①-⑳][^\]]*)\]/g, "$1");
+          items.push(cur);
+          cur = null;
+        }
+      });
+      return items;
+    }
+
+    function referenceQuizItemHtml(i) {
+      const it = referenceQuizItems[i];
+      if (!it) return "";
+      const selected = referenceQuizState[i];
+      const answered = selected !== undefined;
+      const isRight = answered && selected === it.correct;
+      const en = answered
+        ? escapeHtml(it.en).replace(it.answerLabel, `<mark class="bg-emerald-100 text-emerald-900 font-bold px-0.5 rounded">${it.answerLabel}</mark>`)
+        : escapeHtml(it.en);
+      const footer = answered
+        ? `<p class="text-xs font-bold ${isRight ? "text-emerald-700" : "text-rose-600"}">${isRight ? "○ 正解！" : "× 不正解"}　正解：${escapeHtml(it.answerLabel)} ${escapeHtml(it.answerText)}</p>`
+        : `<div class="flex items-center gap-2 pt-0.5">
+            ${it.choices.map((label, ci) => `<button type="button" onclick="answerReferenceQuiz(${i}, ${ci})" class="min-w-[46px] px-3 py-1.5 rounded-lg border border-slate-300 bg-white text-sm font-extrabold text-slate-700 hover:border-emerald-400 hover:text-emerald-700 transition cursor-pointer">${label}</button>`).join("")}
+            <span class="text-[10px] text-slate-400">正しい方を選ぼう</span>
+          </div>`;
+      return `<div id="ref-quiz-${i}" class="rounded-xl border border-slate-200 bg-white px-3 py-3 space-y-1.5">
+          <p class="text-xs font-bold text-slate-800 leading-relaxed">(${escapeHtml(it.no)}) ${escapeHtml(it.ja)}</p>
+          <p class="text-[13px] font-semibold text-slate-700 leading-relaxed break-words">${en}</p>
+          ${footer}
+        </div>`;
+    }
+
+    function answerReferenceQuiz(index, choice) {
+      if (referenceQuizState[index] !== undefined) return;
+      referenceQuizState[index] = choice;
+      const el = document.getElementById("ref-quiz-" + index);
+      if (el) el.outerHTML = referenceQuizItemHtml(index);
+    }
+
+    function renderReferenceQuiz() {
+      let html = "";
+      let lastSection = "";
+      referenceQuizItems.forEach((it, i) => {
+        if (it.section !== lastSection) {
+          lastSection = it.section;
+          if (lastSection) html += `<h4 class="text-sm font-extrabold text-slate-800 mt-3 mb-1">■ ${escapeHtml(lastSection)}</h4>`;
+        }
+        html += referenceQuizItemHtml(i);
+      });
+      return html;
+    }
 
     function setReferenceTab(index) {
       referenceTab = Number(index) || 0;
@@ -2626,6 +2698,7 @@
 
       const ch = LEAP_REFERENCE_DATA[referenceTab];
       if (!ch) { box.innerHTML = ""; return; }
+      referenceQuizItems = parseReferenceQuiz(ch.blocks);
 
       // 第1部の基礎単語は辞典と同じ行スタイル（タップで詳細シート）
       const words = (ch.words || []).map((w, i) => `
@@ -2643,7 +2716,11 @@
           <span class="text-slate-300 text-sm pt-0.5 shrink-0">›</span>
         </div>`).join("");
 
-      const blocks = (ch.blocks || []).map(refLineHtml).join("");
+      const blocks = referenceQuizItems.length ? "" : (ch.blocks || []).map(refLineHtml).join("");
+      const quizHtml = referenceQuizItems.length
+        ? `<p class="text-[11px] font-bold text-slate-400">全${referenceQuizItems.length}問 ・ ①か②を選ぶと正解が表示されます</p>
+           <div class="space-y-2">${renderReferenceQuiz()}</div>`
+        : "";
       box.innerHTML = `
         <div class="bg-slate-900 text-white rounded-2xl p-4">
           <p class="text-[10px] font-bold uppercase tracking-widest text-emerald-300">REFERENCE</p>
@@ -2651,6 +2728,7 @@
           ${ch.subtitle ? `<p class="text-[11px] text-slate-300 mt-0.5">${escapeHtml(ch.subtitle)}</p>` : ""}
         </div>
         ${ch.words && ch.words.length ? `<p class="text-[11px] font-bold text-slate-400">${ch.words.length} 語 ・ タップで詳細</p>${words}` : ""}
+        ${quizHtml}
         ${blocks ? `<div class="bg-white border border-slate-200 rounded-xl p-4 space-y-0.5">${blocks}</div>` : ""}
       `;
     }

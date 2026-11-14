@@ -7,7 +7,7 @@ const ROOT = path.resolve(__dirname, "..");
 const DATA_DIR = path.join(ROOT, "LEAP単語データ");
 const WORD_FILES = [
   "001_101.txt", "102_203.txt", "204_301.txt", "302_400.txt",
-  "401_505.txt", "506_603.txt", "604_702.txt"
+  "401_505.txt", "506_603.txt", "604_702.txt", "703_807.txt"
 ];
 
 const POS_MAP = {
@@ -194,8 +194,21 @@ function parseWordFile(file) {
     if (!t) return;
     if (/^ー[-ー]+$/.test(t)) { section = "notes"; return; }
     if (/^例文[:：]?$/.test(t)) { section = "examples"; return; }
+    const inlineExamples = t.match(/^例文[:：]\s*(.+)$/);
+    if (inlineExamples) {
+      section = "examples";
+      inlineExamples[1].split(/\s+\/\s+(?=[①-⑳])/).forEach(part => {
+        if (part.trim()) cur.rawExamples.push(part.trim());
+      });
+      return;
+    }
     if (section === "head") { cur.headLines.push(line); return; }
-    if (section === "notes") { cur.notes.push(t); return; }
+    if (section === "notes") {
+      // 1行に「コラム：… / 語源：…」と詰め込まれた注記を項目ごとに分ける
+      t.split(/\s*\/\s+(?=(?:コラム|語源|派生語?|類語|頻出|表現|関連語|覚え方|対義語|比較|注意|補充)[:：])/)
+        .forEach(part => { if (part.trim()) cur.notes.push(part.trim()); });
+      return;
+    }
     if (section === "examples") {
       cur.rawExamples.push(line);
     }
