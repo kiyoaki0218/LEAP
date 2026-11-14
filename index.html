@@ -11,7 +11,7 @@
     <script>
     // キャッシュ強制更新ロジック: 新バージョン検知時に古いServiceWorkerキャッシュを破棄
     (function() {
-      const APP_VER = "leap-v3-40context-modes";
+      const APP_VER = "leap-v3-42highlight";
       try {
         const storedVer = localStorage.getItem("LEAP_APP_CACHE_VER");
         if (storedVer !== APP_VER) {
@@ -113,6 +113,15 @@
       to   { opacity: 1; transform: translateY(0); }
     }
     .option-reveal { animation: optionSlideIn 0.22s ease-out both; }
+
+    /* ===== 単語詳細シート ===== */
+    @keyframes sheetUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .sheet-in { animation: sheetUp 0.22s ease-out both; }
+    @keyframes backdropIn { from { opacity: 0; } to { opacity: 1; } }
+    .backdrop-in { animation: backdropIn 0.18s ease-out both; }
 
     /* スマホでのタップ反応速度向上（300ms遅延・誤スクロール判定防止） */
     button, a, input, select {
@@ -232,8 +241,10 @@
   <!-- 実データ(1〜1000)の読み込み -->
   <script src="./words_data.js"></script>
   <script src="./kobun/kobun_words_data.js"></script>
-  <!-- 例文・文脈テスト用の例文データ -->
+  <!-- 例文・文脈テスト用の例文データ / 単語詳細データ -->
   <script src="./examples_data.js"></script>
+  <!-- 語源・接頭辞・接尾辞などの参考資料 -->
+  <script src="./reference_data.js"></script>
   <!-- html2canvas (スクリーンショット生成) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
@@ -489,12 +500,6 @@
         <p id="custom-range-note" class="text-xs text-emerald-600 font-medium">※ Part 1 (ID: 1〜400) と Part 2 (ID: 401〜1000) のデータが収録されています（例: 1〜200、450〜800 など自由に入力可能）。</p>
         </div>
 
-        <!-- 例文・文脈テスト選択中はカスタム範囲指定もロック -->
-        <div id="custom-range-locked" class="hidden text-center space-y-2 py-6">
-          <div class="text-3xl">🔒</div>
-          <p class="text-sm font-extrabold text-slate-600 tracking-wider">COMING SOON</p>
-          <p class="text-[11px] text-slate-400 leading-relaxed">例文・文脈テストは現在準備中です。<br>通常4択モードをお使いください。</p>
-        </div>
       </div>
 
       <!-- 出題数選択（10問, 20問, 50問, 100問, 全問, 自由入力） -->
@@ -590,13 +595,16 @@
             <span id="quiz-context-pos" class="hidden"></span>
           </div>
           <p id="quiz-context-sentence" class="text-lg sm:text-xl font-bold leading-relaxed text-slate-900"></p>
-          <p id="quiz-context-ja" class="hidden text-xs text-slate-500 leading-relaxed"></p>
+          <p id="quiz-context-ja" class="hidden w-full text-left text-sm text-slate-600 leading-relaxed bg-slate-50 border border-slate-200 rounded-xl px-3 py-2"></p>
         </div>
 
-        <div id="quiz-word-row" class="flex items-center gap-3">
-          <h3 id="quiz-word" class="text-4xl font-extrabold text-slate-900 tracking-tight">agree</h3>
-          <span id="quiz-word-pos" class="hidden"></span>
-          <button type="button" id="btn-replay-voice" onclick="speakWord()" title="発音を聞く" class="text-slate-400 hover:text-emerald-600 transition text-2xl cursor-pointer leading-none">🔊</button>
+        <div id="quiz-word-row" class="flex flex-col items-center gap-1">
+          <div class="flex items-center gap-3">
+            <h3 id="quiz-word" class="text-4xl font-extrabold text-slate-900 tracking-tight">agree</h3>
+            <span id="quiz-word-pos" class="hidden"></span>
+            <button type="button" id="btn-replay-voice" onclick="speakWord()" title="発音を聞く" class="text-slate-400 hover:text-emerald-600 transition text-2xl cursor-pointer leading-none">🔊</button>
+          </div>
+          <p id="quiz-word-ipa" class="hidden text-sm font-medium text-slate-500 tracking-wide"></p>
         </div>
       </div>
 
@@ -671,6 +679,9 @@
           <p id="dictionary-count" class="text-xs text-slate-400 mt-0.5 truncate">番号順に並んでいます</p>
         </div>
         <div class="flex items-center gap-2 shrink-0">
+          <button type="button" onclick="openReference()" class="px-2.5 py-1.5 rounded-lg border border-slate-300 bg-white hover:bg-slate-100 text-[11px] font-bold text-slate-600 flex items-center gap-1 shrink-0 transition cursor-pointer" title="語源・接頭辞・接尾辞・発音ルール">
+            <span>📚</span><span>語源</span>
+          </button>
           <button type="button" id="dict-filter-toggle" onclick="toggleDictFilterPanel()" class="px-2.5 py-1.5 rounded-lg border border-slate-300 bg-white hover:bg-slate-100 text-[11px] font-bold text-slate-600 flex items-center gap-1 shrink-0 transition cursor-pointer">
             <span>⚙ 絞り込み</span>
             <span id="dict-filter-active-count" class="hidden text-[10px] font-extrabold bg-emerald-100 text-emerald-800 px-1.5 py-0.2 rounded-full">0</span>
@@ -701,13 +712,28 @@
         </div>
       </div>
 
-      <div class="pb-1">
-        <input type="search" id="dictionary-search" oninput="applyDictionaryFilters()" placeholder="番号・英語・日本語で検索（例: 1 / debate / 討論）" class="w-full p-3 bg-white border border-slate-300 rounded-xl text-sm font-medium text-slate-800 focus:outline-none focus:border-slate-800">
+      <div class="pb-1 space-y-1.5">
+        <input type="search" id="dictionary-search" oninput="handleDictionarySearch()" placeholder="番号・英語・日本語で検索（例: 1 / debate / 討論）" class="w-full p-3 bg-white border border-slate-300 rounded-xl text-sm font-medium text-slate-800 focus:outline-none focus:border-slate-800">
+        <div id="dict-pagination-top" class="flex flex-wrap items-center gap-1.5"></div>
       </div>
       </div>
 
       <div id="dictionary-list" class="space-y-1.5"></div>
       <p id="dictionary-empty" class="hidden text-center text-sm text-slate-400 py-8">該当する単語がありません</p>
+      <div id="dict-pagination-bottom" class="flex flex-wrap items-center gap-1.5 pt-2"></div>
+    </section>
+
+    <!-- 語源・接頭辞・接尾辞などの参考資料 -->
+    <section id="screen-reference" class="fade-in hidden space-y-4">
+      <div class="flex items-center justify-between pb-2 border-b border-slate-200 gap-2">
+        <div class="min-w-0">
+          <h2 class="text-xl font-bold text-slate-900">語源・接頭辞・接尾辞</h2>
+          <p class="text-xs text-slate-400 mt-0.5">基礎単語の詳細と語源の参考資料</p>
+        </div>
+        <button type="button" onclick="navigate('screen-dictionary')" class="text-sm text-slate-500 hover:text-slate-800 font-medium shrink-0">戻る</button>
+      </div>
+      <div id="reference-tabs" class="flex gap-1.5 overflow-x-auto pb-1 -mx-1 px-1"></div>
+      <div id="reference-content" class="space-y-4"></div>
     </section>
 
     <!-- 5. 結果画面 -->
@@ -887,6 +913,29 @@
         <button type="button" onclick="clearWeakWords()" class="py-3 px-3 bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold rounded-xl text-xs transition cursor-pointer">
           全消去
         </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 単語詳細シート（辞典の単語タップで表示） -->
+  <div id="word-detail-modal" class="fixed inset-0 z-[70] hidden items-end sm:items-center justify-center p-0 sm:p-4" role="dialog" aria-modal="true" aria-labelledby="word-detail-title">
+    <div class="backdrop-in absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onclick="closeWordDetail()"></div>
+    <div class="sheet-in relative bg-white w-full sm:max-w-lg max-h-[88vh] rounded-t-3xl sm:rounded-3xl shadow-2xl flex flex-col overflow-hidden">
+      <div class="px-5 pt-4 pb-3 border-b border-slate-100 flex items-start gap-3">
+        <div class="min-w-0 flex-1">
+          <p id="word-detail-meta" class="text-[11px] font-bold text-slate-400 tracking-wider">ID: #1</p>
+          <div class="flex items-center gap-2 flex-wrap mt-0.5">
+            <h3 id="word-detail-title" class="text-2xl font-extrabold text-slate-900 tracking-tight break-words">agree</h3>
+            <span id="word-detail-pos" class="inline-flex items-center gap-1"></span>
+            <button type="button" onclick="speakDetailWord()" title="発音を聞く" class="w-8 h-8 rounded-full bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 text-emerald-700 flex items-center justify-center text-base transition cursor-pointer shrink-0">🔊</button>
+          </div>
+          <p id="word-detail-ipa" class="hidden text-sm font-medium text-slate-500 mt-0.5 tracking-wide"></p>
+        </div>
+        <button type="button" onclick="closeWordDetail()" class="text-slate-400 hover:text-slate-700 text-lg font-bold p-1 shrink-0">✕</button>
+      </div>
+      <div id="word-detail-body" class="px-5 py-4 overflow-y-auto space-y-4 text-sm"></div>
+      <div class="px-5 py-3 border-t border-slate-100 bg-slate-50">
+        <button type="button" onclick="closeWordDetail()" class="w-full py-2.5 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold rounded-xl transition cursor-pointer">閉じる</button>
       </div>
     </div>
   </div>
@@ -1115,6 +1164,19 @@
     let PARTS = LEAP_PARTS;
     let ALL_WORDS = [...LEAP_SOURCE];
 
+    // ===== 単語詳細データ（LEAP単語データ/*.txt から生成） =====
+    // 発音記号・品詞・コラム・例文を単語オブジェクトに紐づける
+    function hydrateLeapDetails() {
+      if (typeof LEAP_WORD_DETAILS === "undefined" || !LEAP_WORD_DETAILS) return;
+      LEAP_SOURCE.forEach(w => {
+        const d = LEAP_WORD_DETAILS[w.id] || LEAP_WORD_DETAILS[String(w.id)];
+        if (!d) return;
+        w.detail = d;
+        if (d.ipa) w.ipa = d.ipa;
+        if (Array.isArray(d.posTags) && d.posTags.length) w.pos = d.posTags[0];
+      });
+    }
+
     // ===== 出題スタイル（通常4択 / 例文・文脈テスト）＆ゲームモード =====
     const QUIZ_STYLE_KEY = "LEAP_QUIZ_STYLE_V1";
     const GAME_MODE_KEY = "LEAP_GAME_MODE_V1";
@@ -1204,7 +1266,7 @@
       const styleHint = document.getElementById("style-hint");
       if (styleHint) {
         styleHint.textContent = style === "context"
-          ? "例文の空欄に入る英単語を選ぶ「学校小テスト風」モード（現在準備中）。公開までは通常4択モードをお使いください。"
+          ? "例文の空欄に入る英単語を選ぶ「学校小テスト風」モード。日本語訳の強調部分をヒントに英文を完成させよう（例文ありの単語のみ出題）。"
           : "英単語を見て日本語の語義を選ぶ通常モード。選択肢が出る前に“自力想起”の時間があります。";
       }
       const gameHint = document.getElementById("game-mode-hint");
@@ -1215,13 +1277,12 @@
       syncCustomRangeLockUi();
     }
 
-    // 例文・文脈テストではカスタム範囲指定もロック表示にする
+    // 例文・文脈テストでもカスタム範囲指定を利用できる
     function syncCustomRangeLockUi() {
-      const isLocked = effectiveQuizStyle() === "context";
       const body = document.getElementById("custom-range-body");
       const lockedNotice = document.getElementById("custom-range-locked");
-      if (body) body.classList.toggle("hidden", isLocked);
-      if (lockedNotice) lockedNotice.classList.toggle("hidden", !isLocked);
+      if (body) body.classList.remove("hidden");
+      if (lockedNotice) lockedNotice.classList.add("hidden");
     }
 
     function currentZone() {
@@ -2034,7 +2095,7 @@
     }
 
     // 画面遷移
-    const SCREENS = ["screen-home", "screen-select", "screen-quiz", "screen-shop", "screen-dictionary", "screen-result"];
+    const SCREENS = ["screen-home", "screen-select", "screen-quiz", "screen-shop", "screen-dictionary", "screen-reference", "screen-result"];
     function currentScreenId() {
       const found = SCREENS.find(id => {
         const el = document.getElementById(id);
@@ -2155,11 +2216,12 @@
         });
         return;
       }
-      const openModal = ["achievements-modal", "modal-weak-words"]
+      const openModal = ["achievements-modal", "modal-weak-words", "word-detail-modal"]
         .map(id => document.getElementById(id))
         .find(el => el && !el.classList.contains("hidden"));
       if (openModal) {
-        openModal.classList.add("hidden");
+        if (openModal.id === "word-detail-modal") closeWordDetail();
+        else openModal.classList.add("hidden");
         try { history.pushState({ screen: currentScreenId() }, ""); } catch (e) {}
         return;
       }
@@ -2171,6 +2233,8 @@
 
     // ===== 単語辞典（番号順） =====
     let dictionaryEntries = [];
+    let dictPage = 1;
+    const DICT_PAGE_SIZE = 100;
     const DICT_FILTER_KEY = "LEAP_DICTIONARY_FILTER_V1";
     const DICT_FILTER_OPEN_KEY = "LEAP_DICT_FILTER_OPEN_V1";
     let dictFilterOpen = false;
@@ -2307,11 +2371,18 @@
       const searchEl = document.getElementById("dictionary-search");
       if (searchEl) searchEl.value = "";
       dictionaryEntries = [];
+      dictPage = 1;
 
       const frag = document.createDocumentFragment();
       words.forEach(w => {
         const row = document.createElement("div");
-        row.className = "bg-white border border-slate-200 rounded-xl px-3 py-2.5 flex gap-3 items-start";
+        row.className = "bg-white border border-slate-200 rounded-xl px-3 py-2.5 flex gap-3 items-start cursor-pointer hover:bg-slate-50 transition-colors";
+        row.setAttribute("role", "button");
+        row.tabIndex = 0;
+        row.addEventListener("click", () => openWordDetail(w.id));
+        row.addEventListener("keydown", (ev) => {
+          if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); openWordDetail(w.id); }
+        });
 
         
         const idEl = document.createElement("span");
@@ -2336,12 +2407,17 @@
             statusBadge = `<span class="text-[10px] font-bold text-emerald-800 bg-emerald-100 px-1.5 py-0.2 rounded shrink-0">学習中 (${pct}% ・ ${st.correct}/${st.total})</span>`;
           }
         }
-        wordEl.innerHTML = `<span>${w.word}</span>${statusBadge}`;
+        wordEl.innerHTML = `<span class="flex items-center gap-1.5 flex-wrap min-w-0"><span>${escapeHtml(w.word)}</span>${posBadgesHtml(w)}</span>${statusBadge}`;
+
+        const ipaEl = document.createElement("div");
+        ipaEl.className = "hidden text-[11px] font-medium text-slate-400 tracking-wide mt-0.5";
+        applyWordIpa(ipaEl, w);
 
         const meaningEl = document.createElement("div");
         meaningEl.className = "text-xs text-slate-500 mt-0.5 break-words";
         meaningEl.textContent = w.meaning;
         body.appendChild(wordEl);
+        body.appendChild(ipaEl);
         body.appendChild(meaningEl);
 
 
@@ -2366,6 +2442,220 @@
 
       renderDictionaryPartFilters();
       applyDictionaryFilters();
+    }
+
+    // ===== 単語詳細シート =====
+    let currentDetailWord = null;
+
+    function escapeRegExpLocal(s) {
+      return String(s).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    }
+
+    function sensesHtml(senses) {
+      return (senses || []).map(s => {
+        const tag = normalizePosDetail(s.tag);
+        return `<div class="flex gap-1.5 items-start">`
+          + `<span class="shrink-0 pt-0.5">${tag ? posBadgeHtml(tag) : ""}</span>`
+          + `<span class="text-xs leading-relaxed text-slate-700 break-words">${escapeHtml(s.text)}</span>`
+          + `</div>`;
+      }).join("");
+    }
+
+    function highlightWordInSentence(text, answer) {
+      const safeText = String(text || "");
+      const ans = String(answer || "");
+      if (!ans) return escapeHtml(safeText);
+      const re = new RegExp(escapeRegExpLocal(ans), "i");
+      const m = safeText.match(re);
+      if (!m) return escapeHtml(safeText);
+      const i = m.index;
+      return escapeHtml(safeText.slice(0, i))
+        + `<strong class="text-emerald-700 underline decoration-emerald-300 underline-offset-2">${escapeHtml(m[0])}</strong>`
+        + escapeHtml(safeText.slice(i + m[0].length));
+    }
+
+    function openWordDetail(wordId) {
+      const w = ALL_WORDS.find(x => x.id === Number(wordId));
+      if (!w) return;
+      openWordSheet(w, `ID: #${w.id} ・ Part ${w.part || "-"}`);
+    }
+
+    // 参考資料（第1部の基礎単語）も辞典と同じシートで表示する
+    function openReferenceWord(chapterIndex, wordIndex) {
+      if (typeof LEAP_REFERENCE_DATA === "undefined" || !Array.isArray(LEAP_REFERENCE_DATA)) return;
+      const ch = LEAP_REFERENCE_DATA[chapterIndex];
+      const rw = ch && ch.words && ch.words[wordIndex];
+      if (!rw) return;
+      const w = {
+        id: null,
+        word: rw.word,
+        ipa: rw.ipa,
+        posTags: rw.posTags || [],
+        meaning: (rw.senses || []).map(s => s.text).join("、"),
+        detail: {
+          ipa: rw.ipa,
+          senses: rw.senses || [],
+          posTags: rw.posTags || [],
+          notes: rw.notes || [],
+          examples: []
+        }
+      };
+      openWordSheet(w, `基礎単語 ・ ${ch.title}`);
+    }
+
+    function openWordSheet(w, metaText) {
+      const modal = document.getElementById("word-detail-modal");
+      if (!modal) return;
+      currentDetailWord = w;
+      const d = w.detail || null;
+
+      const meta = document.getElementById("word-detail-meta");
+      if (meta) meta.textContent = metaText || "";
+      const title = document.getElementById("word-detail-title");
+      if (title) title.textContent = w.word || "";
+      const posEl = document.getElementById("word-detail-pos");
+      if (posEl) posEl.innerHTML = posBadgesHtml(w);
+      applyWordIpa(document.getElementById("word-detail-ipa"), w);
+
+      const body = document.getElementById("word-detail-body");
+      if (!body) return;
+      let html = "";
+
+      html += `<div>`
+        + `<p class="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">語義</p>`
+        + `<div class="space-y-1.5">${d && d.senses && d.senses.length ? sensesHtml(d.senses) : `<div class="text-xs leading-relaxed text-slate-700">${escapeHtml(w.meaning || "")}</div>`}</div>`
+        + `</div>`;
+
+      if (d && d.notes && d.notes.length) {
+        const noteHtml = d.notes.map(n => `<p class="text-xs leading-relaxed text-slate-600 whitespace-pre-line">${escapeHtml(n)}</p>`).join("");
+        html += `<div class="bg-amber-50/70 border border-amber-200 rounded-xl p-3 space-y-1.5">`
+          + `<p class="text-[10px] font-bold uppercase tracking-wider text-amber-700">コラム・頻出</p>`
+          + noteHtml + `</div>`;
+      }
+
+      if (d && d.examples && d.examples.length) {
+        const exHtml = d.examples.map((ex, i) => {
+          const en = highlightWordInSentence(ex.plain || ex.en || "", ex.answer || w.word);
+          const ja = ex.ja ? highlightJapanese(ex.ja, w, ex.jaMark) : "";
+          return `<li class="rounded-xl border border-slate-200 bg-slate-50/70 px-3 py-2.5 space-y-1.5">`
+            + `<div class="flex gap-2 items-start">`
+            + `<span class="shrink-0 mt-0.5 w-5 h-5 rounded-md bg-white border border-slate-200 text-slate-500 text-[10px] font-bold flex items-center justify-center">${i + 1}</span>`
+            + `<p class="text-[13px] font-semibold text-slate-800 leading-relaxed break-words">${en}</p>`
+            + `</div>`
+            + (ja ? `<p class="pl-7 text-xs text-slate-600 leading-relaxed break-words"><span class="inline-block text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 rounded px-1 py-0.5 mr-1 align-[1px]">訳</span>${ja}</p>` : "")
+            + `</li>`;
+        }).join("");
+        html += `<div>`
+          + `<div class="flex items-center justify-between mb-1.5">`
+          + `<p class="text-[10px] font-bold uppercase tracking-wider text-slate-400">例文</p>`
+          + `<span class="text-[10px] font-bold text-slate-400 bg-slate-100 px-1.5 py-0.5 rounded-full">${d.examples.length}件</span>`
+          + `</div>`
+          + `<ul class="space-y-2">${exHtml}</ul></div>`;
+      } else if (!d) {
+        html += `<p class="text-xs text-slate-400">この単語の詳細データ（発音記号・コラム・例文）はまだ収録されていません。</p>`;
+      }
+
+      body.innerHTML = html;
+      modal.classList.remove("hidden");
+      modal.classList.add("flex");
+      const sheet = modal.querySelector(".sheet-in");
+      if (sheet) {
+        sheet.classList.remove("sheet-in");
+        void sheet.offsetWidth;
+        sheet.classList.add("sheet-in");
+      }
+    }
+
+    function closeWordDetail() {
+      const modal = document.getElementById("word-detail-modal");
+      if (!modal) return;
+      modal.classList.add("hidden");
+      modal.classList.remove("flex");
+      currentDetailWord = null;
+    }
+
+    // ===== 参考資料（語源・接頭辞・接尾辞） =====
+    function refLineHtml(line) {
+      const t = String(line || "");
+      if (/^■/.test(t)) return `<h4 class="text-sm font-extrabold text-slate-800 mt-3 mb-1">${escapeHtml(t)}</h4>`;
+      if (/^【/.test(t)) return `<p class="text-xs font-extrabold text-emerald-700 mt-2">${escapeHtml(t)}</p>`;
+      if (/^[・\-]/.test(t)) return `<p class="text-xs text-slate-600 pl-3 leading-relaxed">${escapeHtml(t)}</p>`;
+      if (/^\(\d+\)/.test(t)) return `<p class="text-xs font-bold text-slate-700 mt-1.5 leading-relaxed">${escapeHtml(t)}</p>`;
+      return `<p class="text-xs text-slate-600 leading-relaxed">${escapeHtml(t)}</p>`;
+    }
+
+    let referenceTab = 0;
+
+    function setReferenceTab(index) {
+      referenceTab = Number(index) || 0;
+      renderReference();
+      try { window.scrollTo({ top: 0, behavior: "smooth" }); } catch (e) { window.scrollTo(0, 0); }
+    }
+
+    function referenceTabShortTitle(ch) {
+      return String(ch.subtitle || "")
+        .replace(/（[^）]*）/g, "")
+        .replace(/^[\s\u3000]+|[\s\u3000]+$/g, "");
+    }
+
+    function renderReference() {
+      const box = document.getElementById("reference-content");
+      const tabsEl = document.getElementById("reference-tabs");
+      if (!box) return;
+      if (typeof LEAP_REFERENCE_DATA === "undefined" || !Array.isArray(LEAP_REFERENCE_DATA)) {
+        box.innerHTML = `<p class="text-sm text-slate-400">参考資料が読み込まれていません。</p>`;
+        if (tabsEl) tabsEl.innerHTML = "";
+        return;
+      }
+      if (referenceTab < 0 || referenceTab >= LEAP_REFERENCE_DATA.length) referenceTab = 0;
+
+      // 部ごとのタブ
+      if (tabsEl) {
+        tabsEl.innerHTML = LEAP_REFERENCE_DATA.map((ch, i) => {
+          const active = i === referenceTab;
+          return `<button type="button" onclick="setReferenceTab(${i})" class="shrink-0 px-3 py-2 rounded-xl border text-left transition cursor-pointer ${
+            active ? "bg-slate-900 text-white border-slate-900" : "bg-white text-slate-600 border-slate-300 hover:bg-slate-100"
+          }">
+            <span class="block text-xs font-extrabold">${escapeHtml(ch.title || "")}</span>
+            <span class="block text-[10px] mt-0.5 max-w-[120px] truncate ${active ? "text-slate-300" : "text-slate-400"}">${escapeHtml(referenceTabShortTitle(ch))}</span>
+          </button>`;
+        }).join("");
+      }
+
+      const ch = LEAP_REFERENCE_DATA[referenceTab];
+      if (!ch) { box.innerHTML = ""; return; }
+
+      // 第1部の基礎単語は辞典と同じ行スタイル（タップで詳細シート）
+      const words = (ch.words || []).map((w, i) => `
+        <div class="bg-white border border-slate-200 rounded-xl px-3 py-2.5 flex gap-3 items-start cursor-pointer hover:bg-slate-50 transition-colors"
+             role="button" tabindex="0" onclick="openReferenceWord(${referenceTab}, ${i})"
+             onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openReferenceWord(${referenceTab}, ${i});}">
+          <div class="min-w-0 flex-1">
+            <div class="font-bold text-slate-900 text-sm flex items-center gap-1.5 flex-wrap">
+              <span>${escapeHtml(w.word)}</span>
+              ${(w.posTags || []).map(t => posBadgeHtml(t)).join("")}
+              <span class="text-[11px] font-medium text-slate-400 tracking-wide">${w.ipa ? "[" + escapeHtml(w.ipa) + "]" : ""}</span>
+            </div>
+            <div class="text-xs text-slate-500 mt-0.5 break-words">${escapeHtml((w.senses || []).map(s => s.text).join(" / "))}</div>
+          </div>
+          <span class="text-slate-300 text-sm pt-0.5 shrink-0">›</span>
+        </div>`).join("");
+
+      const blocks = (ch.blocks || []).map(refLineHtml).join("");
+      box.innerHTML = `
+        <div class="bg-slate-900 text-white rounded-2xl p-4">
+          <p class="text-[10px] font-bold uppercase tracking-widest text-emerald-300">REFERENCE</p>
+          <h3 class="text-lg font-extrabold mt-0.5">${escapeHtml(ch.title || "")}</h3>
+          ${ch.subtitle ? `<p class="text-[11px] text-slate-300 mt-0.5">${escapeHtml(ch.subtitle)}</p>` : ""}
+        </div>
+        ${ch.words && ch.words.length ? `<p class="text-[11px] font-bold text-slate-400">${ch.words.length} 語 ・ タップで詳細</p>${words}` : ""}
+        ${blocks ? `<div class="bg-white border border-slate-200 rounded-xl p-4 space-y-0.5">${blocks}</div>` : ""}
+      `;
+    }
+
+    function openReference() {
+      renderReference();
+      navigate("screen-reference");
     }
 
     // ===== 辞典の絞り込み（Part・番号範囲） =====
@@ -2421,6 +2711,7 @@
 
     function setDictionaryPartFilter(part) {
       const value = String(part);
+      dictPage = 1;
       const valid = PARTS.map(p => String(p.id));
       if (value === "all") {
         dictionaryFilter.parts = [];
@@ -2437,6 +2728,7 @@
     }
 
     function setDictionaryStatusFilter(status) {
+      dictPage = 1;
       if (status === "all" || !WORD_STATUSES.includes(status)) {
         dictionaryFilter.statuses = [];
       } else if (dictionaryFilter.statuses.includes(status)) {
@@ -2450,6 +2742,7 @@
     }
 
     function setDictionaryStatusSelection(statuses) {
+      dictPage = 1;
       dictionaryFilter.statuses = (statuses || []).filter(st => WORD_STATUSES.includes(st) && st !== "all");
       saveDictionaryFilter();
       syncDictionaryFilterUi();
@@ -2457,6 +2750,7 @@
     }
 
     function handleDictionaryRangeInput() {
+      dictPage = 1;
       dictionaryFilter.start = (document.getElementById("dict-range-start").value || "").trim();
       dictionaryFilter.end = (document.getElementById("dict-range-end").value || "").trim();
       saveDictionaryFilter();
@@ -2464,6 +2758,7 @@
     }
 
     function resetDictionaryFilters() {
+      dictPage = 1;
       dictionaryFilter = { parts: [], start: "", end: "", statuses: [] };
       const searchEl = document.getElementById("dictionary-search");
       if (searchEl) searchEl.value = "";
@@ -2483,7 +2778,7 @@
       const countEl = document.getElementById("dictionary-count");
       const emptyEl = document.getElementById("dictionary-empty");
 
-      let shown = 0;
+      const matches = [];
       dictionaryEntries.forEach(entry => {
         let hit = true;
         if (dictionaryFilter.parts.length > 0 && !dictionaryFilter.parts.includes(entry.part)) hit = false;
@@ -2496,18 +2791,80 @@
             || entry.searchKana.includes(query)
             || entry.meaningNorm.includes(query);
         }
-        entry.el.classList.toggle("hidden", !hit);
-        if (hit) shown++;
+        if (hit) matches.push(entry);
       });
 
       const total = dictionaryEntries.length;
+      const pageCount = Math.max(1, Math.ceil(matches.length / DICT_PAGE_SIZE));
+      if (dictPage > pageCount) dictPage = pageCount;
+      if (dictPage < 1) dictPage = 1;
+      const from = (dictPage - 1) * DICT_PAGE_SIZE;
+      const to = from + DICT_PAGE_SIZE;
+
+      // ページ内の100語だけを表示する
+      dictionaryEntries.forEach(entry => entry.el.classList.add("hidden"));
+      matches.slice(from, to).forEach(entry => entry.el.classList.remove("hidden"));
+
       const filtering = query !== "" || dictionaryFilter.parts.length > 0 || hasRange || dictionaryFilter.statuses.length > 0;
       if (countEl) {
-        countEl.textContent = total === 0
-          ? "単語データが読み込まれていません"
-          : (filtering ? `表示 ${shown} 語 / 全 ${total} 語` : `全 ${total} 語を番号順に表示`);
+        if (total === 0) {
+          countEl.textContent = "単語データが読み込まれていません";
+        } else if (filtering) {
+          countEl.textContent = `該当 ${matches.length} 語 / 全 ${total} 語 ・ ${dictPage}/${pageCount}ページ`;
+        } else {
+          countEl.textContent = `全 ${total} 語 ・ 100語ずつ ・ ${dictPage}/${pageCount}ページ`;
+        }
       }
-      if (emptyEl) emptyEl.classList.toggle("hidden", shown > 0 || total === 0);
+      renderDictionaryPagination(matches.length, pageCount);
+      if (emptyEl) emptyEl.classList.toggle("hidden", matches.length > 0 || total === 0);
+    }
+
+    // ===== 辞典のページ送り（100語ずつ） =====
+    function dictionaryPageLabel(n) {
+      return String(n);
+    }
+
+    function handleDictionarySearch() {
+      dictPage = 1;
+      applyDictionaryFilters();
+    }
+
+    function setDictionaryPage(page) {
+      dictPage = Number(page) || 1;
+      applyDictionaryFilters();
+      try { window.scrollTo({ top: 0, behavior: "smooth" }); } catch (e) { window.scrollTo(0, 0); }
+    }
+
+    function renderDictionaryPagination(matchCount, pageCount) {
+      const top = document.getElementById("dict-pagination-top");
+      const bottom = document.getElementById("dict-pagination-bottom");
+      if (!top && !bottom) return;
+      let html = "";
+      if (pageCount > 1) {
+        const btnBase = "w-7 h-7 rounded-md border text-[11px] font-bold flex items-center justify-center transition cursor-pointer tabular-nums ";
+        const active = "bg-slate-900 text-white border-slate-900";
+        const idle = "bg-white text-slate-600 border-slate-300 hover:bg-slate-100";
+        html += `<button type="button" onclick="setDictionaryPage(${dictPage - 1})" ${dictPage <= 1 ? "disabled" : ""} class="${btnBase} ${dictPage <= 1 ? "bg-slate-100 text-slate-300 border-slate-200" : idle}">◀</button>`;
+        // ページ番号は現在ページの前後＋先頭・末尾を表示し、間は ⋯ で省略
+        const pages = [];
+        const addPage = (n) => { if (n >= 1 && n <= pageCount && !pages.includes(n)) pages.push(n); };
+        addPage(1);
+        for (let n = dictPage - 2; n <= dictPage + 2; n++) addPage(n);
+        addPage(pageCount);
+        pages.sort((a, b) => a - b);
+        let prev = 0;
+        pages.forEach(n => {
+          if (n - prev > 1) html += `<span class="px-0.5 text-slate-400 text-[11px] font-bold">⋯</span>`;
+          html += `<button type="button" onclick="setDictionaryPage(${n})" class="${btnBase} ${n === dictPage ? active : idle}" title="${n}ページ目">${dictionaryPageLabel(n)}</button>`;
+          prev = n;
+        });
+        html += `<button type="button" onclick="setDictionaryPage(${dictPage + 1})" ${dictPage >= pageCount ? "disabled" : ""} class="${btnBase} ${dictPage >= pageCount ? "bg-slate-100 text-slate-300 border-slate-200" : idle}">▶</button>`;
+        html += `<span class="text-[10px] font-semibold text-slate-400 ml-auto">${dictPage} / ${pageCount}ページ（全 ${matchCount} 語）</span>`;
+      } else {
+        html = `<span class="text-[10px] font-semibold text-slate-400">${matchCount} 語</span>`;
+      }
+      if (top) top.innerHTML = html;
+      if (bottom) bottom.innerHTML = html;
     }
 
     // 範囲選択 ＆ 出題数
@@ -2710,9 +3067,9 @@
     }
     let selectedParts = [1];
 
-    // 例文・文脈テストは準備中のため、Part指定もカスタム範囲指定もロックする
+    // 例文・文脈テストも範囲指定を利用できる（例文のある単語だけが出題対象）
     function isRangeSelectionLocked() {
-      return effectiveQuizStyle() === "context";
+      return false;
     }
 
     function isPartAvailable(part) {
@@ -2893,14 +3250,6 @@
     function startCustomQuiz() {
       isWeakMode = false;
       isDailyMode = false;
-      if (isRangeSelectionLocked()) {
-        showAlert({
-          title: "例文・文脈テストは準備中です",
-          message: "このモードは現在準備中です。通常4択モードでお試しください。",
-          icon: "📝"
-        });
-        return;
-      }
       if (rangeMode === "custom") {
         const sel = getCustomRangeSelection();
         if (!sel.valid) {
@@ -3223,22 +3572,57 @@
       return "";
     }
 
-    // 四角いバッジに「他」「自」「名」「形」などを表示する
+    // 複数品詞（自・他など）に対応したタグ一覧
+    function getPosTags(w) {
+      if (!w) return [];
+      const list = [];
+      const push = (raw) => {
+        const tag = normalizePosDetail(raw);
+        if (tag && !list.includes(tag)) list.push(tag);
+      };
+      if (Array.isArray(w.posTags)) w.posTags.forEach(push);
+      else if (w.detail && Array.isArray(w.detail.posTags)) w.detail.posTags.forEach(push);
+      if (!list.length) push(getPosTag(w));
+      return list;
+    }
+
+    function posBadgeHtml(tag) {
+      const def = POS_TAGS[tag];
+      if (!def) return "";
+      const size = def.symbol.length > 1 ? "text-[9px]" : "text-[11px]";
+      return `<span title="${escapeHtml(def.label)}" class="inline-flex items-center justify-center h-5 min-w-[20px] px-1 rounded-[5px] border font-bold align-middle shrink-0 ${size} border-slate-300 bg-white text-slate-600">${escapeHtml(def.symbol)}</span>`;
+    }
+
+    function posBadgesHtml(w) {
+      return getPosTags(w).map(posBadgeHtml).join("");
+    }
+
+    // 四角いバッジに「他」「自」「名」「形」などを表示する（複数品詞は並べる）
     function applyPosBadge(el, w) {
       if (!el) return;
-      const tag = getPosTag(w);
-      const def = POS_TAGS[tag];
-      if (!def) {
+      const tags = getPosTags(w);
+      if (!tags.length) {
         el.textContent = "";
         el.removeAttribute("title");
         el.className = "hidden";
         return;
       }
-      el.textContent = def.symbol;
-      el.title = def.label;
-      el.className = "inline-flex items-center justify-center h-5 min-w-[20px] px-1 rounded-[5px] border font-bold align-middle shrink-0 "
-        + (def.symbol.length > 1 ? "text-[9px]" : "text-[11px]")
-        + " border-slate-300 bg-white text-slate-600";
+      el.innerHTML = tags.map(posBadgeHtml).join("");
+      el.title = tags.map(t => POS_TAGS[t].label).join("・");
+      el.className = "inline-flex items-center gap-1 flex-wrap align-middle shrink-0";
+    }
+
+    // 発音記号（IPA）を単語の下に表示
+    function applyWordIpa(el, w) {
+      if (!el) return;
+      const ipa = (w && ((w.detail && w.detail.ipa) || w.ipa)) || "";
+      if (!ipa) {
+        el.textContent = "";
+        el.classList.add("hidden");
+        return;
+      }
+      el.textContent = `[${ipa}]`;
+      el.classList.remove("hidden");
     }
 
     function inferPos(w) {
@@ -3337,7 +3721,23 @@
       };
     }
 
-    function getContextData(w) {
+    function getContextData(w, pickRandom) {
+      // 詳細データの例文（括弧マーカー付き）を最優先で使う
+      const d = w && w.detail;
+      if (d && Array.isArray(d.examples) && d.examples.length) {
+        const usable = d.examples.filter(ex => ex && ex.hasBlank && ex.prompt);
+        if (usable.length) {
+          const ex = pickRandom ? usable[Math.floor(Math.random() * usable.length)] : usable[0];
+          return {
+            en: ex.plain || ex.en,
+            ja: ex.ja || "",
+            prompt: ex.prompt,
+            form: ex.answer || "",
+            meaning: ex.ja || "",
+            jaMark: ex.jaMark || ""
+          };
+        }
+      }
       const ex = getExampleFor(w);
       if (!ex) return null;
       const cloze = buildCloze(ex.en, w.word);
@@ -3452,7 +3852,7 @@
       const blockedWords = new Set(selectedWords.map(w => String(w.word || "")));
 
       quizState.questions = selectedWords.map(targetWord => {
-        const contextData = style === "context" ? getContextData(targetWord) : null;
+        const contextData = style === "context" ? getContextData(targetWord, true) : null;
         const optionMode = contextData ? "word" : "meaning";
         const correctText = optionMode === "word" ? String(targetWord.word || "") : String(targetWord.meaning || "");
         const usedKeys = new Set([correctText]);
@@ -3471,6 +3871,7 @@
           sentence: contextData ? contextData.prompt : "",
           sentenceEn: contextData ? contextData.en : "",
           sentenceJa: contextData ? contextData.ja : "",
+          sentenceJaMark: contextData ? contextData.jaMark : "",
           pos: inferPos(targetWord),
           options
         };
@@ -3633,6 +4034,78 @@
         .replace(/"/g, "&quot;");
     }
 
+    // 例文の日本語訳のうち、空欄に対応する語義を見やすく強調する
+    function highlightJapanese(ja, w, forcedMark) {
+      const text = String(ja || "");
+      if (!text) return "";
+      // データ側で対応語句が個別指定されている場合はそれを優先する
+      if (forcedMark && text.includes(forcedMark)) {
+        const fi = text.indexOf(forcedMark);
+        return escapeHtml(text.slice(0, fi))
+          + `<mark class="bg-emerald-100 text-emerald-900 font-bold px-0.5 rounded" title="空欄に入る語の意味">${escapeHtml(forcedMark)}</mark>`
+          + escapeHtml(text.slice(fi + forcedMark.length));
+      }
+      const candidates = new Set();
+      const add = (raw) => {
+        let s = String(raw || "").replace(/[①-⑳]/g, "")
+          .replace(/^[〜~～]+/, "")
+          .replace(/^[（(][^）)]*[）)]/, "")
+          .replace(/[（(][^）)]*$/g, "")
+          .trim();
+        s = s.replace(/(している|している|される|られた|する|した|な|の|だ)$/g, "").trim();
+        if (s.length > 2) s = s.replace(/^[をにがはとでへの]/, "");
+        if (s.length >= 2 && !/^(こと|もの|ひと|人|〜|する|ある)$/.test(s)) candidates.add(s);
+      };
+      if (w && w.meaning) String(w.meaning).split(/[、,／\/]/).forEach(add);
+      if (w && w.detail && Array.isArray(w.detail.senses)) {
+        w.detail.senses.forEach(se => {
+          String(se.text || "").split(/[、,／\/\s　]/).forEach(seg => {
+            add(seg);
+            add(seg.replace(/[（(][^）)]*[）)]/g, ""));
+          });
+        });
+      }
+      let best = "";
+      candidates.forEach(c => {
+        if (text.includes(c) && c.length > best.length) best = c;
+      });
+      // 語形が違う場合（身体→体 など）は漢字1字の一致まで探す
+      if (!best) {
+        const kanji = new Set();
+        candidates.forEach(c => {
+          for (const ch of c) if (/[\u4e00-\u9fff]/.test(ch)) kanji.add(ch);
+        });
+        kanji.forEach(ch => { if (text.includes(ch)) best = best || ch; });
+      }
+      // 対応する語句を特定できない場合も、和訳全体を緑にして見やすくする
+      if (!best) {
+        return `<mark class="bg-emerald-100 text-emerald-900 rounded px-0.5">${escapeHtml(text)}</mark>`;
+      }
+      const idx = text.indexOf(best);
+      // 「開発」→「開発する」、「発」→「発展する」のように語尾まで広げて強調する
+      best = expandJapaneseWord(text, idx, best.length);
+      return escapeHtml(text.slice(0, idx))
+        + `<mark class="bg-emerald-100 text-emerald-900 font-bold px-0.5 rounded" title="空欄に入る語の意味">${escapeHtml(best)}</mark>`
+        + escapeHtml(text.slice(idx + best.length));
+    }
+
+    function expandJapaneseWord(text, start, len) {
+      const isKanji = (c) => /[\u4e00-\u9fff]/.test(c);
+      const isKata = (c) => /[\u30a0-\u30ff]/.test(c);
+      const isHira = (c) => /[\u3040-\u309f]/.test(c);
+      const particles = "のにをがはでともへや";
+      let s = start;
+      let e = start + len;
+      while (s > 0 && (isKanji(text[s - 1]) || isKata(text[s - 1]))) s--;
+      while (e < text.length && (isKanji(text[e]) || isKata(text[e]))) e++;
+      while (e < text.length && isHira(text[e]) && !particles.includes(text[e])) e++;
+      return text.slice(s, e);
+    }
+
+    function contextJaHtml(w, ja, forcedMark) {
+      return `訳: ${highlightJapanese(ja, w, forcedMark)}`;
+    }
+
     // 自力想起ステップ: 選択肢の代わりにマスクを表示
     function renderOptionMask() {
       const container = document.getElementById("quiz-options-container");
@@ -3692,13 +4165,14 @@
       if (sentenceEl) sentenceEl.textContent = q.sentenceEn || q.sentence;
       const jaEl = document.getElementById("quiz-context-ja");
       if (jaEl && q.sentenceJa) {
-        jaEl.textContent = `訳: ${q.sentenceJa}`;
+        jaEl.innerHTML = contextJaHtml(q.word, q.sentenceJa, q.sentenceJaMark);
         jaEl.classList.remove("hidden");
       }
       const tag = getPosTag(q.word);
       const posLabel = (POS_TAGS[tag] && POS_TAGS[tag].label) || POS_LABELS[q.pos] || "語彙";
       const promptEl = document.getElementById("quiz-context-prompt");
       if (promptEl) promptEl.textContent = `正解: ${q.word.word}（${posLabel} / ${q.word.meaning}）`;
+      applyWordIpa(document.getElementById("quiz-word-ipa"), q.word);
     }
 
     function renderQuestion() {
@@ -3740,6 +4214,7 @@
         const wordStatsEl = document.getElementById("quiz-word-stats-badge");
         if (wordIdEl) wordIdEl.textContent = `ID: #${q.word.id}`;
         if (wordEl) wordEl.textContent = q.word.word;
+        applyWordIpa(document.getElementById("quiz-word-ipa"), q.word);
 
         // 例文・文脈テストでは単語と語義を隠し、例文の空欄を見せる
         const isContext = q.type === "word";
@@ -3754,7 +4229,7 @@
           const jaEl = document.getElementById("quiz-context-ja");
           if (jaEl) {
             if (q.sentenceJa) {
-              jaEl.textContent = `訳: ${q.sentenceJa}`;
+              jaEl.innerHTML = contextJaHtml(q.word, q.sentenceJa, q.sentenceJaMark);
               jaEl.classList.remove("hidden");
             } else {
               jaEl.textContent = "";
@@ -4316,6 +4791,26 @@
     }
 
     // ===== 音声読み上げ(TTS) =====
+    function speakEnglish(text) {
+      try {
+        if (!window.speechSynthesis || !text) return;
+        window.speechSynthesis.cancel();
+        const utter = new SpeechSynthesisUtterance(text);
+        utter.lang = "en-US";
+        utter.rate = 0.9;
+        utter.pitch = 1.0;
+        window.speechSynthesis.speak(utter);
+      } catch (e) {
+        console.warn("speechSynthesis error:", e);
+      }
+    }
+
+    // 単語詳細シートの音声ボタン（明示操作なので読み上げ設定に関係なく再生）
+    function speakDetailWord() {
+      if (!currentDetailWord) return;
+      speakEnglish(currentDetailWord.word);
+    }
+
     function speakWord() {
       try {
         if (!userData.voiceEnabled) return;
@@ -5038,6 +5533,7 @@ listContainer.appendChild(row);
     window.addEventListener("DOMContentLoaded", () => {
       initDarkMode();
       loadUserData();
+      hydrateLeapDetails();
       loadUiModes();
       syncDataRangeUi();
       applySubject(getSavedSubject(), { silent: true });

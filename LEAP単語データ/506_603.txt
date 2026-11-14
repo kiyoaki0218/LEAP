@@ -1,0 +1,783 @@
+506
+　access [ǽkses] 名：①利用する権利 ②(場所への)接近方法
+　ーーー
+　コラム：「目標となる場所、物に近づく」 / 頻出：① have access to ～「～を利用[入手]できる」 / 形容詞：accéssible「利用(接近)可能な」 / 名詞：accéssory「付属品(←近くにある物)」
+　例文：
+　① have free 【access】 to a computer コンピュータを自由に利用できる(利用する権利を持つ)
+　② 【access】 to the restrooms トイレへの行き方
+
+507
+　duty [djúːti] 名：①義務 ②関税
+　ーーー
+　コラム：「(法律的、道徳的に)果たさなければならないこと」 / 頻出：① on [off] duty「(交代制の)勤務中[勤務時間外]で」、have a sense of duty toward ～「～に義務感を持つ」 / ② duty-free「免税の」
+　例文：
+　① fulfill my 【duties】 義務を果たす
+　② a 6 percent 【duty】 on imports 輸入品に対する6%の関税
+
+508
+　responsible [rispɑ́nsəbl] 形：①(人が主語)責任がある ②(物が主語)原因となっている
+　ーーー
+　コラム：頻出：be responsible for ～「～の責任がある[原因となる]」、hold (人) responsible for ～「(人)に～の責任を負わせる」 / 語源：respons-[反応]+-ble[可能]から「(要求に)対応できる」→「責任がとれる」 / 名詞：responsibílity「責任」⇨ take [evade] responsibility for ～「～に対して責任をとる[～に対する責任から逃れる]」、It is the responsibility of A to do.「～するのはAの責任だ。」、accountabílity「説明責任」
+　例文：
+　① I am 【responsible】 for what happens at school. 私には学校で起きることに対して責任がある。
+　② The typhoon was 【responsible】 for over 100 deaths. その台風のため100人以上の人が犠牲になった(その台風は100人以上の人の死の原因となった)。
+
+509
+　policy [pɑ́ləsi] 名：①政策 ②方針 ③保険契約、約款
+　ーーー
+　コラム：③は別語源。 / 頻出：① Japan's foreign policy「日本の外交政策」 / 語源：①② poli-[(ギリシャの都市国家ポリスから→)政治、管理] 同根語：pólitics「政治」、políce「警察」
+　例文：
+　① China's one-child 【policy】 中国の一人っ子政策
+　② It is my 【policy】 not to say bad things about others. 他人の悪口を言わないというのが私のポリシー(方針)だ。
+　③ renew an insurance 【policy】 保険契約を更新する
+
+510
+　elect [ilékt] 他：～を(選挙で)選ぶ
+　ーーー
+　コラム：「選挙によって(公的な地位の人)を選ぶ」 / 頻出：elect A (as [to be]) B「AをBに選ぶ」(*Bがmáyor「市長」やprésident「大統領」などの1名しかいない「役職」の場合、冠詞は不要。) / 名詞：eléction「選挙」⇨ a general election「総選挙」
+　例文：
+　I was 【elected】 a class representative. (*委員が複数いる場合はaが必要。) 私はクラス委員に選ばれた。
+
+511
+　industry [índəstri] 名：①工業 ②(the ～ industry)産業、業界 ③勤勉
+　ーーー
+　コラム：元は③の意味だったが、産業革命のころに①②の意味に派生した。 / 注意：ふつうは①の意味だが、the tourist [film] industry「旅行[映画]業界」などの特殊な文脈では②の意味となる。(③はまれ。) / 形容詞：indústrial「工業の」⇨ the Industrial Revolution「産業革命」、indústrialized「工業化した」、indústrious「勤勉な」
+　例文：
+　① commerce and 【industry】 商工業
+　② the fashion 【industry】 ファッション業界
+　③ 【Industry】 is the mother of success. 勤勉は成功の母だ。
+
+512
+　income [ínkʌm] 名：収入
+　ーーー
+　コラム：「(給与、株のもうけ、年金など)収入の合計」 / 頻出：a large [high] income「高収入」、a small [low] income「低収入」、live beyond [within] one's income「収入以上[以内]の暮らしをする」 / 語源：in-[中に]+-come[来る]→「中に入ってくるもの」 / 反対：expénse「費用」
+　例文：
+　my monthly 【income】 私の月収
+
+513
+　profit [prɑ́fit] 名：利益、利潤
+　ーーー
+　コラム：「何かをして得たお金」 / 頻出：make [generate] a profit「利益を得る[生み出す]」 / 語源：pro-[前方]+-fit[=fic 作る]から「前に出て作り出す」→「利益」 同根語：propéller「プロペラ」 / 形容詞：prófitable「利益が出る、有益な」、nónprofit「非営利の」⇨ nonprofit organization (NPO)「非営利組織」
+　例文：
+　The restaurant's daily 【profit】 is about $1,000. そのレストランの1日の利益はおよそ1,000ドルだ。
+
+514
+　tax [tǽks] 名：税金 (〈米〉→〈可算〉 〈英〉→〈不可算〉)
+　ーーー
+　コラム：頻出：tax increases [cuts]「増[減]税」、raise [increase] taxes「増税する」、reduce [cut, lower] taxes「減税する」、tax break「優遇税制」、tax-free「免税の」、tax collector「税務署員」
+　例文：
+　pay 【taxes】 on my income 収入に課された税金を払う
+
+515
+　expense [ikspéns] 名：①費用、経費 ②(at the - of ～)(～を)犠牲(にして)
+　ーーー
+　コラム：「(比較的多額の)出費、犠牲」 / 頻出：① medical [school, living] expenses「医療[学、生活]費」、at great expense「多額の費用をかけて」(*〈不可算〉扱い) / 動詞：expénd「～を費やす」 / 形容詞：expénsive「高価な」(⇔ inexpénsive「安価な」)
+　例文：
+　① This money will cover all your 【expenses】. このお金があなたのすべての費用をまかなうだろう。
+　② at the 【expense】 of my health 健康を犠牲にして
+
+516
+　debt [dét] 名：借金
+　ーーー
+　コラム：「借金をする」はbórrowを使う。 / 頻出：be in debt (to ～)「(～に)借金している」 / 語源：de-[=down マイナス]+-bt[=have 持っている]→「負債を抱える」
+　例文：
+　pay back a 【debt】 of 100 dollars 100ドルの借金を返す
+
+517
+　deposit [dipɑ́zit] 名：①預金 ②頭金、保証金 ③埋蔵物、堆積物 他：④～を預ける
+　ーーー
+　コラム：「下に置かれたもの」→①「銀行口座の下」 ③「地面などの下」 / 頻出：④ deposit (お金) in [× to] a bank「銀行に(お金)を預ける」 / 反対：④ withdráw「～を引き出す」 / 類語：a bank balance「預金残高」
+　例文：
+　① have a large 【deposit】 in the bank 銀行に多額の預金がある
+　② pay a 【deposit】 on a house 家の手付金を払う
+　③ a rich 【deposit】 of oil 豊富な石油の埋蔵
+　④ 【deposit】 ¥10,000 in a bank 銀行口座に10,000円を預金する
+
+518
+　charge [tʃɑ́ːrdʒ] 名：①料金 ②(主にin -)責任、管理 ③(against ～)(～に対する)非難、告訴 他：④～を請求する ⑤～を告訴する ⑥～を充電する
+　ーーー
+　コラム：「荷物を積む」が元の意味で、「負担をかける」から①「(支払いを課す→)料金」 ②③「(責任を課す→)管理、非難」 / 頻出：① free of charge「無料で」(= for free) / ② be in charge of ～「～の責任者である」 / ④ charge A for B「Bの代金としてAを請求する」 / ⑤ be charged with ～「～で告発される」
+　例文：
+　① Goods are delivered free of 【charge】. 商品は無料でお届けします。
+　② Who is in 【charge】 of this shop? この店の責任者はどなたですか。
+　③ a 【charge】 against the company 会社に対する告発
+　④ 【charge】 5,000 yen for a half-hour class 30分の授業で5,000円を請求する
+　⑤ be 【charged】 with accepting bribes 賄賂を受け取ったとして告発される
+　⑥ 【charge】 my smartphone スマートフォンを充電する
+
+519
+　wage [wéidʒ] 名：①賃金〈可算〉 他：②(闘争、運動など)を行う
+　ーーー
+　コラム：①「(主に肉体労働の)賃金」 類語：a sálary「(正社員の)固定給」 / 頻出：① a weekly [daily] wage「週[日]給」、a minimum wage「最低賃金」 / 語源：「(労働の)契約」が元の意味。 同根語：wédding「結婚(←夫婦の契約)」 / 関連語：blue-collar [white-collar] workers「肉体[頭脳]労働者」
+　例文：
+　① get a daily 【wage】 of $100 日給100ドルを得る
+　② 【wage】 a campaign キャンペーンを行う
+
+520
+　recession [riséʃən] 名：不況、不景気
+　ーーー
+　コラム：「(一時的な)不況」 類語：depréssion「(長期にわたる深刻な)不況」 / 頻出：an economic recession「不況(←経済の後退)」 / 語源：re-[後ろに]+-ces-[=ceed 進む] 同根語：procéed「進む」
+　例文：
+　close down my inn because of the continuing 【recession】 長引く不況のため旅館を閉める
+
+521
+　consume [kənsúːm] 他：～を消費する
+　ーーー
+　コラム：「(燃料、食べ物、時間など)を消費する」 / 語源：con-[完全に]+-sume[取る]→「消費する」 同根語：consómmé「コンソメ(←煮出してエキスを取ったスープ)」 / 名詞：consúmption「消費」⇨ consumption tax「消費税」、consúmer「消費者」⇨ consumer goods「消費財」、consúmerism「消費者主義」 / 形容詞：tíme-consuming「時間のかかる」⇨ a time-consuming process「時間のかかる過程」
+　例文：
+　【consume】 a large amount of electricity 大量の電気を消費する
+
+522
+　waste [wéist] 他：①～を浪費する 名：②浪費、無駄 ③廃棄物〈不可算〉
+　ーーー
+　コラム：「(時間、金、努力)を無駄に使う」 / 頻出：① waste (お金) on ～「(お金)を～に浪費する」、waste (時間) doing [副詞句]「(時間)を～に浪費する」 / ② a waste of ～「～の無駄」 / 語源：wa-[=va 空っぽの]から「空っぽにする」→「無駄にする」 同根語：vácant「空いている」、wánt「不足；～が欲しい(←欠けている)」
+　例文：
+　① Don't 【waste】 so much time on video games. テレビゲームにそんなに多くの時間を浪費してはいけません。
+　② It is a 【waste】 of time and money. そんなの時間と金の無駄だ。
+　③ industrial 【waste】 産業廃棄物
+
+523
+　invest [invést] 他：①(A in B)(A)を(Bに)投資する ②(A with B)(A)に(Bを)与える
+　ーーー
+　コラム：①「(お金、時間など)を投資する」 ②「～に(力や雰囲気など)を与える」 / 語源：in-[中に]+-vest[服]→「(投資で金をもうけて)よい服を着る」 同根語：vést「ベスト、チョッキ」 / 名詞：invéstment「投資、付与」
+　例文：
+　① 【invest】 one million yen in stocks 株に100万円を投資する
+　② He is 【invested】 with absolute authority. 彼には絶対的権限が与えられている。
+
+524
+　import [impɔ́ːrt] (名)[ímpɔːrt] 他：①～を輸入する 名：②輸入、輸入品
+　ーーー
+　コラム：語源：im-[=in 中に]+-port[運ぶ]→「～の中に運び込む」 同根語：pórter「ポーター、運搬人」 / 反対：① expórt「～を輸出する」 ② éxport「輸出、輸出品」
+　例文：
+　① 【import】 beef from the U.S. アメリカから牛肉を輸入する
+　② 【Imports】 slightly exceeded exports. 輸入が輸出を少し上回った。
+
+525
+　financial [finǽnʃəl] 形：財政的な、金銭的な
+　ーーー
+　コラム：「お金およびその運用に関わる」 / 語源：fíne「罰金」 / 名詞：fínance「財政、資金」 / 形容詞：físcal「会計の」⇨ a fiscal year「会計年度(←国および地方公共団体の歳入歳出を整理区分するための期間)」
+　例文：
+　receive 【financial】 support 経済的支援を受ける
+
+526
+　hire [háiər] 他：①～を(一時的に)雇う ②(金を払って短期間)～を借りる
+　ーーー
+　コラム：類語：emplóy「(正規に)～を雇う」 / 反対：fíre「～をクビにする」とセットで覚えよう。
+　例文：
+　① 【hire】 movers to do all the work 引っ越し業者を雇って全部任せる
+　② 【hire】 a car (*〈米〉ではrentも可。) 車を借りる
+
+527
+　employ [implɔ́i] 他：①(人)を雇う ②(物、事)を用いる
+　ーーー
+　コラム：①「(人)を雇用する、雇い入れる」→②「(道具など)を使う」(*②日常ではúseを使うことが多い。) / 注意：日本語の「用いる」と同様、目的語には「人」も「物、事」もとる。 / 名詞：emplóyment「雇用」、emplóyer「雇い主」、employée「従業員」 / 動詞：recrúit「(従業員、学生など)を新しく入れる」
+　例文：
+　① 【employ】 minors 未成年者を雇う
+　② 【employ】 new technology 新しい技術を用いる
+
+528
+　resign [rizáin] 自：①(as ～)(～を)辞職する 他：②(地位など)を辞める
+　ーーー
+　コラム：「(地位のある人が途中で公的に)辞職する」 / 注意：resign oneself to ～は「～をあきらめて受け入れる」の意味。 / 語源：re-[後ろ]+-sign[署名]→「署名を撤回する」 / 名詞：resignátion「辞職」
+　例文：
+　① 【resign】 as coach [× a coach] (*役職名なのでaは不要。) コーチを辞める
+　② 【resign】 my post ポストを辞する
+
+529
+　qualify [kwɑ́ləfài] 自：①(for ～)(～の)資格がある ②(as ～)(～としての)資格を得る 他：③～に資格を与える
+　ーーー
+　コラム：類語：lícensed「免許を受けた」 / 頻出：①② be qualified の形も可。 / 語源：quali-[資質]+-fy[与える] / 形容詞：quálified「資格のある、適格の」 / 名詞：qualificátion「資格」
+　例文：
+　① 【qualify】 for bank loans 銀行ローンを受ける資格がある
+　② 【qualify】 as a teacher 教師としての資格を得る
+　③ a World Cup 【qualifying】 game ワールドカップの予選(本選への資格を与える試合)
+
+530
+　assign [əsáin] 他：①～を割り当てる ②～を配属する
+　ーーー
+　コラム：「～を(人に)割り当てる」 / 頻出：assign A to B「AをBに割り当てる」(≒ assign B A) / 語源：as-[=ad 方向]+-sign[印]から「(誰の担当かと)印をつける」→「～を割り当てる」 / 名詞：assígnment「宿題、割り当て、配属」
+　例文：
+　① 【assign】 that important job to him 彼にその大切な仕事を割り当てる
+　② be 【assigned】 to the head office 本店に配属される
+
+531
+　occupation [ɑ̀kjupéiʃən] 名：①職業〈可算〉 ②占有、占領〈不可算〉
+　ーーー
+　コラム：①公文書などで使われる堅い語。(*日常ではjóbのほうが使われる。) / 語源：óccupy「～を占める」の名詞形(「人生を占有するもの」→「職業」)。
+　例文：
+　① my name, address, and 【occupation】 氏名、住所、職業
+　② be under 【occupation】 占領下にある
+
+532
+　career [kəríər] 名：①職業 ②経歴
+　ーーー
+　コラム：「(生涯にわたって)人が歩む(歩んできた)道」 / 頻出：② pursue a career as ～「～としての経歴を歩む」 / 注意：日本語の「キャリア」は②の意味で使われることが多い。
+　例文：
+　① start a 【career】 as a doctor 医者として働き始める(職業を始める)
+　② during her long 【career】 as a teacher 彼女の長い教員生活(教員としての長い経歴)の間に
+
+533
+　profession [prəféʃən] 名：①(専門的な)職業 ②(the -)同業者集団
+　ーーー
+　コラム：「(弁護士、医師など)特別な訓練や高度な知識を必要とする専門職」 / 頻出：① enter a profession「専門職に就く」 / 語源：pro-[前方]+-fess-[言う]→「はっきり言う人」 同根語：conféss「～を告白する」(con-[すっかり]+-fess[言う])、proféssor「教授」 / 形容詞・名詞：proféssional「専門的な、プロの」「専門家、プロ」
+　例文：
+　① enter the legal 【profession】 法律関係の仕事に就く
+　② the medical 【profession】 医療従事者
+
+534
+　unemployment [ʌ̀nimplɔ́imənt] 名：①失業 ②失業率(= - rate)、失業者数 (①②ともに〈不可算〉)
+　ーーー
+　コラム：頻出：① unemployment benefits「失業手当」 / ② high [low] unemployment「高い[低い]失業率」 / 語源：un-[否定]+-employment[雇用]→「失業」 / 形容詞：unemplóyed「失業した」
+　例文：
+　① an 【unemployment】 problem 失業問題
+　② 【Unemployment】 has fallen. 失業率が下がった。
+
+535
+　document [dɑ́kjumənt] (動)[dɑ́kjumènt] 名：①書類、資料 他：②～を記録する
+　ーーー
+　コラム：①主に「公式の文書、書類」 ②「(文書、動画、写真などで)～を記録する」 / 頻出：① an official document「公文書」 / 語源：docu-[教え示す]+-ment[もの] 同根語：dóctrine「教義、(政治上の)主義」 / 形容詞・名詞：documéntary「文書の」「記録作品、ドキュメンタリー」
+　例文：
+　① look over the 【documents】 資料に目を通す
+　② 【document】 how this event happened この出来事がどのように起きたかを記録する
+
+536
+　department [dipɑ́ːrtmənt] 名：①(組織の)部門、課 ②(大学の)学科 ③(米国などの)省
+　ーーー
+　コラム：頻出：a department store「デパート、百貨店(←各部門に分かれている店)」 / 語源：de-[分離]+-part-[部分]+-ment[もの]→「部分に分けられた物」
+　例文：
+　① the toy 【department】 おもちゃ売り場
+　② the English 【department】 英語学科
+　③ the U.S. State 【Department】 米国国務省
+
+537
+　branch [brǽntʃ] 名：①支店、支局 ②(学問の)部門 ③枝
+　ーーー
+　コラム：「枝(bránch)分かれしてできたもの」 / 反対：① a head office「(銀行などの)本店」
+　例文：
+　① a 【branch】 of this bank この銀行の支店
+　② a 【branch】 of biology 生物学の一部門
+　③ Don't break 【branches】 off the trees. 木の枝を折ってはいけません。
+
+538
+　retail [ríːteil] 名：①小売り〈不可算〉 自：②小売りされている
+　ーーー
+　コラム：頻出：① a retail price「小売価格」、a retail store「小売店」 / 語源：re-[繰り返し]+-tail[切る]→「小売りできるよう細かく切る」 同根語：táilor「仕立て屋(←切る人)」 / 名詞：rétailer「小売業者」
+　例文：
+　① a recommended 【retail】 price 希望小売価格
+　② The vinegar 【retails】 at 1,000 yen a bottle. その酢の小売価格は1本千円だ(1本千円で小売りされている)。
+
+539
+　colleague [kɑ́liːg] 名：(from ～)(～の)同僚
+　ーーー
+　コラム：「(専門職、公職にある人の)同僚」(*〈米〉ではcóworker「同僚」のほうが使われる。)「共同研究者」の意味で使うこともある。 / 語源：co-[=con 共に]+-league[選ばれた人] / 反対：subórdinate「部下」
+　例文：
+　a 【colleague】 from work 会社の同僚
+
+540
+　system [sístəm] 名：①制度、組織 ②体系 (①②ともに〈可算〉)
+　ーーー
+　コラム：〈(a.)複数の要素から成り、(b.)その要素が互いに関連し、(c.)全体として体系的に構成されている〉の条件を満たすもの。 / 頻出：the metric system「メートル法」 / 形容詞：systemátic「体系的な」
+　例文：
+　① the tax 【system】 税制
+　② the solar 【system】 太陽系
+
+541
+　structure [strʌ́ktʃər] 名：構造
+　ーーー
+　コラム：「(物の)構造」から「(社会)構造」まで。 / 語源：struct-[組み立てる]+-ure[こと]→「構造」 同根語：constrúct「～を建設する、組み立てる」 / 形容詞：strúctural「構造上の」 / 名詞：restrúcturing「再構成、リストラ(←組織の再編)」(*「リストラする」はlay ～ off「～を解雇する」で表現)
+　例文：
+　a wooden 【structure】 木造建造物(木の構造)
+
+542
+　architecture [ɑ́ːrkətèktʃər] 名：建築(様式)〈不可算〉
+　ーーー
+　コラム：「建築物の様式やデザイン」 類語：búilding「(具体的な)建造物」〈可算〉 / 頻出：modern [Gothic] architecture「現代[ゴシック]建築」 / 語源：arch-[主要な]+-tect-[技術] 同根語：híerarchy「階級組織(←最も主要な人を頂点とする制度)」、techníque「技巧」 / 名詞：árchitect「建築家、設計者」
+　例文：
+　study 【architecture】 建築(様式)を勉強する
+
+543
+　construction [kənstrʌ́kʃən] 名：建設〈不可算〉
+　ーーー
+　コラム：「家や橋を造る過程」 / 頻出：under construction「建設中の」 / 動詞：constrúct「～を建設する」 / 形容詞：constrúctive「建設的な」
+　例文：
+　The new city hall is under 【construction】. 新しい市役所が建設中です。
+
+544
+　function [fʌ́ŋkʃən] 名：①機能 自：②機能する
+　ーーー
+　コラム：注意：日常で「機能する」はwórkがふつう。 / 形容詞：fúnctional「機能している、機能的な」 / 名詞・動詞：malfúnction「故障；故障する、正常に動かない」(mal-[悪い、不十分な]) / 名詞：dysfúnction「機能不全」
+　例文：
+　① bodily 【functions】 身体の機能
+　② His heart is 【functioning】 normally. 彼の心臓は正常に機能している。
+
+545
+　surface [sə́ːrfis] 名：①表面〈可算〉 自：②表面化する
+　ーーー
+　コラム：「(有形、無形のものの)表面」 / 頻出：① the earth's surface「地球の表面」(= the surface of the earth) / 語源：sur-[上]+-face[顔]から「顔の上」→「表面」
+　例文：
+　① the 【surface】 of the moon 月面(月の表面)
+　② The rumor 【surfaced】 in the press. そのうわさがメディアで表面化した。
+
+546
+　aspect [ǽspekt] 名：側面〈可算〉
+　ーーー
+　コラム：「(さまざまに見える)物の1つの側面」 / 頻出：an [every] aspect of ～「～の1つの[あらゆる]側面」 / 語源：a-[=ad 方向]+-spect[見る] 同根語：spéctator「観客、見物人」
+　例文：
+　learn about various 【aspects】 of Japanese culture [× various Japanese cultures] さまざまな日本文化(日本文化のさまざまな側面)を学ぶ
+
+547
+　edge [édʒ] 名：①端〈可算〉 ②(ナイフなどの)刃 ③優位
+　ーーー
+　コラム：「鋭い」→②「刃(先)」→①「端、縁」→③「最先端」 / 頻出：③ have the edge on [over] ～「～に対して優位である」 / 形容詞：cútting-edge「最先端の(←刃先から)」、dóuble-édged「両刃の」
+　例文：
+　① sit on the 【edge】 of the bed ベッドの端に座る
+　② This knife has a sharp 【edge】. このナイフはよく切れる(鋭い刃をもっている)。
+　③ have the 【edge】 over my rival 競争相手より優位である
+
+548
+　makeup [méikʌp] 名：①(物の)構成、構造 ②(人の)資質 ③化粧 ④(- exam)追試験
+　ーーー
+　コラム：「作り上げたもの」 / 頻出：③ put on [wear] makeup「化粧をする[している]」、take off [remove] makeup「化粧を落とす」 / 類語：cosmétics「化粧品」
+　例文：
+　① the 【makeup】 of the team そのチームの構成
+　② the unique 【makeup】 of each person 1人1人の独自の資質
+　③ wear heavy 【makeup】 厚化粧をしている
+　④ take a 【makeup】 exam in Latin ラテン語の追試験を受ける
+
+549
+　consist [kənsíst] 自：①(of ～)(～で)構成されている ②(in ～)(～に)ある
+　ーーー
+　コラム：「(要素を集めて)成り立つ」(*話し言葉ではbe made up of ～のほうが使われる。②はまれ。) / 頻出：① consist of ～「～で構成されている」(= comprise) / ② consist in [× of] ～「(本質的な物が)～にある」 / 語源：con-[共に]+-sist[=stand 立っている]→「(要素が)集まって成り立つ」
+　例文：
+　① The audience 【consisted】 mainly of young people. 観客は大半が若者だった(若者で構成されていた)。
+　② Happiness 【consists】 in contentment. 幸福(の本質)は満足にある。
+
+550
+　compose [kəmpóuz] 他：①～を構成する、組み立てる ②～を作曲[作文]する ③～を落ち着かせる
+　ーーー
+　コラム：「(バラバラなもの)をまとめる」 / 頻出：① be composed of ～「(物質やグループが)～から構成される」 / 語源：com-[=con 共に]+-pose[置く]から「まとめて置く」→「～を組み立てる」 / 名詞：compositíon「組み立て、構造、作品」、compóser「作曲家、作る人」
+　例文：
+　① Water is 【composed】 of hydrogen and oxygen. 水は水素と酸素から構成される。
+　② 【compose】 a haiku 俳句を詠む(書く)
+　③ remain perfectly 【composed】 落ち着き払う
+
+551
+　attach [ətǽtʃ] 他：①～をくっつける、添付する ②～に愛着を持たせる
+　ーーー
+　コラム：「(物や気持ち)をつなぎ留める」 / 頻出：① attach A to B「AをBに取り付ける」、the attached file「添付ファイル」、attach importance to ～「～を重んじる」 / ② feel attached to ～「(人、物)に愛着を感じる」 / 名詞：attáchment「付属品、愛着」 / 反対：detách「～を切り離す」
+　例文：
+　① 【attach】 a file to an email Eメールにファイルを添付する
+　② feel 【attached】 to this jacket この上着に愛着を感じる
+
+552
+　connect [kənékt] 他：①～をつなげる ②～を関連づける 自：③つながる
+　ーーー
+　コラム：頻出：① connect A to B「AをBにつなげる」 / ② connect A with B「AをBと関連づける」 / 名詞：connéction「関係、つながり、コネ」
+　例文：
+　① 【connect】 the printer to my PC パソコンにプリンターを接続する
+　② Exercise is closely 【connected】 with your health. 運動は健康に密接に関わっている。
+　③ 【connect】 to the internet インターネットに接続する
+
+553
+　relate [riléit] 他：①(A to B)(A)を(Bに)関連づける ②～を(順序立てて)話す 自：③(to ～)(～に)理解を示す
+　ーーー
+　コラム：③「～を自らに関連づける」→「(相手の考えなどに共感し)理解を示す」 / 頻出：① stress-related illnesses「ストレス関連の病気」 / 語源：an 800m relay「800mリレー」のrélayと同語源。
+　例文：
+　① These two events are closely 【related】. これら2つの出来事は密接に関連している。
+　② 【relate】 my adventures 冒険談を語る
+　③ cannot 【relate】 to his way of thinking 彼の考え方が理解できない
+
+554
+　associate [əsóuʃièit] (名)[əsóuʃiət] 他：①(A with B)(A)を(Bと)関連づける、(A)から(Bを)連想する 自：②(with ～)(～と)付き合う 名：③同僚、共同経営者
+　ーーー
+　コラム：「(本来は別々のカテゴリーに属していたもの)を結びつける」 / 語源：as-[=ad 方向]+-soci-[=society 社会]から「同じ社会に入れる」→「結びつける」 / 形容詞：assóciate「準～、副～」 / 名詞：associátion「連想、協会」
+　例文：
+　① 【associate】 brand names with high quality ブランド名から高品質を連想する
+　② Don't 【associate】 with shady people. 怪しいやつらと付き合うな。
+　③ work with my 【associates】 till nine 9時まで同僚と働く
+
+555
+　stick [stík] 他：①～を貼り付ける ②(舌や脚)を出す 自：③(to ～)(主義などを)守る、固執する
+　ーーー
+　コラム：「stick(棒切れ)が突き刺さる」イメージ。 / 頻出：get stuck「動けなくなる」、stick with ～「～を堅持する」 / 注意：日本語の「ステッカー」は英語ではsticker [stíkər]「貼り付くもの」と表現する。 / 形容詞：stícky「ねばねばした」、〈口語〉stúck-úp「お高くとまった、高慢な」
+　例文：
+　① 【stick】 posters on the wall 壁にポスターを貼る
+　② 【stick】 my head [× face] out of the window 窓から顔を突き出す
+　③ 【stick】 to my principles 自分の主義を守る
+
+556
+　thief [θíːf] 名：泥棒
+　ーーー
+　コラム：「(こっそりと持ち去る)泥棒」 類語：róbber「(暴力や脅しによる)強盗」、búrglar「(押し入りの)強盗」 / 語源：a chief thief「泥棒の頭(かしら)」というフレーズで覚えよう。 / 名詞：théft「窃盗、盗み」
+　例文：
+　A 【thief】 broke into the building. 泥棒がその建物に侵入した。
+
+557
+　crime [kráim] 名：犯罪
+　ーーー
+　コラム：「(法律上の)罪」 類語：sín「(宗教上、道徳上の)罪」 / 頻出：commit a crime「犯罪を犯す」、gun crime「銃犯罪」 / 注意：「(個々の)犯罪」→〈可算〉 「犯罪(全般)」→〈不可算〉 / 名詞・形容詞：críminal [krímənl]「犯人」「犯罪の」⇨ criminal law「刑法」
+　例文：
+　combat [fight] 【crime】 犯罪と戦う
+
+558
+　motive [móutiv] 名：動機
+　ーーー
+　コラム：「(犯罪などの行動の背景にある)動機」 / 頻出：one's motive for ～「～の動機」 / 語源：mot-[=move 動かす]+-ive[性質]→「動かす性質」 / 動詞：mótivate「(人)に動機を与える」 / 名詞：motivátion「意欲、動機づけ」⇨ people with motivation「やる気ある人々」(= motivated people)
+　例文：
+　his 【motive】 for the crime 彼の犯行の動機
+
+559
+　punish [pʌ́niʃ] 他：((人) for ～)(人)を(～の理由で)罰する
+　ーーー
+　コラム：「痛い目に合わせる」から「(司法レベルで)罰する」まで。 / 名詞：púnishment「罰」⇨ as (a) punishment for ～「～の罰として」、capital punishment「死刑」(= the death penalty)
+　例文：
+　severely 【punish】 him for breaking the rules 規則を破ったことに対して彼を厳しく罰する
+
+560
+　violate [váiəlèit] 他：①(法律など)に違反する ②(権利など)を侵害する
+　ーーー
+　コラム：頻出：① violate the law [an agreement, a treaty]「法[協定、条約]に違反する」 / ② violate human rights [peace]「人権[平和]を侵害する」 / 語源：vio-[暴力]→「暴力的(乱暴)に何かを破る、違反する、侵害する」 同根語：víolence「暴力」 / 名詞：violátion「違反、侵害」 / 形容詞：víolent「暴力的な」
+　例文：
+　① 【violate】 international law 国際法を破る
+　② 【violate】 human rights 人権を侵害する
+
+561
+　legal [líːgəl] 形：①合法の ②法律の、法的な
+　ーーー
+　コラム：「法律で認められた、法律に関する」 / 頻出：② take (a) legal action (against ～)「(～に対して)法的手段をとる」 / 反対：illégal「違法の」 / 副詞：illégally「違法に」⇨ The DVD was copied illegally.「そのDVDは違法にダビングされたものだ。」
+　例文：
+　① In Japan, the current 【legal】 drinking age is 20. 日本では、現在、飲酒が許されているのは20歳から(合法の飲酒ができる年齢は20歳)です。
+　② seek 【legal】 advice 法的助言を求める
+
+562
+　enemy [énəmi] 名：①敵〈可算〉 ②(形容詞的に)敵の
+　ーーー
+　コラム：「敵意、憎しみを抱く相手」 類語：oppónent「(試合などの)対戦相手」 / 頻出：① a natural enemy「天敵」 / ② enemy territory「敵地」 / 反対：friénd「友人」 / 類語：fóe「敵」(*書き言葉) / 名詞：hostílity「敵意」
+　例文：
+　① fight with the 【enemy】 その敵と戦う
+　② 【enemy】 soldiers 敵の兵士
+
+563
+　conflict [kɑ́nflikt] (動)[kənflíkt] 名：①対立、紛争 ②葛藤 自：③(with ～)(～と)矛盾する
+　ーーー
+　コラム：「(意見や利害の)対立、紛争」から「(心の)葛藤」まで。 / 頻出：① be in conflict with ～「～と対立している」、resolve a conflict「対立を解決する」 / 注意：「(人1)と(人2)の(意見が)対立する」は〈(人1) disagree with (人2)〉で表現する。 / 語源：con-[共に]+-flict[打つ]→「ぶつかり合う」 同根語：inflíct「(損害など)を与える」
+　例文：
+　① a 【conflict】 between two parties 2つの政党の間の対立
+　② a psychological 【conflict】 心の葛藤
+　③ This 【conflicts】 with his theory. これは彼の理論と矛盾する。
+
+564
+　compete [kəmpíːt] 自：①競争する ②(in ～)(競技などに)参加する
+　ーーー
+　コラム：「(他者と同じものを求めて)競い合う」 / 頻出：① compete with [against] ～「～と競争する」、compete for ～「～を求めて競争する」 / 語源：com-[=con 共に]+-pete[求める]から「同じ物を共に求める」→「競争する」 同根語：áppetite「食欲」 / 名詞：competítion「競争、競技会、コンペ」 / 形容詞：compétitive「競争の、競争力のある、競争心の強い」 / 名詞：compétitor「競争相手」、petítion「嘆願、申し立て」
+　例文：
+　① 【compete】 with each other for good grades よい成績を目指してお互いに競い合う
+　② 【compete】 in a half marathon ハーフマラソンに参加する
+
+565
+　defeat [difíːt] 他：①(相手)を打ち負かす 名：②敗北
+　ーーー
+　コラム：「相手を(一時的に)負かす」(*béat「(相手を)負かす」のほうが口語的。) / 注意：①「～に勝つ」は〈win (試合、戦争)〉または〈defeat (人、チーム)〉 / 語源：de-[否定]+-feat[する]→「～を打ち負かす」
+　例文：
+　① Our team was completely 【defeated】. 私たちのチームは完敗した(完全に打ち負かされた)。
+　② Japan's 【defeat】 in World War II 第二次世界大戦における日本の敗北
+
+566
+　victim [víktim] 名：犠牲者
+　ーーー
+　コラム：「(犯罪の)犠牲者」から「(自然災害の)犠牲者」まで。 / 頻出：a victim of ～「～の犠牲者」、fall victim to ～「～の犠牲となる」 / 語源：vict-[たたく]→「たたかれた人」 同根語：víctory「勝利(←たたいて勝った)」
+　例文：
+　Over 30 people fell 【victim】 to the terrorist attack. 30名以上の人がそのテロの犠牲になった。
+
+567
+　obstacle [ɑ́bstəkl] 名：(to ～)(～に対する)障害〈可算〉
+　ーーー
+　コラム：「(前に立って)邪魔をするもの」 / 頻出：an obstacle to ～「～への障害」、an obstacle race「障害物競走」 / 語源：ob-[=against に対して]+-stacle[=stand]→「～に対して立っているもの」
+　例文：
+　remove an 【obstacle】 to an agreement 合意への障害を取り除く
+
+568
+　harm [hɑ́ːrm] 名：①害〈不可算〉 他：②～に害を与える
+　ーーー
+　コラム：反対：góod「(利)益」 / 注意：②日常ではbe bad for ～のほうが使われる。 / 頻出：① do (人) harm「(人)に害を与える」(≒ do harm to (人))(*後者は(人)に焦点がある。) / 語源：árms「武器(人を攻撃するもの)」とつづりが似ている。 / 形容詞：hármful (to ～)「(～に)有害な」⇨ harmful insects「害虫」(⇔ hármless「無害の」)
+　例文：
+　① Smoking does you 【harm】. 喫煙は害を及ぼす。
+　② 【harm】 his reputation 彼の評判を悪くする
+
+569
+　invade [invéid] 他：①(プライバシーなど)を侵害する ②(国など)に侵入する、～を侵略する
+　ーーー
+　コラム：頻出：① invade one's privacy「～のプライバシーを侵害する」 / 語源：in-[中に]+-vade[行く] 同根語：eváde「～から逃れる」 / 名詞：invásion「侵略、侵入」、inváder「侵略者、侵入者」 / 反対：① respéct「～を尊重する」
+　例文：
+　① 【invade】 our privacy 私たちのプライバシーを侵害する
+　② 【invade】 a neighboring country 隣接する国に侵攻する
+
+570
+　endanger [indéindʒər] 他：～を危険にさらす
+　ーーー
+　コラム：「危険な状態にする」 / 語源：en-[動詞化]+-danger[危険] / 形容詞：endángered「絶滅の危機に瀕した」⇨ an endangered species「絶滅危惧種」
+　例文：
+　【endanger】 the lives of the passengers 乗客の命を危険にさらす
+
+571
+　interrupt [ìntərʌ́pt] 他：①～を中断する ②～を遮る 自：③人の話を遮る
+　ーーー
+　コラム：「間に割って入る」→「(人の話や仕事など)を短時間中断させる」 / 頻出：Excuse me for interrupting you.「お話し中すみません。」 / 語源：inter-[間]+-rupt[破壊]→「間に入って破壊する」 同根語：bánkrupt「倒産する」、disrúpt「(運行など)を乱す」 / 名詞：interrúption「中断、邪魔」
+　例文：
+　① The meeting was temporarily 【interrupted】 by a blackout. 停電のため会議は一時中断した(中断された)。
+　② 【interrupt】 a speech with questions 質問して講演を遮る
+　③ Don't 【interrupt】. 話を遮らないでください。
+
+572
+　spoil [spɔ́il] 他：①～を台無しにする ②(子ども)を甘やかす
+　ーーー
+　コラム：①「(景観や無形の物の)価値や美しさを損ねる」→②「子どもをダメにする」 類語：dámage「(有形の物)を台無しにする」 / 頻出：① spoil one's fun [one's appetite, one's plans, a party]「楽しみ[食欲、計画、パーティ]を台無しにする[損なう]」 / 名詞：spóiler「ネタをばらす人、台無しにする人」
+　例文：
+　① Ben's sudden arrival 【spoiled】 our plans. ベンが突然来たので私たちの計画が台無しになった(私たちの計画を台無しにした)。
+　② 【spoil】 the child 子どもを甘やかす
+
+573
+　spectator [spékteitər] 名：観客〈可算〉
+　ーーー
+　コラム：「(スポーツや催しなどの)観客」 類語：áudience「(コンサートやスピーチ、映画などの)聴衆、観衆」、býstander「傍観者」 / 語源：spect-[見る]+-or[人] 同根語：áspect「側面、外観」
+　例文：
+　The football match attracted more than 10,000 【spectators】. そのサッカーの試合には1万人以上の観客が押し寄せた。
+
+574
+　relative [rélətiv] 名：①(家族も含めて)親戚 形：②相対的な
+　ーーー
+　コラム：頻出：① a close relative「親、兄弟など」、a distant relative「遠い親類(大叔父など)」 / ② relative to ～「～と関連する、～と比べて」 / 語源：reláte「～を関連づける」の派生語。 / 副詞：rélatively「比較的」 / 名詞：relatívity「相対性」 / 反対：② ábsolute「絶対的な」
+　例文：
+　① one of my 【relatives】 親戚の1人
+　② 【relative】 merits 相対的な利点
+
+575
+　departure [dipɑ́ːrtʃər] 名：①出発 ②逸脱
+　ーーー
+　コラム：①「(飛行機、電車、旅などの)出発」 / 頻出：① a departure lounge「(空港の)出発ロビー」、a departure board「出発時刻の掲示板」 / 動詞：depárt「出発する」 / 反対：arríval「到着」 / 関連表現：I am off (to school / to work).「行ってきます。」(*ただし、日本語ほど固定表現ではない。)
+　例文：
+　① the flight's 【departure】 飛行機の出発
+　② a 【departure】 from the norm 常軌を逸したもの
+
+576
+　destination [dèstənéiʃən] 名：①目的地 ②(tourist -)観光地、旅行先 (①②ともに〈可算〉)
+　ーーー
+　コラム：「運命づけられた場所」→「目的地、行き先」 / 注意：① What [× Where] is your destination?「目的地はどこですか。」 / 名詞：déstiny「運命」
+　例文：
+　① get to my 【destination】 目的地に到着する
+　② Hawaii is a popular tourist 【destination】. ハワイは人気のある観光地だ。
+
+577
+　transportation [træ̀nspərtéiʃən] 名：交通機関〈不可算〉 〈英〉transport
+　ーーー
+　コラム：頻出：use public transportation「公共交通機関を利用する」、improve the transportation system「交通網を整備する」 / 語源：trans-[越えて]+-port-[運ぶ]から「何かを(越えて)遠くへ(人を)運ぶ」→「交通機関」 同根語：expórt「～を輸出する(←外に運ぶ)」
+　例文：
+　by public 【transportation】 公共交通機関で
+
+578
+　vehicle [víːəkl] 名：①(エンジンの付いた)車両 ②(思想、意見の)伝達手段
+　ーーー
+　コラム：a car, a bus, a truckなどの総称。 / 頻出：driverless [self-driving] vehicles「自動運転車両」 / 語源：veh-[運ぶ]+-icle[小さな]から「小型の運ぶもの(車)」→「車両」 同根語：véctor「ベクトル(←大きさと方向を運ぶ)」 / 形容詞：vehícular「乗り物の、車両の」
+　例文：
+　① emergency 【vehicles】 緊急車両
+　② Poetry is the 【vehicle】 of my ideas. 詩は私の思想を伝達する手段です。
+
+579
+　baggage [bǽgidʒ] 名：(旅行時の)手荷物〈不可算〉
+　ーーー
+　コラム：「いくつかのbagの集合体」なので〈不可算〉の扱い。〈英〉luggage / 注意：〈不可算〉なので、数を表すときはa piece ofをつける。→ two pieces of baggage [× two baggages]「2つの手荷物」 / 語源：bag-[カバン]+-age[集合] 同根語：víllage「村(←vílla「大邸宅」)」
+　例文：
+　How many pieces of 【baggage】 can I take on the airplane with me? 機内へは手荷物は何個まで持ち込むことができますか。
+
+580
+　via [váiə] 前：①～経由で ②～によって
+　ーーー
+　コラム：頻出：① = by way of ～ / ② via (手段を表す名詞)「～によって」 / 語源：via [= way 道]から「～の道で」→「～経由で、～によって」
+　例文：
+　① fly to Zurich 【via】 Hong Kong 香港経由でチューリッヒに飛ぶ
+　② send a message to a friend 【via】 email Eメールで友だちにメッセージを送る
+
+581
+　lead [líːd] (名)[léd] 自：①(to ～)(～に)至る 他：②(a ～ life)(～な生活)を送る ③(A to do)Aに～させる 名：④鉛、(シャーペンなどの)芯
+　ーーー
+　コラム：「先頭に立って物事を導く」(*④は別語源。) / 頻出：① (原因) lead to (結果)「～に至る、～を引き起こす」 / ② lead a ～ life「～な生活を送る」(= live a ～ life)([×] lead [live] a life) / 形容詞：léading「一流の、大手の」 / 名詞：léad [líːd]「先導」 / [活用] lead - led - led
+　例文：
+　① Laziness 【leads】 to failure. 怠けると失敗する(失敗に至る)。
+　② 【lead】 an easy life 楽な生活を送る
+　③ What 【led】 you to do it? なぜそんなことをしたの(何があなたにそれをさせたの)。
+　④ The pencil 【lead】 has broken. 鉛筆の芯が折れた。
+
+582
+　rise [ráiz] 自：①上がる、昇る 名：②上昇
+　ーーー
+　コラム：「(下から上に)上がる(こと)」 / 頻出：① rise to the top「頂点に昇りつめる」、give rise to ～「～を引き起こす」、be on the rise「上昇している」 / 注意：①「(水位が)上昇する」や「(パンなどが)ふくらむ」の意味もある。 / 語源：súnrise「日の出(←太陽の上昇)」で覚えよう。(⇔ súnset「日の入り」) / [活用] rise - rose - risen [rízn] / 関連語：ráise「～を上げる」
+　例文：
+　① The sun 【rises】 in [from] the east. 太陽は東から昇る。
+　② a 【rise】 in sea levels 海面の上昇
+
+583
+　flow [flóu] 自：①流れる 名：②流れ
+　ーーー
+　コラム：「(液体、気体が)流れる」から「(情報、言葉、人が)流れる」まで。 / 語源：flówchart「フローチャート、流れ図」、overflów「氾濫」、ínflux「流入」 / [活用] flow - flowed - flowed (*fly - flew - flown と区別。)
+　例文：
+　① This river 【flows】 into the Pacific. この川は太平洋に流れ込む。
+　② the 【flow】 of conversation 会話の流れ
+
+584
+　burst [bə́ːrst] 自：①破裂する、爆発する ②(慣用句で)突然～し始める
+　ーーー
+　コラム：「(内部からの圧力や衝動によって)爆発する」 / 頻出：② burst out laughing [crying]「突然笑い[泣き]出す」(= burst into laughter [tears])、burst apart「爆発して飛び散る」 / 名詞：óutburst「噴出」 / [活用] burst - burst(ed) - burst(ed)
+　例文：
+　① Japan's economic bubble 【burst】 in the 1990s. 日本のバブル経済は1990年代にはじけた。
+　② She 【burst】 out crying. (= She 【burst】 into tears.) 彼女は突然泣き始めた。
+
+585
+　melt [mélt] 自：①(固体が)溶ける 他：②～を溶かす
+　ーーー
+　コラム：「固体が溶けて、液体になる」 類語：tháw「(霜、雪、氷などが)溶ける」 / 注意：固体が液体の中で「溶ける」はdissolveで表現する。→ Salt dissolves in hot water.「塩がお湯で溶ける。」 / 名詞：méltdown「(原子炉の)炉心溶融、(株、相場の)急落」 / 形容詞：mélting「溶けていく」⇨ a melting pot「人種のるつぼ(←アメリカ社会の比喩)」
+　例文：
+　① The ice cream quickly 【melted】. アイスクリームがすぐに溶けてしまった。
+　② 【melt】 the butter バターを溶かす
+
+586
+　commute [kəmjúːt] 自：①通勤[通学]する 名：②通勤[通学](距離)
+　ーーー
+　コラム：「(交通機関を使って)通勤する」 / 頻出：① commute from A to B [between A and B]「AからBまで通勤する」、commute a long distance to work「長距離を通勤する」 / 語源：com-[=con 共に]+-mute[変える]→「場所を変える」 同根語：mutátion「突然変異」 / 名詞：commúter「通勤者」⇨ a commuter train「通勤列車」
+　例文：
+　① 【commute】 to work by train 電車を使って通勤する
+　② My 【commute】 takes around one hour. 通勤には1時間くらいかかります。
+
+587
+　accompany [əkʌ́mpəni] 他：①(人が主語)～と一緒に行く ②(物が主語)～に伴う
+　ーーー
+　コラム：頻出：② A accompany B「BにはAが伴う」(= B is accompanied by A) / 語源：ac-[=ad 方向]+-company[仲間]→「仲間として一緒に行く」 / 名詞：accómpaniment「伴奏、添え物」
+　例文：
+　① 【accompany】 my boss to Germany 上司に同行してドイツに行く
+　② A cold is often 【accompanied】 by a fever. かぜはしばしば熱を伴う。
+
+588
+　emit [imít] 他：(ガス、熱、光など)を排出する
+　ーーー
+　コラム：「(ガス、熱、光など)を外へ放出する」 / 頻出：emit exhaust fume「排気ガスを出す」、emit black smoke「黒い煙を出す」 / 語源：e-[=ex- 外へ]+-mit[送る] 同根語：permít「許可する(←通して送る)」 / 名詞：emíssion「放出(物)、放射(物)」
+　例文：
+　【emit】 greenhouse gas 温室効果ガスを排出する
+
+589
+　progress [prɑ́gres] (動)[prəgrés] 名：①進歩、前進〈不可算〉 自：②進歩する、進む
+　ーーー
+　コラム：「(個人の能力の)進歩」から「(社会、科学技術の)進歩」まで。 / 頻出：① make progress (in ～)「(～で)進歩する」、make ～ progress in ...「…で～な進歩を遂げる」、in progress「(工事などが)進行中で」 / 語源：pro-[前方]+-gress[進む] 同根語：cóngress「(正式な)会議(←共に進む)」 / 形容詞：progréssive「進歩的な」
+　例文：
+　① make great 【progress】 in English 英語が随分と上達する
+　② As the meeting 【progressed】, I grew more and more tired. 会議が進むにつれて、ますます疲れた。
+
+590
+　advance [ədvǽns] 名：①進歩、前進〈可算〉 自：②(軍隊などが)前進する、進歩する 形：③事前の
+　ーーー
+　コラム：①主に「科学技術、医学の進歩」 / 頻出：in advance「前もって」(= beforehand) / ① advances in ～「～の進歩」 / 語源：ad-[方向]+-vance[進む] 同根語：advántage「利点(←人より進んだ所)」 / 形容詞：advánced「進歩した、上級の」 / 名詞：adváncement「進歩、昇級」
+　例文：
+　① 【advances】 in technology 科学技術の進歩
+　② The team 【advanced】 to the final. チームは決勝戦に進んだ。
+　③ an 【advance】 ticket 前売り券
+
+591
+　deal [díːl] 自：①(with ～)(～を)扱う 名：②取り引き
+　ーーー
+　コラム：①「(やっかいな問題、人などを)扱う」(*「解決を目指す」というイメージはない。) ②「(問題の処理→)取り引き」 / 頻出：a great [good] deal of ～「大量の～(←大きな取り引き)」、It is no big deal.「それは大したことではない。」 / 名詞：déaler「販売人、販売店」 / [活用] deal - dealt - dealt [délt]
+　例文：
+　① 【deal】 with the drunk well その酔っ払いをうまく扱う
+　② make a 【deal】 with the kidnapper その誘拐犯と取り引きする
+
+592
+　handle [hǽndl] 他：①～を扱う ②(手で)～を扱う、触れる 名：③取っ手
+　ーーー
+　コラム：①「(責任感をもって)うまく解決する、収拾する」ことを示唆。 / 注意：「ハンドル」は〈自動車〉→ a steering wheel 〈自転車〉→ a handlebar
+　例文：
+　① 【handle】 stress well ストレスにうまく対処する
+　② Please do not 【handle】 the exhibits. 展示品に手を触れないでください。
+　③ the 【handle】 of a mug [× mug cup] マグカップの取っ手
+
+593
+　treat [tríːt] 他：①(副詞を伴って)～を扱う ②(病人、病気)を治療する ③(A to B)(A)に(Bを)おごる 名：④楽しみ
+　ーーー
+　コラム：①「扱う」→②「治療する」→③「もてなす」 / 頻出：③ treat (人) to lunch [dinner]「(人)に昼食[夕食]をおごる」(*日常で「(人)に～をおごる」は、buy (人) ～と表現することが多い。) / 注意：① coldly「冷たく」、like a child「子どものように」などの副詞(句)を伴う。 / 名詞：tréatment「扱い、治療」⇨ treatment for cancer「がんの治療」
+　例文：
+　① 【treat】 children fairly 公平に子どもを扱う
+　② 【treat】 patients 患者を治療する
+　③ Let me 【treat】 you to dinner tonight. (≒ Let me buy you dinner tonight.) 今夜の食事は私におごらせてください。
+　④ The trip was a real 【treat】. その旅は本当に楽しかった。
+
+594
+　clue [klúː] 名：(to ～)(～の)手がかり
+　ーーー
+　コラム：「(複雑な問題を解くための)糸口」 / ゴロ：「手がかり」が狂う(クルー)。 / 類語：a key to ～「～の鍵」、cúe「合図」
+　例文：
+　find a 【clue】 to his whereabouts 彼の居所の手がかりを見つける
+
+595
+　restrict [ristríkt] 他：～を制限する
+　ーーー
+　コラム：「(自由)を制限する」から「(カロリー)を制限する」まで。 / 頻出：restrict A to B「AをBに制限する」⇨ restrict the expenses to one million yen「費用を100万円に抑える(制限する)」 / 語源：re-[再び→強意]+-strict[厳しい]→「とても厳しくする」 / 名詞：restríction「制限」⇨ dietary restrictions「食事制限」
+　例文：
+　【restrict】 the amount of carbohydrate 炭水化物の量を制限する
+
+596
+　limit [límit] 他：①(数量、範囲)を制限する 名：②制限
+　ーーー
+　コラム：「越えられない限界(を設ける)」 / 頻出：②〈掲示〉OFF LIMITS「立入禁止」、put a limit on ～「～に制限を設ける」 / 注意：「人間の命には限りがある」と表現する場合、Our lifetime [life] is limited.「人間の命の時間には限りがある。」としなければならない。 / 名詞：limitátion「制限(すること)」 / 形容詞：límited「限られた、有限の」
+　例文：
+　① 【limit】 class size to fifteen クラスの人数を15名に制限する
+　② put a 【limit】 on the number of participants 参加者の数に制限を設ける
+
+597
+　forbid [fərbíd] 他：～を禁じる
+　ーーー
+　コラム：「(権威に基づいて親や教師などが)～を禁じる」 類語：bán「(よくないこと)を禁止する」、prohíbit「(公的に)～を禁止する」 / 頻出：forbid (人) to do [from doing]「(人)が～するのを禁じる」(*「禁止、妨げ」関連の動詞は通例、〈SVO from ～〉の形になる。本来、forbidは例外だが、prohibit (人) from ～の影響でforbid (人) from ～という表現も現在では使われている。) / ゴロ：褒美(ド)を禁じる。 / [活用] forbid - forbade - forbidden
+　例文：
+　【forbid】 employees to accept tips from customers 従業員が客からのチップを受け取ることを禁じる
+
+598
+　ban [bǽn] 名：①禁止〈可算〉 他：②～を禁止する
+　ーーー
+　コラム：「(公式に)(よくない行為)を禁止する」 / 頻出：① a ban on ～「～の禁止」(*新聞の見出しでよく見る表現。)、impose a ban on ～「～を(公式に)禁じる」、lift a ban「解禁する」 / ② ban doing「～することを禁じる」 / 語源：「王の叫び声」から。 同根語：bánish「～を追放する(←出ていけと叫ぶ)」
+　例文：
+　① impose a total 【ban】 on smoking in public places 公共の場所での喫煙を全面的に禁止する
+　② 【ban】 the illegal downloading of music 音楽の違法ダウンロードを禁止する
+
+599
+　refuse [rifjúːz] 自：①(to do)～するのを拒む 他：②～を断る
+　ーーー
+　コラム：「(申し出や、申し出されたもの)をきっぱりと断る」(*日常ではturn downのほうが使われる。) / 頻出：② refuse an offer [an invitation]「申し出[招待]を断る」 / 注意：「意見」などは目的語にとらない。 / 語源：re-[再び]+-fuse[注ぐ]→「注ぎ返す」 同根語：confúse「～を困惑させる(←全部注ぐ)」 / 名詞：refúsal「拒否、拒絶」
+　例文：
+　① 【refuse】 to listen to him 彼の話を聞くことを拒む
+　② flatly 【refuse】 the offer きっぱりとその申し出を断る
+
+600
+　reject [ridʒékt] 他：①～を拒絶する ②(人)を拒む、除け者にする
+　ーーー
+　コラム：「(要求、提案など)を激しく拒絶する、はねつける」(= flatly refuse to accept or agree with something) / 頻出：① reject an idea [a proposal]「考え[提案]を拒絶する」 / 語源：re-[再び]+-ject[投げる]→「投げ返す」 同根語：próject「計画(←前へ投げる)」 / 名詞：rejéction「拒絶、拒否」
+　例文：
+　① 【reject】 the idea その考えを拒絶する
+　② People in the village 【rejected】 him. 村の人々は彼を除け者にした。
+
+601
+　persuade [pərswéid] 他：(A to do)(A)を説得して～させる
+　ーーー
+　コラム：「説得に成功する」 / 注意：「説得したがだめだった」のような場合はtry to persuadeと表現する。 / ゴロ：パスしたほうがええどと「説得する」。 / 形容詞：persuásive「説得力のある」 / 名詞：persuásion「説得」 / 動詞：dissuáde (A from doing)「(A)に～しないよう説得する」
+　例文：
+　It is no use trying to 【persuade】 him to eat carrots. ニンジンを食べるよう彼を説得するのは無駄だ。
+
+602
+　convince [kənvíns] 他：①(A of B)(A)に(Bを)確信させる、(A that SV)(A)に(～を)確信させる ②(A to do)(A)を説得して～させる
+　ーーー
+　コラム：「(相手を追い詰めて)説き伏せる、思い込ませる」 / 頻出：be convinced「確信している」 / 語源：con-[すっかり]+-vince[=vict 征服する] 同根語：víctory「勝利」 / 形容詞：convíncing「説得力のある」⇨ convincing evidence「説得力のある証拠」 / 名詞：convíction「(事実に基づく)確信」
+　例文：
+　① 【convince】 him that I am right 私が正しいことを彼に確信させる
+　② 【convince】 him to study hard 彼を説得して熱心に勉強させる
+
+603
+　inspire [inspáiər] 他：①～を奮起させる、かき立てる ②(作品)に創作のヒントを与える
+　ーーー
+　コラム：「やる気にさせる、(ある感情や考えを)吹き込む」 / 頻出：① inspire (人) to do「(人)を奮起させて～させる」 / 語源：in-[中に]+-spire[息]→「息を吹き込む」 同根語：aspíre「熱望する」(a-[=ad 方向]+-spire[息]) / 名詞：inspirátion「霊感、インスピレーション」
+　例文：
+　① His remark 【inspired】 me to study. 彼の発言で私の勉強のスイッチが入った(彼の発言が私を奮起させた)。
+　② This novel was 【inspired】 by real events. この小説は実話をヒントにしている(実話からヒントを与えられた)。

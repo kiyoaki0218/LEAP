@@ -1,0 +1,686 @@
+==================================================
+【第1部】重要な基本動詞（pp.8-21）
+==================================================
+
+　look　[lúk]　自動：①（at 〜）（〜を）見る　②（for 〜）（〜を）探す　③〜に見える　他動：④（熟語で）〜をじっと見つめる　名：⑤見ること　⑥様子、顔つき
+　ーーー
+　コラム：
+　▶「（自分の意志で）視線を向ける」
+　頻出：① look in 〜「〜の中を見る」、look at oneself in a mirror「鏡（で自分の姿）を見る」、look back on 〜「（過去）を振り返る」、③ look（形容詞）/ look like（名詞）「〜に見える」、④ look（人）in the eye [face]「（人）をじっと見つめる」、⑤ have a look at 〜「〜を（ちょっと）見る」、look forward to（名詞）/ doing「〜［するの］を楽しみにして待つ」、look out (of) the window「窓の外を見る」、look up a word in the dictionary「辞書で単語を調べる」
+　比較：
+　・Look at [× Look] that bird.「あの鳥を見ろ。」
+　・I looked at him.「彼を見た（＝彼に視線を向けた）。」
+　・I saw him.「彼を見た（＝彼が視界に入った）。」
+
+　see　[síː]　他動：①〜が見える、〜を見る　②〜に会う、(be -ing) 〜とつき合う　③（医者・弁護士など）に診てもらう、相談する　④〜がわかる　自動：⑤（can 〜）目が見える
+　ーーー
+　コラム：
+　▶「（自然と）視界に入ってくる」
+　頻出：① see a movie「（映画館で）映画を見る」、see A do [doing, done]「Aが〜する［している、される］のを見る」⇨ I saw her sing [singing].「彼女が歌う［歌っている］のを見た。」、see A as 〜「Aを〜とみなす」、② Long time, no see.「（くだけて）久しぶり。」、④ see that S' V'「S' V' がわかる」、see if S' V'「S' V' かどうかを確認する」、I see.「わかりました。」、Let me see.「ええと（何かを考えたり、思い出したりしようとすることを示す）。」
+　注意：Nice to see you (again).「（また）お会いできてうれしいです。」や See you.「さようなら。」、come to see（人）「（人）に会いに来る」、see（人）off「（人）を見送る」などの表現以外は、（人）を目的語とする場合、①の意味であることが多い。
+　比較：
+　・I saw him yesterday.「昨日彼と会った（＝見かけた）。」
+　・I met him yesterday.「昨日彼と（約束して／偶然）会った。」
+　★［活用］see - saw - seen
+　派生・関連：sight「見ること、光景」
+
+　watch　[wɑ́tʃ]　他動：①〜をじっと見る　②〜を見張る　③（A do [doing]）（Aが〜する［している］の）を見る　自動：④（out (for) 〜）（〜を）用心する　名：⑤腕時計、見張り
+　ーーー
+　コラム：
+　▶「（動いている［動く可能性がある］ものを）目で追いかける」
+　頻出：① watch a movie on TV [on a DVD]「テレビ［DVD］で映画を見る」、Watch my bag.「かばんを見ておいてね。」、Watch your language.「言葉遣いに注意しなさい。」、Watch out (for cars)!「（車に）気をつけろ。」（＊Be careful! より強い意味。）
+　比較：
+　・Watch me!「（今から何かをするから）私を見て。」
+　・Look at me!「（この状況の）私を見て。」
+
+　listen　[lísn]　自動：①（to 〜）（〜を）聴く、聞く　②（to 〜）（忠告などに）耳を貸す、従う　③（for 〜）（聞こえないかと）〜に耳を澄ます
+　ーーー
+　コラム：
+　▶「（意識［集中］して）耳を傾ける」
+　頻出：① listen to music「音楽を聴く」、listen carefully [attentively]「注意深く聞く」、listen to A do [doing]「Aが〜する［している］のに耳を傾ける」、listen to 〜 with [through] earphones「〜をイヤフォンで聴く」、a listening (comprehension) test「リスニングテスト」、② listen to what（人）have to say「（人）の声（＝意見）に耳を傾ける」、listen to one's advice「〜の忠告に耳を傾ける」、③ listen for any sound「何か音がしないか聞き耳を立てる」、listen in (on 〜)「（〜を）立ち聞きする」（＊この in は副詞。）
+　注意：to 〜 を伴わなくても使える。⇨ Please listen!「どうか聞いてください。」
+
+　hear　[híər]　他動：①〜が聞こえる　②（that S V）〜という話を聞いている　自動：③（from 〜）（〜から）連絡がある　④（can 〜）耳が聞こえる
+　ーーー
+　コラム：
+　▶「（自然と）耳に入る」
+　頻出：① hear A do [doing, done]「Aが〜する［している、される］のを聞く」⇨ I heard her sing [singing].「彼女が歌う［歌っている］のを聞いた。」、③ hear from（人）「（人）から連絡がある」
+　注意：通例、目的語には「音、声、人」がくるので、「話題」を目的語とする場合は hear about [of] 〜「〜について聞く」と表現することが多い。⇨ hear the sound「その音を聞く」、hear of the news「その知らせを聞く」／「先生の話を聞きなさい。」は Listen to [× Hear] your teacher. と表現する。／ hear は通例、進行形にしない。進行形の意味（「〜が聞こえている」）は can hear で表現する。これは see, understand などの知覚動詞にも当てはまる。
+　比較：
+　・I was listening to the news.「ニュースに耳を傾けていた。」
+　・I heard the news.「ニュースが聞こえた。」
+　★［活用］hear - heard - heard [hə́ːrd]
+
+　stand　[stænd]　自動：①立つ　②（建物などが）（〜に）ある、建っている　他動：③（cannot 〜）〜に耐えられない　名：④（複合語で）屋台、乗り場
+　ーーー
+　コラム：
+　▶「まっすぐに立つ」
+　頻出：① stand up「立ち上がる」（⇔ sit down）、stand in line「1列に並ぶ」、stand on one's hands [head]「逆立ちする」、stand still「じっと立つ」、④ a hotdog stand「ホットドッグの屋台」、a taxi stand「タクシー乗り場」、stand for 〜「（略号が）〜を表す、（考えなど）を支持する」⇨ UN stands for United Nations.「UNは国際連合を表す。」、stand out「目立つ」、stand by 〜「〜の味方をする」、stand in for 〜「〜の代理を務める」、stand in one's [the] way「（〜の）邪魔になっている」
+　注意：②動かせない物の場合、進行形は不可。⇨ The school stands [× is standing] on a hill.「その学校は丘の上に建っている。」③「立っていられない」から発展した表現。
+　比較：
+　・stand up「（さっと）立ち上がる」
+　・get to one's feet「（ゆっくりと）立ち上がる」
+　★［活用］stand - stood - stood [stúd]
+
+　speak　[spíːk]　自動：①（about [of, on] 〜）（〜について）話す　②（to 〜）（〜に）話しかける　他動：③（言語）を話す
+　ーーー
+　コラム：
+　▶「（一方通行で）話をする」（＊必ずしも、「話し相手」は必要ではない。）
+　頻出：① speak with 〜「〜と話す」、speak about [of, on] 〜「〜について話す」（＊軽く言及する場合は of、専門的な話題の場合は on を使う。）、speak fluent [a little] English「英語を流ちょうに［少し］話す」（＊「（話せる）程度」は「言語」の前に形容詞をつけて表現する。）、speak out「はっきり言う」、speaking of 〜「〜と言えば」、not to speak of 〜「〜は言うまでもなく」、so to speak「いわば」
+　注意：通例、自動詞で使われるが、③のように他動詞としても使われることもある。
+　比較：
+　・speak English「英語を話す」
+　・speak in English「英語で話す」
+　★［活用］speak - spoke - spoken
+　派生・関連：speech「話すこと、言葉、発言、演説」
+
+　talk　[tɔ́ːk]　自動：①（about [of（まれ）] 〜）（〜について）話す、話し合う　他動：②（（人）into [out of] doing）（（人）を説得して）〜させる［やめさせる］　名：③話、相談、会談
+　ーーー
+　コラム：
+　▶「（人と）言語のやり取りをする」（＊「話し相手」の存在が強く意識される。）
+　頻出：① talk about [of] 〜「〜について話す」、talk with [to]（人）「（人）と話す」、talk to oneself「独り言を言う（←自分と話す）」、talk back (to 〜)「（〜に）口答えする」、③ have a talk (with A)「（Aと）話をする」、make small talk「雑談する」
+　注意：② into は「変化の結果」を表す。③ have a talk with 〜 など以外では堅い表現で使う。
+
+　tell　[tél]　他動：①（人）に〜を話す　②（（人）to do）（人）に〜するように命じる　③（（人）wh-節）（人）に（〜か）を教える　④（主に can 〜）〜がわかる、識別ができる
+　ーーー
+　コラム：
+　▶「情報を（誰かに）伝える」（＊「誰に」伝えるのかに重点がある。）
+　頻出：① tell（人）about 〜 / that S V「（人）に〜のことを話す」、to tell (you) the truth「本当のことを言えば」、I'll tell you what.「（提案を示して）じゃあこうしましょう。」、④ can tell A from B「AをBと識別できる」、can tell 〜 apart「〜を識別できる」、tell（人）off (for 〜)「（〜のことで）（人）をしかる」
+　注意：①②③（人）の部分（「誰」に話すか）は省略不可。（ただし、tell a story [a lie, a joke, the truth] などそれ自体が話す内容を含む名詞を目的語にする場合は例外。）／①〈tell（人）〜〉の形は a story [a lie, a joke, the truth] などを目的語にする場合のみで、それ以外は〈tell（人）about 〜〉の形となる。⇨ tell him [× the shop] about the shop「彼にその店のことを教える」／「私は〜と言われた」は I was told [× said] that S V. と表現する。／「（人）に道を教える」は tell [show（案内する）, × teach]（人）the way と表現する。
+　比較：
+　・He told me that he was well.「彼は私に自分は健康だと言った。」
+　・He said [× told] that he was well.「彼は自分は健康だと言った。」
+　★［活用］tell - told - told [tóuld]
+
+　say　[séi]　他動：①〜を言う　②（手紙・掲示などに）〜と書いてある　③（天気予報・研究・調査が）〜と述べる　④（挿入句）たとえば
+　ーーー
+　コラム：
+　▶「言葉を発する」
+　頻出：① People [They] say that S V. (= S is said to do / It is said that S V.)「〜と言われている。」、say bad things about 〜「〜の悪口を言う」、It goes without saying that S V.「〜は言うまでもない。」、What do you say (to A [doing])?「（A［〜すること］は）どうですか。」、to say nothing of 〜「〜は言うまでもなく」、needless to say「言うまでもなく」、that said「とはいうものの」、③ The weather forecast says that S V.「天気予報によれば〜だ。」、④ Can you play an instrument, say, the piano?「楽器、たとえば、ピアノは弾けますか。」のように〈, say,〉の形で使う。Let's say [Just say] (that) S V.「たとえば〜としてみよう。」
+　注意：say の目的語には実際の発言も可能。⇨ Say “Cheese.”「『チーズ』と言ってください。」／「冗談を言う」は tell [× say] a joke と表現する。
+　★［活用］say - said - said [séd]
+　派生・関連：saying「ことわざ」
+
+　ask　[ǽsk]　他動：①（（人）about 〜）（人）に（〜について）尋ねる　②（（人）wh-節 [if S V, whether S V]）（人）に（〜かを）尋ねる　③（（人）to do）（人）に（〜するように）お願いする　④（（人）for 〜）（人）に（〜が欲しいと）頼む
+　ーーー
+　コラム：
+　▶「求める」（＊①②「（情報を求める→）尋ねる」　③④「（物事を求める→）頼む」）
+　頻出：④ ask（人）for advice [permission]「（人）に助言［許可］を求める」、ask（人）out (for a date)「（人）をデートに誘う」、ask for it「自業自得だ」、ask a question「質問する」、ask the price「値段を尋ねる」、May I ask a favor (of you)?「ひとつお願いがあるのですが。」
+　★古英語では［質問する］→［してくれないかと質問する］→［お願いする］
+
+　put　[pút]　他動：①〜を置く　②〜を訳す、表現する
+　ーーー
+　コラム：
+　▶「物を移動させて、ある場所に置く」
+　頻出：② as A put it「Aも言ったように（Aの言葉を借りれば）」、Simply put「簡単に言えば」（＊この put は過去分詞で「簡単に表現されれば」が直訳。）、put 〜 on「〜を身につける」（⇔ take 〜 off「〜を脱ぐ」）、put 〜 out「（火・ガスなど）を消す」、put 〜 off「〜を延期する」、put 〜 together「〜を組み立てる」、put 〜 away「〜を片付ける」、put 〜 back「〜を元の場所に戻す」、put up with 〜「〜を我慢する」、stay put「じっとしている」（＊この put は「静止した」の意味の形容詞。）
+　注意：①日本語ではさまざまに表現する。⇨ (a.) put a textbook on the desk「机の上に教科書を置く」 (b.) put a stamp on the envelope「封筒に切手を貼る」 (c.) put ketchup on the eggs「卵にケチャップをかける」 (d.) put my wallet in my pocket「財布をポケットに入れる」
+　★［活用］put - put - put
+
+　find　[fáind]　他動：①〜を見つける　②（that S V）〜だとわかる　③（out）（隠されていたこと）がわかる　④（S V O C）OがCだと思う　⑤（- oneself 副詞句 [doing]）気がつくと〜だ
+　ーーー
+　コラム：
+　▶「（探していたもの・有用なもの）を見つける」
+　頻出：① find A B「AにBを見つけてやる」（＝find B for A）⇨ I have found you some great earrings.「あなたにすごくいいイヤリングを見つけた。」、find time to do「〜する時間を見つける」、find fault with 〜「〜のあら探しをする」
+　注意：wh-節 / if 節 / whether 節を目的語にする場合は find out を使うことが多い。⇨ find out how important staying healthy is「健康の重要性がわかる」／「〜するのが簡単だ［難しい、楽しい］と思う」は形式上の目的語 it を伴い、find it easy [difficult, pleasant] to do と表現する。
+　★派生・関連：finding「研究成果、発見」
+　［活用］find - found - found
+
+　think　[θíŋk]　他動：①〜と考える　自動：②考える
+　ーーー
+　コラム：
+　▶「（理論的に）思考する」から「（漠然と）思う」まで。
+　頻出：② think of 〜「〜のことを（漠然と）思う」、think about 〜「〜について色々と考える」（carefully「慎重に」、deeply「深く」、positively「前向きに」などの副詞を伴うことが多い。）、think of doing「〜することを検討する」、come to think of it「考えてみれば」、think of A as B「AをBと考える」、think for oneself「自分で考える」、think 〜 over「〜をよく考える」、think 〜 up「（計画・言い訳など）を思いつく」
+　注意：原則、自動詞だが think that S V の場合には他動詞扱いとなる。（think of it that S V から of it が脱落した形と考えよう。）wh-節を導く場合は about を伴うこともある。また、通例、状態動詞だが、be thinking of [about] 〜「検討［思案］している」の場合、進行形も可。
+　★派生・関連：thought「思考、考えること」、thoughtful「思慮深い」、thoughtless「思慮を欠く」
+　［活用］think - thought - thought
+
+　believe　[bilíːv]　他動：①（that S V）（〜ということ）を信じる　②（人）の言うことを信じる　③（A (to be) B）（A）を（Bだと）信じている　自動：④（in 〜）（〜を）信じる
+　ーーー
+　コラム：
+　▶「（間違いないと）思う」
+　頻出：make believe that S V「〜のふりをする」（＊make oneself believe that S V「自分に〜ということを信じさせる」から oneself が省略された形と覚えよう。）⇨ Let's make believe that we are pirates!「海賊ごっこをしよう（海賊のふりをしよう）。」、believe it or not「信じようと信じまいと」、④ believe in 〜「〜を信仰する、〜の価値（存在）を信じる」（＊〜には God, UFOs, ghosts などがくる。）
+　注意：強調する場合、strongly や firmly を伴う。
+　比較：
+　・I believe you.「君の言うことを信じる。」
+　・I believe in you.「君の力を信じる。」
+　★派生・関連：belief「信じること、信念、信仰」、unbelievable「信じられない」
+
+　know　[nóu]　自動：①（about 〜）（〜について）知っている　他動：②〜を知っている　③（that S V）（〜ということ）を知っている
+　ーーー
+　コラム：
+　▶「（知識や情報として）頭の中に持っている」
+　頻出：① know a lot [something, a little, little] about 〜「〜についてよく［多少、少し、ほとんど〜ない］知っている」、② get to know 〜「〜を知る」、before S know it「知らず知らずのうちに」、as far as I know「私の知る限りでは」、know better than A [to do]「A［〜］しないだけの分別がある」
+　注意：②「直接的な知り合い、名前、言語」以外はあまり目的語とはならない。（＊①を参照。）／「〜を知る」という意味では使用不可。⇨ in order to find out [× know] the truth「真実を知るために」ただし、want to know 〜「〜を知りたい（←〜を知っている状態を望む）」や let me know 〜「〜を私に教える（←私が〜を知っている状態を許可する）」の表現は可。強調する場合、① know a lot about 〜、② know 〜 very well などと表現する。
+　比較：
+　・I know about Kyoto.「京都について色々知っている。」
+　・I know of Kyoto.「（地名を聞いたことがある程度に）京都を知っている。」
+　★派生・関連：knowledge「知っていること、知識」
+　［活用］know - knew [njúː] - known [nóun]
+
+　learn　[lə́ːrn]　自動：①学ぶ、知る　他動：②（言語・技術など）を身につける　③（to do）〜できるようになる　④（情報・真実）を知る　⑤（セリフ・詩など）を覚える
+　ーーー
+　コラム：
+　▶「（練習・努力によって）身につける」（＊「結果」に重点がある。）
+　頻出：learn about 〜「〜について学ぶ、知る」、learn from 〜「〜から学ぶ、知る」、learn that S V「〜ということを知る」、learn one's lesson from 〜「（失敗など）から教訓を得る」、⑤ learn 〜 by heart「（詩など）を暗記する」
+　注意：「（言語）を身につける」に master を使うと大げさな表現となる。「〜を学ぶ（＝身につけようとする）ときは」は when you try to learn [× learn] 〜 と表現する。
+　比較：
+　・learn English「英語を学ぶ（英単語や英文法、英語表現などを身につける）」
+　・learn about English「英語について学ぶ（英語の構造や歴史など、英語がどのようなものかを知る）」
+　・learn a lot about Italy「イタリアのことをよく知る」
+　・know a lot about Italy「イタリアのことをよく知っている」
+　★派生・関連：learning「学問」〈不可算〉、learned [lə́ːrnid]「学識のある」
+
+　study　[stʌ́di]　他動：①〜を勉強する、研究する　②〜を（詳しく）調べる　名：③研究、調査〈可算〉　④書斎〈可算〉　⑤（one's -ies）（主に大学での）勉強
+　ーーー
+　コラム：
+　▶「（意識的に）熱心に学ぶ」（＊「過程」に重点がある。）
+　注意：「過程」に重点があるため、「結果」は問題にしない。⇨ He studied English for six years, but learned nothing.「彼は英語を6年間勉強したが、何も身につかなかった。」／②「（文書・計画・表現など）を（時間をかけて）調べる」の意味。／⑤一般に「勉強」は studying と表現することが多い。⇨ I like studying [× study].
+
+　go　[góu]　自動：①行く　②（to 〜）（学校などに）通う　③（doing）〜しに行く　④（悪い状態に）なる　⑤（be going to do）〜するつもりだ　⑥〜と言う
+　ーーー
+　コラム：
+　▶「視点のある（話題となっている）所から離れて行く」
+　頻出：① go (and) do「〜しに行く」、go out「外に出る、（明かり・火が）消える」、④ go bad「腐る、悪くなる」、go bankrupt「破産する」、go gray「白髪になる」、as the proverb goes「ことわざによると」、go back (to 〜)「（〜へ）戻る」、go by「（時が）過ぎる」、go off「立ち去る、（電気・水道が）止まる、（爆弾などが）爆発する」、go ahead「どうぞ」、For here or to go?「ここでお召し上がりですか、お持ち帰りですか」
+　注意：②「学校」に冠詞をつけない。⇨ go to college [× a college]「大学に通う」／③対象は「娯楽」のみ。⇨ go fishing in the river「川に魚釣りに行く」、go shopping at a store「店に買い物に行く」／⑥直接話法で、発言を生き生きと伝えるときに使う。⇨ He just went, “Don't ask!”「『聞くなよ』とだけ彼は言った。」
+　★派生・関連：ongoing「進行中の」
+　［活用］go - went - gone
+
+　come　[kʌ́m]　自動：①来る　②（よい状態に）なる
+　ーーー
+　コラム：
+　▶「視点のある（話題となっている）所へ来る」
+　頻出：① come from 〜「〜出身である、〜から来る」、come in「中に入る」（＊in は副詞）、② come true「（夢などが）実現する、現実になる」、Come on.「（いらだちを示して）早く早く、何言っているんだよ。」、come back (to 〜)「（〜へ）戻る」、come into being [existence]「生まれる」、come up to（人）「（人）に近づく」、come up with 〜「（考えなど）を思いつく」、come down with 〜「（かぜなど）にかかる」、when it comes to A [doing]「A［〜すること］に関して言えば」、come to think [feel]「考える［感じる］ようになる」、How come S V?「どうして〜？」（＊How (does it) come (that) S V?「どのようにしてそれが生じるの」が省略されてできた表現で、How come?「どうして？」単独でも使われる。）
+　注意：「（話題となっている場所へ）行きます。」は I'm coming [× going]. と表現する。
+　★［活用］come - came - come
+
+　run　[rʌ́n]　自動：①走る　②（バス・列車などが）運行されている　③（川・水・涙などが）流れる　④（機械が）動く　他動：⑤〜を経営する　⑥（危険など）を冒す
+　ーーー
+　コラム：
+　▶「一定の方向に連続的に動く」
+　頻出：① run away「逃げる」、run after 〜「〜を追いかける」、② The bus runs between A and B.「そのバスはA-B間を走る。」、③ leave the tap running「水道を出しっぱなしにする」、His nose is running.「彼は鼻水が出ている。」、④ run down「（機械が）止まる」、run on batteries「電池で動く」、⑥ run a risk「危険を冒す」、run the risk of A [doing]「Aの［〜する］危険を冒す」、run for 〜「〜に立候補する」、run out of 〜「〜がなくなる」、run across 〜「〜に偶然出会う」、run into（人）「（人）に偶然出会う」、in the long run「長い目で見れば」
+　★［活用］run - ran - run
+
+　move　[múːv]　自動：①動く　②引っ越す　他動：③〜を動かす　④〜を感動させる　名：⑤動き、動作、手段
+　ーーー
+　コラム：
+　▶「場所や位置を変える」
+　頻出：② move to（土地）[into（建物）]「（土地）［（建物）］に引っ越す」、④ be (deeply) moved by 〜「〜に（とても）感動する」、⑤ be on the move「絶えず移動している」、make the first move「先手を打つ」
+　注意：「（家の中を）動きまわる」は move around と表現することが多いが、「（街の中を）動きまわる」は get around と表現するのがふつう。
+　比較：
+　・The buses run every ten minutes.「バスは10分毎に走っている（＝運行している）。」
+　・The bus is moving slowly.「バスがゆっくりと走っている（＝動いている）。」
+　★派生・関連：movement「（社会的・宗教的）運動、動くこと」、moving「感動的な」、mover「〈米〉引っ越し業者」
+
+　reach　[ríːtʃ]　他動：①（場所）に到達する　②（数字・合意など）に達する　自動：③（(out) for 〜）（〜に）手を伸ばす　名：④（熟語で）範囲
+　ーーー
+　コラム：
+　▶「（手を伸ばして）届く、到達する」
+　頻出：② reach a conclusion [decision]「結論［決定］に達する［到る］」、③ reach across the table「テーブルの反対側から手を伸ばす」、④ within [out of] one's reach「〜の手の届く［届かない］ところに」、within (easy) reach of 〜「〜のすぐ近くに」、beyond the reach of 〜「〜の届かないところに」
+　注意：①「（その山の）頂上に到達する」などの場合、reach を用いて、reach the summit などと表現する。ただし、「〜に到着する」の意味では get to [arrive at] 〜 と表現するほうがふつう。
+
+　leave　[líːv]　自動：①（for 〜）（〜に向かって）出発する　他動：②（場所を表す副詞を伴い）〜を置き忘れる　③〜から出て行く　④（S V O C）OをCのままにしておく　⑤（A to B）（A）を（Bに）任せる　名：⑥（複合語で）休暇
+　ーーー
+　コラム：
+　▶「（そのままの状態で）ある場所から離れる、置き去りにする」
+　頻出：① leave for 〜「〜に向かって出発する」、leave home「家を出る」、③ leave hospital [〈米〉the hospital]「退院する」（⇔ be hospitalized, go into [to] (the) hospital「入院する」）、④ leave the window open「窓を開けておく」、Leave me alone.「1人にしておいてくれ。」、leave behind「〜を残しておく」、⑤ Leave it to me.「（私に）任せてください。」、Leave it to your imagination.「それは想像にお任せします。」、⑥ paid [annual, childcare] leave「有給［年次、育児］休暇」、be on leave「休暇中だ」
+　注意：②場所を表す副詞を伴わない場合、通例、forget を使う。④しばしば〈leave O un- で始まる過去分詞〉の形をとる。⇨ leave the letter unanswered「手紙に返事を出さないままにしておく」
+　★［活用］leave - left - left
+
+　take　[téik]　他動：①（A to B）（A）を（Bに）連れて行く　②（時間・労力など）を必要とする　③（乗り物）を利用する、乗る　④〜を取る
+　ーーー
+　コラム：
+　▶「ある場所から別の場所へ移す」
+　頻出：② It takes +（人）+（時間）+ to do「（人）が〜するのに（時間）がかかる」、③ take the train [bus]「列車［バス］を利用する」（＊総称の the）、④ I'll take it.「〈買い物で〉これにします。」、take 〜 off「（服など）を脱ぐ」（⇔ put 〜 on「〜を身につける」）、take off「離陸する」、take part (in 〜)「（〜に）参加する」、take（人）out for dinner「（人）を食事に連れ出す」、take 〜 away「〜を連れ去る」／次の2つの熟語は目的語の oneself が脱落したと考えよう。(a.) take after 〜「（父や叔父など血縁関係のある年上の人）に似ている」 (b.) take to 〜「（会ってすぐに）〜が好きになる」／take care of 〜「〜の世話をする」、take one's time「ゆっくりやる」、take a photograph [a picture]「写真を撮る」、take 〜 seriously「〜を深刻に受け止める」、take（期間）off「（期間）を休暇としてとる」、be taken in「だまされる」（＊この in は副詞）
+　注意：① take A to B「AをBへ連れて行く」（⇔ bring A to B「AをBに連れて来る」）、③「〜に乗り込む（get on [into] 〜）」ではなくて「〜を利用する」という意味。
+　比較：
+　・take a taxi「タクシーを利用する」
+　・get into a taxi「タクシーに乗り込む」
+　★［活用］take - took - taken
+
+　bring　[bríŋ]　他動：①〜を持って来る、連れて来る　②（up）（子ども）を育てる　③（話題）を持ち出す
+　ーーー
+　コラム：
+　▶「ある場所からこちらへ持って来る」
+　頻出：What has brought you here?「なぜここへ来たの（←何があなたをここへ連れて来たの）。」、② I was brought up in 〜.「〜で育った。」、bring 〜 out「〜を明るみに出す」、bring 〜 about「（問題など）をもたらす」、bring 〜 home to（人）「（人）に〜をしみじみわからせる」、〜 bring back (fond) memories「〜が（懐かしい）思い出をよみがえらせる」、Just bring yourself.「手ぶらで来てください。」
+　注意：bring A to B「BまでAを持って来る」に対して、bring A for B「BのためにAを持って来る」は「（Bの）利益」になることを示唆する。⇨ I will bring the magazine to [for] you later.「あとでその雑誌を君に渡すよ［持って来てあげるよ］。」②目的語が代名詞の場合、語順に注意。bring him up [× bring up him]
+　★［活用］bring - brought - brought
+
+　carry　[kǽri]　他動：①〜を運ぶ　②（with me）〜を持ち歩く　③（新聞・番組などが）（情報など）を扱う　④（店で）（商品）を扱う、販売する
+　ーーー
+　コラム：
+　▶「（手に持って）移動する」（＊take や bring と違い、「方向性」のニュアンスはない。）
+　頻出：carry 〜 out「（計画など）を実行する」、be carried away with 〜「〜に夢中になる」、carry on 〜「（頑張って仕事など）を続ける」
+　注意：②「持ち歩く」などと表現する場合、日本語訳につられて have を使わない。（I usually carry [× have] my water bottle with me.「私は普段水筒を持ち歩いています。」）④ deal in 〜 より口語的な表現。⇨ This store carries sports gear.「この店はスポーツ用品を扱っている。」
+
+　make　[méik]　他動：①〜を作る　②（S V O C）OをCにする　③（A do）Aに〜（無理やり）させる　自動：④（ある特性を持つもの）になる　⑤進む
+　ーーー
+　コラム：
+　▶「（手を加えて、物や状況、形態）を作り出す」
+　頻出：① make A of B「BでAを作る」、make A from B「BからAを作る」、make A into B「AをBに作り変える」、make time「時間を作る」、⑤ make for 〜「〜へ向かって進む」、make 〜 up「〜をでっちあげる」、make friends with 〜「〜と友達になる」、make do with 〜「〜で済ます」、make up「化粧する」、make up for 〜「〜の埋め合わせをする」、make it「うまくやる、間に合う」、make 〜 out「（can を伴い）〜が識別できる」
+　注意：③〈（人）が主語〉「（嫌がる相手に強制的に）〜させる」、〈（物）が主語〉「（無意識的に）〜させる」⇨ My father made me do [× to do] my homework.「父は私に宿題をさせた。」（＊かつては to do だったが、現在では to が脱落した。）④「〜に向いている」の意味。⇨ Left-handed people are said to make better architects.「左利きの人は建築家に向いている（よい建築家になる）と言われている。」⑤ make one's way「前進する（←〜が進むべき道を作る）」から one's way が省略された形。
+　★［活用］make - made - made
+
+　let　[lét]　他動：①（A do）（Aが〜するの）を許可する　②（Let's）〜しよう　③（me do）〜をしましょう、私に〜させてください
+　ーーー
+　コラム：
+　▶「自由にやらせる（阻止しない）」（＊口語的）
+　頻出：let go of 〜「（ロープなど）を放す」、Let me see.「（考えて）ええと。」／以下の熟語では補語の go / come が省略される。⇨ let 〜 (come) in「（空気など）を入れる」、let 〜 (go) down「〜をがっかりさせる」／let alone 〜「まして〜（ない）」（＊let 〜 (go) alone「〜なんてとんでもない（←〜を放置しよう）」からできた表現。通例、否定文に続けて使われる。）
+　注意：② Let us do.「私たちが〜するのを許可しよう（→〜しよう）」の短縮形。（＊ただし Let us do. は「私たちに〜させてください」の意味にもなる。）付加疑問文は Let's 〜, shall we? と表現する。⇨ Let's go and have lunch, shall we?「昼ご飯を食べに行きませんか。」③ (a.)「（提案）〜しましょう」と (b.)「（命令）私に〜させてください」の2つの意味がある。
+　★［活用］let - let - let
+
+　have　[hǽv]　他動：①〜を所有している　②（A with [on]（人））（今）Aを持っている　③（a 〜 time）（〜な時間）を過ごす　④（飲食物）をとる　⑤（A done）Aを〜してもらう　⑥（A do）Aに〜してもらう
+　ーーー
+　コラム：
+　▶「所有している状態である（ある範囲に存在する）」
+　注意：③④は進行形可。③ a good [wonderful, hard, busy] time などを目的語にする場合、spend は不可で have を使用する。（＊後ろに動名詞を伴うこともある。）④ eat, drink の間接的な表現。⑤⑥通例、業者や専門家、同僚などにやってもらう。「誰に」やってもらうことを明確にする場合は⑥、そうでなければ⑤になる。⑤ I had my car repaired. / ⑥ I had him repair my car. ⑤「（事件や災害の）被害」や「完了」を表すこともある。I had my wallet stolen in the train.「私は電車で財布を盗まれた。」
+　★［活用］have - had - had
+
+　give　[gív]　他動：①（S V O1 O2）（O1にO2）を与える　②（住所などの情報）を教える　③（イベントなど）を行う　④（up 〜）〜をあきらめる
+　ーーー
+　コラム：
+　▶「（自分の領域から外に出して）与える」
+　頻出：① give O1 O2「O1にO2を与える」⇨ give O2 to O1 と表現すると、O1 に重点が置かれる。give（人）a call「（人）に電話する」、give（人）a ride to 〜「（人）を〜まで車に乗せて行く」、give（人）a hand「（人）に手を貸す」、give（人）a cold「（人）にかぜをうつす」、③ give a party [concert]「パーティ［コンサート］を開く」、④ give up 〜「（悪習、希望など）をあきらめる」、give up doing「（これまでにやってきたこと）をあきらめる」、give up (on) the idea of doing「〜する考えをあきらめる」、give up on 〜「〜に見切りをつける」、give (up) a seat to（人）「（人）に席を譲る」、give in (to 〜)「（〜に）屈する」、give 〜 off「（臭いなど）を発する」
+　注意：② give [× teach]（人）information [an address, a message]「（人）に情報［住所、メッセージ］を教える［伝える］」（＊teach は「（学科、言語、やり方など）を教える」の意味。）
+　★［活用］give - gave - given
+
+　get　[gét]　他動：①〜を受け取る、得る　②（病気）になる　③（O1 O2）（O1）に（O2）を買う　④（A to do）（A）に〜してもらう　⑤（A done）（A）を〜の状態にさせる［してもらう］　自動：⑥（〜の状態）になる　⑦（to 〜）（〜に）到着する
+　ーーー
+　コラム：
+　▶「何かを手に入れる、ある状態になる」
+　頻出：① get enough sleep「十分な睡眠をとる」、get exercise「運動する」、get（人）wrong「（人）を誤解する」、get to know「〜を知る」、get down to 〜「〜に（真剣に）取りかかる」、get on 〜「（バス、列車など）に乗り込む」、get off (〜)「（バス、列車などから）降りる」、get into 〜「（車、タクシーなど）に乗り込む、（難関大）に合格する」、get out (of 〜)「（車などから）出る」、get over 〜「〜を克服する」、have got to do「〜する必要がある」、get along [on] with（人）「（（折り合いをつけるのが難しい）人）とうまくやっていく」、I don't get it.「私にはそれが理解できない。」
+　注意：⑤〈get done〉の形は3つの意味で使われる。⇨ (a.) その道のプロにしてもらう (b.) 事件性のない被害にあう (c.) 終わらせる
+　★［活用］get - got - got [〈米〉gotten]
+
+　keep　[kíːp]　他動：①〜を保存［保管］する　②（ある状態）を保つ　③（家畜など）を飼育する　自動：④ずっと〜のままである
+　ーーー
+　コラム：
+　▶「（ある状態）を保つ」
+　頻出：② keep（人）waiting「（人）を待たせておく」、keep 〜 secret [to oneself]「〜を秘密にしておく」、keep the room neat「部屋をきちんとしておく」、keep things as they are「現状を保つ」、④ keep fit「（運動して）体型を保つ」、keep quiet「静かにする」、keep up with 〜「（流行など）に遅れずについていく」、keep an eye on 〜「〜を見張る」
+　注意：③「（ペットとしてイヌやネコなど）を飼う」と表現する場合、have を使うのがふつう。ただし、場所を表す副詞（句）を伴う場合、keep も可。I keep a squirrel in a big cage.
+　★［活用］keep - kept - kept
+
+　hold　[hóuld]　他動：①〜を（しっかり）持って［つかんで］いる　②（記録・地位など）を保持している　③（パーティなど）を開催する　④〜を収容［収納］できる　自動：⑤（天候・傾向などが）続く
+　ーーー
+　コラム：
+　▶「しっかりつかんで手放さない、（一時的に）抑えておく」
+　頻出：① hold 〜 in one's arms「〜を抱いている」、hold chopsticks properly「箸を正しく持つ」、hold one's hand「手を握る」、hold 〜 back「（涙・あくびなど）をこらえる」、get hold of 〜「〜に連絡をとる」（＊この hold は名詞）、hold on to 〜「（手すりなど）につかまる」、hold one's hand out「〜の手を差し伸べる」、⑤ hold true [good]「当てはまる、適用できる」⇨ The same holds true [good] in this case.「同じことがこの場合にも当てはまる。」
+　注意：③「（形式張らない）パーティを開く」なら have [throw, give] a party と表現するのがふつう。（＊hold は「（正式な会、式）を催す」の意味。）
+　★［活用］hold - held - held
+
+　lose　[lúːz]　他動：①〜を失う　②（試合など）に負ける　③（時計が）遅れる　④（be lost [lose oneself] in 〜）〜に没頭する　自動：⑤負ける
+　ーーー
+　コラム：
+　▶「何かを失う」（＊②⑤「（試合）を失う」　③「（時間）を失う」　④「（我）を失う」）
+　頻出：① lose one's way「道に迷う」（＝get lost）、lose one's mind「正気を失う」、lose weight「減量する」（⇔ gain weight「増量する」）、lose sight of 〜「〜を見失う」、lose A to B「BにAを取られる」
+　注意：「（財布）を落とす（＝なくす）」と表現する場合、lose を使う。⇨ I have lost [× dropped] my wallet.「財布を落とした。」
+　★派生・関連：loss「失うこと、損失、敗北」⇨ be at a loss「途方に暮れている」、loose [lúːs]「ゆるんだ」
+　［活用］lose - lost - lost
+
+　do　[dúː]　他動：①〜をする　②（スポーツ）をする　③〜を与える　自動：④（will 〜）十分だ、役立つ　助動：⑤本当に（＊動詞を強調。）
+　ーーー
+　コラム：
+　▶「何かをする」
+　頻出：①目的語には one's homework「宿題」、(the) housework「家事」、(the) laundry「洗濯」、the dishes「皿洗い」などがくることが多い。④ Any 〜 will do.「どんな〜でも役立つ。」、do away with 〜「〜を廃止する」、have [be] done with 〜「〜を終える」、do without 〜「〜なしで済ます」、have a lot [something, a little] to do with 〜「〜と大いに［何か、少し］関係がある」
+　注意：①「〜をする」は英語ではさまざまに表現する。⇨ make a mistake「間違いをする」、take a walk「散歩をする」、get exercise「運動をする（時間をとる）」／②「（球技を）する」は do ではなく play を使う。／③の目的語は good「利益」、harm「害」、a favor「好意」、justice「公正」などに限られる。
+　★［活用］do - did - done [dʌ́n]
+
+　help　[hélp]　他動：①〈人が主語〉〜を助ける、手伝う　②〈物が主語〉〜に役立つ　③（cannot 〜 doing, cannot 〜 but do）思わず〜する　自動：④手伝う、役立つ　名：⑤助け、役立つもの
+　ーーー
+　コラム：
+　▶「（人）を支える」
+　頻出：① help（人）with 〜「（人）の〜を手伝う」、help（人）(to) do「（人）が〜するのを助ける」（＊to は省略されることが多い。）⇨ I helped him (to) repair his bike.「彼が自転車を修理するのを手伝った。」、⑤ of (great) help「（とても）役立つ」、Help yourself to 〜.「〜をご自由に食べてください。」（＊Help yourself go to 〜 から go が脱落した形。）、help out at home「家事手伝いをする」、It can't be helped.「仕方ないよ。」
+　注意：①日本語では「宿題を手伝う」などの表現があるが、help は原則として目的語に（人）をとる。（⇨ help him with his homework [× help his homework]）ただし、②の意味の場合は例外。This will help the economy.「これは経済に役立つだろう。」／③「感情を抑え難い」というニュアンス。⇨ I cannot help thinking [cannot help but think] about the exam.「試験のことをつい考えてしまう。」
+　★派生・関連：helping「（食べ物の）1杯、ひと盛り」⇨ another helping「お代わり」
+
+　break　[bréik]　他動：①（固いもの）を壊す　②〜を骨折する　③（規則・法律など）に違反する　④（約束・記録など）を破る　⑤（札）をくずす　自動：⑥壊れる　⑦（down）故障する、決定する　名：⑧中断、休憩
+　ーーー
+　コラム：
+　▶「力を加えて有形無形の物を壊す」
+　頻出：② break one's leg「脚を折る」、③ break the speed limit「制限速度をオーバーする」、④ break the world record「世界記録を破る」、⑤ break a 100-dollar bill「100ドル札をくずす」、⑥ My pencil has broken.「鉛筆が折れた。」、⑦ My car has broken down.「車が故障した。」、⑧ take [have] a break「ちょっと休憩する」、break out「（火事・戦争などが突然）起きる」、break into 〜「（泥棒などが）〜に押し入る」、break with 〜「〜と絶交する」、break up「（グループが）解散する」、break up with 〜「（恋人）と別れる、〜と離婚する」、break the ice「打ち解けた雰囲気にする」、The day has broken.「夜が明けた。」、His voice has broken.「彼は声変わりした。」
+　注意：①「破壊」の意図の有無は無関係。
+　★派生・関連：broken「故障した」、broke「文無しの」
+　［活用］break - broke - broken
+
+　build　[bíld]　他動：①〜を建てる　②〜を築く　自動：③（up）（感情などが）高まる
+　ーーー
+　コラム：
+　▶「部品や材料を組み合わせて一層ずつ作る」
+　頻出：① build a snowman「雪だるまを作る」、build one's nest「巣を作る」、② build a society in which S V「〜な社会を築く」、be built on 〜「（関係などが）〜に基づき築かれる」、build 〜 up「（徐々に知識・名声・体力など）を増強する」（⇨ build up one's vocabulary「語彙を増強する」）
+　注意：build a house は「（自分で）家を建てる」あるいは「（業者に）家を建ててもらう」のどちらの意味にも使えるが、have a house built は後者の意味となる。
+　★派生・関連：building「建物」（＊日本語の「ビルディング」と異なり、「小さい建造物」も表す。）、built-in「作りつけの、固有の」
+　［活用］build - built - built
+
+　meet　[míːt]　他動：①（人）に会う　②（必要・要求など）を満たす　③（人）を出迎える　名：④〈米〉（運動・競技）会
+　ーーー
+　コラム：
+　▶「（2つの人［物］が）出会う」
+　頻出：① happen to meet 〜「偶然〜と会う」（＝meet 〜 by chance）、② meet the needs of 〜「〜の要求を満たす」、meet the deadline「締め切りに間に合う」、③ meet（人）at the airport [station]「空港［駅］で（人）を出迎える」、④ an athletic meet「運動会」、make ends meet「収支を合わせる」、meet with 〜「（非難・成功など）を受ける、経験する」
+　注意：Nice to meet you.「はじめまして。」は初対面で使用し、Nice to see you (again).「（また）お会いできてうれしいです。」は2回目以降に使用する。（＊(It was) nice meeting you.「お会いできてよかったです。」は別れ際のあいさつ。）①主に「（約束して）会う」だが、文脈によっては「（偶然）会う」の意味でも用いる。
+　★派生・関連：meeting「会議」
+　［活用］meet - met - met
+
+　drive　[dráiv]　他動：①〜を運転する　②（人）を車に乗せて行く　③〜を追いやる　④（（人）to A [do]）（人）を（Aに［〜するように］）駆り立てる　自動：⑤運転する　名：⑥運転、道のり、衝動
+　ーーー
+　コラム：
+　▶「（力を加えて）ある方向に進行するよう促す」
+　頻出：② drive you home「あなたを家まで送る」、③ A drive（人）crazy [mad]「Aは（人）をおかしくさせる［怒らせる］」、④ a driving force「原動力」、⑤ drive to work「車で仕事に行く」、⑥ go for a drive「ドライブに行く」⇨ It is a two-hour drive from Nagoya to Kyoto.「名古屋から京都までは車で2時間（の道のり）だ。」、drive away「走り去る」、What are you driving at?「何が言いたいの。」
+　注意：「（自転車・オートバイ）を運転する」は ride、「（飛行機）を操縦する」は fly を使う。
+　★［活用］drive - drove - driven [drívən]
+
+　change　[tʃéindʒ]　自動：①変化する　②（into 〜）（〜に）着替える　他動：③〜を変える　④（A into B）（A）を（Bに）変える　名：⑤（in 〜）（〜の）変化　⑥おつり、小銭〈不可算〉　⑦（a 〜）気分転換
+　ーーー
+　コラム：
+　▶「（形態の）変化」から「（スケジュールなどの）変更」まで。
+　頻出：① change into 〜「〜になる、変化する」、change for the better [worse]「（事態が）好転［悪化］する」、② change into 〜「〜に着替える」、③ change jobs [one's job]「転職する」、change trains「電車を乗り換える」、change one's mind [× decision]「決心を変える」、⑥ Keep the change.「おつりはいりません。」、⑦ for a change「（いつもと変えて）気分転換に」
+　注意：①③「大きく変わる［（〜を）変える］」は change (〜) completely [greatly, a lot] と表現する。⑤「〜の変化（←〜における内容の変化）」は a change in [× of] 〜 と表現する。change in lifestyle「生活スタイルの変化」ただし、「〜の変化（←別物に変化）」は of を用いる。⇨ the changes of the seasons「四季の変化（春→夏など）」、a change of address [plan, government]「住所の変更［計画の変更、政権交代］」
+　★派生・関連：changeable「（天気などが）変わりやすい」
+
+
+==================================================
+【第2部】語源の捉え方（pp.138-140）
+==================================================
+
+■ Ⅰ. 《語源について》
+1. 語源とは：単語のもととなる意味や成り立ちのこと。
+   ・例：revolution ＝ re-［逆に］＋ -vol-［回る］＋ -tion［名詞語尾］ →「逆回転して権力や組織をひっくり返す」→「革命」
+2. 暗記の「手がかり」として活用する：すべての単語を完璧に推測できるわけではないが、記憶の助けになる。
+   ・例：philosophy（philo-［愛する］＋ -sophy［知］＝哲学）／ emphasis（em-［強調］＋ -pha-［現れる］＝強調）
+3. 「音」のつながりに注目する：つづりよりも「音」に意識を向けると、関連語が見えてくる。
+   ・例：dry［乾いた］／ drought［干ばつ］／ drain［〜の水を抜く］／ drink［〜を飲む］
+4. 音の「同化」：接頭辞の最後の音は、後ろに続く子音に合わせて変化することがある。
+   ・例：ad-［方向］＋ company［仲間］ → accompany「〜と一緒に行く」（ad- が ac- に変化）
+
+■ Ⅱ. 《覚えておきたい接頭辞・接尾辞》
+
+【1. 重要な接頭辞（単語の先頭につく要素）】
+(1) en-（p, b, m の前では em-）：《動詞を作る》
+    ・enable（en- + -able［可能］）→「〜に可能にする」
+(2) dis-：「バラバラ、分離」
+    ・distant（dis- + -stant［立つ］）→「遠い」
+(3) ob-：「〜に対して、反対して（＝against）」
+    ・object（ob- + -ject［投げる］）→「反対する」
+(4) ab-：「離れて（＝away）」
+    ・abolish（ab- + -ol-［古い］+ -ish［する］）→「〜を廃止する」
+(5) ex-：「外に」
+    ・expose（ex- + -pose［置く］）→「〜をさらす」
+(6) de-：「下」
+    ・depress（de- + -press［押す］）→「〜を憂うつにさせる」
+(7) con-（p, b, m の前では com-）：「共に、一緒に」
+    ・consist（con- + -sist［立っている］）→「構成されている」
+(8) pro-：「前方に」
+    ・progress（pro- + -gress［進む］）→「進歩」
+(9) pre-：「（時間的に）前に」
+    ・predict（pre- + -dict［言う］）→「〜を予測する」
+(10) per-：「通して、ずっと（＝through）」
+    ・perfect（per- + -fect［作る］）→「完璧な」
+(11) re-：「再び、後ろに」
+    ・react（re- + -act［行動する］）→「反応する」
+(12) mis-：「間違って」
+    ・misunderstand（mis- + -understand［理解している］）→「〜を誤解している」
+(13) sub-：「下」
+    ・subway（sub- + -way［道］）→「地下鉄」
+(14) ant-：「〜に対して、〜に反対して（＝against）」
+    ・antibiotics（anti- + -bio-［生命］）→「抗生物質」
+(15) syn-（p, b, m の前では sym-）：「同じ」
+    ・sympathy（sym- + -pathy［感情］）→「同情」
+(16) dia-：「横切って」
+    ・dialogue（dia- + -logue［話す］）→「会話」
+(17) inter-：「間、互いに」
+    ・interview（inter- + -view［見る］）→「面接」
+(18) para-：「横で」
+    ・parasite（para- + -site［food］）→「寄生虫」
+(19) non-：《否定》
+    ・nonsense（non- + -sense［意味］）→「無意味な」
+(20) se-：「分離、離す」
+    ・separate（se- + -para-［準備する］）→「〜を引き離す」
+(21) mono-：「1」
+    ・monopoly（mono- + -poly［売る］）→「独占」
+(22) tri-：「3」
+    ・triathlon（tri- + -athlon［競技］）→「トライアスロン」
+(23) trans-：「越えて」
+    ・transparent（trans- + -parent［現れる］）→「透明な」
+(24) un-：《逆動作》（＊動詞の前につく場合）
+    ・unfold（un- + -fold［折りたたむ］）→「展開する」
+(25) sur- / super-：「上」
+    ・surplus（sur- + -plus［プラス］）→「余剰、黒字」
+(26) contra-：「逆に」
+    ・contradict（contra- + -dict［言う］）→「〜と矛盾する」
+(27) for(e)-：「前方、前もって」
+    ・forehead（fore- + -head［頭部］）→「額」
+(28) bene-：「よい」
+    ・benefit（bene- + -fit［行い］）→「恩恵」
+(29) mal-：「悪い」
+    ・malnutrition（mal- + -nutrition［栄養］）→「栄養失調」
+(30) manu-：「手」
+    ・manuscript（manu- + -script［書いたもの］）→「原稿」
+(31) auto-：「自動、自立、自己」
+    ・autobiography（auto- + -bio-［命］+ -graphy［描く］）→「自伝」
+
+【2. 重要な接尾辞（単語の末尾につく要素）】
+(1) -ee：「〜される人」
+    ・employee（employ-［雇う］+ -ee）→「従業員」
+(2) -fy：《動詞を作る》
+    ・unify（uni-［1つ］+ -fy）→「〜を統一する」
+(3) -ful：「〜に満ちた」
+    ・respectful（respect-［敬意］+ -ful）→「敬意をもっている」
+(4) -er：《反復》（＊「〜する人」の意味もある）
+    ・waver（wave-［不規則に動く］+ -er）→「揺れる」
+(5) -(r)y：《集合名詞を作る》
+    ・poetry（poet-［詩］+ -y）→「（集合的に）詩」
+(6) -ory：「場所」
+    ・factory（fact-［作る］+ -ory）→「工場」
+(7) -ship：「状態、性質」
+    ・friendship（friend-［友だち］+ -ship）→「友情」
+(8) -let / -cle：「小さな」
+    ・booklet（book-［本］+ -let）→「小冊子」
+
+
+==================================================
+【第3部】英作文でよく使う「ディスコースマーカー」一覧（pp.306-307, 510-511）
+==================================================
+
+■ A. 「逆接」
+［接続詞］
+・but「しかし」
+・yet「それでもなお」
+・while「〜だが」
+・(al)though「〜にもかかわらず」
+［副詞］
+・however「しかしながら」
+・though「（通例、文末・文中で）だが、もっとも」
+・nevertheless「それにもかかわらず」
+・all the same「それでもやはり」
+・that said「とはいうものの」
+・unfortunately「残念ながら」
+［前置詞］
+・despite 〜「〜にもかかわらず」
+・in spite of 〜「〜にもかかわらず」
+
+■ B. 「対比」
+［接続詞］
+・〜, while ...「〜だが一方…」
+・〜, whereas ...「〜だが一方…」
+［副詞］
+・meanwhile「一方」
+・by [in] contrast「対照的に」
+・on the contrary「（通例、否定文に続けて）それどころか」
+
+■ C. 「例示」
+・for example「たとえば」
+・for instance「たとえば」
+・including 〜「〜を含めて」
+・say「（挿入的に）たとえば」
+
+■ D. 「結果」
+・that is why 〜「そういうわけで」
+・as a result「その結果」
+・therefore「それゆえ」
+・so (that)「そのため」
+・hence「それゆえ」
+・in conclusion「結論として」
+・thus「したがって」
+・accordingly「したがって」
+・consequently「結果として」
+
+■ E. 「言い換え」
+［副詞］
+・in fact「実際（は）」
+・in other words「言い換えると」
+・in short「要するに」
+・to sum up「要するに」
+・namely「つまり」
+［接続詞］
+・or「（,［コンマ］＋ or）すなわち」
+
+■ F. 「追加」
+［副詞］
+・also「〜もまた」
+・furthermore「さらに」
+・additionally「加えて」
+・what is more「さらに」
+・moreover「さらに」
+・in addition「加えて」
+・on top of that「その上」
+・besides「加えて」
+
+
+==================================================
+【第4部】発音・アクセントのルール（pp.308-310, 392-394）
+==================================================
+
+■ Ⅰ. 《発音編》
+
+【1. 発音の基本原則】
+・原則1：英語は腹式呼吸
+  息をお腹から吐き出しながら、英文1つのカタマリごとに一息で発話する。
+・原則2：余分な母音は省いて発音する
+  子音をしっかり発音し、日本語のような母音の挿入を防ぐ。（例：salad [sǽləd]、advice [ədváis]）
+・原則3：内容語は強く、機能語は弱く発音する
+  - 内容語（強く）：名詞・動詞・形容詞・副詞・疑問詞
+  - 機能語（弱く・弱形）：人称代名詞・助動詞・be動詞・前置詞・冠詞・接続詞
+  ※ただし、否定形（can't）、文末の助動詞・前置詞、対比される語は強く発音する。
+・原則4：有声音と無声音を区別する
+  - 無声子音（のどが震えない）：[p, t, k, θ, f, s など]（例：pad, bath, missed）
+  - 有声子音（のどが震える）：[b, d, g, ð, v, z など]（例：bad, bathe, using）
+  ※後ろに有声子音がくると、前の母音は長めに発音される。（例：mop [mɑ́p] vs mob [mɑ́(ː)b]）
+
+【2. 発音の応用原則（音変化）】
+・応用1：音の接続（リエゾン）
+  単語単位で区切らず、前後の音をつなげて発音する。
+  - [t] + [j] → [tʃ]：don't you / can't you / let you / meet you
+  - 母音にはさまれた [t] → [l] と [d] の中間の音：not at all / let it go / check it out
+・応用2：音の脱落
+  - 破裂音 [p, t, k, b, d, g] が語末にくると脱落することがある。（例：a big ship / sit down / Good job!）
+  - -nt- は [t] が脱落して [n] になることがある（主に〈米〉）。（例：internet / twenty / want to）
+
+■ Ⅱ. 《アクセント編》
+※［ ˊ ］は第一強勢（一番強い）、［ ˋ ］は第二強勢（二番目に強い）。
+
+【1. アクセントの基本ルール】
+・原則：名詞は前、動詞とその派生語は後ろにアクセントがある。
+  - 例（名詞）：arrow [ǽrou], pattern [pǽtərn], uniform [júːnəfɔ̀ːrm]
+  - 例（動詞・派生語）：recover [rikʌ́vər] ⇨ recovery [rikʌ́vəri] / employ [implɔ́i] ⇨ employment [implɔ́imənt]
+  - 例外注意：（動詞）differ [dífər]「異なる」／（名詞）semester [siméstər]「学期」
+・名詞と動詞が同形の場合の3パターン：
+  a) 名詞が前、動詞が後ろ：object [ɑ́bdʒikt]（名）/ [əbdʒékt]（動）、progress [prɑ́gres]（名）/ [prəgrés]（動）
+  b) 共に前（元は名詞）：influence [ínfluəns], purchase [pə́ːrtʃəs]
+  c) 共に後ろ（元は動詞）：control [kəntróul], consent [kənsént]
+
+【2. アクセントとつづりの関係】
+(1) それ自体にアクセントがある語尾
+  ・-ee- / -oo-：career, balloon（例外：committee, coffee, cuckoo）
+  ・-ental：accidental, incidental
+(2) 直前の母音字にアクセントがある語尾
+  ・-ic, -ics, -ical：atomic, economics, ethical（例外：Arabic, politics, Catholic, rhetoric, lunatic, arithmetic）
+  ・-ity, -ety：electricity, society
+  ・-ial, -ual：official, habitual（例外：spiritual）
+  ・-tion, -cian, -gion：tradition, magician, religion
+  ・-meter：diameter, barometer（例外：centimeter ※「メートル」の意）
+  ・-sive：expensive, aggressive
+  ・子音字 + (i)a / o：umbrella, soprano（例外：orchestra）
+  ・-(i)age：image, marriage（例外：average, beverage, heritage）
+  ・-en：happen, frighten（例外：quieten）
+  ・-ish：abolish, astonish（例外：〈名詞 + -ish〉は元の名詞と同じ → feverish, devilish）
+(3) 2つ前の母音字にアクセントがある語尾
+  ・-ate, -ator, -ite：educate, elevator, infinite
+  ・-ous：obvious, monotonous（例外：enormous, disastrous, tremendous）
+  ・-gy, -gist：energy, ecologist
+  ・-fy, -py：satisfy, occupy
+  ・-ize, -ise：recognize, compromise
+  ・-phy：geography
+(4) アクセント位置が元の語と同じになる語尾
+  ・動詞の形容詞形（-ful, -less, -able など）：respectful, useless, comfortable（例外：admirable, preferable）
+  ・動詞の名詞形（-ment, -er, -ant, -al, -y, -ence, -ance など）：development, manager, participant, immigrant, arrival, proposal, discovery, existence, acceptance（例外：reference, preference, ignorance, maintenance）
+
+
+==================================================
+【第5部】英作文で役立つ「英単語の使い方」20問（pp.512-514）
+==================================================
+
+■ 1. 動詞に関して
+(1) この子たちはマナーがなっていない。
+    These children do not [① have] / ② know good manners.
+    ★正解：① have
+(2) 私たちは学校の創立100周年を祝った。
+    We [① celebrated] / ② congratulated our school's 100th anniversary.
+    ★正解：① celebrated
+(3) 両親は私がイギリスに留学するのを認めてくれた。
+    My parents ① admitted / [② allowed] me to study in the U.K.
+    ★正解：② allowed
+(4) あなたが助けてくれたことに本当に感謝しています。
+    I really [① appreciate] / ② thank your help.
+    ★正解：① appreciate
+(5) その科学者たちは、自分たちの実験が世界を変えることになると気づいた。
+    The scientists ① noticed / [② realized] their experiment would change the world.
+    ★正解：② realized
+(6) このスープにはさまざまなハーブが入っている。
+    This soup ① includes / [② contains] various herbs.
+    ★正解：② contains
+
+■ 2. 名詞に関して
+(7) 私たちは経験から時は金なりと学ぶ。
+    We learn from [① experience] / ② experiences that time is money.
+    ★正解：① experience
+(8) 私は搾取工場（低賃金・長時間労働の工場）に関する多くのニュースを耳にしたことがある。
+    I have heard many ① news / [② news items] about sweatshops.
+    ★正解：② news items
+(9) 私たちはインターネットでさまざまな情報を得る。
+    We get various ① information / [② kinds of information] on the internet.
+    ★正解：② kinds of information
+(10) ヘレンはテニスの技術を向上させるために一生懸命に努力している。
+     Helen is trying hard to improve her tennis ① skill / [② skills].
+     ★正解：② skills
+(11) この部屋は18世紀の家具でいっぱいです。
+     This room is full of eighteen-century [① furniture] / ② furnitures.
+     ★正解：① furniture
+(12) その村では美しい風景を楽しむことができます。
+     You can enjoy beautiful ① scene / [② scenery] in the village.
+     ★正解：② scenery
+(13) その歌手はスタイルが良い。
+     The singer has a nice [① figure] / ② style.
+     ★正解：① figure
+
+■ 3. 前置詞に関して
+(14) 3時まで待っていただけませんか？
+     Could you wait ① by / [② until] three o'clock?
+     ★正解：② until
+(15) 英語以外の外国語も勉強すべきだ。
+     You should study a foreign language [① besides] / ② except English.
+     ★正解：① besides
+(16) グレンは昨年ジルと結婚した。
+     Glen got married [① to] / ② with Jill last year.
+     ★正解：① to
+(17) 私たちは逆方向に行った。
+     We went [① in] / ② to the opposite direction.
+     ★正解：① in
+
+■ 4. 英単語のつながりに関して
+(18) 私はその会社が倒産したという記事を読んだ。
+     I read an article ① that / [② saying that] the company had gone bankrupt.
+     ★正解：② saying that
+(19) マイクはより多くの情報を収集する方法を提案した。
+     Mike proposed a method ① to collect / [② for collecting] more information.
+     ★正解：② for collecting
+(20) 地球が温暖化しているという現象はよく知られている。
+     The ① phenomenon / [② fact] that the Earth is getting warmer is well-known.
+     ★正解：② fact

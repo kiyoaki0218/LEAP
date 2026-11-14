@@ -1,0 +1,840 @@
+102
+　destroy [distrɔ́i] 他：①～を(完全に)破壊する ②～を殺す、全滅させる
+　ーーー
+　コラム：「(建物など)を(完全に)取り壊す」から「(動物など)を殺処分する」まで。 / 注意：「環境を破壊する」は「(完全に)破壊する」ではなく、「(部分的に)破壊する」なのでdamage [× destroy] the environmentと表現する。 / 語源：de-[下→否定]+-stroy[=story structure 構造] / 名詞：destrúction「破壊」
+　例文：
+　① 【destroy】 all weapons すべての武器を破壊する
+　② This horse has to be 【destroyed】. この馬を殺処分するしかない。
+
+103
+　ruin [rúːin] 他：①～を台無しにする ②～を破滅させる 名：③(-s)廃墟、荒廃
+　ーーー
+　コラム：「(元々はすばらしかった物)を台無しにする」 / 頻出：① ruin [△ lose] one's health「健康を害する」(*loseはやや古い表現。) / 語源：「倒れる」が元の意味。同根語：bánkrupt「倒産した」、corrúpt「堕落[腐敗]した」
+　例文：
+　① You 【ruined】 my plan. 君のせいで計画が台無しだよ(君は私の計画を台無しにした)。
+　② The flood 【ruined】 the town. 洪水が町を破壊してしまった。
+　③ the 【ruins】 of Pompeii ポンペイの遺跡
+
+104
+　danger [déindʒər] 名：危険
+　ーーー
+　コラム：「(危害、損害の)恐れ、危険(性)」 / 類語：rísk「(自らの判断、行動によってもたらされる)悪い結果の可能性」 / 頻出：be in danger of ～「～の危険がある」、in danger「危険な状態の」 / 形容詞：dángerous「危険な」 / 副詞：dángerously「危険なほどに」
+　例文：
+　Tigers are in 【danger】 of extinction. ◇ Tigers are dangerous. トラが絶滅の危機にある。◇トラは危険(な動物)だ。
+
+105
+　neighbor [néibər] 名：①近所の人 ②(a next-door ～)隣の人
+　ーーー
+　コラム：語源：neigh-[=near]+-bor[人]→「近くに住む人」 / 形容詞：néighboring「近所の」 / 名詞：néighborhood「(ある町や都市の人の住む)地域」(*日本語の「近所」より幅広い地域を指す。)
+　例文：
+　① chat with a 【neighbor】 近所の人と話す
+　② My next-door 【neighbor's】 dog barks day and night. 隣(の人)のイヌが昼夜問わずほえる。
+
+106
+　audience [ɔ́ːdiəns] 名：聴衆、観客
+　ーーー
+　コラム：「観客(全体)」 / 注意：a large audience ([×] many audiences)「大観衆」、「1人の観客」はan audience memberと表現する。 / 語源：audi-[聞く] 同根語：áudible「聞こえる」、auditórium「〈米〉講堂」、áuditory「聴覚の」
+　例文：
+　draw a large 【audience】 大観衆を集める
+
+107
+　crowd [kráud] 名：群衆
+　ーーー
+　コラム：「(押し合いになるくらいの)人ごみ」 / 形容詞：crówded (with ～)「(～で)混雑した」 / 類語：congésted「(道が)混雑した」
+　例文：
+　A 【crowd】 rushed into the hall. 群衆が会場になだれ込んだ。
+
+108
+　author [ɔ́ːθər] 名：①著者 ②(主に文学作品の)作家
+　ーーー
+　コラム：頻出：the author of ～「～の著者」 / 語源：「生み出す人」が元の意味。同根語：áutumn「秋(←果実を生む季節)」
+　例文：
+　① the 【author】 of War and Peace 『戦争と平和』の著者
+　② The 【author】 was signing copies of his new book. その作家は彼の新刊本にサインをしていた。
+
+109
+　staff [stǽf] 名：(集合的に)職員、従業員
+　ーーー
+　コラム：「職員(全体)」 / 頻出：be on the staff「職員だ」 / 注意：日本語の「スタッフ」は「1人の職員」を指すことがあるが、本来staffは「職員(全体)」を示す。(*「1人の職員」はa staff memberと表現。)
+　例文：
+　Most of the 【staff】 is [〈英〉 are] from Australia. 職員の大半はオーストラリア出身です。
+
+110
+　clerk [klə́ːrk] 名：①〈米〉店員 ②事務員、社員
+　ーーー
+　コラム：①〈英〉 a shop assistant / 形容詞：clérical「事務の」⇨ clerical work「事務仕事」
+　例文：
+　① the 【clerks】 at that department store あのデパートの店員
+　② a bank 【clerk】 銀行員
+
+111
+　customer [kʌ́stəmər] 名：客
+　ーーー
+　コラム：「(商店や企業から商品やサービスを購入する)顧客」 / 類語：clíent「(弁護士など専門家に助言を求める)依頼人」、guéste「招待客、宿泊客」 / 頻出：a repeat [regular] customer [× repeater]「常連客、リピーター」 / 語源：「custom(習慣)的に来る人(客)」が元の意味。
+　例文：
+　The restaurant was crowded with 【customers】 from abroad. そのレストランは外国人客で混雑していた。
+
+112
+　passenger [pǽsəndʒər] 名：乗客
+　ーーー
+　コラム：「乗務員」はa crew memberと表現する。 / 頻出：a train [bus, airline] passenger「列車[バス、飛行機]の乗客」 / 語源：passeng-[=pass 過ぎる]+-er[人]→「通り過ぎて行く人」 / 類語：a train [taxi, bus] driver「列車[タクシー、バス]運転手」
+　例文：
+　There were a lot of 【passengers】 on the train. 列車には多くの乗客が乗っていた。
+
+113
+　elderly [éldərli] 形：①年配の 名：②(the ～)(総称的に)年配の人々
+　ーーー
+　コラム：「年配の、年老いた(óld, áged)」の丁寧で遠回しな表現。 / 頻出：elderly people [the elderly]「年配の人々」、middle-aged and elderly people「中高年の人々」
+　例文：
+　① give up my seat to 【elderly】 people お年寄り(年配の人)に席を譲る
+　② priority seats for the 【elderly】 お年寄りのための優先席
+
+114
+　female [fíːmeil] 形：①女性の ②(動物)雌の 名：③女性、雌
+　ーーー
+　コラム：生物学上、または警察や調査員によって使われる堅い語。日常ではwomanのほうが使われる。⇨ women's rights「女性の権利」 / 反対：mále「男性の、雄の」 / 名詞：féminist「女権拡張論者」 / 形容詞：féminine「女性らしい」(反対：másculine「男性らしい」)
+　例文：
+　① 【female】 workers 女性の労働者
+　② a 【female】 cat 雌のネコ
+　③ the 【female】 of the species その種の雌
+
+115
+　head [héd] 自：①向かう 他：②～を率いる
+　ーーー
+　コラム：①「頭を向ける」 ②「頭(リーダー)になる」 / 頻出：① head for ～「～へ向かう」 / ② A headed by B「Bに率いられたA」 / 名詞：héadline「(新聞、雑誌などの)大見出し」 / 形容詞：héad-ón「正面衝突の」
+　例文：
+　① 【head】 for the beach 海辺に向かう
+　② an investigative team 【headed】 by Mr. Nakahara 中原氏が率いる調査団
+
+116
+　follow [fɑ́lou] 他：①～の後について行く、～に続く ②(忠告、方針など)に従う
+　ーーー
+　コラム：頻出：be followed by ～「次に～が続く」、as follows「以下のとおり」、Just because SV, it does not follow that S' V'.「SVというだけでS'V'というわけではない。」(*この場合、fóllowは自。) / 形容詞：fóllowing「次の、以下のような」⇨ the following reason「次の理由」
+　例文：
+　① Someone was 【following】 me. 誰かが私をつけていた。
+　② 【follow】 his advice 彼の忠告に従う
+
+117
+　wander [wɑ́ndər] 自：歩き回る、さまよう
+　ーーー
+　コラム：「(当てもなく、ぶらぶら)歩く」 / 頻出：しばしばaround, about「(～の)あちこち」を伴う。 / 注意：wónder「不思議に思う」[wʌ́ndər]と区別。 / 語源：wand-[=wend 行く]+-er[繰り返し]→「行ったり来たりする」
+　例文：
+　【wander】 about the town 街をぶらぶら歩き回る
+
+118
+　travel [trǽvəl] 自：①旅行する、移動する ②(光、音などが)進む
+　ーーー
+　コラム：「遠くへ移動する」 / 類語：a trip to ～「～への(短期から長期の)旅」、a journey「(通例、陸路の)長旅」 / 頻出：① travel abroad「海外旅行をする」、travel by plane [ship, car]「飛行機[船、車]で移動する」、travel into [× to] space「宇宙へ旅行する」 / 名詞：trável(ing)「旅行」〈不可算〉、tóurism「観光(業)」
+　例文：
+　① 【travel】 around the world 世界中を旅する
+　② Light 【travels】 faster than sound. 光は音より速く進む。
+
+119
+　pass [pǽs] 他：①～を通り過ぎる ②～を抜く ③(試験)に受かる ④((人) A)(人)に(Aを)渡す 自：⑤(時が)過ぎる 名：⑥通行証
+　ーーー
+　コラム：「(ある地点)を通過する」 / 頻出：pass away「(人が)亡くなる」、pass for ～「～として(世間で)通る」、pass the time「暇をつぶす」 / ④ pass ～ down「(次世代へ)～を伝える」 / ⑥ a free pass「無料入場券、フリーパス」 / 形容詞：pássing「一時的な」
+　例文：
+　① 【pass】 the post office 郵便局(の前)を通り過ぎる
+　② 【pass】 five runners on the final lap 最後の一周で5人の走者を抜く
+　③ 【pass】 the bar exam 司法試験に受かる
+　④ 【Pass】 me the salt, please. 塩を取って(私に渡して)ください。
+　⑤ as time 【passes】 時の経過(時が過ぎる)と共に
+　⑥ an annual 【pass】 for the theme park そのテーマパークの年間パス
+
+120
+　likely [láikli] 形：①(to do)～しそうだ、可能性が高い 副：②おそらく
+　ーーー
+　コラム：頻出：① be likely to do「～しそうだ」(= It is likely that SV.) / 名詞：líkelihood「可能性」 / 反対：unlíke「～しそうにない」
+　例文：
+　① Things are 【likely】 to improve. 事態はよくなりそうだ。
+　② He will very 【likely】 stay home. おそらく、彼は家にいるだろう。
+
+121
+　natural [nǽtʃərəl] 形：①当然の ②自然の ③生まれながらの
+　ーーー
+　コラム：頻出：① It is natural (for A) to do.「Aが～するのは当然だ。」(= It is natural that A (should) do.) / ② natural surroundings「自然環境」⇨ relax in natural surroundings [× in nature]「自然の中でくつろぐ」 / 副詞：náturally「当然、自然に」 / 反対：unnátural「不自然な」
+　例文：
+　① It is only 【natural】 that you cannot catch words you do not know. 知らない単語を聞き取れないのはごく当然のことだ。
+　② 【natural】 beauty 自然美
+　③ her 【natural】 talent 彼女の生まれつきの才能
+
+122
+　certain [sə́ːrtn] 形：①確かな ②(名詞の前で)ある～
+　ーーー
+　コラム：②「特定の人[物]について、あえて名前を出さないで言う」 / 類語：some (名詞の単数形)「(具体的にはわからないが)ある～」 / 頻出：① be certain to do「きっと～する」 / 副詞：cértainly「確かに」→ Certainly.「もちろん、(店員などが)承りました。」
+　例文：
+　① He is 【certain】 to become a star player. 彼はきっとスター選手になるよ。
+　② be sent to a 【certain】 country ある国に派遣される
+
+123
+　probably [prɑ́bəbli] 副：おそらく
+　ーーー
+　コラム：確信度はおよそ70%以上。 / 類語：perháps「ひょっとすると(←確信度はおよそ30%以上)」 / 注意：will probably「～するだろう」はwillよりも意味が弱くなる。 / 語源：prob-[証明]+-abl-[可能]から「証明できそう」→「おそらく」 / 形容詞：próbable「ありそうな、起こりそうな」 / 名詞：probabílity「見込み、確率」
+　例文：
+　The repairs will 【probably】 take a month. 修理はおそらく1か月はかかるだろう。
+
+124
+　face [féis] 他：①～に直面する ②〈方向〉～向きである 名：③顔、体面、文字盤
+　ーーー
+　コラム：頻出：① (人) face ～「(人)が～に直面する」(*能動的)、(人) be faced with ～「(人)が～に直面している」 / ③ in the face of ～「～にもかかわらず」 / 注意：Don't put your head [× face] out of the window.「窓から顔を出すな。」 / 形容詞：fácial「顔の」⇨ facial expressions「顔の表情」
+　例文：
+　① We are 【faced】 with a crisis. 私たちは危機に直面している。
+　② a window 【facing】 (to the) south 南向きの窓
+　③ lose 【face】 面目を失う
+
+125
+　avoid [əvɔ́id] 他：～を避ける
+　ーーー
+　コラム：「(危険なものや嫌なもの)を遠ざける」 / 頻出：avoid doing「～するのを避ける」([×] avoid to do) / 語源：a-[=away 離れて]+-void[空っぽの] 同根語：vácant「空いている」 / 形容詞：unavóidable「避けられない」
+　例文：
+　【Avoid】 making eye contact with monkeys. サルとは目を合わせないようにしなさい(サルと目を合わせることを避けろ)。
+
+126
+　solve [sɑ́lv] 他：～を解決する
+　ーーー
+　コラム：「(困難や問題)を解く」 / 類語：ánswer「(試験の問題)を解く、(アンケートなど質問)に答える」 / 注意：「問題を解決する」はsolve a problem [× question]と表現する。 / 語源：元は「～を溶かす」の意味。 / 名詞：solútion「解決策、溶解、溶液」⇨ a solution to [× of] a problem「問題の解決策」
+　例文：
+　【solve】 the math problem その数学の問題を解く
+
+127
+　trouble [trʌ́bl] 名：①問題、ごたごた(通例〈不可算〉) 他：②～を困らせる
+　ーーー
+　コラム：「(集合的に)通常の進行を妨げるもの」≒ difficult problems / 頻出：① have trouble doing「～するのに苦労する」、The trouble is that SV.「困ったことに～だ。」、be in trouble「(自己責任で)困っている」 / 注意：英作文で「問題」を表現する際はa próblemを使うのが無難。 / 形容詞：tróublesome「やっかいな、面倒な」
+　例文：
+　① have 【trouble】 sleeping 寝つけない(眠るのに苦労する)
+　② I'm sorry to 【trouble】 you. お手数をおかけして(あなたを困らせて)すみません。
+
+128
+　issue [íʃuː] 名：①問題 ②(雑誌の)号 他：③(切手など)を発行する
+　ーーー
+　コラム：①「(多くの人々に影響を与える、社会[政治]的な)問題」 / 頻出：① take issue with ～「～に反対する」 / ② the current [latest] issue「今[最新]の号」 / 語源：iss-[=ex 外に]+-ue[=it 出る]→「外へ出る」 同根語：éxit「出口」
+　例文：
+　① an international 【issue】 国際問題
+　② the latest 【issue】 of a magazine 雑誌の最新号
+　③ 【issue】 a passport パスポートを発行する
+
+129
+　cheer [tʃíər] 他：①(on)～に声援を送る ②(up)～を励ます 名：③声援、励まし ④(-s)乾杯
+　ーーー
+　コラム：「(みんなで)声を上げて応援する」 / 頻出：Cheer up!「元気を出せ！」 / 注意：「チアガール」は和製英語で、正しくはchéerleaderと表現する。 / 形容詞：chéerful「陽気な、明るい」
+　例文：
+　① 【cheer】 all the players on すべての選手たちに声援を送る
+　② His arrival 【cheered】 me up. 彼の到着で元気が出た(私を励ました)。
+　③ give [raise] a 【cheer】 声援を送る
+　④ "【Cheers】!" shouted Adam. 「乾杯！」とアダムは叫んだ。
+
+130
+　encourage [inkə́ːridʒ] 他：①(A to do)(A)に(～するよう)促す、奨励する ②～を励ます
+　ーーー
+　コラム：「状況や気持ちを前に促す」 / 語源：en-[動詞化]+-courage[勇気] / 名詞：encóuragement「激励」 / 反対：discóurage (人) from doing「(人)が～するのをやめさせる」
+　例文：
+　① 【encourage】 people to bike to work 人々に自転車通勤するよう促す
+　② 【encourage】 the students 生徒たちを元気づける
+
+131
+　support [səpɔ́ːrt] 他：①～を支持する ②(家族など)を養う ③(理論など)を立証する 名：④支持、支援〈不可算〉
+　ーーー
+　コラム：「(倒れないように)下から支える」 / 頻出：① strongly support ～「～を強く支持する」 / 名詞：suppórter「支持者、サポーター、ファン」
+　例文：
+　① firmly 【support】 her 強く彼女を支持する
+　② 【support】 a family of four 4人家族を養う
+　③ This 【supports】 my idea. これが私の考えを立証する。
+　④ financial 【support】 財政的援助
+
+132
+　prevent [privént] 他：①(A from B)(AがBするの)を妨げる ②～を予防する
+　ーーー
+　コラム：頻出：① prevent A from doing「Aが～するのを妨げる」 / 語源：pre-[前に]+-vent[来る]→「先回りして防ぐ」 同根語：invént「発明する(←頭の中に入ってくる)」 / 名詞：prevéntion「防止、予防」 / 形容詞：prevéntable「予防可能な」
+　例文：
+　① The heavy snow 【prevented】 us from going out. 大雪のため外出できなかった(私たちが外出するのを妨げた)。
+　② 【prevent】 the flu インフルエンザの予防をする
+
+133
+　deny [dinái] 他：①～を否定する ②(SVO₁O₂)(O₁)に(O₂を)与えない
+　ーーー
+　コラム：頻出：① deny (that) SV [doing]「～[すること]を否定する」 / ゴロ：～でないと「否定する」 / 名詞：deníal「否定、与えないこと」
+　例文：
+　① 【deny】 that he is a great scientist 彼が偉大な科学者であることを否定する
+　② 【deny】 them the right to vote 彼らに投票権を与えない
+
+134
+　enable [inéibl] 他：(A to do)(A)に[が](～することを)可能にする
+　ーーー
+　コラム：「(力や手段によって)～できるようにする」 / 注意：目的語を伴わない[×] enable to doの形は不可。 / 語源：en-[動詞化]+-able[可能] 同根語：enrích「～を豊かにする」
+　例文：
+　The internet has 【enabled】 us to receive information right away. インターネットのおかげで情報をすぐに得られるようになった(私たちが情報をすぐに得ることを可能にした)。
+
+135
+　succeed [səksíːd] 自：①(in ～)(～に)成功する ②(to ～)(家業などを)継ぐ
+　ーーー
+　コラム：「(人、計画、やり方などが)うまくいく」 / 注意：① [×] succeed to doは不可。 / 語源：suc-[=sub 下]+-ceed[進む]→「下(後ろ)から上に進む」 / 名詞：succéss「成功」、succéssion「継承、連続」⇨ in quick succession「矢継ぎ早に」 / 形容詞：succéssful「成功した」、succéssive「連続した」
+　例文：
+　① 【succeed】 in landing on the moon 月面着陸に成功する
+　② 【succeed】 to the family business 家業を引き継ぐ
+
+136
+　miss [mís] 他：①～を逃す ②～を休む ③～を恋しく思う
+　ーーー
+　コラム：頻出：① You can't miss it.「(道案内の最後に)必ず見つかりますよ。」、miss one's stop「(電車などで)乗り過ごす」 / 注意：②日常では「学校[仕事]を休む」はbe absent from school [work]ではなくmiss school [work]と表現するのがふつう。日本語の「ミスをする」はmake a mistakeと表現する。 / 形容詞：míssing「行方不明の」
+　例文：
+　① 【miss】 the last train 終電を逃す
+　② 【miss】 school for two days 2日間学校を休む
+　③ I 【miss】 you. あなたに会えなくて寂しい(あなたが恋しい)。
+
+137
+　fail [féil] 自：①(in [at] ～)(～に)失敗する ②(to do)～できない 他：③(試験)に落ちる ④(人)に役に立たない〈まれ〉
+　ーーー
+　コラム：注意：②日常ではcannot doと表現するのがふつう。(反対：succéed) / 頻出：without fail「必ず」(*このfáilは名詞扱い。) / 名詞：fáilure「失敗、できないこと、故障」
+　例文：
+　① 【fail】 in business 商売で失敗する
+　② 【fail】 to see what happened 何が起きたかわからない
+　③ 【fail】 the exam 試験に落ちる
+　④ My memory 【fails】 me these days. 近頃、記憶が(私に)役立たない。
+
+138
+　mistake [mistéik] 名：①間違い 他：②(A for B)(A)を(Bと)間違える
+　ーーー
+　コラム：頻出：① make a mistake「ミスをする」、by mistake「間違えて」 / 形容詞：mistáken「間違えている」⇨ You are mistaken.「あなたは間違えている。」 / 副詞：mistákenly「誤って」⇨ mistakenly believe that SV「～だと誤解している」
+　例文：
+　① make grammatical 【mistakes】 文法ミスをする
+　② 【mistake】 him for his twin brother 彼を双子の弟と間違える
+
+139
+　check [tʃék] 他：①～を調べる ②～を阻止する 名：③小切手 ④勘定書 ⑤検査、点検 ⑥抑制
+　ーーー
+　コラム：頻出：① check out「(伝聞情報)を確認する、〈米〉～を借りる」、hold [keep] ～ in check「～を食い止める」 / 語源：チェスの用語「王手(check)」が語源で「(王の動き)を阻止する」→「(王手が正しかったか)を調べる」 / 派生語：chéckout counter「(スーパーの)レジ」、páycheck「〈米〉給与(支払い小切手)」、chéckup「健康診断」
+　例文：
+　① 【check】 the brakes そのブレーキを調べる
+　② 【check】 the spread of the disease その病気の流行を阻止する
+　③ sign a 【check】 小切手に署名する
+　④ Can I have the 【check】 [〈英〉 bill], please? お勘定をお願いいたします。
+　⑤ have a medical 【check】(up) 健康診断を受ける
+　⑥ hold their activities in 【check】 彼らの活動を食い止める(抑制して留める)
+
+140
+　hide [háid] 他：①～を隠す 自：②隠れる
+　ーーー
+　コラム：注意：受け身の場合、必ずしも「(意図的に)隠された」とは限らない。⇨ be hidden from view「視界から隠れている」 / 形容詞：hídden「隠れた」⇨ a hidden camera「隠しカメラ」 / 派生語：play hide-and-seek「かくれんぼをする」 / [活用] hide - hid - hidden [hídn]
+　例文：
+　① 【hide】 the comic under the pillow 枕の下に漫画を隠す
+　② my 【hiding】 place 私の隠れ場所
+
+141
+　draw [drɔ́ː] 他：①(線で絵など)を描く ②(注意)を引く ③～を引っ張る、集める
+　ーーー
+　コラム：③「引く」→②「(注意、関心など)を引く」 ①「(線を引く→)描く」 / 頻出：① draw ～ up「(文書など)を作成する」、a drawing room「応接間」 / ② draw (one's) attention to A「Aに(～の)注目を集める」 / ③ The game drew 50,000 people.「その試合は5万人を集めた。」 / 名詞：dráwer「引き出し」 / [活用] draw - drew - drawn
+　例文：
+　① 【draw】 her portrait 彼女の似顔絵を描く
+　② 【draw】 his attention to that fact その事実に彼の注目を向けさせる
+　③ a cart 【drawn】 by two horses 2頭の馬に引かれた荷馬車
+
+142
+　join [dʒɔ́in] 他：①(クラブ、団体など)に加わる ②～をつなぐ ③(食事などを)～とともにする 自：④(議論、活動などに)参加する
+　ーーー
+　コラム：「～をつなぐ、(仲間)に入る」(①→組織 ④→活動) / 派生語：jóint「接合、関節」
+　例文：
+　① 【join】 the Me Too movement Me Too運動に参加する
+　② 【join】 pipes together 配水管を一本につなぐ
+　③ 【Join】 us for lunch. お昼を一緒に食べようよ。
+　④ 【join】 in the discussion その議論に(途中から)参加する
+
+143
+　throw [θróu] 他：①～を投げる ②(away [out])～を捨てる ③(パーティなど)を催す 名：④投げること
+　ーーー
+　コラム：③口語ではháveやgiveも可。(*hóldは堅い語。) / 頻出：throw up (= vómit)「吐く」、throw ～ in「(店が)～をおまけする」 / 注意：②代名詞が目的語の場合はthrow it away [× throw away it]の語順。 / 動詞：overthrów「～を転覆させる」 / [活用] throw - threw - thrown
+　例文：
+　① 【Throw】 me a rope. ロープを投げてくれ。
+　② Don't 【throw】 away your empty cans here. ここに空き缶を捨てるな。
+　③ 【throw】 a party for him 彼のためにパーティを開く
+　④ a 【throw】 of 100 meters 100メートルの投てき
+
+144
+　operate [ɑ́pərèit] 他：①(機械など)を操作する 自：②手術する ③(機械などが)作動する、(組織が)運営される
+　ーーー
+　コラム：「仕事をする[させる]」 / 頻出：② operate on (人) for ～「(人)に～の手術をする」 / 名詞：operátion「手術、活動、操作」→ have an operation「手術を受ける」、réscue operations「救援活動」
+　例文：
+　① 【operate】 five machines at once 1度に5台の機械を操作する
+　② 【operate】 on a patient for cancer 患者にがんの手術をする
+　③ 【operate】 efficiently 能率的に運営される
+
+145
+　repair [ripéər] 他：①～を修理する ②～を修復する 名：③修理、修復
+　ーーー
+　コラム：「元通りにする」(*〈米〉日常ではfíxのほうが使われる。) / 頻出：③ under repair「修理中で」、beyond repair「修復不可能で」 / 語源：re-[再び]+-pair[=prepare 準備する]→「再び使えるように準備する」
+　例文：
+　① 【repair】 a bicycle 自転車を修理する
+　② 【repair】 damage to his neck 彼の首の損傷を修復する
+　③ a smartphone under 【repair】 修理中のスマートフォン
+
+146
+　sew [sóu] 他：①～を縫う ②(on)(ボタンなど)を縫いつける
+　ーーー
+　コラム：語源：日本語の「ミシン」はa séwing machineの「マシン」からできた語。 / 名詞：séwing「裁縫」⇨ a séwing bóx「裁縫箱」 / 類語：knít [nít]「～を編む」、knítting「編み物」、dústcloth「雑巾」 / [活用] sew - sewed - sewn
+　例文：
+　① She 【sews】 all her own dresses. 彼女は自分の服をすべて自分で縫っている。
+　② 【sew】 a button on ボタンを縫いつける
+
+147
+　raise [réiz] 他：①～を上げる ②(子ども、作物)を育てる ③(お金、資金)を集める ④(問題)を提起する 名：⑤賃上げ、昇給
+　ーーー
+　コラム：「上げる」のイメージ。 / 頻出：③ raise awareness「意識を高める」 / 注意：自動詞ríse「上がる」と区別。 / 名詞：fúnd-raiser「資金調達者」
+　例文：
+　① 【Raise】 your hand. 手を上げて。
+　② 【raise】 children 子どもを育てる
+　③ 【raise】 funds 資金を集める
+　④ 【raise】 the issue of aging 高齢化の問題を提起する
+　⑤ get a pay 【raise】 給料が上がる(賃上げを得る)
+
+148
+　serve [sə́ːrv] 他：①(飲食物)を出す ②～に役立つ 自：③役立つ
+　ーーー
+　コラム：頻出：First come, first served.「早い者勝ち(←早く来た者が早く出される)。」、(It) serves you right.「当然の報いだ(←君に正しく役立っている)。」 / ③ serve as ～「(本当は違うが)～として役立つ、使われる」 / 語源：「(召使い、奴隷として)～に仕える、奉仕する」が元の意味。 / 名詞：sérvant「使用人、召使い」⇨ a public [civil] servant「公務員」
+　例文：
+　① 【serve】 wine to the guests 客にワインを出す
+　② This experience will 【serve】 you well. この経験は君の役に立つだろう。
+　③ The hospital 【served】 as a school. その病院は学校として使われていた。
+
+149
+　pour [pɔ́ːr] 他：①～を注ぐ 自：②降りそそぐ
+　ーーー
+　コラム：「(液状の物や光など)を流し込む」 / 頻出：① pour A into B「AをBに注ぐ」→ pour coffee into a cup「コーヒーをカップに注ぐ」、pour A over B「AをBにかける」⇨ pour sauce over the omelette「オムレツにソースをかける」 / ゴロ：ポ(ー)ットからお湯を「注ぐ」
+　例文：
+　① 【pour】 tea for all of the guests 客みんなにお茶を注ぐ
+　② It 【poured】 all night. 一晩中土砂降りだった(雨が降りそそいだ)。
+
+150
+　spill [spíl] 他：①～をこぼす 名：②(石油などの)流出
+　ーーー
+　コラム：頻出：① spill A on [down, over] B「AをBにこぼす」 / 語源：sp-で始まる単語はspít「つばを吐く」やspríng「春(←命が吹き出す季節)、バネ」など「外部に飛び出す力」を含意するものが多い。 / [活用] spill - spilled (〈英〉 spilt) - spilled (〈英〉 spilt) / 派生語：spíllover「波及効果、過剰(←あふれて流出したもの)」
+　例文：
+　① 【spill】 coffee all over my laptop コーヒーをノートパソコンの上にこぼす
+　② an oil 【spill】 in the Atlantic Ocean 大西洋の石油流出
+
+151
+　pretend [priténd] 他：(to do / that SV)(～する / ～である)ふりをする
+　ーーー
+　コラム：類語：make believe that SV「～ごっこをする」と区別。 / 注意：自動詞の用法もある。 / 語源：pre-[前に]+-tend[伸ばす]→「みんなに気づかれる前に自分をある方向に持って行く」 / 名詞：prétense「見せかけ」
+　例文：
+　【pretend】 to be sleeping 寝ているふりをする
+
+152
+　behave [bihéiv] 自：ふるまう
+　ーーー
+　コラム：「行動の仕方」に重点。 / 類語：áct「(個別の)行動、行動する」 / 頻出：通例、「行動の仕方」を表す副詞を伴う。⇨ behave well [badly, like a child]「行儀よく[行儀悪く、子どものように]ふるまう」 / 注意：[例外] Behave yourself.「(子どもに対して)行儀よくしなさい。」 / 語源：be-[強意]+-have[持つ]から「自分自身を持つ」→「(正しく)ふるまう」 / 名詞：behávior「(ある人の全般的な)行動」
+　例文：
+　① He 【behaves】 badly in class. 彼の授業中の態度は悪い(彼は授業中、行儀悪くふるまう)。
+　② tell him to 【behave】 himself 彼に行儀よくふるまうように言う
+
+153
+　bear [béər] 他：①(can ～)～に耐える ②～を持つ、運ぶ ③～を産む
+　ーーー
+　コラム：頻出：② bear responsibility「責任を持つ」、bear [keep] ～ in mind「～を心に留める」 / ③ bear fruit「実をつける、(努力などが)実る」 / 注意：①通例、cannot bear ～の形で使われる。口語ではcan't stand ～を使用。 / ゴロ：「クマ(béar)が何かを背負って運んでいる」→「～を持つ、～に耐える」 / [活用] ①② bear - bore - borne ③ bear - bore - born / 派生語：fóod-borne disease「食品媒介疾患」
+　例文：
+　① cannot 【bear】 the noise 騒音に耐えられない
+　② 【bear】 the responsibility for the accident その事故の責任を負う
+　③ She was 【born】 with a silver spoon in her mouth. 彼女は裕福な家に生まれた。
+
+154
+　explore [iksplɔ́ːr] 他：①～を探検する、(街など)を探索する ②(問題など)を探る
+　ーーー
+　コラム：日本語の「～を探検する」より幅広く使える。 / 名詞：explorátion「探検、探索」、explórer「探検家」
+　例文：
+　① 【explore】 the surface of Mars 火星の地表を探査する
+　② 【explore】 the possibility of collaboration コラボの可能性を探る
+
+155
+　happen [hǽpən] 自：①(to ～)(～に)起こる ②(to do)偶然～する
+　ーーー
+　コラム：「(偶然、不意に)起こる」 / 注意：①主語はwhát, sómething, nóthingなどが多い。 / 名詞：háppening「(思いがけない)出来事、(奇妙な)事件」
+　例文：
+　① What 【happened】 to her? 彼女に何が起こったの。
+　② I 【happened】 to meet him. (= It 【happened】 that I met him.) 彼にたまたま会った。
+
+156
+　appear [əpíər] 自：①現れる ②(to be ～)～のように思える
+　ーーー
+　コラム：①「(TVなどに)出る」から「(市場に出る→)発売される」まで。 ② seem to be ～よりも堅い表現。 / 注意：「(友人などが約束の場所に)現れる」はshow up (≠ appear)と表現する。 / 名詞：appéarance「出現、外見」 / 動詞：disappéar「消える」
+　例文：
+　① The singer 【appeared】 on the stage. その歌手がステージに現れた。
+　② He 【appears】 to be sleeping. (= It 【appears】 that he is sleeping.) 彼は寝ているようだ。
+
+157
+　remain [riméin] 自：①～のままでいる ②残る
+　ーーー
+　コラム：「同じ状態が続く」 / 頻出：remain to be done「まだ～されていない(←これからなされる状態)」、The fact remains that SV.「～という事実に変わりはない。」 / 注意：後ろに名詞や形容詞が置かれたら①、なければ②の意味になる。 / 語源：re-[後ろ]+-main[維持する]から「後ろに置いておく」→「～のままでいる」 同根語：maintáin「～を維持する」 / 名詞：remáins「遺物、遺跡」 / 形容詞：remáining「残りの」⇨ the remaining money「残りのお金」
+　例文：
+　① The cause of the accident 【remains】 unknown. その事故の原因はいまだに知られていない(知られていないままだ)。
+　② Five people 【remained】 in the room. 部屋には5人が残っていた。
+
+158
+　survive [sərváiv] 自：①生き残る 他：②～から生き延びる、～の後も存続する
+　ーーー
+　コラム：「(何かを乗り越えて)生き延びる、生き抜く」 / 類語：líve「生きる」 / 注意：「(生命の存続にかかわってくる場合の)生きる」はsurviveが適切。 / 語源：sur-[上]+-vi-[命]から「～を越えて命をつなぐ」→「～を生き残る」 同根語：vítal「極めて重要な(←生命の)」 / 名詞：survíval「生存、生き残ること」
+　例文：
+　① eat grass in order to 【survive】 生き延びるため草を食べる
+　② 【survive】 a plane crash 飛行機の事故で生き残る
+
+159
+　belong [bilɔ́ːŋ] 自：(to ～)(～に)所属している
+　ーーー
+　コラム：「(長期[恒久]的な所属→)あるべき場所にある」 / 注意：jóin「～に所属する、参加する」と区別。また、「(長期[恒久]的な)所属」を示唆するので、「野球部に所属している(→せいぜい3年間)。」はI am on [〈英〉 in] the baseball team.と表現するほうが自然。 / 名詞：(one's) belóngings「(～の)持ち物」
+　例文：
+　Sam 【belongs】 [× is belonging] to the Sales Department. サムは営業部に所属している。
+
+160
+　represent [rèprizént] 他：①～を代表する ②(記号などが)を表す ③～を表現する
+　ーーー
+　コラム：「シンボルとして～を示す」→①「(会社や国など)を代表する」 / 語源：re-[再び→強意]+-present[提示する]→「示す」 / 名詞：represéntative「代表者」⇨ sales representative「販売外交員」、representátion「代表、表現」
+　例文：
+　① 【represent】 Japan at the World Cup ワールドカップ日本代表となる
+　② This sign 【represents】 a temple. このマークは寺を表す。
+　③ This painting 【represents】 the fight between good and evil. この絵画は善と悪の戦いを表現している。
+
+161
+　base [béis] 他：①～の基礎を置く 名：②基礎(の部分)、基盤 ③基地
+　ーーー
+　コラム：頻出：① base A on B「Aの基礎をBに置く」、be based on ～「～に基づいている」、based on ～「～に基づいて」⇨ make a judgement based on experience「経験に基づいて判断する」 / 形容詞：básic「基礎の」 / 名詞：básis「基礎」⇨ on a daily basis「毎日」
+　例文：
+　① This novel is 【based】 on facts. この小説は事実に基づいている。
+　② I work in many places, but my 【base】 is here. 多くの場所で働いているが、私の基盤はここだ。
+　③ a secret 【base】 秘密基地
+
+162
+　include [inklúːd] 他：～を含む
+　ーーー
+　コラム：「(それだけで取り出すことのできる、全体の構成要素の1つとして)含む」 / 注意：目的語には「料金」や「メンバー」などがくることが多い。 / 語源：in-[中に]+-clude[=close 閉じる]→「中に閉じる」 同根語：exclúde「～を除外する(←外に閉じる)」 / 前置詞：inclúding「～を含めて」
+　例文：
+　The price 【includes】 postage. (Postage is 【included】 in the price.) 価格には送料が含まれています(送料を含む)。
+
+163
+　contain [kəntéin] 他：①～を含む ②(主に否定で)～を抑える
+　ーーー
+　コラム：①「具体的な要素(固体、液体、気体)をまんべんなく含む」→②「(感情を自分の中に含む→)感情を抑える」 / 名詞：contáiner「容器、入れ物、コンテナ」
+　例文：
+　① This soup 【contains】 various herbs. このスープにはさまざまな薬草が入っている(さまざまな薬草を含んでいる)。
+　② I cannot 【contain】 my anger. 怒りを抑えられない。
+
+164
+　own [óun] 形：(所有格の後で)①自分自身の ②(名詞的に)自分自身のもの 他：③～を所有している
+　ーーー
+　コラム：③「(契約を交わし、マンションや高級外車など)を所有する」 / 頻出：② A of one's own「自分自身のA」、on one's own「自分の力で」 / 注意：①「私自身の家」はmy own house [× own house]と表現する。
+　例文：
+　① with my 【own】 eyes 私自身の目で
+　② I decided to quit the company and start my 【own】. 会社を辞め、自分の会社を始めることに決めた。
+　③ 【own】 ten companies in India インドに10の会社を所有している
+
+165
+　share [ʃéər] 他：①～を共有する ②(考えなど)を(人に)伝える 名：③共有 ④分け前
+　ーーー
+　コラム：「1つのものを2人(以上)で分け合う、共有する」 / 頻出：share A with B「①AをBと共有する ②AをBに伝える」、give (人) a share「(人)におすそ分けする」 / 語源：「ルームシェア(部屋の共有)」のshareのこと。
+　例文：
+　① 【share】 a table with a stranger 知らない人と相席(席を共有)する
+　② Could you 【share】 your opinion about this? これについてのあなたのご意見をお聞かせください。
+　③ a flat 【share】 アパートの共有
+　④ a 【share】 of the profits 利益の分け前
+
+166
+　collect [kəlékt] 他：①(同種の物)を集める ②～を徴収する、回収する
+　ーーー
+　コラム：頻出：① collect signatures「署名を集める」 / 名詞：colléction「集めること、収集」 / 形容詞：colléctive「集合的な」⇨ the right of collective defense「集団的自衛権」
+　例文：
+　① 【collect】 teddy bears クマのぬいぐるみを集める
+　② 【collect】 empty cans for recycling リサイクルのために空き缶を回収する
+
+167
+　gather [gǽðər] 他：①～を集める 自：②集まる
+　ーーー
+　コラム：「(分散している物、人)を一か所に寄せ集める」 / 頻出：a hunter-gatherer「狩猟採集民」 / 語源：同根語：togéther「一緒に」 / 名詞：gáthering「集会」
+　例文：
+　① 【gather】 information 情報を集める
+　② 【gather】 around the teacher 先生のまわりに集まる
+
+168
+　history [hístəri] 名：①歴史 ②履歴、前歴、病歴
+　ーーー
+　コラム：「過去に起きたこと」 / 頻出：①② have a history of ～「～の歴史[履歴、病歴]がある」 / 形容詞：históric「歴史的に重要な」⇨ a historic event「歴史的に重要な事件」、histórical「歴史に関する」⇨ historical studies「歴史に関する研究」
+　例文：
+　① the best soccer player in 【history】 史上最高のサッカー選手
+　② an update 【history】 更新履歴
+
+169
+　subject [sʌ́bdʒikt] 名：①科目 ②話題 ③被験者 形：④(be ～ to ～)～を受けやすい
+　ーーー
+　コラム：「～の下」が基本的なイメージ。①「(勉強の下→)科目」 ②「(話の下→)話題」 ③「(実験の下→)被験者」 ④「(支配の下→)支配されている」 / 形容詞：subjéctive「主観的な」 / 語源：sub-[下]+-ject[投げる]→「下にくるもの」 / 類語：théme [θíːm]「(作品中に何度も登場する)テーマ、主題」
+　例文：
+　① a required 【subject】 必須科目
+　② get off the 【subject】 話題からそれる
+　③ the 【subject】 of the experiment その実験の被験者
+　④ The program is 【subject】 to change. プログラムは変更の可能性があります(変更を受けやすい)。
+
+170
+　education [èdʒukéiʃən] 名：教育
+　ーーー
+　コラム：「教育によって能力や素質を外に引き出すこと」 / 頻出：compulsory education「義務教育」、formal education「正規教育」、receive [get] (an) education「教育を受ける」 / 注意：通例、〈不可算〉だが、a good [poor, basic] educationは〈可算〉扱い。 / 動詞：éducate「～を教育する」 / 形容詞：éducated「教育を受けた、教養のある」、educátional「教育に関する」 / 名詞：coeducátion [có-éd]「男女共学」
+　例文：
+　receive a good 【education】 よい教育を受ける
+
+171
+　knowledge [nɑ́lidʒ] 名：知識、知っていること
+　ーーー
+　コラム：「(教育や経験によって得た)知識」 / 頻出：to (the best of) one's knowledge「～の知る範囲では」、gain [acquire, learn] knowledge「知識を得る」、improve [expand, increase] one's knowledge「知識を増やす」 / 注意：通例、〈不可算〉だが、形容詞(a lot ofやsomeなどは除く)がつくとa knowledgeとなるのがふつう。 / 形容詞：knówledgeable (about ～)「(～に)精通している」
+　例文：
+　have a wide range of 【knowledge】 of cinema 映画に関する幅広い知識を持っている
+
+172
+　uniform [júːnəfɔ̀ːrm] 名：①制服 形：②同一の、一定の
+　ーーー
+　コラム：頻出：① wear a uniform「制服を着ている」、in uniform「制服を着て」 / 語源：uni-[1]+-form[形]→「形が同じ」 / 名詞：unifórmity「均一性」 / 類語：fórm「形、形態、申込用紙、〈英〉学年；～を形作る」
+　例文：
+　① wear a school 【uniform】 学校の制服を着ている
+　② maintain a 【uniform】 temperature 一定の温度を保つ
+
+173
+　grade [gréid] 名：①(小、中、高の)学年 ②等級 ③成績
+　ーーー
+　コラム：「段(階)」 / 頻出：③ get good [bad] grades「よい[悪い]成績をとる」、1st-6th grade (小学校) 7th-9th (中学校) 10th-12th (高校) / 注意：日本語の「グレード」は②の意味のみ。 / 動詞：degráde「～の品位を下げる」
+　例文：
+　① She is in the eighth 【grade】. (= She is an eighth 【grader】.) 彼女は8年生(中学2年生)だ。
+　② low-【grade】 products 低級の製品
+　③ a high 【grade】 in math 数学での好成績
+
+174
+　senior [síːnjər] 名：①(高校、大学の)最上級生 形：②高齢者の ③(地位が)上位の
+　ーーー
+　コラム：「(地位が)上位の、年長の」(*② óldの遠まわしの表現。) / 頻出：② have a senior moment「度忘れする」 / 注意：「(仕事の)先輩、後輩」は英語圏ではa wórkmate, a friend from work「(仕事の)友だち、仲間」と表現することが多い。 / 名詞：seniórity「年長、先輩であること」⇨ seniority system「年功序列制度」 / 反対：júnior「下級の」 / 類語：〈米〉 fréshman「大学1年生」、sóphomore「大学2年生」、júnior「大学3年生」、sénior「大学4年生」
+　例文：
+　① a college 【senior】 大学4年生
+　② 【senior】 citizens 高齢者
+　③ a 【senior】 manager 上級管理者
+
+175
+　graduate [grǽdʒuèit] 自：(from ～)(～を)卒業する
+　ーーー
+　コラム：gráde「学年」が上がって「卒業する」 / 頻出：graduate from (無冠詞の学校)「～を卒業する」 / 名詞：graduátion「卒業」、undergráduate「大学生、学部生」、a gráduate [grǽdʒuət] school [student]「大学院[大学院生]」
+　例文：
+　【graduate】 from high school 高校を卒業する
+
+176
+　decide [disáid] 他：①(to do)(～すること)を決定する、決心する 自：②(on ～)(～を)決める
+　ーーー
+　コラム：日常ではmake up one's mind「決める」も使われる。 / 注意：〈decide + wh-節〉の形はよく使われる。〈decide + (名詞)〉の形はあまり使われない。 / 語源：de-[下]+-cide[切る]から「(ほかの選択肢)を切り離す」→「～を決定する」 同根語：súicide「自殺(←自分を切る)」、pésticide「殺虫剤(←害虫を切る)」 / 名詞：decísion「決定」⇨ make a decision「決定する」 / 形容詞：decísive「決定的な」
+　例文：
+　① 【decide】 to live on my own 一人で暮らすことを決心する
+　② 【decide】 on a date for the wedding 結婚式の日取りを決める
+
+177
+　judge [dʒʌ́dʒ] 他：①～を判断する 名：②裁判官、審判(員)
+　ーーー
+　コラム：頻出：judging from ～「～から判断すると」 / 語源：ju-[正しい]+-dge[言う] 同根語：jústice「正義」 / 名詞：júdgment「判断」
+　例文：
+　① 【judge】 someone by their appearance 人を外見で判断する
+　② a Supreme Court 【judge】 ◇ the lay 【judge】 system 最高裁判所の裁判官 ◇(日本の)裁判員制度
+
+178
+　quit [kwít] 他：～を(完全に)やめる
+　ーーー
+　コラム：類語：stóp「～を中断する」 / 頻出：目的語には名詞やdoingがくる。([×] to doは不可。) / 語源：qui-[停止] 同根語：quíet「静かな」 / [活用] quit - quit (〈英〉 quitted) - quit (〈英〉 quitted)
+　例文：
+　【quit】 my job 仕事をやめる
+
+179
+　retire [ritáiər] 自：(from ～)(～を)引退する、退職する
+　ーーー
+　コラム：類語：resígn「辞職する」 / 名詞：retírement「引退、退職」⇨ life after retirement「老後(←引退後)の生活」、reach [raise] the retirement age「定年に達する[を延長する]」 / 形容詞：retíred「退職した」(反対：incúmbent [inkʌ́mbənt]「現職の」)
+　例文：
+　【retire】 from the company 会社を(定年で)退職する
+
+180
+　review [rivjúː] 名：①再検討 ②(新聞などの)批評 ③復習
+　ーーー
+　コラム：頻出：① place ～ under review「～を再検討する」 / 語源：re-[再び]+-view[見る]→「再検討、復習」 同根語：revísit「～を再び訪れる、再考する」 / 動詞：revíew「～を再検討する、復習する」
+　例文：
+　① a 【review】 of the tax system 税制の見直し
+　② a 【review】 of his new book 彼の新刊本の書評
+　③ do a 【review】 of the last lesson 前の課を復習する
+
+181
+　choose [tʃúːz] 他：①～を選ぶ 自：②選ぶ
+　ーーー
+　コラム：類語：seléct「(注意深く)精選する」 / 頻出：② choose from [between] ～「～から選ぶ」 / 名詞：chóice「選択」⇨ have no choice but to do「～せざるを得ない」 / [活用] choose - chose - chosen
+　例文：
+　① 【choose】 what to wear to school 学校へ着ていく服を選ぶ
+　② 【choose】 between the two 2つから選ぶ
+
+182
+　imagine [imǽdʒin] 他：～を想像する
+　ーーー
+　コラム：「どうなるかなと考える」 / 注意：目的語には名詞、動名詞、that節、wh-節などさまざまな形がくる。 / 名詞：imaginátion「想像」⇨ use [exercise] one's imagination「想像力を働かせる」、ímage [ímidʒ]「像」⇨ visual images「視覚映像」
+　例文：
+　【Imagine】 life without electricity. 電気のない生活を想像してごらん。
+
+183
+　guess [gés] 他：①～を推測する 名：②推測
+　ーーー
+　コラム：「(事実などを持ち合わせずに)推測する」 / 頻出：① guess (名詞) [wh-節]「～を[と]推測する」、Guess what!「あのねえ、何だと思う。」 / ② Make [Take] a guess!「当ててごらん。」 / 名詞：guésswork「当てずっぽう」
+　例文：
+　① 【Guess】 what is in this bag. この袋に何が入っているかを当ててごらん。
+　② This is only a 【guess】. これは推測にすぎない。
+
+184
+　expect [ikspékt] 他：①～を予期する ②(A of [from] B)(BにA)を期待する ③(be ～ing)(～を)身ごもっている(*③は自も可)
+　ーーー
+　コラム：「(主観的な判断に基づいて)予期する」(*①よいことだけでなく悪いことにも使う。③ prégnant「妊娠している」を遠回しに表現する語。) / 頻出：expect to do「～するつもりだ」、expect (人、物) to do「(人、物)が～するだろうと思う」、expect (that) SV「～だと思う」 / 語源：ex-[外に]+-pect[=spect 見る]→「未来を見る」 / 名詞：expectátion「予期、期待」⇨ live up to one's expectations「～の期待に沿う」、expéctancy「予想、(統計上の)予測値」⇨ life expectancy「余命」
+　例文：
+　① We are 【expecting】 a typhoon. 台風が来るらしい(来ることを予期している)。
+　② Don't 【expect】 too much of [from] him. 彼にあまり期待しすぎる(あまりに多くのことを期待する)な。
+　③ She is 【expecting】 (a baby). 彼女はおめでたです(赤ん坊を身ごもっています)。
+
+185
+　predict [pridíkt] 他：～を予測する
+　ーーー
+　コラム：「山勘」から「(信頼できるデータに基づく)予測」まで。 / 頻出：predict the future [the weather, an earthquake]「未来[天気、地震]を予測する」、predict wh-節「～かと予測する」 / 語源：pre-[前に]+-dict[言う] 同根語：díctionary「辞書(←言ったことをまとめたもの)」 / 名詞：predíction「予言」 / 形容詞：predíctable「予測可能な、(ドラマなど予想できて)つまらない」
+　例文：
+　【predict】 when cherry blossoms will start to flower 桜の開花時期を予測する
+
+186
+　remember [rimémbər] 他：①(doing)(過去にしたこと)を覚えている ②(to do)(～すること)を覚えている ③(me to ～)(～に)よろしく伝える
+　ーーー
+　コラム：③ say hello to ～のほうが口語的な表現。 / 語源：re-[再び]+-mem-[心]から「再び心に留める」→「～を覚えている」 同根語：mémory「記憶」 / 名詞：remémbrance「覚えていること、記憶」
+　例文：
+　① I 【remember】 meeting her here [that I met her here]. 彼女にここで会ったことを覚えています。
+　② Did you 【remember】 to feed the dog? イヌにエサをやるのを覚えてた？
+　③ 【Remember】 me to your wife. 奥さんによろしくお伝えください。
+
+187
+　remind [rimáind] 他：①(A of B)(A)に(Bのことを)思い出させる ②((人) to do)(人)に～するように念を押す
+　ーーー
+　コラム：注意：remind (人) that SV「(人)に～ということを思い出させる」も可。 / 語源：re-[再び]+-mind[心]から「再び心に呼び戻す」→「思い出させる」 / 名詞：remínder「思い出させるもの、催促状」
+　例文：
+　① This song 【reminds】 me of him. この歌は彼のことを私に思い出させる。
+　② 【remind】 him not to be late 彼に遅れないように念を押す
+
+188
+　realize [ríːəlàiz] 他：①～を(はっきり)理解する ②(夢、計画など)を実現する
+　ーーー
+　コラム：「(精神的な認識として重要性、深刻さなど)に気づく」 / 類語：nótice「(見たり、聞いたりして)気づいている」、find out「(情報、真相など)を突き止める」 / 頻出：①目的語には、(a) that節 (b) that節に相当する語句(my mistake [= that I am mistaken]) (c) wh-節を置くのがふつう。 / 名詞：realizátion「よく理解すること、実現」、reálity「現実、現実味」 / 形容詞：réal「現実の」
+　例文：
+　① Jim 【realized】 [× noticed] that he did not love her any more. ジムはもう彼女のことを愛していないことに気づいた。
+　② She 【realized】 her dream of running her own shop. 彼女は自分の店を経営するという夢を実現した。
+
+189
+　appreciate [əpríːʃièit] 他：①～を(正しく)理解する ②～のよさがわかる ③～に感謝する
+　ーーー
+　コラム：対象は①「価値、重要性など」 ②「芸術、味など」 ③「人の好意など」 / 頻出：③ I would appreciate it if you could do.「～していただけたらありがたいのですが。」(*itはifの内容を示す。) / 注意：「(人)に感謝する」は〈thank + (人)〉で表現する。 / 語源：ap-[=ad 方向]+-preci-[=précious 貴重な]から「～を貴重だと思う」→「～を正しく理解する」 / 名詞：appreciátion「理解、鑑賞、評価」
+　例文：
+　① 【appreciate】 the importance of discussion 話し合いの重要性を理解する
+　② 【appreciate】 [× understand] the flavors of Japanese cuisine 和食の味がわかる
+　③ I'd 【appreciate】 it if you could help me. 助けていただければありがたいのですが。
+
+190
+　accept [æksépt] 他：～を受け入れる
+　ーーー
+　コラム：「(納得[同意]して、申し出、招待)を受け入れる」 / 頻出：目的語はan offer「申し出」、an invitation「招待」、a fáte「運命」など。 / 注意：recéive「～を受け取る」と区別。「(仕事)を引き受ける」はtákeを使う。 / 語源：ac-[=ad 方向]+-cept[取る] / 名詞：accéptance「受け入れ」 / 形容詞：accéptable「受け入れられる、容認可能な」
+　例文：
+　【accept】 other people's opinions 他人の意見を受け入れる
+
+191
+　consider [kənsídər] 他：①～をよく考える、考慮する ②(人の気持ち)を思いやる ③(A (to be [as]) B)(A)を(Bと)みなす
+　ーーー
+　コラム：①「(判断、決定する前に)よく考える」 / 頻出：consider doing「～することを考える」 / 名詞：considerátion「考慮、思いやり」 / 形容詞：consíderate「思いやりのある」、consíderable「(数量が)かなりの(←考えられる限りの)」 / 前置詞：consídering (that) SV「～を考慮すれば」
+　例文：
+　① 【consider】 all the possibilities すべての可能性を考える
+　② 【consider】 other people 人(の気持ち)を思いやる
+　③ 【consider】 it (to be) meaningless それは無意味だとみなす
+
+192
+　mind [máind] 他：①気にする 名：②精神、頭脳 ③(才能、知性のある)人
+　ーーー
+　コラム：①否定文、疑問文で使うのがふつう。 / 頻出：Do [Would] you mind if SV?「～してもいいですか(←～を気にしますか)。」(*「いいですよ。」の場合はCertainly not.やNot at all.など否定で答える。)、if you do not mind「よろしければ」 / ② make up [change] one's mind「決心する[心変わりする]」 / 注意：英作文で「～を気にしない」はdo not care about ～、「～を気にす る」はbe worried [anxious] about ～と表現するのが無難。mind (doing)は「(～するの)を気にする」の意味。 / 派生語：-minded「～気質の」⇨ internationally-minded「国際感覚のある」
+　例文：
+　① Do you 【mind】 if I open the window? 窓を開けてもいいですか(窓を開けるのを気にしますか)。
+　② the 【minds】 of children 子どもの心
+　③ Great 【minds】 think alike. (*人と意見が一致したときにふざけて言う表現。) 《ことわざ》賢人は同じように考える。
+
+193
+　wonder [wʌ́ndər] 他：①(wh-節 / if SV)～かなと思う 自：②(at ～)(～に)驚く
+　ーーー
+　コラム：①「疑問を持って問いかける」 / 頻出：I was wondering if you could do.「～していただけますでしょうか。」 / 名詞：wónder「驚き」⇨ (It is) no wonder SV.「～なのは不思議ではない。」
+　例文：
+　① I 【wonder】 [× think] where he has gone. 彼はどこに行ってしまったのだろうか。
+　② 【wonder】 at his ability 彼の才能に驚く
+
+194
+　seem [síːm] 自：～のように思われる
+　ーーー
+　コラム：「(見た目や状況、自分の考えなどから)～のようだ」 / 頻出：seem ～ to A「Aには～と思われる」 / 注意：日本語では一見、受け身のようだが、つられてseemを受け身にしないこと。 / 副詞：séemingly「一見」⇨ a seemingly easy task「簡単そうに思える仕事」
+　例文：
+　It 【seems】 that he knows what happened. (= He 【seems】 to know what happened.) 彼は起きたことを知っているようだ。
+
+195
+　compare [kəmpéər] 他：①(A with [to, and] B)(A)を(Bと)比較する ②(A to B)(A)を(Bに)例える 自：③(with [to] ～)(～に)匹敵する
+　ーーー
+　コラム：語源：com-[共に]+-pare[等しい]から「同等の状態に置く」→「～を比較する、例える」 / 名詞：compárison「比較」 / 形容詞：compárative「比較的」、cómparable「似た、比較できる」
+　例文：
+　① 【compare】 city life with country life 都会の生活を田舎の生活と比較する
+　② 【compare】 life to a voyage 人生を航海に例える
+　③ No one can 【compare】 with him in academic ability. 学力で彼に匹敵する者はいない。
+
+196
+　concentrate [kɑ́nsəntrèit] 自：①(on ～)(～に)集中する 他：②(A on B)(A)を(Bに)集中させる
+　ーーー
+　コラム：主に「(人を主語として)エネルギーを1か所に集める」 / 語源：con-[共に]+-centra-[中心]→「(意識を)中心に集める」 / 名詞：concentrátion「集中、濃度、(トランプの)神経衰弱」
+　例文：
+　① 【concentrate】 on my studies 勉強に集中する
+　② 【Concentrate】 your attention on your job. 仕事に集中しなさい(仕事に注意を集中させなさい)。
+
+197
+　focus [fóukəs] 自：①(on ～)(～に)焦点を当てる、力を注ぐ 名：②焦点
+　ーーー
+　コラム：「(レンズなどの)焦点」から「(興味、関心などの)中心」まで。 / 頻出：② be in [out of] focus「焦点が合っている[合っていない]」 / 形容詞：fócal「焦点の」、fócused (on ～)「(～に)焦点を合わせた」
+　例文：
+　① This book 【focuses】 on French culture. この本はフランス文化に焦点を当てている。
+　② become the 【focus】 of media attention マスコミの注目の的になる
+
+198
+　allow [əláu] 他：①(人が)～を許可する ②(物が)～を可能にする
+　ーーー
+　コラム：「(非公式に個人で)許可を与える」(*létの堅い語。) / 頻出：①② allow A to do「Aが～するのを許す[可能にする]」、allow for ～「～を考慮する、～に向かう」(← allow oneself to go for ～が省略された形。) / 語源：al-[=ad 方向]+-low[下げる]から「ハードルを下げる」→「許可する」 / 名詞：allówance「手当、小遣い」(〈英〉 pocket money)
+　例文：
+　① Please 【allow】 me to introduce myself. 自己紹介をさせて(自己紹介するのを許可して)ください。
+　② This machine 【allows】 you to measure your blood pressure. この機械で血圧を測ることができます(血圧を測ることを可能にする)。
+
+199
+　admit [ædmít] 他：①～を認める ②～の入場[入学]を許可する
+　ーーー
+　コラム：①「(自分に不利、不快こと)を(しぶしぶ)認める」 / 頻出：①目的語にはthat節や動名詞をとることが多い。 / ② admit A to [into] B「AがBに入場[入学]することを許可する」 / 語源：ad-[方向]+-mit[送る]から「～へ送る」→「～に入るのを許す」 / 名詞：admíssion「入学(許可)、入場(料)、入会(金)」
+　例文：
+　① Tom 【admitted】 that he had been mistaken. トムは自分が間違っていたことを認めた。
+　② be 【admitted】 to the university 大学入学を許可される
+
+200
+　ground [gráund] 名：①地面 ②根拠
+　ーーー
+　コラム：「最も下の部分」のイメージ。 / 派生語：únderground「地下の」「地下に」、pláyground「運動場」 / 形容詞：gróundbreaking「革新的な」 / 注意：grind「～を挽く」の過去形・過去分詞はground ⇨ ground meat「挽き肉」
+　例文：
+　① deep in the 【ground】 地中深くに
+　② on the 【grounds】 that he is young 彼は若いという理由(根拠)で
+
+201
+　pollution [pəlúːʃən] 名：汚染、公害〈不可算〉
+　ーーー
+　コラム：「汚染」を意味する一般的な語。 / 頻出：air pollution「大気汚染」、noise pollution「騒音公害」 / 動詞：pollúte「～を汚染する」 / 名詞：pollútant「汚染物質」
+　例文：
+　prevent marine 【pollution】 海洋汚染を食い止める
+
+202
+　sight [sáit] 名：①光景 ②視力
+　ーーー
+　コラム：「見ること、見えるもの」 / 頻出：at first sight「一目見て」、at the sight of ～「～を見て」、catch [lose] sight of ～「～を見かける[見失う]」、in [out of] sight「見える[見えない]ところに」 / 注意：②は一部の表現で使用し、日常で「視力」はéyesightを使うのがふつう。 / 語源：séeの名詞形。 / 名詞：óversight「見落とし」、síghtseeing「観光」⇨ go sightseeing「観光に行く」 / 形容詞：néarsighted「近視の」(〈英〉 shórtsighted)
+　例文：
+　① Snow is a rare 【sight】 in this area. 雪はこの地域では珍しい光景です。
+　② recover my 【sight】 視力を回復する
+
+203
+　view [vjúː] 名：①眺め、景色〈可算〉 ②見解、見方 他：③(A as B)(A)を(Bと)みなす
+　ーーー
+　コラム：「(一般に)眺め、(窓や高い所から見る)景色」 / 頻出：① have [get] a ～ view of A「Aの～な景色が見える」 / ② from a point of view「～の視点から」、one's view of ～「～に対する見方」、in one's view「～の考えでは」、with a view to doing「～するために」
+　例文：
+　① enjoy a night 【view】 of Kobe 神戸の夜景(夜の景色)を楽しむ
+　② look at things from a different point of 【view】 視点を変えて(異なる視点から)物事を見る
+　③ Skiing is 【viewed】 as the national sport of Norway. スキーはノルウェーの国技だとみなされている。
