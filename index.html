@@ -11,7 +11,7 @@
     <script>
     // キャッシュ強制更新ロジック: 新バージョン検知時に古いServiceWorkerキャッシュを破棄
     (function() {
-      const APP_VER = "leap-v3-47highlight";
+      const APP_VER = "leap-v3-48data1578";
       try {
         const storedVer = localStorage.getItem("LEAP_APP_CACHE_VER");
         if (storedVer !== APP_VER) {
@@ -451,7 +451,7 @@
           <button type="button" data-game-mode="sprint" onclick="setGameMode('sprint')" class="py-2 text-[11px] font-bold border rounded-lg bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100 transition cursor-pointer">⏱️ 60秒</button>
           <button type="button" data-game-mode="sudden" onclick="setGameMode('sudden')" class="py-2 text-[11px] font-bold border rounded-lg bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100 transition cursor-pointer">💀 サドンデス</button>
         </div>
-        <p class="text-[11px] text-slate-400 leading-relaxed">60秒スプリント: 5コンボごとに +3秒、誤答で -2秒。サドンデス: 1問8秒、誤答か時間切れで即終了。</p>
+        <p class="text-[11px] text-slate-400 leading-relaxed">60秒スプリント: 5コンボごとに +3秒、誤答で -2秒。サドンデス: 1問8秒、誤答か時間切れで即終了。<br>※ 忘却曲線復習とデイリーチャレンジは、この設定に関係なく通常モードで出題されます。</p>
       </div>
 
       <!-- モード切り替えタブ -->
@@ -603,7 +603,7 @@
           <div class="flex items-center gap-3">
             <h3 id="quiz-word" class="text-4xl font-extrabold text-slate-900 tracking-tight">agree</h3>
             <span id="quiz-word-pos" class="hidden"></span>
-            <button type="button" id="btn-replay-voice" onclick="speakWord()" title="発音を聞く" class="text-slate-400 hover:text-emerald-600 transition text-2xl cursor-pointer leading-none">🔊</button>
+            <button type="button" id="btn-replay-voice" onclick="speakWord()" title="発音を聞く" class="w-7 h-7 rounded-full bg-white border border-slate-200 text-slate-500 hover:text-emerald-600 hover:border-emerald-300 flex items-center justify-center text-sm transition cursor-pointer shrink-0">🔊</button>
           </div>
           <p id="quiz-word-ipa" class="hidden text-sm font-medium text-slate-500 tracking-wide"></p>
         </div>
@@ -1192,6 +1192,8 @@
     const SUDDEN_MS = 8000;
     let quizStyle = "normal";
     let gameMode = "normal";
+    // 今回のクイズで実際に使うゲームモード（忘却曲線復習などは常に通常）
+    let quizGameMode = "normal";
 
     // 古文単語には例文データがないため、常に通常4択で出題する
     function effectiveQuizStyle() {
@@ -3388,7 +3390,8 @@
 
       selectedRange = { start: 1, end: 1000, label: labelText };
       questionLimit = targetList.length;
-      startQuizWithPool(targetList);
+      // 忘却曲線復習はサドンデス等の設定を引き継がない
+      startQuizWithPool(targetList, { forceNormalMode: true });
     }
 
     // クイズエンジン
@@ -3882,9 +3885,11 @@
       return picked;
     }
 
-    function startQuizWithPool(pool) {
+    function startQuizWithPool(pool, options) {
       const style = effectiveQuizStyle();
-      const mode = gameMode;
+      const forceNormal = !!(options && options.forceNormalMode);
+      const mode = forceNormal ? "normal" : gameMode;
+      quizGameMode = mode;
       let candidates = shuffleArray([...pool]);
 
       if (style === "context") {
@@ -3999,7 +4004,7 @@
     let quizClockTimer = null;
 
     function brainFirstDelayMs() {
-      return gameMode === "sprint" ? 800 : 1200;
+      return quizGameMode === "sprint" ? 800 : 1200;
     }
 
     function clearBrainTimer() {
@@ -4019,12 +4024,12 @@
     function setupQuizClock() {
       stopQuizClock();
       const wrap = document.getElementById("quiz-timer-wrap");
-      if (gameMode === "normal") {
+      if (quizGameMode === "normal") {
         if (wrap) wrap.classList.add("hidden");
         return;
       }
       if (wrap) wrap.classList.remove("hidden");
-      if (gameMode === "sprint") {
+      if (quizGameMode === "sprint") {
         quizState.timeLeftMs = SPRINT_TOTAL_MS;
         startSprintClock();
       } else {
@@ -4066,22 +4071,22 @@
     }
 
     function startQuestionClock() {
-      if (gameMode === "sprint") {
+      if (quizGameMode === "sprint") {
         if (!quizClockTimer) startSprintClock();
-      } else if (gameMode === "sudden") {
+      } else if (quizGameMode === "sudden") {
         startSuddenClock();
       }
     }
 
     function updateTimerUi() {
       const wrap = document.getElementById("quiz-timer-wrap");
-      if (!wrap || gameMode === "normal") return;
+      if (!wrap || quizGameMode === "normal") return;
       const bar = document.getElementById("quiz-timer-bar");
       const label = document.getElementById("quiz-timer-label");
       const note = document.getElementById("quiz-timer-note");
       const urgentClass = "h-full rounded-full bg-rose-500 transition-all duration-100";
       const normalClass = "h-full rounded-full bg-amber-500 transition-all duration-100";
-      if (gameMode === "sprint") {
+      if (quizGameMode === "sprint") {
         const left = Math.max(0, quizState.timeLeftMs || 0);
         if (label) label.textContent = `⏱️ 60秒スプリント: ${(left / 1000).toFixed(1)}s`;
         if (bar) { bar.style.width = `${Math.min(100, (left / SPRINT_TOTAL_MS) * 100)}%`; bar.className = left <= 10000 ? urgentClass : normalClass; }
@@ -4184,7 +4189,8 @@
     }
 
     function contextJaHtml(w, ja, forcedMark) {
-      return `訳: ${highlightJapanese(ja, w, forcedMark)}`;
+      // 辞典の詳細シートと同じ「訳」バッジで揃える
+      return `<span class="inline-block text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 rounded px-1 py-0.5 mr-1 align-[1px]">訳</span>${highlightJapanese(ja, w, forcedMark)}`;
     }
 
     // 自力想起ステップ: 選択肢の代わりにマスクを表示
@@ -4267,7 +4273,7 @@
         const q = quizState.questions[quizState.currentIndex];
         quizState.isAnswered = false;
         clearBrainTimer();
-        if (gameMode === "sudden") stopQuizClock();
+        if (quizGameMode === "sudden") stopQuizClock();
 
         const total = quizState.questions.length;
         const current = quizState.currentIndex + 1;
@@ -4355,8 +4361,10 @@
           renderOptions(q);
           startQuestionClock();
           updateTimerUi();
-          // 例文モードでは読み上げが正解のヒントになるため行わない
-          if (!isContext) {
+          if (isContext) {
+            // 例文クイズも通常クイズと同じタイミングで自動読み上げ（設定ON時のみ）
+            if (userData.voiceEnabled) setTimeout(() => { try { speakQuizExample(); } catch (e) {} }, 60);
+          } else {
             setTimeout(() => { try { speakWord(); } catch (e) {} }, 30);
           }
         }, brainFirstDelayMs());
@@ -4435,10 +4443,10 @@
 
         quizState.earnedCoins += coinBonus;
         quizState.earnedExp += EXP_PER_CORRECT;
-        quizState.score += gameMode === "normal" ? (100 / quizState.questions.length) : 10;
+        quizState.score += quizGameMode === "normal" ? (100 / quizState.questions.length) : 10;
 
         // 60秒スプリント: 5コンボごとに +3秒
-        if (gameMode === "sprint" && quizState.combo > 0 && quizState.combo % 5 === 0) {
+        if (quizGameMode === "sprint" && quizState.combo > 0 && quizState.combo % 5 === 0) {
           quizState.timeLeftMs = (quizState.timeLeftMs || 0) + SPRINT_BONUS_MS;
           updateTimerUi();
           showToast("⏱ コンボボーナス +3秒！");
@@ -4499,13 +4507,13 @@
       } else {
         registerWrongAnswer(q);
 
-        if (gameMode === "sprint") {
+        if (quizGameMode === "sprint") {
           quizState.timeLeftMs = Math.max(0, (quizState.timeLeftMs || 0) - SPRINT_PENALTY_MS);
           updateTimerUi();
           showToast("⏱ 誤答ペナルティ -2秒");
           if (quizState.timeLeftMs <= 0) quizState.endReason = "timeup";
         }
-        if (gameMode === "sudden") quizState.endReason = "sudden";
+        if (quizGameMode === "sudden") quizState.endReason = "sudden";
 
         clickedBtn.classList.remove("bg-white", "hover:bg-slate-50", "border-slate-200");
         clickedBtn.classList.add("bg-rose-50", "border-rose-400", "text-rose-900");
@@ -4514,7 +4522,13 @@
         });
       }
 
-      if (q.type === "word") revealContextAnswer(q);
+      if (q.type === "word") {
+        revealContextAnswer(q);
+        // 例文クイズでは答えの単語も自動で読み上げる
+        if (userData.voiceEnabled) {
+          setTimeout(() => { try { speakEnglish(q.word.word); } catch (e) {} }, 260);
+        }
+      }
 
       const liveCoins = document.getElementById("quiz-live-coins");
       if (liveCoins) liveCoins.textContent = `🪙 +${quizState.earnedCoins}`;
@@ -4633,7 +4647,7 @@
           combo: quizState.maxCombo,
           coins: quizState.earnedCoins,
           range: selectedRange.label
-            + (gameMode === "normal" ? "" : ` ・ ${GAME_MODES[gameMode].icon}${GAME_MODES[gameMode].label}`)
+            + (quizGameMode === "normal" ? "" : ` ・ ${GAME_MODES[quizGameMode].icon}${GAME_MODES[quizGameMode].label}`)
             + (quizState.questions[0] && quizState.questions[0].type === "word" ? " ・ 📝例文" : ""),
           date: getTodayString(),
           isDaily: isDailyBonus
@@ -4824,7 +4838,8 @@
         });
       }
 
-      startQuizWithPool(picked);
+      // デイリーチャレンジはサドンデス等の設定を引き継がない
+      startQuizWithPool(picked, { forceNormalMode: true });
     }
 
     // ===== スコア履歴UI =====

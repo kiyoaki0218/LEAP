@@ -7,7 +7,8 @@ const ROOT = path.resolve(__dirname, "..");
 const DATA_DIR = path.join(ROOT, "LEAP単語データ");
 const WORD_FILES = [
   "001_101.txt", "102_203.txt", "204_301.txt", "302_400.txt",
-  "401_505.txt", "506_603.txt", "604_702.txt", "703_807.txt"
+  "401_505.txt", "506_603.txt", "604_702.txt", "703_807.txt",
+  "808_1000.txt", "1001_1217.txt", "1218_1578.txt"
 ];
 
 const POS_MAP = {
@@ -118,7 +119,15 @@ function looksLikeTarget(token, word) {
 function parseExampleLine(line, word) {
   const t = line.replace(/^[\s\u3000]+/, "").trim();
   if (!t) return null;
-  const firstJp = t.search(JP_RE);
+  // 和訳側の [ が英文側に残らないよう、日本語を含む括弧の位置も分割点にする
+  let firstJp = t.search(JP_RE);
+  const jpBracket = t.search(/\[[^\]]*[\u3040-\u30ff\u3400-\u9fff]/);
+  if (jpBracket >= 0 && (firstJp < 0 || jpBracket < firstJp)) firstJp = jpBracket;
+  // 「英文　和訳」の全角スペース区切りを優先（番号や「」《》が英文側に残るのを防ぐ）
+  for (let i = t.indexOf("　"); i > 0 && (firstJp < 0 || i < firstJp); i = t.indexOf("　", i + 1)) {
+    const tail = t.slice(i + 1);
+    if (JP_RE.test(tail) || /^[①-⑳「“《（(]/.test(tail)) firstJp = i;
+  }
   let en = "";
   let ja = "";
   if (firstJp < 0) {
@@ -136,8 +145,10 @@ function parseExampleLine(line, word) {
         ja = math[0].trim() + ja;
         en = en.slice(0, math.index);
       }
-    } else if (!/^\d/.test(ja)) {
-      const num = en.match(/(\d[\d,.]*)\s*$/);
+    } else {
+      // 英語側に残った数字を和訳へ戻すのは、和訳が数量の単位から始まる場合だけ
+      const startsUnit = /^[時円年月分秒日週間回階歳度倍個本枚冊件名点等番%％]|^(ドル|セント|ポンド|ユーロ|キロ|メートル|グラム|リットル|か月|カ月|ヶ月)/.test(ja);
+      const num = startsUnit ? en.match(/(\d[\d,.]*)\s*$/) : null;
       if (num) {
         ja = num[1] + ja;
         en = en.slice(0, num.index);
@@ -145,7 +156,13 @@ function parseExampleLine(line, word) {
     }
   }
   en = cleanEnglish(en).replace(/^[①-⑳]+[\s\u3000]*/, "");
+  ja = ja.replace(/^[①-⑳]+[\s\u3000]*/, "").trim();
   if (!en && !ja) return null;
+
+  // 和訳側の [ ] は空欄に対応する語句の目印なので、表示用に外して強調候補として保持する
+  const jaBrackets = [...ja.matchAll(/\[([^\]]+)\]/g)].map(m => m[1].trim()).filter(Boolean);
+  if (jaBrackets.length) ja = ja.replace(/\[([^\]]+)\]/g, "$1");
+  const jaMarkAuto = jaBrackets.length === 1 ? jaBrackets[0] : "";
 
   // マーカーは 【word】 と [word] の2形式がある
   let marked = /【[^】]*】/.test(en);
@@ -170,7 +187,8 @@ function parseExampleLine(line, word) {
     plain: plain,
     prompt: prompt,
     answer: answer,
-    hasBlank: bracketMatches.length > 0
+    hasBlank: bracketMatches.length > 0,
+    jaMarkAuto: jaMarkAuto
   };
 }
 
@@ -182,7 +200,7 @@ function parseWordFile(file) {
   let section = "";
   lines.forEach(raw => {
     const line = raw;
-    const idMatch = line.match(/^\s*(\d{3})\s*$/);
+    const idMatch = line.match(/^\s*(\d{3,4})\s*$/);
     if (idMatch) {
       if (cur) entries.push(cur);
       cur = { id: Number(idMatch[1]), headLines: [], notes: [], rawExamples: [], started: true };
@@ -205,7 +223,7 @@ function parseWordFile(file) {
     if (section === "head") { cur.headLines.push(line); return; }
     if (section === "notes") {
       // 1行に「コラム：… / 語源：…」と詰め込まれた注記を項目ごとに分ける
-      t.split(/\s*\/\s+(?=(?:コラム|語源|派生語?|類語|頻出|表現|関連語|覚え方|対義語|比較|注意|補充)[:：])/)
+      t.split(/\s*[\/／]\s*(?=(?:コラム|語源|派生語?|類語|頻出|表現|関連(?:語)?|覚え方|対義語|比較|注意|補充|由来)[:：])/)
         .forEach(part => { if (part.trim()) cur.notes.push(part.trim()); });
       return;
     }
@@ -238,13 +256,18 @@ WORD_FILES.forEach(file => {
     exs.forEach((ex, i) => {
       const key = e.id + ":" + i;
       const mark = jaOverrides[key];
-      if (!mark) return;
-      if (ex.ja && ex.ja.includes(mark)) {
-        ex.jaMark = mark;
-        usedOverrides.add(key);
-      } else {
-        badOverrides.push(key + " -> " + mark);
+      if (mark) {
+        if (ex.ja && ex.ja.includes(mark)) {
+          ex.jaMark = mark;
+          usedOverrides.add(key);
+        } else {
+          badOverrides.push(key + " -> " + mark);
+        }
       }
+      if (!ex.jaMark && ex.jaMarkAuto && ex.ja && ex.ja.includes(ex.jaMarkAuto)) {
+        ex.jaMark = ex.jaMarkAuto;
+      }
+      delete ex.jaMarkAuto;
     });
     details[e.id] = {
       id: e.id,
