@@ -318,11 +318,15 @@
 
       <!-- ステータスカード -->
       <div class="grid grid-cols-2 gap-3 bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
-        <div class="p-3 bg-slate-50 rounded-xl">
-          <p class="text-xs text-slate-400 font-medium">ハイスコア</p>
-          <p id="home-highscore" class="text-2xl font-bold text-slate-800 mt-1">0 <span class="text-xs font-normal text-slate-500">pts</span></p>
+        <div class="p-3 bg-orange-50 rounded-xl border border-orange-100">
+          <p class="text-xs text-orange-500 font-bold">連続学習</p>
+          <p id="home-streak" class="text-2xl font-bold text-orange-700 mt-1">0 <span class="text-xs font-normal text-orange-500">日</span></p>
         </div>
-        <div class="p-3 bg-slate-50 rounded-xl">
+        <div class="p-3 bg-sky-50 rounded-xl border border-sky-100">
+          <p class="text-xs text-sky-500 font-bold">学習した単語</p>
+          <p id="home-learned-count" class="text-2xl font-bold text-sky-700 mt-1">0 <span class="text-xs font-normal text-sky-500">語</span></p>
+        </div>
+        <div class="col-span-2 p-3 bg-slate-50 rounded-xl">
           <p class="text-xs text-slate-400 font-medium">装着中の称号</p>
           <p id="home-title" class="text-base font-bold text-emerald-600 truncate mt-1">始まりのビギナー</p>
         </div>
@@ -401,10 +405,10 @@
         </button>
       </div>
 
-      <!-- スコア履歴（最近5回） -->
+      <!-- 学習履歴（最近5回） -->
       <div id="home-score-history" class="hidden bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
         <button type="button" onclick="toggleScoreHistory()" class="w-full flex items-center justify-between p-4 cursor-pointer hover:bg-slate-50 transition">
-          <span class="font-bold text-sm text-slate-700 flex items-center gap-1.5"><span>📊</span> 最近のスコア履歴</span>
+          <span class="font-bold text-sm text-slate-700 flex items-center gap-1.5"><span>📊</span> 最近の学習履歴</span>
           <span id="score-history-arrow" class="text-slate-400 text-sm">▼</span>
         </button>
         <div id="score-history-list" class="hidden px-4 pb-4 space-y-2"></div>
@@ -626,7 +630,7 @@
       <div class="flex items-center justify-between pb-2 border-b border-slate-200">
         <div>
           <h2 class="text-xl font-bold text-slate-900">カスタムショップ</h2>
-          <p class="text-xs text-slate-400">称号とアバターフレームで自分だけの見た目に</p>
+          <p class="text-xs text-slate-400">称号・フレーム・絵柄で自分だけの見た目に</p>
         </div>
         <button type="button" onclick="navigate('screen-home')" class="text-sm text-slate-500 hover:text-slate-800 font-medium">戻る</button>
       </div>
@@ -648,7 +652,7 @@
       </div>
 
       <!-- 前称号 / 後称号 / アバター / 実績切替タブ -->
-      <div class="flex bg-slate-200/70 p-1 rounded-xl gap-1">
+      <div class="flex flex-wrap bg-slate-200/70 p-1 rounded-xl gap-1">
         <button type="button" id="shop-tab-prefix" onclick="switchShopTab('prefix')" class="flex-1 py-2 text-[11px] font-bold rounded-lg bg-white shadow-sm text-slate-900 transition-all flex items-center justify-center gap-1 cursor-pointer">
           <span>🏷️ 前称号</span>
           <span id="prefix-owned-count" class="text-[10px] bg-emerald-100 text-emerald-800 px-1.5 py-0.2 rounded-full">1/70</span>
@@ -658,8 +662,12 @@
           <span id="suffix-owned-count" class="text-[10px] bg-slate-200 text-slate-600 px-1.5 py-0.2 rounded-full">1/70</span>
         </button>
         <button type="button" id="shop-tab-frame" onclick="switchShopTab('frame')" class="flex-1 py-2 text-[11px] font-bold rounded-lg text-slate-600 hover:text-slate-900 transition-all flex items-center justify-center gap-1 cursor-pointer">
-          <span>🖼️ アバター</span>
+          <span>🖼️ フレーム</span>
           <span id="frame-owned-count" class="text-[10px] bg-slate-200 text-slate-600 px-1.5 py-0.2 rounded-full">1/27</span>
+        </button>
+        <button type="button" id="shop-tab-avatar" onclick="switchShopTab('avatar')" class="flex-1 py-2 text-[11px] font-bold rounded-lg text-slate-600 hover:text-slate-900 transition-all flex items-center justify-center gap-1 cursor-pointer">
+          <span>🦉 絵柄</span>
+          <span id="avatar-owned-count" class="text-[10px] bg-slate-200 text-slate-600 px-1.5 py-0.2 rounded-full">1/15</span>
         </button>
         <button type="button" onclick="openAchievementsModal()" class="flex-1 py-2 text-[11px] font-bold rounded-lg text-slate-600 hover:text-slate-900 transition-all flex items-center justify-center gap-1 cursor-pointer">
           <span>🏆</span>
@@ -792,6 +800,9 @@
         <div class="bg-amber-50 border border-amber-200 rounded-xl p-3 flex items-center justify-center gap-2 text-amber-900 font-bold text-sm">
           <span>🪙 獲得コイン:</span>
           <span id="result-earned-coins">+120 Coin</span>
+        </div>
+        <div id="result-streak" class="hidden text-xs font-bold text-orange-700 bg-orange-50 border border-orange-200 rounded-xl p-2">
+          🔥 連続学習 1日！
         </div>
 
         <!-- 間違えた単語リスト（復習用） -->
@@ -1023,7 +1034,14 @@
       { id: "pre_cosmos", name: "宇宙の", price: 23000 },
       { id: "pre_dimensional", name: "次元の", price: 24000 },
       { id: "pre_allthings", name: "万物の", price: 26000 },
-      { id: "pre_onlyme", name: "唯我の", price: 30000 }
+      { id: "pre_onlyme", name: "唯我の", price: 30000 },
+      // 実績で自動解放される称号（購入不可）
+      { id: "pre_earned_streak7", name: "不抜の", price: 0, unlockAchievement: "streak_7" },
+      { id: "pre_earned_streak30", name: "星霜の", price: 0, unlockAchievement: "streak_30" },
+      { id: "pre_earned_review", name: "錬磨の", price: 0, unlockAchievement: "review_20" },
+      { id: "pre_earned_perfect", name: "天稟の", price: 0, unlockAchievement: "perfect_3" },
+      { id: "pre_earned_avatar", name: "収集の", price: 0, unlockAchievement: "avatar_all" },
+      { id: "pre_earned_1000", name: "不滅の", price: 0, unlockAchievement: "correct_1000" }
     ];
 
     const SUFFIX_TITLES = [
@@ -1096,7 +1114,14 @@
       { id: "suf_dominator", name: "単語の支配者", price: 26000 },
       { id: "suf_transcender", name: "言語の超越者", price: 28000 },
       { id: "suf_knowledge_king", name: "知識の王", price: 30000 },
-      { id: "suf_omniscient", name: "全知の存在", price: 35000 }
+      { id: "suf_omniscient", name: "全知の存在", price: 35000 },
+      // 実績で自動解放される称号（購入不可）
+      { id: "suf_earned_streak7", name: "継続者", price: 0, unlockAchievement: "streak_7" },
+      { id: "suf_earned_streak30", name: "毎日学習者", price: 0, unlockAchievement: "streak_30" },
+      { id: "suf_earned_review", name: "復習の達人", price: 0, unlockAchievement: "review_20" },
+      { id: "suf_earned_perfect", name: "完全主義者", price: 0, unlockAchievement: "perfect_3" },
+      { id: "suf_earned_avatar", name: "絵柄蒐集家", price: 0, unlockAchievement: "avatar_all" },
+      { id: "suf_earned_1000", name: "全知全能", price: 0, unlockAchievement: "correct_1000" }
     ];
 
     // アバターフレーム（ショップで購入・装着）
@@ -1128,6 +1153,25 @@
       { id: "frame_ultimate", name: "アルティメット", price: 15000, emoji: "🌟", box: "bg-gradient-to-br from-amber-200 via-yellow-400 to-rose-400 ring-4 ring-amber-300 shadow-lg" },
       { id: "frame_chaos", name: "カオス", price: 18000, emoji: "🌀", box: "bg-gradient-to-br from-fuchsia-500 via-purple-700 to-slate-900 ring-4 ring-fuchsia-400 shadow-lg" },
       { id: "frame_god", name: "ゴッド", price: 25000, emoji: "👁️", box: "bg-gradient-to-br from-white via-amber-200 to-yellow-500 ring-4 ring-yellow-300 shadow-lg" }
+    ];
+
+    // アバターの絵柄（フレームとは独立して選択・レベルや実績で解放）
+    const AVATAR_ITEMS = [
+      { id: "avatar_auto", name: "フレーム準拠", emoji: "", unlockType: "free", unlockLabel: "最初から利用可能" },
+      { id: "avatar_chick", name: "ヒヨコ", emoji: "🐣", unlockType: "level", unlockValue: 3, unlockLabel: "Lv.3 で解放" },
+      { id: "avatar_book", name: "本読み", emoji: "📘", unlockType: "level", unlockValue: 5, unlockLabel: "Lv.5 で解放" },
+      { id: "avatar_fox", name: "キツネ", emoji: "🦊", unlockType: "level", unlockValue: 8, unlockLabel: "Lv.8 で解放" },
+      { id: "avatar_cat", name: "ネコ", emoji: "🐱", unlockType: "level", unlockValue: 12, unlockLabel: "Lv.12 で解放" },
+      { id: "avatar_panda", name: "パンダ", emoji: "🐼", unlockType: "level", unlockValue: 16, unlockLabel: "Lv.16 で解放" },
+      { id: "avatar_owl", name: "フクロウ博士", emoji: "🦉", unlockType: "level", unlockValue: 20, unlockLabel: "Lv.20 で解放" },
+      { id: "avatar_lion", name: "ライオン", emoji: "🦁", unlockType: "level", unlockValue: 25, unlockLabel: "Lv.25 で解放" },
+      { id: "avatar_rocket", name: "ロケット", emoji: "🚀", unlockType: "level", unlockValue: 30, unlockLabel: "Lv.30 で解放" },
+      { id: "avatar_unicorn", name: "ユニコーン", emoji: "🦄", unlockType: "achievement", unlockValue: "perfect_clear", unlockLabel: "実績「完全無欠」で解放" },
+      { id: "avatar_dragon", name: "ドラゴン", emoji: "🐉", unlockType: "achievement", unlockValue: "correct_100", unlockLabel: "実績「暗記マスター」で解放" },
+      { id: "avatar_crown", name: "王冠", emoji: "👑", unlockType: "achievement", unlockValue: "correct_500", unlockLabel: "実績「語彙の求道者」で解放" },
+      { id: "avatar_galaxy", name: "銀河", emoji: "🌌", unlockType: "achievement", unlockValue: "streak_30", unlockLabel: "実績「皆勤の求道者」で解放" },
+      { id: "avatar_hero", name: "勇者", emoji: "🦸", unlockType: "achievement", unlockValue: "part3_80", unlockLabel: "実績「Part 3 制圧」で解放" },
+      { id: "avatar_eye", name: "全知の目", emoji: "👁️", unlockType: "level", unlockValue: 50, unlockLabel: "Lv.50 で解放" }
     ];
 
     // Part定義（収録データに応じて利用可否を自動判定）
@@ -1421,7 +1465,6 @@
     const STORAGE_KEY = "LEAP_QUIZ_USER_DATA_V3";
     let userData = {
       coins: 0,
-      highScore: 0,
       prefix: "始まりの",
       suffix: "ビギナー",
       purchasedPrefixes: ["pre_init"],
@@ -1437,7 +1480,13 @@
       totalQuizzes: 0,
       maxComboEver: 0,
       dictOpened: false,
-      wordStats: {} // { [wordId]: { correct: 0, total: 0 } }
+      wordStats: {}, // { [wordId]: { correct: 0, total: 0 } }
+      streak: 0, // 現在の連続学習日数
+      lastPlayDate: "", // 最後にクイズを完走した日
+      dailyClears: 0, // デイリーチャレンジをクリアした回数
+      reviewClears: 0, // 忘却曲線復習を完了した回数
+      ownedAvatars: ["avatar_auto"],
+      equippedAvatar: "avatar_auto"
     };
 
     function getFullTitle() {
@@ -1451,6 +1500,15 @@
     function _totalCorrect(u) {
       // EXPは正解1問で +10 なので、正解数の累計として使える
       return Math.floor((Number(u.exp) || 0) / 10);
+    }
+    // Partごとの解答済み単語の割合（0〜1）
+    function _partCoverage(u, partId) {
+      const part = LEAP_PARTS.find(p => p.id === partId);
+      if (!part) return 0;
+      const words = LEAP_SOURCE.filter(w => w.id >= part.start && w.id <= part.end);
+      if (words.length === 0) return 0;
+      const stats = u.wordStats || {};
+      return words.filter(w => stats[w.id]).length / words.length;
     }
     const ACHIEVEMENTS = [
       // === はじめの一歩・基本機能 ===
@@ -1573,15 +1631,39 @@
       { id: "review_stage3", name: "記憶の定着", icon: "🧠", category: "review", desc: "復習ステージ3に到達した単語を3語つくる", price: 350,
         condition: (u) => Object.values(u.weakWords || {}).filter(w => (w.stage || 1) >= 3).length >= 3 },
 
-      // === スコア ===
-      { id: "score_100", name: "スコア100", icon: "💯", category: "score", desc: "ハイスコア100ptを達成する", price: 100,
-        condition: (u) => (Number(u.highScore) || 0) >= 100 },
-      { id: "score_300", name: "スコア300", icon: "📈", category: "score", desc: "ハイスコア300ptを達成する", price: 250,
-        condition: (u) => (Number(u.highScore) || 0) >= 300 },
-      { id: "score_500", name: "スコア500", icon: "📊", category: "score", desc: "ハイスコア500ptを達成する", price: 500,
-        condition: (u) => (Number(u.highScore) || 0) >= 500 },
-      { id: "score_1000", name: "スコア1000", icon: "🏅", category: "score", desc: "ハイスコア1000ptを達成する", price: 1000,
-        condition: (u) => (Number(u.highScore) || 0) >= 1000 },
+      // === 連続学習・デイリー ===
+      { id: "streak_3", name: "三日坊主返上", icon: "🔥", category: "daily", desc: "3日連続で学習する", price: 200,
+        condition: (u) => (u.streak || 0) >= 3 },
+      { id: "streak_7", name: "一週間の習慣", icon: "📅", category: "daily", desc: "7日連続で学習する", price: 400,
+        condition: (u) => (u.streak || 0) >= 7 },
+      { id: "streak_14", name: "二週間の継続", icon: "🗓️", category: "daily", desc: "14日連続で学習する", price: 700,
+        condition: (u) => (u.streak || 0) >= 14 },
+      { id: "streak_30", name: "皆勤の求道者", icon: "🌕", category: "daily", desc: "30日連続で学習する", price: 1500,
+        condition: (u) => (u.streak || 0) >= 30 },
+      { id: "daily_5", name: "デイリー5回", icon: "🌟", category: "daily", desc: "デイリーチャレンジを5回クリアする", price: 300,
+        condition: (u) => (u.dailyClears || 0) >= 5 },
+      { id: "daily_10", name: "デイリー10回", icon: "💫", category: "daily", desc: "デイリーチャレンジを10回クリアする", price: 600,
+        condition: (u) => (u.dailyClears || 0) >= 10 },
+
+      // === 復習の継続 ===
+      { id: "review_5", name: "復習の常連", icon: "🔁", category: "review", desc: "忘却曲線復習を5回完了する", price: 250,
+        condition: (u) => (u.reviewClears || 0) >= 5 },
+      { id: "review_20", name: "記憶の番人", icon: "🧠", category: "review", desc: "忘却曲線復習を20回完了する", price: 800,
+        condition: (u) => (u.reviewClears || 0) >= 20 },
+
+      // === Part攻略 ===
+      { id: "part1_80", name: "Part 1 制圧", icon: "1️⃣", category: "words", desc: "Part 1の8割の単語に解答する", price: 400,
+        condition: (u) => _partCoverage(u, 1) >= 0.8 },
+      { id: "part2_80", name: "Part 2 制圧", icon: "2️⃣", category: "words", desc: "Part 2の8割の単語に解答する", price: 800,
+        condition: (u) => _partCoverage(u, 2) >= 0.8 },
+      { id: "part3_80", name: "Part 3 制圧", icon: "3️⃣", category: "words", desc: "Part 3の8割の単語に解答する", price: 1200,
+        condition: (u) => _partCoverage(u, 3) >= 0.8 },
+
+      // === アバター絵柄 ===
+      { id: "avatar_5", name: "絵柄コレクター", icon: "🧑‍🎨", category: "shop", desc: "アバター絵柄を5種類解放する", price: 300,
+        condition: (u) => (u.ownedAvatars || []).length >= 5 },
+      { id: "avatar_all", name: "絵柄コンプリート", icon: "🎭", category: "shop", desc: "アバター絵柄をすべて解放する", price: 2000,
+        condition: (u) => (u.ownedAvatars || []).length >= AVATAR_ITEMS.length },
 
       // === ショップ・アバター ===
       { id: "first_frame", name: "初めての着せ替え", icon: "🎨", category: "shop", desc: "アバターフレームを2種類以上所持する", price: 100,
@@ -1661,11 +1743,32 @@
       return false;
     }
 
+    // 実績で自動解放される称号を所持リストへ追加
+    function syncEarnedTitles() {
+      const granted = [];
+      const grant = (list, owned) => {
+        list.forEach(t => {
+          if (!t.unlockAchievement) return;
+          if (!isAchievementDone(t.unlockAchievement)) return;
+          if (!Array.isArray(owned) || owned.includes(t.id)) return;
+          owned.push(t.id);
+          granted.push(t);
+        });
+      };
+      grant(PREFIX_TITLES, userData.purchasedPrefixes);
+      grant(SUFFIX_TITLES, userData.purchasedSuffixes);
+      return granted;
+    }
+
     function initAchievements() {
       loadAchievements();
+      syncOwnedAvatars();
       ACHIEVEMENTS.forEach(unlockIfMet);
+      const newTitles = syncEarnedTitles();
+      const newAvatars = syncOwnedAvatars();
       saveAchievements();
       updateAchievementCount();
+      if (newTitles.length || newAvatars.length) saveUserData();
     }
 
     function getAchievementById(id) {
@@ -1708,13 +1811,19 @@
     }
 
     function checkAchievements() {
+      const newAvatars = syncOwnedAvatars();
       const newly = [];
       ACHIEVEMENTS.forEach(a => { if (unlockIfMet(a)) newly.push(a); });
-      if (newly.length) {
+      const newTitles = syncEarnedTitles();
+      newAvatars.push(...syncOwnedAvatars());
+      if (newly.length || newTitles.length || newAvatars.length) {
         saveAchievements();
         updateAchievementCount();
-        notifyAchievements(newly);
+        saveUserData();
       }
+      if (newly.length) notifyAchievements(newly);
+      newTitles.forEach(t => showToast(`🏷️ 実績称号「${(userData.prefix || "")}${t.name}」を獲得！`));
+      newAvatars.forEach(a => showToast(`🎭 アバター「${a.name}」を解放！`));
     }
 
     function notifyAchievements(newly) {
@@ -1800,7 +1909,6 @@
         { id: "collection", label: "収集" },
         { id: "words", label: "単語" },
         { id: "review", label: "復習" },
-        { id: "score", label: "スコア" },
         { id: "shop", label: "ショップ" },
         { id: "daily", label: "継続" },
         { id: "kobun", label: "裏世界" }
@@ -1903,11 +2011,35 @@
     function getFrameItem(id) {
       return FRAME_ITEMS.find(f => f.id === id) || FRAME_ITEMS[0];
     }
+    function getAvatarItem(id) {
+      return AVATAR_ITEMS.find(a => a.id === id) || AVATAR_ITEMS[0];
+    }
+    function isAvatarUnlocked(item) {
+      if (!item) return false;
+      if (item.unlockType === "free") return true;
+      if (item.unlockType === "level") return getLevelState(userData.exp).level >= (item.unlockValue || 1);
+      if (item.unlockType === "achievement") return isAchievementDone(item.unlockValue);
+      return false;
+    }
+    // 条件を満たした絵柄を所持リストへ追加（新規解放分を返す）
+    function syncOwnedAvatars() {
+      if (!Array.isArray(userData.ownedAvatars)) userData.ownedAvatars = [];
+      if (!userData.ownedAvatars.includes("avatar_auto")) userData.ownedAvatars.unshift("avatar_auto");
+      const newly = [];
+      AVATAR_ITEMS.forEach(a => {
+        if (isAvatarUnlocked(a) && !userData.ownedAvatars.includes(a.id)) {
+          userData.ownedAvatars.push(a.id);
+          newly.push(a);
+        }
+      });
+      return newly;
+    }
     function applyFrameStyle(el, frameId, sizeClass) {
       if (!el) return;
       const frame = getFrameItem(frameId);
+      const avatar = getAvatarItem(userData.equippedAvatar);
       el.className = `${sizeClass || "w-12 h-12 text-2xl"} rounded-2xl flex items-center justify-center shrink-0 ${frame.box}`;
-      el.textContent = frame.emoji || "🦉";
+      el.textContent = avatar.emoji || frame.emoji || "🦉";
     }
 
     function loadUserData() {
@@ -1938,6 +2070,19 @@
       if (!FRAME_ITEMS.some(f => f.id === userData.equippedFrame) || !userData.ownedFrames.includes(userData.equippedFrame)) {
         userData.equippedFrame = "frame_normal";
       }
+      if (typeof userData.streak !== "number" || !isFinite(userData.streak) || userData.streak < 0) userData.streak = 0;
+      if (typeof userData.lastPlayDate !== "string") userData.lastPlayDate = "";
+      if (typeof userData.dailyClears !== "number") userData.dailyClears = 0;
+      if (typeof userData.reviewClears !== "number") userData.reviewClears = 0;
+      if (!Array.isArray(userData.ownedAvatars) || userData.ownedAvatars.length === 0) userData.ownedAvatars = ["avatar_auto"];
+      if (!userData.ownedAvatars.includes("avatar_auto")) userData.ownedAvatars.unshift("avatar_auto");
+      if (!AVATAR_ITEMS.some(a => a.id === userData.equippedAvatar) || !userData.ownedAvatars.includes(userData.equippedAvatar)) {
+        userData.equippedAvatar = "avatar_auto";
+      }
+      if (!userData.lastPlayDate && Array.isArray(userData.scoreHistory) && userData.scoreHistory[0] && userData.scoreHistory[0].date) {
+        userData.lastPlayDate = userData.scoreHistory[0].date;
+        if (!userData.streak) userData.streak = 1;
+      }
       if (typeof userData.totalQuizzes !== "number") userData.totalQuizzes = 0;
       if (typeof userData.maxComboEver !== "number") userData.maxComboEver = 0;
       if (typeof userData.dictOpened !== "boolean") userData.dictOpened = false;
@@ -1963,11 +2108,13 @@
       const full = getFullTitle();
       const hCoins = document.getElementById("header-coins");
       const hTitle = document.getElementById("header-title");
-      const hScore = document.getElementById("home-highscore");
+      const hStreak = document.getElementById("home-streak");
+      const hLearned = document.getElementById("home-learned-count");
       const homeT = document.getElementById("home-title");
       if (hCoins) hCoins.textContent = userData.coins;
       if (hTitle) hTitle.textContent = full;
-      if (hScore) hScore.innerHTML = `${userData.highScore} <span class="text-xs font-normal text-slate-500">pts</span>`;
+      if (hStreak) hStreak.innerHTML = `${userData.streak || 0} <span class="text-xs font-normal text-orange-500">日</span>`;
+      if (hLearned) hLearned.innerHTML = `${Object.keys(userData.wordStats || {}).length} <span class="text-xs font-normal text-sky-500">語</span>`;
       if (homeT) homeT.textContent = full;
 
       const spPre = document.getElementById("shop-preview-prefix");
@@ -3437,6 +3584,15 @@
       return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
     }
 
+    // クイズ完走時に連続学習日数を更新（同日は据え置き、昨日から連続なら+1）
+    function recordPlayDay() {
+      const today = getTodayString();
+      if (userData.lastPlayDate === today) return;
+      const yesterday = addDaysToDate(today, -1);
+      userData.streak = userData.lastPlayDate === yesterday ? (userData.streak || 0) + 1 : 1;
+      userData.lastPlayDate = today;
+    }
+
     // エビングハウス忘却曲線のインターバル（ステージ1: +1日、ステージ2: +3日、ステージ3: +7日、ステージ4: +14日）
     const FORGETTING_STAGES = {
       1: { days: 1, label: "ステージ 1 (+1日後)" },
@@ -4660,10 +4816,6 @@
       const leveledUp = levelAfter > levelBefore;
       userData.level = levelAfter;
 
-      if (!isAborted && finalScore > userData.highScore) {
-        userData.highScore = finalScore;
-      }
-
       // スコア履歴に追加（最大5件）
       if (!isAborted && totalQ > 0) {
         userData.totalQuizzes = (userData.totalQuizzes || 0) + 1;
@@ -4683,6 +4835,12 @@
           isDaily: isDailyBonus
         });
         if (userData.scoreHistory.length > 5) userData.scoreHistory = userData.scoreHistory.slice(0, 5);
+      }
+
+      if (!isAborted) {
+        recordPlayDay();
+        if (isDailyBonus) userData.dailyClears = (userData.dailyClears || 0) + 1;
+        if (isWeakMode) userData.reviewClears = (userData.reviewClears || 0) + 1;
       }
 
       saveUserData();
@@ -4744,6 +4902,15 @@
       document.getElementById("result-earned-coins").textContent = isDailyBonus
         ? `+${quizState.earnedCoins} Coin 獲得！(2倍ボーナス🌟)`
         : `+${quizState.earnedCoins} Coin 獲得！`;
+      const rStreak = document.getElementById("result-streak");
+      if (rStreak) {
+        if (!isAborted && (userData.streak || 0) > 0) {
+          rStreak.textContent = `🔥 連続学習 ${userData.streak}日！`;
+          rStreak.classList.remove("hidden");
+        } else {
+          rStreak.classList.add("hidden");
+        }
+      }
 
       // レベル・称号・アバター・EXPの反映
       const rLevel = document.getElementById("result-player-level");
@@ -5449,7 +5616,8 @@ listContainer.appendChild(row);
       const tabs = {
         prefix: document.getElementById("shop-tab-prefix"),
         suffix: document.getElementById("shop-tab-suffix"),
-        frame: document.getElementById("shop-tab-frame")
+        frame: document.getElementById("shop-tab-frame"),
+        avatar: document.getElementById("shop-tab-avatar")
       };
       const activeClass = "flex-1 py-2 text-[11px] font-bold rounded-lg bg-white shadow-sm text-slate-900 transition-all flex items-center justify-center gap-1 cursor-pointer";
       const idleClass = "flex-1 py-2 text-[11px] font-bold rounded-lg text-slate-600 hover:text-slate-900 transition-all flex items-center justify-center gap-1 cursor-pointer";
@@ -5465,10 +5633,58 @@ listContainer.appendChild(row);
       if (!container) return;
       container.innerHTML = "";
 
+      const newTitles = syncEarnedTitles();
+      if (newTitles.length) saveUserData();
+
       const preOwned = document.getElementById("prefix-owned-count");
       const sufOwned = document.getElementById("suffix-owned-count");
       if (preOwned) preOwned.textContent = `${userData.purchasedPrefixes.length}/${PREFIX_TITLES.length}`;
       if (sufOwned) sufOwned.textContent = `${userData.purchasedSuffixes.length}/${SUFFIX_TITLES.length}`;
+
+      // アバターの絵柄一覧（レベル・実績で解放）
+      if (currentShopTab === "avatar") {
+        syncOwnedAvatars();
+        const ownedCount = document.getElementById("avatar-owned-count");
+        if (ownedCount) ownedCount.textContent = `${userData.ownedAvatars.length}/${AVATAR_ITEMS.length}`;
+
+        AVATAR_ITEMS.forEach(item => {
+          const unlocked = isAvatarUnlocked(item);
+          const isEquipped = userData.equippedAvatar === item.id;
+          const emoji = item.emoji || getFrameItem(userData.equippedFrame).emoji || "🦉";
+
+          const box = document.createElement("div");
+          box.className = `p-3 rounded-2xl border transition-all text-center flex flex-col justify-between items-center min-h-[140px] relative ${
+            isEquipped
+              ? "bg-emerald-50 border-emerald-500 shadow-sm ring-1 ring-emerald-500/30"
+              : unlocked
+                ? "bg-white border-slate-200 hover:border-slate-400 cursor-pointer shadow-sm"
+                : "bg-slate-50 border-slate-200 opacity-70"
+          }`;
+
+          let statusBadge = "";
+          if (isEquipped) {
+            statusBadge = `<span class="text-[10px] font-extrabold bg-emerald-500 text-white px-2 py-0.5 rounded-full">装着中</span>`;
+          } else if (!unlocked) {
+            statusBadge = `<span class="text-[10px] font-bold bg-slate-200 text-slate-500 px-2 py-1 rounded-lg w-full block">🔒 ${item.unlockLabel}</span>`;
+          } else {
+            statusBadge = `<button type="button" onclick="equipAvatar('${item.id}', '${item.name}')" class="text-[10px] font-bold bg-slate-900 hover:bg-slate-800 text-white px-2.5 py-1 rounded-lg w-full transition cursor-pointer">装着する</button>`;
+          }
+
+          box.innerHTML = `
+            <div class="w-full flex justify-between items-center text-[10px] text-slate-400 font-semibold mb-1">
+              <span>アバター絵柄</span>
+              ${unlocked ? '<span class="text-emerald-600">✓ 解放済</span>' : ''}
+            </div>
+            <div class="my-auto flex justify-center">
+              <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl bg-white ring-2 ring-slate-200 ${unlocked ? "" : "grayscale"}">${unlocked ? emoji : "🔒"}</div>
+            </div>
+            <div class="font-extrabold text-xs text-slate-900 mt-2 ${isEquipped ? 'text-emerald-700' : ''}">${item.name}</div>
+            <div class="w-full mt-2">${statusBadge}</div>
+          `;
+          container.appendChild(box);
+        });
+        return;
+      }
 
       // アバターフレーム一覧（価格昇順で正しくソートして表示）
       if (currentShopTab === "frame") {
@@ -5524,19 +5740,25 @@ listContainer.appendChild(row);
       sortedList.forEach(item => {
         const isOwned = ownedList.includes(item.id);
         const isEquipped = currentEquipped === item.name;
+        const earnAch = item.unlockAchievement ? getAchievementById(item.unlockAchievement) : null;
+        const isLocked = !!item.unlockAchievement && !isAchievementDone(item.unlockAchievement);
 
         const box = document.createElement("div");
         box.className = `p-3 rounded-2xl border transition-all text-center flex flex-col justify-between items-center min-h-[110px] relative ${
           isEquipped
             ? "bg-emerald-50 border-emerald-500 shadow-sm ring-1 ring-emerald-500/30"
-            : isOwned
-              ? "bg-white border-slate-200 hover:border-slate-400 cursor-pointer shadow-sm"
-              : "bg-white border-slate-200 hover:border-amber-400 cursor-pointer shadow-sm"
+            : isLocked
+              ? "bg-slate-50 border-slate-200 opacity-70"
+              : isOwned
+                ? "bg-white border-slate-200 hover:border-slate-400 cursor-pointer shadow-sm"
+                : "bg-white border-slate-200 hover:border-amber-400 cursor-pointer shadow-sm"
         }`;
 
         let statusBadge = "";
         if (isEquipped) {
           statusBadge = `<span class="text-[10px] font-extrabold bg-emerald-500 text-white px-2 py-0.5 rounded-full">装着中</span>`;
+        } else if (isLocked) {
+          statusBadge = `<span class="text-[10px] font-bold bg-slate-200 text-slate-500 px-2 py-1 rounded-lg w-full block">🔒 実績「${earnAch ? earnAch.name : "条件"}」で解放</span>`;
         } else if (isOwned) {
           statusBadge = `<button type="button" onclick="equipPart('${item.id}', '${item.name}', '${currentShopTab}')" class="text-[10px] font-bold bg-slate-900 hover:bg-slate-800 text-white px-2.5 py-1 rounded-lg w-full transition cursor-pointer">装着する</button>`;
         } else {
@@ -5545,7 +5767,7 @@ listContainer.appendChild(row);
 
         box.innerHTML = `
           <div class="w-full flex justify-between items-center text-[10px] text-slate-400 font-semibold mb-1">
-            <span>${isPrefix ? "前称号" : "後称号"}</span>
+            <span>${item.unlockAchievement ? "実績称号" : (isPrefix ? "前称号" : "後称号")}</span>
             ${isOwned ? '<span class="text-emerald-600">✓ 所持</span>' : ''}
           </div>
           <div class="font-extrabold text-sm text-slate-900 tracking-tight my-auto ${isEquipped ? 'text-emerald-700' : ''}">
@@ -5636,6 +5858,14 @@ listContainer.appendChild(row);
       userData.equippedFrame = id;
       saveUserData();
       showToast(`フレーム「${name}」を装着しました`);
+      renderShop();
+    }
+
+    function equipAvatar(id, name) {
+      if (!userData.ownedAvatars.includes(id)) return;
+      userData.equippedAvatar = id;
+      saveUserData();
+      showToast(`アバター「${name}」に変更しました`);
       renderShop();
     }
 
