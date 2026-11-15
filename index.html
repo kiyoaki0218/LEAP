@@ -451,7 +451,7 @@
           <button type="button" data-game-mode="sprint" onclick="setGameMode('sprint')" class="py-2 text-[11px] font-bold border rounded-lg bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100 transition cursor-pointer">⏱️ 60秒</button>
           <button type="button" data-game-mode="sudden" onclick="setGameMode('sudden')" class="py-2 text-[11px] font-bold border rounded-lg bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100 transition cursor-pointer">💀 サドンデス</button>
         </div>
-        <p class="text-[11px] text-slate-400 leading-relaxed">60秒スプリント: 5コンボごとに +3秒、誤答で -2秒。サドンデス: 1問8秒、誤答か時間切れで即終了。<br>※ 忘却曲線復習とデイリーチャレンジは、この設定に関係なく通常モードで出題されます。</p>
+        <p class="text-[11px] text-slate-400 leading-relaxed">60秒スプリント: 5コンボごとに +3秒、誤答で -2秒。サドンデス: 1問8秒、誤答か時間切れで即終了。<br>※ 忘却曲線復習はこの設定を引き継がず、通常モード・通常4択で出題されます。デイリーチャレンジはこの設定に関係なく通常モードで出題されます。</p>
       </div>
 
       <!-- モード切り替えタブ -->
@@ -1199,6 +1199,11 @@
     // 古文単語には例文データがないため、常に通常4択で出題する
     function effectiveQuizStyle() {
       return currentSubject === "kobun" ? "normal" : quizStyle;
+    }
+
+    // クイズ実施中に使う出題スタイル（忘却曲線復習などは設定を引き継がず通常4択に固定）
+    function activeQuizStyle() {
+      return quizState.style || effectiveQuizStyle();
     }
 
     function loadUiModes() {
@@ -3391,8 +3396,8 @@
 
       selectedRange = { start: 1, end: 1000, label: labelText };
       questionLimit = targetList.length;
-      // 忘却曲線復習はサドンデス等の設定を引き継がない
-      startQuizWithPool(targetList, { forceNormalMode: true });
+      // 忘却曲線復習はゲームモード・出題スタイルの設定を引き継がない（常に通常4択・通常モード）
+      startQuizWithPool(targetList, { forceNormalMode: true, forceNormalStyle: true });
     }
 
     // クイズエンジン
@@ -3412,7 +3417,8 @@
       isAborted: false,
       endReason: "",
       timeLeftMs: SPRINT_TOTAL_MS,
-      questionTimeLeftMs: SUDDEN_MS
+      questionTimeLeftMs: SUDDEN_MS,
+      style: null
     };
 
     // デイリーチャレンジモードフラグ（startDailyChallenge() でtrue/false制御）
@@ -3887,10 +3893,12 @@
     }
 
     function startQuizWithPool(pool, options) {
-      const style = effectiveQuizStyle();
       const forceNormal = !!(options && options.forceNormalMode);
+      const forceNormalStyle = !!(options && options.forceNormalStyle);
+      const style = forceNormalStyle ? "normal" : effectiveQuizStyle();
       const mode = forceNormal ? "normal" : gameMode;
       quizGameMode = mode;
+      quizState.style = style;
       let candidates = shuffleArray([...pool]);
 
       if (style === "context") {
@@ -4199,7 +4207,7 @@
       const container = document.getElementById("quiz-options-container");
       if (!container) return;
       container.innerHTML = "";
-      const hint = effectiveQuizStyle() === "context"
+      const hint = activeQuizStyle() === "context"
         ? "空欄に入りそうな単語を想像してみよう…"
         : "日本語の語義を思い出してみよう…";
       const mask = document.createElement("div");
