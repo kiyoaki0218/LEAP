@@ -11,7 +11,7 @@
     <script>
     // キャッシュ強制更新ロジック: 新バージョン検知時に古いServiceWorkerキャッシュを破棄
     (function() {
-      const APP_VER = "leap-v3-48data1578";
+      const APP_VER = "leap-v3-49quizui";
       try {
         const storedVer = localStorage.getItem("LEAP_APP_CACHE_VER");
         if (storedVer !== APP_VER) {
@@ -607,6 +607,7 @@
           </div>
           <p id="quiz-word-ipa" class="hidden text-sm font-medium text-slate-500 tracking-wide"></p>
         </div>
+        <p id="quiz-answer-feedback" class="hidden w-full text-[11px] font-semibold text-slate-600 bg-slate-50 border border-slate-200 rounded-xl px-3 py-1.5 text-center leading-relaxed"></p>
       </div>
 
       <!-- 4択選択肢 -->
@@ -4255,11 +4256,22 @@
         jaEl.innerHTML = contextJaHtml(q.word, q.sentenceJa, q.sentenceJaMark);
         jaEl.classList.remove("hidden");
       }
+      // 正解の単語が出たので、例文側の品詞バッジと指示チップは隠す（二重表示を防ぐ）
+      const promptEl = document.getElementById("quiz-context-prompt");
+      if (promptEl) promptEl.textContent = "✅ 正解";
+      const ctxPos = document.getElementById("quiz-context-pos");
+      if (ctxPos) ctxPos.classList.add("hidden");
+      applyWordIpa(document.getElementById("quiz-word-ipa"), q.word);
+    }
+
+    // 通常クイズ・例文クイズ共通の正解表示
+    function showAnswerFeedback(q) {
+      const el = document.getElementById("quiz-answer-feedback");
+      if (!el || !q || !q.word) return;
       const tag = getPosTag(q.word);
       const posLabel = (POS_TAGS[tag] && POS_TAGS[tag].label) || POS_LABELS[q.pos] || "語彙";
-      const promptEl = document.getElementById("quiz-context-prompt");
-      if (promptEl) promptEl.textContent = `正解: ${q.word.word}（${posLabel} / ${q.word.meaning}）`;
-      applyWordIpa(document.getElementById("quiz-word-ipa"), q.word);
+      el.textContent = `正解: ${q.word.word}（${posLabel} / ${q.word.meaning}）`;
+      el.classList.remove("hidden");
     }
 
     function renderQuestion() {
@@ -4324,7 +4336,15 @@
             }
           }
           const promptEl = document.getElementById("quiz-context-prompt");
-          if (promptEl) promptEl.textContent = "空欄に最もふさわしい語を選べ";
+          if (promptEl) {
+            promptEl.textContent = "空欄に最もふさわしい語を選べ";
+            promptEl.classList.remove("hidden");
+          }
+        }
+        const feedbackEl = document.getElementById("quiz-answer-feedback");
+        if (feedbackEl) {
+          feedbackEl.classList.add("hidden");
+          feedbackEl.textContent = "";
         }
         // 品詞記号バッジ（データがある単語のみ表示）
         applyPosBadge(document.getElementById("quiz-word-pos"), q.word);
@@ -4529,11 +4549,13 @@
           setTimeout(() => { try { speakEnglish(q.word.word); } catch (e) {} }, 260);
         }
       }
+      showAnswerFeedback(q);
 
       const liveCoins = document.getElementById("quiz-live-coins");
       if (liveCoins) liveCoins.textContent = `🪙 +${quizState.earnedCoins}`;
 
-      const feedbackDelay = q.type === "word" ? 1100 : 700;
+      // 通常クイズ・例文クイズで同じテンポにする
+      const feedbackDelay = 1100;
       setTimeout(() => {
         if (quizState.endReason) {
           finishQuiz(false, quizState.endReason);
