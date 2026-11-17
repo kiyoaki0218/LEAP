@@ -11,7 +11,7 @@
     <script>
     // キャッシュ強制更新ロジック: 新バージョン検知時に古いServiceWorkerキャッシュを破棄
     (function() {
-      const APP_VER = "leap-v3-50nexttap";
+      const APP_VER = "leap-v3-51fixautotap";
       try {
         const storedVer = localStorage.getItem("LEAP_APP_CACHE_VER");
         if (storedVer !== APP_VER) {
@@ -4795,6 +4795,7 @@
         btn.innerHTML = `<span class="w-6 h-6 rounded-md bg-slate-100 text-slate-500 text-xs font-bold flex items-center justify-center shrink-0 border border-slate-200 pointer-events-none">${idx + 1}</span><span class="text-sm leading-snug pointer-events-none">${escapeHtml(opt.text)}</span>`;
         btn.addEventListener("click", (e) => {
           e.preventDefault();
+          e.stopPropagation();
           handleAnswer(opt, btn);
         });
         container.appendChild(btn);
@@ -5129,13 +5130,6 @@
           btn.innerHTML += `<span class="text-xs font-bold text-emerald-700 bg-emerald-100/80 px-2 py-0.5 rounded-full shrink-0">✓ 正解</span>`;
         }
         btn.innerHTML += `</div>`;
-
-        // 解答後はタップで次へ進めるように pointer-events を有効化して次へハンドラを設定
-        btn.style.pointerEvents = "auto";
-        btn.onclick = (e) => {
-          e.preventDefault();
-          proceedToNextQuestion(e);
-        };
       });
 
       if (q.type === "word") {
@@ -5150,18 +5144,36 @@
       const liveCoins = document.getElementById("quiz-live-coins");
       if (liveCoins) liveCoins.textContent = `🪙 +${quizState.earnedCoins}`;
 
-      // ユーザーがタップするまで自動で進まないように待機
-      quizState.waitingNext = true;
-      const nextBtn = document.getElementById("quiz-next-btn");
-      if (nextBtn) {
-        nextBtn.classList.remove("hidden");
-        try { nextBtn.scrollIntoView({ behavior: "smooth", block: "nearest" }); } catch (e) {}
-      }
+      // 解答直後はタップで暴発しないようガード（350msのクールダウン）
+      quizState.waitingNext = false;
+      quizState.answeredAt = Date.now();
+
+      setTimeout(() => {
+        if (!quizState.isAnswered) return;
+        quizState.waitingNext = true;
+        const nextBtn = document.getElementById("quiz-next-btn");
+        if (nextBtn) {
+          nextBtn.classList.remove("hidden");
+          try { nextBtn.scrollIntoView({ behavior: "smooth", block: "nearest" }); } catch (e) {}
+        }
+        // クールダウン完了後に全ボタンをタップ可能にする
+        buttons.forEach(btn => {
+          btn.style.pointerEvents = "auto";
+          btn.onclick = (e) => {
+            if (e) { e.preventDefault(); e.stopPropagation(); }
+            proceedToNextQuestion(e);
+          };
+        });
+      }, 350);
     }
 
     function proceedToNextQuestion(e) {
-      if (e && e.stopPropagation) e.stopPropagation();
+      if (e) {
+        if (e.preventDefault) e.preventDefault();
+        if (e.stopPropagation) e.stopPropagation();
+      }
       if (!quizState.waitingNext) return;
+      if (Date.now() - (quizState.answeredAt || 0) < 350) return;
       quizState.waitingNext = false;
       const nextBtn = document.getElementById("quiz-next-btn");
       if (nextBtn) nextBtn.classList.add("hidden");
@@ -6508,7 +6520,11 @@ listContainer.appendChild(row);
         btn.className = "p-3 rounded-xl border border-slate-200 bg-white hover:border-indigo-300 hover:bg-indigo-50/40 active:scale-[0.98] transition text-center cursor-pointer";
         btn.innerHTML = `<span class="block text-base font-extrabold text-slate-900 leading-tight break-words">${escapeHtml(opt.core)}</span>`
           + `<span class="block text-[10px] text-slate-400 mt-1">${escapeHtml(opt.root)}</span>`;
-        btn.addEventListener("click", () => answerAffixRush(opt));
+        btn.addEventListener("click", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          answerAffixRush(opt);
+        });
         wrap.appendChild(btn);
       });
     }
@@ -6547,11 +6563,7 @@ listContainer.appendChild(row);
               + `<span class="block text-[11px] text-slate-500 truncate font-normal">「${escapeHtml(opt.ja)}」</span>`;
           }
 
-          btn.disabled = false;
-          btn.onclick = (e) => {
-            e.preventDefault();
-            proceedToNextAffixRushQuestion(e);
-          };
+          btn.disabled = true; // クールダウン中は無効化
         });
       }
 
@@ -6576,19 +6588,38 @@ listContainer.appendChild(row);
       }
       updateAffixRushHud();
 
-      // ユーザーがタップするまで自動で進まないように待機
-      r.waitingNext = true;
-      const nextBtn = document.getElementById("affix-rush-next-btn");
-      if (nextBtn) {
-        nextBtn.classList.remove("hidden");
-        try { nextBtn.scrollIntoView({ behavior: "smooth", block: "nearest" }); } catch (e) {}
-      }
+      // 解答直後はタップで暴発しないようガード（350msのクールダウン）
+      r.waitingNext = false;
+      r.answeredAt = Date.now();
+
+      setTimeout(() => {
+        if (!affixRush || affixRush.ended) return;
+        r.waitingNext = true;
+        const nextBtn = document.getElementById("affix-rush-next-btn");
+        if (nextBtn) {
+          nextBtn.classList.remove("hidden");
+          try { nextBtn.scrollIntoView({ behavior: "smooth", block: "nearest" }); } catch (e) {}
+        }
+        if (wrap) {
+          Array.from(wrap.querySelectorAll("button")).forEach(btn => {
+            btn.disabled = false;
+            btn.onclick = (e) => {
+              if (e) { e.preventDefault(); e.stopPropagation(); }
+              proceedToNextAffixRushQuestion(e);
+            };
+          });
+        }
+      }, 350);
     }
 
     function proceedToNextAffixRushQuestion(e) {
-      if (e && e.stopPropagation) e.stopPropagation();
+      if (e) {
+        if (e.preventDefault) e.preventDefault();
+        if (e.stopPropagation) e.stopPropagation();
+      }
       const r = affixRush;
       if (!r || r.ended || !r.waitingNext) return;
+      if (Date.now() - (r.answeredAt || 0) < 350) return;
       r.waitingNext = false;
       const nextBtn = document.getElementById("affix-rush-next-btn");
       if (nextBtn) nextBtn.classList.add("hidden");
@@ -7295,15 +7326,17 @@ listContainer.appendChild(row);
       initAchievements();
       syncAffixTypeUi();
       updateReaderPreview();
-      // 画面タップで次へ進むハンドラ（待機時のみ有効）
+      // 画面タップで次へ進むハンドラ（待機時のみ有効・解答直後の暴発を防止）
       document.getElementById("screen-quiz")?.addEventListener("click", (e) => {
         if (!quizState.waitingNext) return;
+        if (Date.now() - (quizState.answeredAt || 0) < 350) return;
         if (e.target.closest("button#btn-replay-voice") || e.target.closest("button[onclick*='speak']") || e.target.closest("button[onclick*='abortQuiz']")) return;
         proceedToNextQuestion(e);
       });
       document.getElementById("screen-affix-rush")?.addEventListener("click", (e) => {
         const r = affixRush;
         if (!r || !r.waitingNext) return;
+        if (Date.now() - (r.answeredAt || 0) < 350) return;
         if (e.target.closest("button[onclick*='abortAffixRush']")) return;
         proceedToNextAffixRushQuestion(e);
       });
