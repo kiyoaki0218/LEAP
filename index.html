@@ -237,6 +237,60 @@
     html.dark body.kobun-mode #home-hero-title { color: #ddd6fe; }
     body.kobun-mode #home-hero-sub { color: #6d28d9; }
     html.dark body.kobun-mode #home-hero-sub { color: #c4b5fd; }
+
+    /* ===== 接辞クイズ（神経衰弱）のカード ===== */
+    .memo-card {
+      perspective: 800px;
+      aspect-ratio: 1 / 1;
+      cursor: pointer;
+    }
+    .memo-inner {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      transform-style: preserve-3d;
+      transition: transform 0.32s ease;
+    }
+    .memo-card.flipped .memo-inner,
+    .memo-card.matched .memo-inner { transform: rotateY(180deg); }
+    .memo-face {
+      position: absolute;
+      inset: 0;
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2px;
+      border-radius: 0.75rem;
+      padding: 0.25rem;
+      text-align: center;
+      overflow: hidden;
+    }
+    .memo-front { background: #0f172a; color: #e2e8f0; font-weight: 800; font-size: 1.1rem; }
+    .memo-back { transform: rotateY(180deg); background: #fff; border: 1px solid #cbd5e1; }
+    .memo-card.matched .memo-back { border-color: #059669; background: #ecfdf5; box-shadow: inset 0 0 0 1px rgba(5,150,105,0.35); }
+    html.dark .memo-front { background: #334155; }
+    html.dark .memo-back { background: #172033; border-color: #475569; }
+    html.dark .memo-card.matched .memo-back { background: rgba(16,185,129,0.18); border-color: #10b981; }
+
+    /* ===== レベル別リーダー ===== */
+    .reader-sentence { line-height: 2; }
+    .reader-ja { display: block; font-size: 0.8rem; line-height: 1.75; color: #64748b; margin-top: 0.1rem; }
+    html.dark .reader-ja { color: #b6c3d4; }
+    .reader-target {
+      display: inline;
+      background: #fef3c7;
+      color: #92400e;
+      border-bottom: 2px solid #f59e0b;
+      border-radius: 0.2rem;
+      padding: 0 0.1rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .reader-target:hover { background: #fde68a; }
+    html.dark .reader-target { background: rgba(217,119,6,0.35); color: #fde68a; border-bottom-color: #f59e0b; }
   </style>
   <!-- 実データ(1〜1000)の読み込み -->
   <script src="./words_data.js"></script>
@@ -245,6 +299,8 @@
   <script src="./examples_data.js"></script>
   <!-- 語源・接頭辞・接尾辞などの参考資料 -->
   <script src="./reference_data.js"></script>
+  <!-- 語源ラッシュ（接頭辞・接尾辞）用データ -->
+  <script src="./affix_data.js"></script>
   <!-- html2canvas (スクリーンショット生成) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
@@ -371,6 +427,16 @@
         <button type="button" onclick="navigate('screen-select')" class="w-full py-4 bg-slate-900 hover:bg-slate-800 active:scale-[0.99] text-white font-bold rounded-xl shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer">
           <span>クイズを始める</span>
           <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg>
+        </button>
+
+        <!-- 語源ラッシュ -->
+        <button type="button" onclick="openAffixHub()" class="w-full text-left px-4 py-3 bg-white hover:bg-slate-50 active:bg-slate-100 border border-slate-200 rounded-xl shadow-sm transition-all flex items-center gap-3 cursor-pointer">
+          <span class="w-9 h-9 rounded-xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-lg shrink-0">🧩</span>
+          <span class="min-w-0 flex-1">
+            <span class="block text-sm font-bold text-slate-800">語源ラッシュ（接頭辞・接尾辞）</span>
+            <span class="block text-[11px] text-slate-400 mt-0.5 truncate">60秒4択ラッシュ ＆ 神経衰弱で語源の感覚を養う</span>
+          </span>
+          <span class="text-slate-300 text-sm shrink-0">›</span>
         </button>
 
         <!-- デイリーチャレンジボタン -->
@@ -649,6 +715,7 @@
           </div>
         </div>
         <p class="text-[11px] text-slate-400 text-center">下のボックスをタップして即時購入＆装着！</p>
+        <p class="text-[10px] text-slate-500 text-center leading-relaxed pt-1 border-t border-slate-700/60">前称号＝「〜の」「〜な」「〜し」で終わる修飾語／後称号＝助詞なしの名詞。組み合わせると「修飾語＋肩書き」になります。</p>
       </div>
 
       <!-- 前称号 / 後称号 / アバター / 実績切替タブ -->
@@ -744,6 +811,214 @@
       </div>
       <div id="reference-tabs" class="flex gap-1.5 overflow-x-auto pb-1 -mx-1 px-1"></div>
       <div id="reference-content" class="space-y-4"></div>
+    </section>
+
+    <!-- 4.5 接頭辞・接尾辞クイズ（ハブ） -->
+    <section id="screen-affix" class="fade-in hidden space-y-5">
+      <div class="flex items-center justify-between pb-2 border-b border-slate-200">
+        <div>
+          <h2 class="text-xl font-bold text-slate-900">語源ラッシュ</h2>
+          <p class="text-xs text-slate-400">接頭辞・接尾辞＋語根で、未知語を推測する力を養う</p>
+        </div>
+        <button type="button" onclick="navigate('screen-home')" class="text-sm text-slate-500 hover:text-slate-800 font-medium">戻る</button>
+      </div>
+
+      <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm space-y-3">
+        <div class="flex items-center justify-between gap-2">
+          <span class="text-xs font-bold text-slate-700">出題する接辞</span>
+          <span id="affix-best-badge" class="text-[10px] font-bold text-amber-800 bg-amber-50 border border-amber-200 px-1.5 py-0.5 rounded-md">ベスト 0</span>
+        </div>
+        <div class="flex bg-slate-200/70 p-1 rounded-xl gap-1">
+          <button type="button" id="affix-type-prefix" onclick="setAffixType('prefix')" class="flex-1 py-2 text-xs font-bold rounded-lg bg-white shadow-sm text-slate-900 transition-all cursor-pointer">接頭辞（pre- など）</button>
+          <button type="button" id="affix-type-suffix" onclick="setAffixType('suffix')" class="flex-1 py-2 text-xs font-bold rounded-lg text-slate-500 hover:text-slate-800 transition-all cursor-pointer">接尾辞（-able など）</button>
+        </div>
+        <p id="affix-type-hint" class="text-[11px] text-slate-400 leading-relaxed">「pre- = 前に」のような共通パーツを固定して出題します。語根のコアイメージを手がかりに語を組み立てましょう。</p>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <button type="button" onclick="startAffixRush()" class="text-left p-4 bg-gradient-to-br from-slate-900 to-slate-800 text-white rounded-2xl shadow-sm border border-slate-700 hover:from-slate-800 hover:to-slate-700 active:scale-[0.99] transition cursor-pointer">
+          <div class="flex items-center justify-between">
+            <span class="text-2xl">⚡</span>
+            <span class="text-[10px] font-extrabold bg-white/15 px-2 py-0.5 rounded-full">60 SEC</span>
+          </div>
+          <p class="font-extrabold text-base mt-3">4択ラッシュ</p>
+          <p class="text-[11px] text-slate-300 mt-1 leading-relaxed">日本語訳から語根を4択で即答。正解で+2秒、誤答で-2秒。</p>
+        </button>
+        <button type="button" onclick="startAffixMemory(6)" class="text-left p-4 bg-white rounded-2xl shadow-sm border border-slate-200 hover:border-indigo-300 active:scale-[0.99] transition cursor-pointer">
+          <div class="flex items-center justify-between">
+            <span class="text-2xl">🃏</span>
+            <span class="text-[10px] font-extrabold bg-indigo-50 text-indigo-700 border border-indigo-200 px-2 py-0.5 rounded-full">12 CARDS</span>
+          </div>
+          <p class="font-extrabold text-base mt-3 text-slate-900">神経衰弱ペアリング</p>
+          <p class="text-[11px] text-slate-500 mt-1 leading-relaxed">語根カードと完成単語カードをめくってペアに。揃うと意味と発音を確認できます。</p>
+        </button>
+      </div>
+
+      <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm space-y-2">
+        <p class="text-xs font-bold text-slate-700">語根のコアイメージとは</p>
+        <p class="text-[11px] text-slate-500 leading-relaxed">
+          例えば <span class="font-bold">pre-</span>［前に］＋ <span class="font-bold">dict</span>［言う］＝ <span class="font-bold text-emerald-700">predict</span>「予測する」。<br>
+          「前に＋言う」→「あらかじめ言う」→「予測する」。丸暗記ではなく、パーツの意味から意味を組み立てる感覚を身につけます。
+        </p>
+      </div>
+
+      <div id="affix-memory-best-list" class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm space-y-1.5">
+        <p class="text-xs font-bold text-slate-700">自己ベスト</p>
+        <div id="affix-best-rows" class="space-y-1 text-[11px] text-slate-500"></div>
+      </div>
+    </section>
+
+    <!-- 4.6 語源ラッシュ（4択・60秒） -->
+    <section id="screen-affix-rush" class="fade-in hidden space-y-4">
+      <div class="flex items-center justify-between pb-2 border-b border-slate-200">
+        <div>
+          <h2 class="text-xl font-bold text-slate-900">⚡ 4択ラッシュ</h2>
+          <p id="affix-rush-sub" class="text-xs text-slate-400">接頭辞の意味から語根を選ぶ60秒チャレンジ</p>
+        </div>
+        <button type="button" onclick="abortAffixRush()" class="text-sm text-slate-500 hover:text-slate-800 font-medium">中断</button>
+      </div>
+
+      <div class="flex items-center justify-between text-xs font-bold">
+        <div class="flex items-center gap-2">
+          <span id="affix-rush-score" class="text-amber-800 bg-amber-50 border border-amber-200 px-2 py-1 rounded-full">SCORE 0</span>
+          <span id="affix-rush-combo" class="hidden text-rose-700 bg-rose-50 border border-rose-200 px-2 py-1 rounded-full">🔥 0 COMBO</span>
+        </div>
+        <span id="affix-rush-time" class="text-slate-700 tabular-nums">⏱️ 60.0s</span>
+      </div>
+      <div class="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
+        <div id="affix-rush-bar" class="h-full rounded-full bg-amber-500 transition-all duration-100" style="width: 100%"></div>
+      </div>
+
+      <div id="affix-rush-play" class="space-y-4">
+        <div class="bg-gradient-to-r from-slate-900 to-slate-800 text-white rounded-2xl p-4 text-center space-y-1 shadow-sm">
+          <p class="text-[10px] font-bold tracking-widest text-emerald-400">共通の<span id="affix-rush-kind">接頭辞</span></p>
+          <p id="affix-rush-affix" class="text-3xl font-extrabold tracking-tight">pre-</p>
+          <p id="affix-rush-meaning" class="text-xs text-slate-300">［前に］</p>
+        </div>
+
+        <div class="bg-white border border-slate-200 rounded-2xl p-5 text-center space-y-2 shadow-sm">
+          <p id="affix-rush-ja" class="text-xs font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-full px-3 py-1 inline-block">予測する</p>
+          <p id="affix-rush-formula" class="text-xl font-extrabold text-slate-900 tracking-tight">[ pre- ] + [ ？ ]</p>
+          <p class="text-[11px] text-slate-400">語根のコアイメージを手がかりに選ぼう</p>
+        </div>
+
+        <div id="affix-rush-options" class="grid grid-cols-2 gap-3"></div>
+        <p id="affix-rush-feedback" class="hidden text-xs leading-relaxed bg-slate-50 border border-slate-200 rounded-xl p-3 text-slate-600"></p>
+      </div>
+
+      <div id="affix-rush-result" class="hidden bg-white border border-slate-200 rounded-2xl p-5 text-center space-y-4 shadow-sm">
+        <div>
+          <p class="text-[10px] font-bold uppercase tracking-widest text-slate-400">RUSH RESULT</p>
+          <p id="affix-rush-result-score" class="text-3xl font-extrabold text-slate-900 mt-1">0</p>
+          <p id="affix-rush-result-detail" class="text-xs text-slate-500 mt-1">正解 0 / 0問</p>
+        </div>
+        <div class="bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs text-slate-600 space-y-1">
+          <p id="affix-rush-result-best">自己ベスト: 0</p>
+          <p id="affix-rush-result-coins">🪙 獲得コイン: 0</p>
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+          <button type="button" onclick="startAffixRush()" class="py-3 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold rounded-xl transition cursor-pointer">もう一度</button>
+          <button type="button" onclick="navigate('screen-affix')" class="py-3 bg-white hover:bg-slate-100 border border-slate-200 text-slate-700 text-xs font-bold rounded-xl transition cursor-pointer">モード選択へ</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4.7 神経衰弱ペアリング -->
+    <section id="screen-affix-memory" class="fade-in hidden space-y-4">
+      <div class="flex items-center justify-between pb-2 border-b border-slate-200">
+        <div>
+          <h2 class="text-xl font-bold text-slate-900">🃏 神経衰弱</h2>
+          <p id="affix-memory-sub" class="text-xs text-slate-400">語根と完成単語をめくってペアを作ろう</p>
+        </div>
+        <button type="button" onclick="navigate('screen-affix')" class="text-sm text-slate-500 hover:text-slate-800 font-medium">戻る</button>
+      </div>
+
+      <div class="flex items-center justify-between text-xs font-bold">
+        <span id="affix-memory-progress" class="text-slate-700 bg-slate-100 border border-slate-200 px-2 py-1 rounded-full">0 / 6 ペア</span>
+        <span id="affix-memory-moves" class="text-slate-500">手数 0</span>
+        <span id="affix-memory-time" class="text-slate-500 tabular-nums">00:00</span>
+      </div>
+
+      <div id="affix-memory-board" class="grid grid-cols-4 gap-2"></div>
+      <p class="text-[11px] text-slate-400 text-center leading-relaxed">語根カードと完成単語カードを1枚ずつ。揃うと完成単語と意味が表示され、発音が流れます。</p>
+
+      <div id="affix-memory-matched" class="space-y-1.5"></div>
+
+      <div id="affix-memory-result" class="hidden bg-white border border-emerald-300 rounded-2xl p-5 text-center space-y-3 shadow-sm">
+        <p class="text-2xl">🎉</p>
+        <p class="font-extrabold text-slate-900">全ペア完成！</p>
+        <p id="affix-memory-result-detail" class="text-xs text-slate-500">手数 0 ・ 0秒</p>
+        <p id="affix-memory-result-coins" class="text-xs font-bold text-amber-700 bg-amber-50 border border-amber-200 rounded-xl p-2">🪙 獲得コイン: 0</p>
+        <div class="grid grid-cols-2 gap-2">
+          <button type="button" onclick="startAffixMemory(6)" class="py-3 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl transition cursor-pointer">もう一度</button>
+          <button type="button" onclick="navigate('screen-affix')" class="py-3 bg-white hover:bg-slate-100 border border-slate-200 text-slate-700 text-xs font-bold rounded-xl transition cursor-pointer">モード選択へ</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4.8 レベル別リーダー -->
+    <section id="screen-reader" class="fade-in hidden space-y-4">
+      <div class="flex items-center justify-between pb-2 border-b border-slate-200">
+        <div>
+          <h2 class="text-xl font-bold text-slate-900">📖 レベル別リーダー</h2>
+          <p class="text-xs text-slate-400">LEAPの番号帯と連動した3段階の長文読解</p>
+        </div>
+        <button type="button" onclick="navigate('screen-home')" class="text-sm text-slate-500 hover:text-slate-800 font-medium">戻る</button>
+      </div>
+
+      <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm space-y-3">
+        <div class="flex items-center justify-between gap-2">
+          <span class="text-xs font-bold text-slate-700">読む範囲（10語前後）</span>
+          <span id="reader-band-badge" class="text-[10px] font-bold text-sky-800 bg-sky-50 border border-sky-200 px-1.5 py-0.5 rounded-md">Part 1 ・ 中学文法</span>
+        </div>
+        <div id="reader-part-chips" class="flex flex-wrap gap-1.5"></div>
+        <div class="flex items-center gap-2">
+          <input type="number" id="reader-start" min="1" max="2000" value="1" oninput="updateReaderPreview()" class="w-full p-2.5 border border-slate-300 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:border-slate-800">
+          <span class="text-xs text-slate-400 font-bold shrink-0">〜</span>
+          <input type="number" id="reader-end" min="1" max="2000" value="100" oninput="updateReaderPreview()" class="w-full p-2.5 border border-slate-300 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:border-slate-800">
+        </div>
+        <p id="reader-preview" class="text-[11px] text-slate-400 leading-relaxed">この範囲から10語を選び、例文をつないで本文を作ります。</p>
+        <button type="button" onclick="buildReader()" class="w-full py-3.5 bg-sky-600 hover:bg-sky-700 active:scale-[0.99] text-white font-bold rounded-xl shadow-sm transition cursor-pointer">この範囲で本文を作る</button>
+      </div>
+
+      <div class="bg-sky-50 border border-sky-200 rounded-2xl p-3 flex items-start gap-2">
+        <span class="text-base shrink-0">✍️</span>
+        <p class="text-[11px] text-sky-900 leading-relaxed">
+          <span class="font-extrabold">専用の長文は準備中（COMING SOON）</span>です。現在は選んだ範囲のLEAP例文をつないだ自動生成本文で読めます。本文データを追加すると、そちらが優先されます。
+        </p>
+      </div>
+
+      <div id="reader-passage" class="hidden space-y-3">
+        <div class="bg-white border border-slate-200 rounded-2xl p-4 space-y-2 shadow-sm">
+          <div class="flex items-start justify-between gap-2">
+            <div class="min-w-0">
+              <p class="text-[10px] font-bold uppercase tracking-widest text-slate-400">READING</p>
+              <p id="reader-passage-title" class="text-sm font-bold text-slate-900 truncate">Words That Changed My View</p>
+              <p id="reader-range-label" class="text-[10px] text-slate-400 mt-0.5"></p>
+            </div>
+            <span id="reader-grammar-badge" class="text-[10px] font-bold text-indigo-800 bg-indigo-50 border border-indigo-200 px-1.5 py-0.5 rounded-md shrink-0">中学文法</span>
+          </div>
+          <div class="flex bg-slate-200/70 p-1 rounded-xl gap-1">
+            <button type="button" id="reader-lv-1" onclick="setReaderLevel(1)" class="flex-1 py-1.5 text-[11px] font-bold rounded-lg transition-all cursor-pointer">Lv.1 導入</button>
+            <button type="button" id="reader-lv-2" onclick="setReaderLevel(2)" class="flex-1 py-1.5 text-[11px] font-bold rounded-lg transition-all cursor-pointer">Lv.2 標準</button>
+            <button type="button" id="reader-lv-3" onclick="setReaderLevel(3)" class="flex-1 py-1.5 text-[11px] font-bold rounded-lg transition-all cursor-pointer">Lv.3 実践</button>
+          </div>
+          <div class="flex flex-wrap gap-1.5 pt-0.5">
+            <button type="button" id="reader-ja-btn" onclick="toggleReaderJa()" class="px-2.5 py-1.5 rounded-lg border text-[11px] font-bold transition cursor-pointer">🇯🇵 日本語訳</button>
+            <button type="button" id="reader-slash-btn" onclick="toggleReaderSlash()" class="px-2.5 py-1.5 rounded-lg border text-[11px] font-bold transition cursor-pointer">／ スラッシュ</button>
+            <button type="button" onclick="speakReaderPassage()" class="px-2.5 py-1.5 rounded-lg border border-slate-300 bg-white hover:bg-slate-100 text-[11px] font-bold text-slate-600 transition cursor-pointer">🔊 読み上げ</button>
+            <button type="button" onclick="buildReader()" class="px-2.5 py-1.5 rounded-lg border border-slate-300 bg-white hover:bg-slate-100 text-[11px] font-bold text-slate-600 transition cursor-pointer">🔄 別の本文</button>
+          </div>
+        </div>
+
+        <div id="reader-body" class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm space-y-3"></div>
+        <p class="text-[11px] text-slate-400 text-center leading-relaxed">ハイライトされた単語をタップすると、意味とLEAP番号が見られます。</p>
+
+        <div id="reader-word-list" class="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm space-y-2">
+          <p class="text-xs font-bold text-slate-700">この本文のターゲット語</p>
+          <div id="reader-word-rows" class="grid grid-cols-2 gap-1.5"></div>
+        </div>
+      </div>
     </section>
 
     <!-- 5. 結果画面 -->
@@ -953,6 +1228,24 @@
     </div>
   </div>
 
+  <!-- リーダーの単語ポップアップ -->
+  <div id="reader-word-modal" class="fixed inset-0 z-[75] hidden items-end sm:items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4" onclick="closeReaderWord(event)">
+    <div class="bg-white rounded-3xl w-full max-w-sm p-5 shadow-2xl space-y-3" onclick="event.stopPropagation()">
+      <div class="flex items-start justify-between gap-2">
+        <div class="min-w-0">
+          <p id="reader-word-meta" class="text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full inline-block">LEAP No.1 ・ Part 1</p>
+          <p id="reader-word-title" class="text-2xl font-extrabold text-slate-900 mt-2 break-all">word</p>
+          <p id="reader-word-meaning" class="text-sm text-slate-600 mt-1 leading-relaxed">意味</p>
+        </div>
+        <button type="button" onclick="closeReaderWord()" class="text-slate-400 hover:text-slate-700 text-lg font-bold p-1 shrink-0">✕</button>
+      </div>
+      <div class="flex gap-2 pt-1">
+        <button type="button" id="reader-word-speak" class="flex-1 py-2.5 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold rounded-xl transition cursor-pointer">🔊 発音</button>
+        <button type="button" id="reader-word-detail" class="flex-1 py-2.5 bg-white hover:bg-slate-100 border border-slate-200 text-slate-700 text-xs font-bold rounded-xl transition cursor-pointer">📖 単語詳細</button>
+      </div>
+    </div>
+  </div>
+
   <!-- トースト通知 -->
   <div id="toast" class="fixed bottom-5 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-xs font-medium px-4 py-2 rounded-full shadow-lg opacity-0 pointer-events-none transition-all duration-300 z-50">
     コピーしました
@@ -1035,6 +1328,17 @@
       { id: "pre_dimensional", name: "次元の", price: 24000 },
       { id: "pre_allthings", name: "万物の", price: 26000 },
       { id: "pre_onlyme", name: "唯我の", price: 30000 },
+      // 追加: 必ず名詞（後称号）が続く連体形で終わる前称号
+      { id: "pre_rookie", name: "駆け出しの", price: 60 },
+      { id: "pre_midnight", name: "深夜の", price: 140 },
+      { id: "pre_onestroke", name: "一問入魂の", price: 500 },
+      { id: "pre_kyoto", name: "京都の", price: 700 },
+      { id: "pre_story", name: "物語を編む", price: 850 },
+      { id: "pre_perfect", name: "全問正解の", price: 900 },
+      { id: "pre_wordsmith", name: "言葉を紡ぐ", price: 950 },
+      { id: "pre_fullmark", name: "満点の", price: 1100 },
+      { id: "pre_etymology", name: "語源を極めし", price: 1300 },
+      { id: "pre_affix", name: "接辞を刻みし", price: 1500 },
       // 実績で自動解放される称号（購入不可）
       { id: "pre_earned_streak7", name: "不抜の", price: 0, unlockAchievement: "streak_7" },
       { id: "pre_earned_streak30", name: "星霜の", price: 0, unlockAchievement: "streak_30" },
@@ -1069,60 +1373,101 @@
       { id: "suf_pioneer", name: "開拓者", price: 1400 },
       { id: "suf_brave", name: "勇者", price: 1500 },
       { id: "suf_king", name: "読解王", price: 1600 },
-      { id: "suf_conqueror", name: "語彙の覇者", price: 1800 },
+      { id: "suf_conqueror", name: "語彙覇者", price: 1800 },
       { id: "suf_master", name: "LEAPマスター", price: 2000 },
       { id: "suf_grandmaster", name: "名誉教授", price: 2200 },
       { id: "suf_linguist", name: "言語学者", price: 2500 },
       { id: "suf_philosopher", name: "哲学者", price: 3000 },
       { id: "suf_overlord", name: "覇王", price: 3500 },
       { id: "suf_ruler", name: "絶対王者", price: 4000 },
-      { id: "suf_incarnation", name: "英単語の化身", price: 4500 },
+      { id: "suf_incarnation", name: "化身", price: 4500 },
       { id: "suf_god", name: "語彙の神", price: 5000 },
       { id: "suf_oracle", name: "神託", price: 5500 },
       { id: "suf_concept", name: "概念", price: 6000 },
       { id: "suf_apprentice", name: "単語見習い", price: 60 },
       { id: "suf_vocab_king", name: "語彙王", price: 7000 },
       { id: "suf_collector2", name: "単語蒐集家", price: 7500 },
-      { id: "suf_memory_keeper", name: "記憶の番人", price: 8000 },
-      { id: "suf_spelling_mage", name: "綴りの魔術師", price: 8500 },
-      { id: "suf_meaning_seeker", name: "意味の探求者", price: 9000 },
-      { id: "suf_quiz_master", name: "四択の達人", price: 9500 },
+      { id: "suf_memory_keeper", name: "記憶番人", price: 8000 },
+      { id: "suf_spelling_mage", name: "綴り魔術師", price: 8500 },
+      { id: "suf_meaning_seeker", name: "意味探求者", price: 9000 },
+      { id: "suf_quiz_master", name: "四択達人", price: 9500 },
       { id: "suf_combo_artisan", name: "コンボ職人", price: 10000 },
-      { id: "suf_streak_hunter", name: "連答の狩人", price: 10500 },
+      { id: "suf_streak_hunter", name: "連答狩人", price: 10500 },
       { id: "suf_accuracy99", name: "正答率99%", price: 11000 },
       { id: "suf_all_correct", name: "全問正解者", price: 11500 },
       { id: "suf_perfect", name: "パーフェクト", price: 12000 },
-      { id: "suf_unbroken", name: "不屈の受験生", price: 12500 },
-      { id: "suf_midnight", name: "深夜の学習者", price: 13000 },
-      { id: "suf_morning", name: "朝型の秀才", price: 13500 },
-      { id: "suf_commuter", name: "電車内の求道者", price: 14000 },
-      { id: "suf_wordbook", name: "単語帳の主", price: 14500 },
-      { id: "suf_dictionary", name: "辞書の愛好家", price: 15000 },
+      { id: "suf_unbroken", name: "不屈受験生", price: 12500 },
+      { id: "suf_midnight", name: "深夜学習者", price: 13000 },
+      { id: "suf_morning", name: "朝型秀才", price: 13500 },
+      { id: "suf_commuter", name: "通学求道者", price: 14000 },
+      { id: "suf_wordbook", name: "単語帳マイスター", price: 14500 },
+      { id: "suf_dictionary", name: "辞書愛好家", price: 15000 },
       { id: "suf_etymology", name: "語源ハンター", price: 15500 },
-      { id: "suf_synonym", name: "類義語の使い手", price: 16000 },
+      { id: "suf_synonym", name: "類義語マスター", price: 16000 },
       { id: "suf_example", name: "例文マスター", price: 16500 },
-      { id: "suf_pronounce", name: "発音の申し子", price: 17000 },
-      { id: "suf_listening", name: "リスニングの鬼", price: 17500 },
-      { id: "suf_longtext", name: "長文の支配者", price: 18000 },
-      { id: "suf_translation", name: "和訳の求道者", price: 18500 },
-      { id: "suf_composition", name: "英作文の魔術師", price: 19000 },
+      { id: "suf_pronounce", name: "発音申し子", price: 17000 },
+      { id: "suf_listening", name: "リスニング鬼", price: 17500 },
+      { id: "suf_longtext", name: "長文支配者", price: 18000 },
+      { id: "suf_translation", name: "和訳求道者", price: 18500 },
+      { id: "suf_composition", name: "英作文魔術師", price: 19000 },
       { id: "suf_breaker", name: "難関突破者", price: 19500 },
-      { id: "suf_exam_child", name: "試験の申し子", price: 20000 },
+      { id: "suf_exam_child", name: "試験申し子", price: 20000 },
       { id: "suf_score_source", name: "得点源", price: 21000 },
       { id: "suf_fullmark", name: "満点請負人", price: 22000 },
-      { id: "suf_alchemist", name: "語彙の錬金術師", price: 24000 },
-      { id: "suf_dominator", name: "単語の支配者", price: 26000 },
-      { id: "suf_transcender", name: "言語の超越者", price: 28000 },
-      { id: "suf_knowledge_king", name: "知識の王", price: 30000 },
-      { id: "suf_omniscient", name: "全知の存在", price: 35000 },
+      { id: "suf_alchemist", name: "語彙錬金術師", price: 24000 },
+      { id: "suf_dominator", name: "単語支配者", price: 26000 },
+      { id: "suf_transcender", name: "言語超越者", price: 28000 },
+      { id: "suf_knowledge_king", name: "知識王", price: 30000 },
+      { id: "suf_omniscient", name: "全知者", price: 35000 },
+      // 追加: 助詞を含まない純粋な名詞（体言止め）の後称号
+      { id: "suf_sprint_king", name: "快速王", price: 1400 },
+      { id: "suf_affix_hunter", name: "接辞ハンター", price: 1500 },
+      { id: "suf_pronunciation", name: "発音職人", price: 1600 },
+      { id: "suf_reader", name: "長文読解者", price: 1700 },
+      { id: "suf_etymologist", name: "語源探究者", price: 1800 },
+      { id: "suf_storyteller", name: "語り部", price: 1900 },
+      { id: "suf_memory_master", name: "記憶達人", price: 2000 },
+      { id: "suf_word_smith", name: "言葉職人", price: 2100 },
       // 実績で自動解放される称号（購入不可）
       { id: "suf_earned_streak7", name: "継続者", price: 0, unlockAchievement: "streak_7" },
       { id: "suf_earned_streak30", name: "毎日学習者", price: 0, unlockAchievement: "streak_30" },
-      { id: "suf_earned_review", name: "復習の達人", price: 0, unlockAchievement: "review_20" },
+      { id: "suf_earned_review", name: "復習達人", price: 0, unlockAchievement: "review_20" },
       { id: "suf_earned_perfect", name: "完全主義者", price: 0, unlockAchievement: "perfect_3" },
       { id: "suf_earned_avatar", name: "絵柄蒐集家", price: 0, unlockAchievement: "avatar_all" },
       { id: "suf_earned_1000", name: "全知全能", price: 0, unlockAchievement: "correct_1000" }
     ];
+
+    // 旧称号名→新称号名（助詞を排除した体言止めへの移行用）
+    const SUFFIX_NAME_MIGRATION = {
+      "語彙の覇者": "語彙覇者",
+      "英単語の化身": "化身",
+      "記憶の番人": "記憶番人",
+      "綴りの魔術師": "綴り魔術師",
+      "意味の探求者": "意味探求者",
+      "四択の達人": "四択達人",
+      "連答の狩人": "連答狩人",
+      "不屈の受験生": "不屈受験生",
+      "深夜の学習者": "深夜学習者",
+      "朝型の秀才": "朝型秀才",
+      "電車内の求道者": "通学求道者",
+      "単語帳の主": "単語帳マイスター",
+      "辞書の愛好家": "辞書愛好家",
+      "類義語の使い手": "類義語マスター",
+      "発音の申し子": "発音申し子",
+      "リスニングの鬼": "リスニング鬼",
+      "長文の支配者": "長文支配者",
+      "和訳の求道者": "和訳求道者",
+      "英作文の魔術師": "英作文魔術師",
+      "試験の申し子": "試験申し子",
+      "語彙の錬金術師": "語彙錬金術師",
+      "単語の支配者": "単語支配者",
+      "言語の超越者": "言語超越者",
+      "知識の王": "知識王",
+      "全知の存在": "全知者",
+      "復習の達人": "復習達人"
+    };
+    // 旧名の前称号は現行データに存在しないが、将来の改名に備えて用意
+    const PREFIX_NAME_MIGRATION = {};
 
     // アバターフレーム（ショップで購入・装着）
     const FRAME_ITEMS = [
@@ -1489,8 +1834,27 @@
       equippedAvatar: "avatar_auto"
     };
 
+    // 前称号（連体形）＋後称号（体言止め）を自然な日本語に連結する
+    // 例: 「天才の」＋「語彙王」→「天才の語彙王」／「物語を編む」＋「語り部」→「物語を編む語り部」
+    const TITLE_CONNECTIVE_TAIL = /(の|な|し|る|む|く|た|い|き|ず)$/;
+    function composeTitle(prefix, suffix) {
+      let head = String(prefix == null ? "" : prefix).trim();
+      const tail = String(suffix == null ? "" : suffix).trim();
+      if (!head && !tail) return "始まりのビギナー";
+      if (!head) return tail;
+      if (!tail) return /の$/.test(head) ? head.slice(0, -1) : head;
+      // 「〜の」＋「〜の」で助詞が重複する場合
+      if (/の$/.test(head) && /^の/.test(tail)) head = head.slice(0, -1);
+      // 「満点の」＋「満点請負人」のように語幹が重複する場合は前称号を落とす
+      const stem = head.replace(/[のな]$/, "");
+      if (stem.length >= 2 && tail.indexOf(stem) === 0) head = "";
+      // 体言で終わる前称号には「の」を補って連結する
+      if (head && !TITLE_CONNECTIVE_TAIL.test(head)) head += "の";
+      return head + tail;
+    }
+
     function getFullTitle() {
-      return (userData.prefix || "") + (userData.suffix || "ビギナー");
+      return composeTitle(userData.prefix, userData.suffix);
     }
 
 
@@ -1822,7 +2186,7 @@
         saveUserData();
       }
       if (newly.length) notifyAchievements(newly);
-      newTitles.forEach(t => showToast(`🏷️ 実績称号「${(userData.prefix || "")}${t.name}」を獲得！`));
+      newTitles.forEach(t => showToast(`🏷️ 実績称号「${composeTitle(userData.prefix, t.name)}」を獲得！`));
       newAvatars.forEach(a => showToast(`🎭 アバター「${a.name}」を解放！`));
     }
 
@@ -2064,6 +2428,11 @@
           }
         }
       } catch (e) { console.error(e); }
+      if (!userData.affixStats || typeof userData.affixStats !== "object") userData.affixStats = {};
+      if (typeof userData.readerRuns !== "number") userData.readerRuns = 0;
+      // 旧称号名（助詞入り）を新しい「修飾語＋名詞」構成へ引き継ぐ
+      if (userData.suffix && SUFFIX_NAME_MIGRATION[userData.suffix]) userData.suffix = SUFFIX_NAME_MIGRATION[userData.suffix];
+      if (userData.prefix && PREFIX_NAME_MIGRATION[userData.prefix]) userData.prefix = PREFIX_NAME_MIGRATION[userData.prefix];
       if (typeof userData.exp !== "number" || !isFinite(userData.exp) || userData.exp < 0) userData.exp = 0;
       if (!Array.isArray(userData.ownedFrames) || userData.ownedFrames.length === 0) userData.ownedFrames = ["frame_normal"];
       if (!userData.ownedFrames.includes("frame_normal")) userData.ownedFrames.unshift("frame_normal");
@@ -2251,7 +2620,7 @@
     }
 
     // 画面遷移
-    const SCREENS = ["screen-home", "screen-select", "screen-quiz", "screen-shop", "screen-dictionary", "screen-reference", "screen-result"];
+    const SCREENS = ["screen-home", "screen-select", "screen-quiz", "screen-shop", "screen-dictionary", "screen-reference", "screen-affix", "screen-affix-rush", "screen-affix-memory", "screen-reader", "screen-result"];
     function currentScreenId() {
       const found = SCREENS.find(id => {
         const el = document.getElementById(id);
@@ -2309,6 +2678,15 @@
       const options = opts || {};
       // クイズ画面を離れるときはタイマーを止める（背後で時間が進み続けるのを防ぐ）
       if (screenId !== "screen-quiz") stopQuizTimers();
+      // 接辞クイズのタイマーも同様に止める（ラッシュは終了時にコインを確定）
+      if (screenId !== "screen-affix-rush") {
+        if (affixRush && !affixRush.ended) endAffixRush();
+        else stopAffixRushTimer();
+      }
+      if (screenId !== "screen-affix-memory") {
+        if (affixMemory && !affixMemory.ended) affixMemory.ended = true;
+        stopAffixMemoryTimer();
+      }
       SCREENS.forEach(id => {
         const el = document.getElementById(id);
         if (el) {
@@ -5902,6 +6280,893 @@ listContainer.appendChild(row);
       }, 2000);
     }
 
+    // ============================================================
+    // 語源ラッシュ（接頭辞・接尾辞クイズ）
+    // ============================================================
+    const AFFIX_TYPE_KEY = "LEAP_AFFIX_TYPE_V1";
+    let affixType = "prefix";
+    let affixTypeLoaded = false;
+    let affixRush = null;
+    let affixMemory = null;
+    let readerState = null;
+
+    function setAffixText(id, text) {
+      const el = document.getElementById(id);
+      if (el) el.textContent = text;
+    }
+
+    function getAffixGroups(type) {
+      if (typeof AFFIX_DATA === "undefined" || !AFFIX_DATA) return [];
+      const list = (type === "suffix" ? AFFIX_DATA.suffixes : AFFIX_DATA.prefixes) || [];
+      return list.filter(g => g && Array.isArray(g.roots) && g.roots.length > 0);
+    }
+
+    function isPrefixAffix(type) { return type !== "suffix"; }
+
+    // 接辞と語根を組み立てた表示（pre- + dict / read + -able）
+    function affixFormula(group, root, type) {
+      const aff = group ? group.affix : "";
+      return isPrefixAffix(type) ? `${aff} + ${root.root}` : `${root.root} + ${aff}`;
+    }
+
+    function ensureAffixStats() {
+      if (!userData.affixStats || typeof userData.affixStats !== "object") userData.affixStats = {};
+      const st = userData.affixStats;
+      if (!st.rushBest || typeof st.rushBest !== "object") st.rushBest = {};
+      if (!st.memoryBest || typeof st.memoryBest !== "object") st.memoryBest = {};
+      ["prefix", "suffix"].forEach(k => {
+        if (typeof st.rushBest[k] !== "number" || !isFinite(st.rushBest[k])) st.rushBest[k] = 0;
+        const m = st.memoryBest[k];
+        if (!m || typeof m !== "object" || typeof m.moves !== "number" || typeof m.seconds !== "number") {
+          st.memoryBest[k] = { moves: 0, seconds: 0 };
+        }
+      });
+      return st;
+    }
+
+    function loadAffixType() {
+      if (affixTypeLoaded) return;
+      affixTypeLoaded = true;
+      try {
+        const saved = localStorage.getItem(AFFIX_TYPE_KEY);
+        if (saved === "prefix" || saved === "suffix") affixType = saved;
+      } catch (e) {}
+    }
+
+    function openAffixHub() {
+      loadAffixType();
+      navigate("screen-affix");
+      syncAffixTypeUi();
+    }
+
+    function setAffixType(type) {
+      affixType = type === "suffix" ? "suffix" : "prefix";
+      try { localStorage.setItem(AFFIX_TYPE_KEY, affixType); } catch (e) {}
+      syncAffixTypeUi();
+    }
+
+    // 同じ接辞の中で、間違えやすい語根を混ぜて4択を作る
+    function pickAffixRushQuestion(type) {
+      const groups = getAffixGroups(type);
+      if (!groups.length) return null;
+      const group = groups[Math.floor(Math.random() * groups.length)];
+      const target = group.roots[Math.floor(Math.random() * group.roots.length)];
+      const pool = [];
+      groups.forEach(g => g.roots.forEach(r => {
+        if (r.core === target.core) return;
+        if (String(r.core).toLowerCase() === String(target.core).toLowerCase()) return;
+        pool.push(r);
+      }));
+      const distractors = [];
+      shuffleArray(pool).forEach(r => {
+        if (distractors.length >= 3) return;
+        if (distractors.some(d => d.core === r.core)) return;
+        distractors.push(r);
+      });
+      return { group, target, options: shuffleArray([target, ...distractors]) };
+    }
+
+    function startAffixRush() {
+      loadAffixType();
+      const groups = getAffixGroups(affixType);
+      if (!groups.length) {
+        showToast("接辞データが読み込まれていません");
+        return;
+      }
+      stopAffixRushTimer();
+      affixRush = {
+        type: affixType,
+        score: 0,
+        correct: 0,
+        total: 0,
+        combo: 0,
+        maxCombo: 0,
+        timeLeft: 60,
+        ended: false,
+        locked: false,
+        current: null,
+        intervalId: null,
+        timeoutIds: []
+      };
+      const result = document.getElementById("affix-rush-result");
+      if (result) result.classList.add("hidden");
+      const play = document.getElementById("affix-rush-play");
+      if (play) play.classList.remove("hidden");
+      const feedback = document.getElementById("affix-rush-feedback");
+      if (feedback) feedback.classList.add("hidden");
+      setAffixText("affix-rush-sub", `${isPrefixAffix(affixType) ? "接頭辞" : "接尾辞"}の意味から語根を選ぶ60秒チャレンジ`);
+      updateAffixRushHud();
+      navigate("screen-affix-rush");
+      nextAffixRushQuestion();
+      affixRush.intervalId = setInterval(tickAffixRush, 100);
+    }
+
+    function nextAffixRushQuestion() {
+      if (!affixRush || affixRush.ended) return;
+      affixRush.locked = false;
+      affixRush.current = pickAffixRushQuestion(affixRush.type);
+      renderAffixRushQuestion();
+    }
+
+    function renderAffixRushQuestion() {
+      const q = affixRush && affixRush.current;
+      if (!q) return;
+      const type = affixRush.type;
+      setAffixText("affix-rush-kind", isPrefixAffix(type) ? "接頭辞" : "接尾辞");
+      setAffixText("affix-rush-affix", q.group.affix);
+      setAffixText("affix-rush-meaning", `［${q.group.meaning}］`);
+      setAffixText("affix-rush-ja", q.target.ja);
+      setAffixText("affix-rush-formula", isPrefixAffix(type) ? `[ ${q.group.affix} ] + [ ？ ]` : `[ ？ ] + [ ${q.group.affix} ]`);
+
+      const feedback = document.getElementById("affix-rush-feedback");
+      if (feedback) {
+        feedback.classList.add("hidden");
+        feedback.innerHTML = "";
+      }
+
+      const wrap = document.getElementById("affix-rush-options");
+      if (!wrap) return;
+      wrap.innerHTML = "";
+      q.options.forEach(opt => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.dataset.core = opt.core;
+        btn.className = "p-3 rounded-xl border border-slate-200 bg-white hover:border-indigo-300 hover:bg-indigo-50/40 active:scale-[0.98] transition text-center cursor-pointer";
+        btn.innerHTML = `<span class="block text-base font-extrabold text-slate-900 leading-tight break-words">${escapeHtml(opt.core)}</span>`
+          + `<span class="block text-[10px] text-slate-400 mt-1">${escapeHtml(opt.root)}</span>`;
+        btn.addEventListener("click", () => answerAffixRush(opt));
+        wrap.appendChild(btn);
+      });
+    }
+
+    function answerAffixRush(option) {
+      const r = affixRush;
+      if (!r || r.ended || r.locked || !r.current) return;
+      r.locked = true;
+      const q = r.current;
+      const isCorrect = option.core === q.target.core;
+      r.total += 1;
+
+      const wrap = document.getElementById("affix-rush-options");
+      if (wrap) {
+        Array.from(wrap.querySelectorAll("button")).forEach(btn => {
+          if (btn.dataset.core === q.target.core) {
+            btn.className = "p-3 rounded-xl border-2 border-emerald-500 bg-emerald-50 text-center cursor-default";
+          } else if (btn.dataset.core === option.core) {
+            btn.className = "p-3 rounded-xl border-2 border-rose-400 bg-rose-50 text-center cursor-default";
+          } else {
+            btn.className = "p-3 rounded-xl border border-slate-200 bg-white text-center opacity-60 cursor-default";
+          }
+          btn.disabled = true;
+        });
+      }
+
+      const feedback = document.getElementById("affix-rush-feedback");
+      if (feedback) {
+        feedback.classList.remove("hidden");
+        feedback.innerHTML = isCorrect
+          ? `✅ <span class="font-bold text-emerald-700">${escapeHtml(affixFormula(q.group, q.target, r.type))}</span> = <span class="font-bold">${escapeHtml(q.target.word)}</span>「${escapeHtml(q.target.ja)}」<br><span class="text-[11px] text-slate-500">${escapeHtml(q.group.affix)}［${escapeHtml(q.group.meaning)}］＋ ${escapeHtml(q.target.root)}［${escapeHtml(q.target.core)}］</span>`
+          : `❌ 正解は <span class="font-bold text-emerald-700">${escapeHtml(q.target.root)}［${escapeHtml(q.target.core)}］</span>。<br>${escapeHtml(affixFormula(q.group, q.target, r.type))} = ${escapeHtml(q.target.word)}「${escapeHtml(q.target.ja)}」`;
+      }
+
+      if (isCorrect) {
+        r.correct += 1;
+        r.combo += 1;
+        r.maxCombo = Math.max(r.maxCombo, r.combo);
+        r.score += 10 + Math.min(r.combo - 1, 5) * 2;
+        r.timeLeft = Math.min(99, r.timeLeft + 2);
+        if (userData.voiceEnabled) speakEnglish(q.target.word);
+      } else {
+        r.combo = 0;
+        r.timeLeft = Math.max(0.1, r.timeLeft - 2);
+      }
+      updateAffixRushHud();
+
+      const timeoutId = setTimeout(() => {
+        if (!affixRush || affixRush.ended) return;
+        nextAffixRushQuestion();
+      }, isCorrect ? 520 : 1400);
+      r.timeoutIds.push(timeoutId);
+    }
+
+    function updateAffixRushHud() {
+      const r = affixRush;
+      if (!r) return;
+      setAffixText("affix-rush-score", `SCORE ${r.score}`);
+      const comboEl = document.getElementById("affix-rush-combo");
+      if (comboEl) {
+        comboEl.classList.toggle("hidden", r.combo < 2);
+        comboEl.textContent = `🔥 ${r.combo} COMBO`;
+      }
+      setAffixText("affix-rush-time", `⏱️ ${Math.max(0, r.timeLeft).toFixed(1)}s`);
+      const bar = document.getElementById("affix-rush-bar");
+      if (bar) bar.style.width = `${Math.max(0, Math.min(100, (r.timeLeft / 60) * 100))}%`;
+    }
+
+    function tickAffixRush() {
+      const r = affixRush;
+      if (!r || r.ended) {
+        stopAffixRushTimer();
+        return;
+      }
+      r.timeLeft -= 0.1;
+      if (r.timeLeft <= 0) {
+        r.timeLeft = 0;
+        updateAffixRushHud();
+        endAffixRush();
+        return;
+      }
+      updateAffixRushHud();
+    }
+
+    function stopAffixRushTimer() {
+      if (affixRush && affixRush.intervalId) {
+        clearInterval(affixRush.intervalId);
+        affixRush.intervalId = null;
+      }
+    }
+
+    function endAffixRush() {
+      const r = affixRush;
+      if (!r || r.ended) {
+        stopAffixRushTimer();
+        return;
+      }
+      r.ended = true;
+      stopAffixRushTimer();
+      (r.timeoutIds || []).forEach(id => clearTimeout(id));
+      r.timeoutIds = [];
+
+      const st = ensureAffixStats();
+      const key = r.type;
+      const isBest = r.score > (st.rushBest[key] || 0);
+      if (isBest) st.rushBest[key] = r.score;
+      const coins = Math.floor(r.score / 10) * 2 + (isBest && r.score > 0 ? 10 : 0);
+      if (coins > 0) userData.coins += coins;
+      saveUserData();
+
+      const play = document.getElementById("affix-rush-play");
+      if (play) play.classList.add("hidden");
+      const result = document.getElementById("affix-rush-result");
+      if (result) result.classList.remove("hidden");
+      setAffixText("affix-rush-result-score", String(r.score));
+      setAffixText("affix-rush-result-detail", `正解 ${r.correct} / ${r.total}問 ・ 最大コンボ ${r.maxCombo}`);
+      setAffixText("affix-rush-result-best", `自己ベスト: ${st.rushBest[key] || 0}${isBest && r.score > 0 ? "（更新！）" : ""}`);
+      setAffixText("affix-rush-result-coins", `🪙 獲得コイン: ${coins}`);
+      syncAffixTypeUi();
+      if (coins > 0) showToast(`語源ラッシュ終了！ 🪙${coins} Coin 獲得`);
+      checkAchievements();
+    }
+
+    function abortAffixRush() {
+      if (affixRush && !affixRush.ended) endAffixRush();
+      navigate("screen-affix");
+    }
+
+    // ===== 神経衰弱ペアリング =====
+    function startAffixMemory(pairs) {
+      loadAffixType();
+      const groups = getAffixGroups(affixType);
+      if (!groups.length) {
+        showToast("接辞データが読み込まれていません");
+        return;
+      }
+      const requested = Math.max(2, Math.min(8, Number(pairs) || 6));
+      // 1グループは4〜5語根なので、足りない分は他の接辞グループから補充する
+      const rootPool = shuffleArray(groups.flatMap(g => g.roots.map(root => ({ root, group: g }))));
+      const pickedRoots = rootPool.slice(0, Math.min(requested, rootPool.length));
+      const cards = [];
+      pickedRoots.forEach(({ root, group: cardGroup }, i) => {
+        cards.push({ pairKey: String(i), kind: "root", root, group: cardGroup, flipped: false, matched: false });
+        cards.push({ pairKey: String(i), kind: "word", root, group: cardGroup, flipped: false, matched: false });
+      });
+      stopAffixMemoryTimer();
+      affixMemory = {
+        type: affixType,
+        cards: shuffleArray(cards),
+        flipped: [],
+        matched: 0,
+        totalPairs: pickedRoots.length,
+        moves: 0,
+        startedAt: Date.now(),
+        elapsed: 0,
+        ended: false,
+        lock: false,
+        intervalId: null
+      };
+      const result = document.getElementById("affix-memory-result");
+      if (result) result.classList.add("hidden");
+      const matched = document.getElementById("affix-memory-matched");
+      if (matched) matched.innerHTML = "";
+      setAffixText("affix-memory-sub", `${isPrefixAffix(affixType) ? "接頭辞" : "接尾辞"}グループの語根と完成単語をペアに`);
+      renderAffixMemoryBoard();
+      updateAffixMemoryHud();
+      navigate("screen-affix-memory");
+      affixMemory.intervalId = setInterval(() => {
+        if (!affixMemory || affixMemory.ended) return;
+        affixMemory.elapsed = Math.floor((Date.now() - affixMemory.startedAt) / 1000);
+        updateAffixMemoryHud();
+      }, 500);
+    }
+
+    function renderAffixMemoryBoard() {
+      const board = document.getElementById("affix-memory-board");
+      if (!board || !affixMemory) return;
+      board.innerHTML = "";
+      affixMemory.cards.forEach((card, index) => {
+        const el = document.createElement("button");
+        el.type = "button";
+        el.className = "memo-card";
+        el.dataset.index = String(index);
+        const back = card.kind === "root"
+          ? `<span class="text-[11px] font-extrabold text-indigo-700 leading-tight break-all">${escapeHtml(card.root.root)}</span><span class="text-[9px] text-slate-500 leading-tight">［${escapeHtml(card.root.core)}］</span>`
+          : `<span class="text-[10px] font-extrabold text-emerald-700 leading-tight break-all">${escapeHtml(card.root.word)}</span><span class="text-[9px] text-slate-500 leading-tight">${escapeHtml(card.root.ja)}</span>`;
+        el.innerHTML = `<div class="memo-inner"><div class="memo-face memo-front">?</div><div class="memo-face memo-back">${back}</div></div>`;
+        el.addEventListener("click", () => flipAffixMemoryCard(index));
+        board.appendChild(el);
+      });
+    }
+
+    function cardElement(index) {
+      return document.querySelector(`#affix-memory-board .memo-card[data-index="${index}"]`);
+    }
+
+    function flipAffixMemoryCard(index) {
+      const m = affixMemory;
+      if (!m || m.ended || m.lock) return;
+      const card = m.cards[index];
+      if (!card || card.flipped || card.matched) return;
+      card.flipped = true;
+      const el = cardElement(index);
+      if (el) el.classList.add("flipped");
+      m.flipped.push(index);
+      if (m.flipped.length < 2) return;
+
+      m.moves += 1;
+      updateAffixMemoryHud();
+      const [a, b] = m.flipped;
+      const ca = m.cards[a];
+      const cb = m.cards[b];
+      if (ca.pairKey === cb.pairKey && ca.kind !== cb.kind) {
+        m.flipped = [];
+        ca.matched = true;
+        cb.matched = true;
+        [a, b].forEach(i => {
+          const e = cardElement(i);
+          if (e) {
+            e.classList.remove("flipped");
+            e.classList.add("matched");
+          }
+        });
+        m.matched += 1;
+        addAffixMemoryMatchedRow(ca.root, ca.group, m.type);
+        if (userData.voiceEnabled) speakEnglish(ca.root.word);
+        updateAffixMemoryHud();
+        if (m.matched >= m.totalPairs) finishAffixMemory();
+        return;
+      }
+
+      m.lock = true;
+      const wrong = [...m.flipped];
+      setTimeout(() => {
+        if (!affixMemory) return;
+        wrong.forEach(i => {
+          const c = affixMemory.cards[i];
+          if (!c || c.matched) return;
+          c.flipped = false;
+          const e = cardElement(i);
+          if (e) e.classList.remove("flipped");
+        });
+        affixMemory.flipped = [];
+        affixMemory.lock = false;
+      }, 760);
+    }
+
+    function addAffixMemoryMatchedRow(root, group, type) {
+      const list = document.getElementById("affix-memory-matched");
+      if (!list) return;
+      const row = document.createElement("div");
+      row.className = "flex items-center justify-between gap-2 text-[11px] bg-emerald-50 border border-emerald-200 rounded-lg px-2.5 py-1.5 text-emerald-900";
+      row.innerHTML = `<span class="font-extrabold shrink-0">${escapeHtml(affixFormula(group, root, type))}</span>`
+        + `<span class="font-bold truncate">${escapeHtml(root.word)}「${escapeHtml(root.ja)}」</span>`;
+      list.appendChild(row);
+    }
+
+    function formatAffixClock(seconds) {
+      const total = Math.max(0, Math.floor(seconds));
+      const mm = String(Math.floor(total / 60)).padStart(2, "0");
+      const ss = String(total % 60).padStart(2, "0");
+      return `${mm}:${ss}`;
+    }
+
+    function updateAffixMemoryHud() {
+      const m = affixMemory;
+      if (!m) return;
+      setAffixText("affix-memory-progress", `${m.matched} / ${m.totalPairs} ペア`);
+      setAffixText("affix-memory-moves", `手数 ${m.moves}`);
+      setAffixText("affix-memory-time", formatAffixClock(m.elapsed));
+    }
+
+    function stopAffixMemoryTimer() {
+      if (affixMemory && affixMemory.intervalId) {
+        clearInterval(affixMemory.intervalId);
+        affixMemory.intervalId = null;
+      }
+    }
+
+    function finishAffixMemory() {
+      const m = affixMemory;
+      if (!m || m.ended) return;
+      m.ended = true;
+      stopAffixMemoryTimer();
+      m.elapsed = Math.max(1, Math.round((Date.now() - m.startedAt) / 1000));
+      updateAffixMemoryHud();
+
+      const st = ensureAffixStats();
+      const prev = st.memoryBest[m.type] || { moves: 0, seconds: 0 };
+      const isBest = !prev.moves || m.moves < prev.moves || (m.moves === prev.moves && m.elapsed < prev.seconds);
+      if (isBest) st.memoryBest[m.type] = { moves: m.moves, seconds: m.elapsed };
+      const coins = Math.max(10, 40 + m.totalPairs * 5 - Math.max(0, m.moves - m.totalPairs) * 2);
+      userData.coins += coins;
+      saveUserData();
+
+      const result = document.getElementById("affix-memory-result");
+      if (result) result.classList.remove("hidden");
+      setAffixText("affix-memory-result-detail", `手数 ${m.moves} ・ ${formatAffixClock(m.elapsed)}${isBest ? " ・ 自己ベスト更新！" : ""}`);
+      setAffixText("affix-memory-result-coins", `🪙 獲得コイン: ${coins}`);
+      syncAffixTypeUi();
+      showToast(`全ペア完成！ 🪙${coins} Coin 獲得`);
+      checkAchievements();
+    }
+
+    // ハブ画面の自己ベスト一覧
+    function renderAffixBestRows() {
+      const wrap = document.getElementById("affix-best-rows");
+      if (!wrap) return;
+      const st = ensureAffixStats();
+      const types = [
+        { key: "prefix", label: "接頭辞" },
+        { key: "suffix", label: "接尾辞" }
+      ];
+      wrap.innerHTML = "";
+      types.forEach(t => {
+        const rush = st.rushBest[t.key] || 0;
+        const mem = st.memoryBest[t.key] || { moves: 0, seconds: 0 };
+        const memText = mem.moves ? `${mem.moves}手 ・ ${formatAffixClock(mem.seconds)}` : "未挑戦";
+        const row = document.createElement("div");
+        row.className = "flex items-center justify-between gap-2 border-b border-slate-100 last:border-b-0 py-1";
+        row.innerHTML = `<span class="font-bold text-slate-600 shrink-0">${t.label}</span>`
+          + `<span class="text-right truncate">⚡ ${rush} ／ 🃏 ${memText}</span>`;
+        wrap.appendChild(row);
+      });
+    }
+
+    function syncAffixTypeUi() {
+      loadAffixType();
+      const isPrefix = isPrefixAffix(affixType);
+      const preBtn = document.getElementById("affix-type-prefix");
+      const sufBtn = document.getElementById("affix-type-suffix");
+      const active = "flex-1 py-2 text-xs font-bold rounded-lg bg-white shadow-sm text-slate-900 transition-all cursor-pointer";
+      const idle = "flex-1 py-2 text-xs font-bold rounded-lg text-slate-500 hover:text-slate-800 transition-all cursor-pointer";
+      if (preBtn) preBtn.className = isPrefix ? active : idle;
+      if (sufBtn) sufBtn.className = isPrefix ? idle : active;
+      const hint = document.getElementById("affix-type-hint");
+      if (hint) {
+        hint.textContent = isPrefix
+          ? "「pre- = 前に」のような接頭辞を固定して出題します。語根のコアイメージを手がかりに語を組み立てましょう。"
+          : "「-able = 〜できる」のような接尾辞を固定して出題します。語根のコアイメージから意味を推測しましょう。";
+      }
+      const st = ensureAffixStats();
+      setAffixText("affix-best-badge", `ベスト ${isPrefix ? st.rushBest.prefix : st.rushBest.suffix}`);
+      renderAffixBestRows();
+    }
+
+    // ============================================================
+    // レベル別長文リーダー（LEAP連動・randoku風）
+    // 本番用の長文ができたらグローバル READER_PASSAGES を定義すれば
+    // 自動生成より優先されます（形式は下の getCuratedReaderPassage を参照）。
+    // ============================================================
+    const READER_LEVELS = {
+      1: { name: "導入", grammar: "中学文法", jaDefault: true, chunk: 1, hint: "1文ずつ区切って、訳を見ながら読みます" },
+      2: { name: "標準", grammar: "高校基礎", jaDefault: false, chunk: 3, hint: "3文ずつのかたまりで、訳を隠して読みます" },
+      3: { name: "実践", grammar: "高校標準", jaDefault: false, chunk: 99, hint: "通しで読み、返り読みをせずに内容を取ります" }
+    };
+    const READER_MAX_WORDS = 10;
+
+    function clampReaderNumber(value, min, max) {
+      const n = Number(value);
+      if (!isFinite(n)) return min;
+      return Math.min(max, Math.max(min, Math.round(n)));
+    }
+
+    function getReaderBounds() {
+      const ids = LEAP_SOURCE.map(w => Number(w.id)).filter(n => isFinite(n) && n > 0);
+      if (!ids.length) return { start: 1, end: 2000 };
+      return { start: Math.max(1, Math.min(...ids)), end: Math.max(...ids) };
+    }
+
+    function getLeapPartForId(id) {
+      return LEAP_PARTS.find(p => Number(id) >= p.start && Number(id) <= p.end) || LEAP_PARTS[0];
+    }
+
+    function getReaderGrammar(partId) {
+      if (partId <= 1) return "中学文法";
+      if (partId === 2) return "高校基礎";
+      if (partId === 3) return "高校標準";
+      return "高校発展";
+    }
+
+    function getCuratedReaderPassage(lo, hi) {
+      if (typeof READER_PASSAGES === "undefined" || !READER_PASSAGES) return null;
+      const list = Array.isArray(READER_PASSAGES) ? READER_PASSAGES : READER_PASSAGES.passages;
+      if (!Array.isArray(list)) return null;
+      return list.find(p => p && Number(p.start) <= hi && Number(p.end) >= lo && Array.isArray(p.sentences) && p.sentences.length) || null;
+    }
+
+    // 例文・断片が混ざるので、本文に使える長さの英文だけ拾う
+    function getReaderExamples(word) {
+      if (!word || !word.word) return [];
+      const out = [];
+      const detail = word.detail || (typeof LEAP_WORD_DETAILS !== "undefined" ? LEAP_WORD_DETAILS[word.id] : null);
+      const push = (en, ja) => {
+        let text = String(en || "").replace(/[【】]/g, "").replace(/\s+/g, " ").trim();
+        if (!text) return;
+        if (text.length < 12 || text.length > 170) return;
+        if (/[×※]/.test(text)) return;
+        if (!/[A-Za-z]/.test(text)) return;
+        if (/^[a-z]/.test(text)) text = text.charAt(0).toUpperCase() + text.slice(1);
+        if (!/[.!?]$/.test(text)) text += ".";
+        out.push({ en: text, ja: String(ja || "").trim() });
+      };
+      if (detail && Array.isArray(detail.examples)) {
+        detail.examples.forEach(ex => push(ex.plain || ex.en, ex.ja));
+      }
+      if (!out.length) {
+        const ex = (typeof LEAP_EXAMPLE_DATA !== "undefined") ? LEAP_EXAMPLE_DATA[word.id] : null;
+        if (ex) push(ex.en, ex.ja);
+      }
+      return out;
+    }
+
+    function buildReaderForms(word) {
+      const w = String(word || "").toLowerCase().trim();
+      if (!w) return [];
+      const set = new Set([w]);
+      const add = s => { if (s && s.length > 1) set.add(s); };
+      add(w + "s");
+      add(w + "es");
+      add(w + "ed");
+      add(w + "d");
+      add(w + "ing");
+      if (/e$/.test(w)) {
+        add(w.slice(0, -1) + "ing");
+        add(w.slice(0, -1) + "ed");
+      }
+      if (/y$/.test(w)) {
+        add(w.slice(0, -1) + "ies");
+        add(w.slice(0, -1) + "ied");
+      }
+      return Array.from(set);
+    }
+
+    function escapeRegexReader(text) {
+      return String(text).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    }
+
+    // 対象語をまとめて1パスでハイライト（単語中の "word" を属性内で誤置換しないため）
+    function highlightReaderSentence(text, targets) {
+      const escaped = escapeHtml(text);
+      if (!Array.isArray(targets) || !targets.length) return escaped;
+      const formMap = new Map();
+      targets.forEach(t => {
+        (t.forms || []).forEach(f => {
+          const key = String(f).toLowerCase();
+          if (!formMap.has(key)) formMap.set(key, t);
+        });
+      });
+      const forms = Array.from(formMap.keys()).sort((a, b) => b.length - a.length);
+      if (!forms.length) return escaped;
+      const pattern = new RegExp("\\b(" + forms.map(escapeRegexReader).join("|") + ")\\b", "gi");
+      return escaped.replace(pattern, m => {
+        const target = formMap.get(String(m).toLowerCase());
+        if (!target) return m;
+        return `<span class="reader-target" onclick="openReaderWord(${Number(target.id)})">${m}</span>`;
+      });
+    }
+
+    function addReaderSlashes(text) {
+      return String(text || "")
+        .replace(/,\s*/g, " ／ ")
+        .replace(/\s+(and|but|because|although|though|while|when|if|that|which|who|whose|where|so)\s+/gi, " ／ $1 ")
+        .replace(/\s+/g, " ")
+        .trim();
+    }
+
+    function openReader() {
+      navigate("screen-reader");
+      renderReaderPartChips();
+      updateReaderPreview();
+    }
+
+    function renderReaderPartChips() {
+      const wrap = document.getElementById("reader-part-chips");
+      if (!wrap) return;
+      wrap.innerHTML = "";
+      const startEl = document.getElementById("reader-start");
+      const endEl = document.getElementById("reader-end");
+      const lo = startEl ? Number(startEl.value) : 1;
+      const hi = endEl ? Number(endEl.value) : 100;
+      LEAP_PARTS.forEach(part => {
+        const isActive = Number(lo) === part.start && Number(hi) === part.end;
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "px-2.5 py-1 text-[11px] font-bold rounded-lg border transition cursor-pointer " +
+          (isActive
+            ? "bg-sky-600 border-sky-600 text-white shadow-sm"
+            : "bg-white border-slate-200 text-slate-600 hover:border-sky-300 hover:text-sky-700");
+        btn.textContent = part.name;
+        btn.addEventListener("click", () => {
+          const b = getReaderBounds();
+          const startInput = document.getElementById("reader-start");
+          const endInput = document.getElementById("reader-end");
+          if (startInput) startInput.value = String(clampReaderNumber(part.start, b.start, b.end));
+          if (endInput) endInput.value = String(clampReaderNumber(part.end, b.start, b.end));
+          updateReaderPreview();
+        });
+        wrap.appendChild(btn);
+      });
+    }
+
+    function updateReaderPreview() {
+      const startEl = document.getElementById("reader-start");
+      const endEl = document.getElementById("reader-end");
+      const preview = document.getElementById("reader-preview");
+      const badge = document.getElementById("reader-band-badge");
+      if (!startEl || !endEl) return;
+      const bounds = getReaderBounds();
+      const start = clampReaderNumber(startEl.value, bounds.start, bounds.end);
+      const end = clampReaderNumber(endEl.value, bounds.start, bounds.end);
+      const lo = Math.min(start, end);
+      const hi = Math.max(start, end);
+      const words = LEAP_SOURCE.filter(w => Number(w.id) >= lo && Number(w.id) <= hi && w.word);
+      const withExamples = words.filter(w => getReaderExamples(w).length > 0);
+      if (badge) {
+        const part = getLeapPartForId(Math.round((lo + hi) / 2));
+        badge.textContent = `Part ${part.id} ・ ${getReaderGrammar(part.id)}`;
+      }
+      if (preview) {
+        preview.textContent = `この範囲に ${words.length} 語（うち例文あり ${withExamples.length} 語）。最大${READER_MAX_WORDS}語を選んで本文を組み立てます。`;
+      }
+    }
+
+    function buildReader() {
+      const startEl = document.getElementById("reader-start");
+      const endEl = document.getElementById("reader-end");
+      if (!startEl || !endEl || !LEAP_SOURCE.length) {
+        showToast("単語データが読み込まれていません");
+        return;
+      }
+      const bounds = getReaderBounds();
+      const lo = Math.min(clampReaderNumber(startEl.value, bounds.start, bounds.end), clampReaderNumber(endEl.value, bounds.start, bounds.end));
+      const hi = Math.max(clampReaderNumber(startEl.value, bounds.start, bounds.end), clampReaderNumber(endEl.value, bounds.start, bounds.end));
+      const words = LEAP_SOURCE.filter(w => Number(w.id) >= lo && Number(w.id) <= hi && w.word);
+      if (!words.length) {
+        showToast("この範囲に単語がありません");
+        return;
+      }
+      const withExamples = words.filter(w => getReaderExamples(w).length > 0);
+      const pool = withExamples.length >= 3 ? withExamples : words;
+      const picks = shuffleArray(pool).slice(0, READER_MAX_WORDS).sort((a, b) => Number(a.id) - Number(b.id));
+      const level = readerState ? readerState.level : 1;
+
+      const curated = getCuratedReaderPassage(lo, hi);
+      let sentences = [];
+      let targets = [];
+      if (curated) {
+        sentences = curated.sentences.map(s => ({
+          en: String(s.en || "").trim(),
+          ja: String(s.ja || "").trim(),
+          id: Number(s.id) || 0
+        })).filter(s => s.en);
+        const ids = curated.targets && curated.targets.length ? curated.targets : sentences.map(s => s.id);
+        targets = ids.map(id => {
+          const w = LEAP_SOURCE.find(x => Number(x.id) === Number(id));
+          if (!w) return null;
+          return { id: w.id, word: w.word, ja: w.meaning || "", forms: buildReaderForms(w.word) };
+        }).filter(Boolean);
+      } else {
+        picks.forEach(w => {
+          const exs = getReaderExamples(w);
+          const ex = exs.length ? exs[Math.floor(Math.random() * exs.length)] : { en: `${w.word}.`, ja: "" };
+          sentences.push({ en: ex.en, ja: ex.ja, id: Number(w.id) });
+        });
+        targets = picks.map(w => ({ id: w.id, word: w.word, ja: w.meaning || "", forms: buildReaderForms(w.word) }));
+      }
+
+      readerState = {
+        start: lo,
+        end: hi,
+        level,
+        showJa: READER_LEVELS[level].jaDefault,
+        slash: false,
+        sentences,
+        targets,
+        curated: !!curated,
+        title: curated && curated.title ? curated.title : `LEAP No.${lo}–${hi} の${targets.length}語で読む`
+      };
+
+      const passage = document.getElementById("reader-passage");
+      if (passage) passage.classList.remove("hidden");
+      renderReader();
+      userData.readerRuns = (Number(userData.readerRuns) || 0) + 1;
+      saveUserData();
+      showToast(`No.${lo}〜${hi} から ${sentences.length} 文の本文を作成しました`);
+    }
+
+    function renderReader() {
+      const st = readerState;
+      if (!st) return;
+      const level = READER_LEVELS[st.level] || READER_LEVELS[1];
+      const body = document.getElementById("reader-body");
+      if (!body) return;
+
+      setAffixText("reader-passage-title", st.title);
+      setAffixText("reader-range-label", `LEAP No.${st.start}〜${st.end} ・ ${st.targets.length}語 ・ Lv.${st.level} ${level.name}`);
+      setAffixText("reader-grammar-badge", level.grammar);
+      const part = getLeapPartForId(Math.round((st.start + st.end) / 2));
+      setAffixText("reader-band-badge", `Part ${part.id} ・ ${getReaderGrammar(part.id)}`);
+      syncReaderLevelUi();
+
+      body.innerHTML = "";
+      const note = document.createElement("p");
+      note.className = "text-[10px] font-bold text-sky-900 bg-sky-50 border border-sky-200 rounded-lg px-2.5 py-1.5 leading-relaxed";
+      note.textContent = st.curated
+        ? "配布済みの専用本文を表示しています。"
+        : "COMING SOON：専用本文の準備中です。現在はLEAP例文をつないだ自動生成本文です。";
+      body.appendChild(note);
+
+      const chunks = [];
+      for (let i = 0; i < st.sentences.length; i += level.chunk) {
+        chunks.push(st.sentences.slice(i, i + level.chunk));
+      }
+      chunks.forEach(chunk => {
+        const para = document.createElement("p");
+        para.className = "reader-sentence text-sm text-slate-800";
+        chunk.forEach((s, i) => {
+          const line = document.createElement("span");
+          line.className = "block mb-2 last:mb-0";
+          const en = st.slash ? addReaderSlashes(s.en) : s.en;
+          const jaHtml = st.showJa && s.ja ? `<span class="reader-ja">${escapeHtml(s.ja)}</span>` : "";
+          line.innerHTML = `<span class="reader-en">${highlightReaderSentence(en, st.targets)}</span>${jaHtml}`;
+          para.appendChild(line);
+        });
+        body.appendChild(para);
+      });
+
+      renderReaderWordRows();
+      syncReaderToggleUi();
+    }
+
+    function renderReaderWordRows() {
+      const rows = document.getElementById("reader-word-rows");
+      if (!rows || !readerState) return;
+      rows.innerHTML = "";
+      readerState.targets.forEach(t => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "text-left p-2 rounded-lg border border-slate-200 bg-slate-50 hover:border-sky-300 hover:bg-sky-50/60 transition cursor-pointer";
+        btn.innerHTML = `<span class="block text-[9px] font-bold text-slate-400">No.${Number(t.id)}</span>`
+          + `<span class="block text-xs font-extrabold text-slate-900 truncate">${escapeHtml(t.word)}</span>`
+          + `<span class="block text-[10px] text-slate-500 truncate">${escapeHtml(t.ja || "")}</span>`;
+        btn.addEventListener("click", () => openReaderWord(t.id));
+        rows.appendChild(btn);
+      });
+    }
+
+    function syncReaderLevelUi() {
+      if (!readerState) return;
+      const active = "flex-1 py-1.5 text-[11px] font-bold rounded-lg bg-white shadow-sm text-slate-900 transition-all cursor-pointer";
+      const idle = "flex-1 py-1.5 text-[11px] font-bold rounded-lg text-slate-500 hover:text-slate-800 transition-all cursor-pointer";
+      [1, 2, 3].forEach(lv => {
+        const el = document.getElementById(`reader-lv-${lv}`);
+        if (el) el.className = readerState.level === lv ? active : idle;
+      });
+    }
+
+    function syncReaderToggleUi() {
+      if (!readerState) return;
+      const jaBtn = document.getElementById("reader-ja-btn");
+      if (jaBtn) {
+        jaBtn.className = "px-2.5 py-1.5 rounded-lg border text-[11px] font-bold transition cursor-pointer " +
+          (readerState.showJa
+            ? "bg-emerald-600 border-emerald-600 text-white"
+            : "bg-white border-slate-300 text-slate-600 hover:bg-slate-100");
+        jaBtn.textContent = readerState.showJa ? "🇯🇵 日本語訳 ON" : "🇯🇵 日本語訳 OFF";
+      }
+      const slashBtn = document.getElementById("reader-slash-btn");
+      if (slashBtn) {
+        slashBtn.className = "px-2.5 py-1.5 rounded-lg border text-[11px] font-bold transition cursor-pointer " +
+          (readerState.slash
+            ? "bg-indigo-600 border-indigo-600 text-white"
+            : "bg-white border-slate-300 text-slate-600 hover:bg-slate-100");
+        slashBtn.textContent = readerState.slash ? "／ スラッシュ ON" : "／ スラッシュ";
+      }
+    }
+
+    function setReaderLevel(level) {
+      const lv = level === 2 ? 2 : level === 3 ? 3 : 1;
+      if (!readerState) {
+        updateReaderPreview();
+        return;
+      }
+      readerState.level = lv;
+      readerState.showJa = READER_LEVELS[lv].jaDefault;
+      renderReader();
+    }
+
+    function toggleReaderJa() {
+      if (!readerState) return;
+      readerState.showJa = !readerState.showJa;
+      renderReader();
+    }
+
+    function toggleReaderSlash() {
+      if (!readerState) return;
+      readerState.slash = !readerState.slash;
+      renderReader();
+    }
+
+    function speakReaderPassage() {
+      if (!readerState || !readerState.sentences.length) return;
+      speakEnglish(readerState.sentences.map(s => s.en).join(" "));
+    }
+
+    function openReaderWord(wordId) {
+      const id = Number(wordId);
+      const w = LEAP_SOURCE.find(x => Number(x.id) === id) || ALL_WORDS.find(x => Number(x.id) === id);
+      const modal = document.getElementById("reader-word-modal");
+      if (!w || !modal) return;
+      const part = getLeapPartForId(id);
+      setAffixText("reader-word-meta", `LEAP No.${id} ・ Part ${part.id}`);
+      setAffixText("reader-word-title", w.word);
+      setAffixText("reader-word-meaning", w.meaning || "意味データは未登録です");
+      const speakBtn = document.getElementById("reader-word-speak");
+      if (speakBtn) speakBtn.onclick = () => speakEnglish(w.word);
+      const detailBtn = document.getElementById("reader-word-detail");
+      if (detailBtn) detailBtn.onclick = () => { closeReaderWord(); openWordDetail(id); };
+      modal.classList.remove("hidden");
+      modal.classList.add("flex");
+      if (userData.voiceEnabled) speakEnglish(w.word);
+    }
+
+    function closeReaderWord(event) {
+      if (event && event.target && event.target !== event.currentTarget) return;
+      const modal = document.getElementById("reader-word-modal");
+      if (!modal) return;
+      modal.classList.add("hidden");
+      modal.classList.remove("flex");
+    }
+
     // 初期化
     window.addEventListener("DOMContentLoaded", () => {
       initDarkMode();
@@ -5918,6 +7183,8 @@ listContainer.appendChild(row);
       checkAndFetchData();
       checkIncomingChallenge();
       initAchievements();
+      syncAffixTypeUi();
+      updateReaderPreview();
       showPwaBanner();
       if ("serviceWorker" in navigator) {
         navigator.serviceWorker.register("./sw.js").then((reg) => {
