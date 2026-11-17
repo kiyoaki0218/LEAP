@@ -11,7 +11,7 @@
     <script>
     // キャッシュ強制更新ロジック: 新バージョン検知時に古いServiceWorkerキャッシュを破棄
     (function() {
-      const APP_VER = "leap-v3-49quizui";
+      const APP_VER = "leap-v3-50nexttap";
       try {
         const storedVer = localStorage.getItem("LEAP_APP_CACHE_VER");
         if (storedVer !== APP_VER) {
@@ -59,6 +59,8 @@
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;500;700&display=swap');
     body { font-family: 'Inter', 'Noto Sans JP', sans-serif; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
     /* forwards を付けない: 終了後も transform が残ると中の position: sticky がずれるため */
     .fade-in { animation: fadeIn 0.2s ease-in-out; }
     /* 辞典は中に sticky な絞り込みバーがあるため、transform を使わないフェードにする */
@@ -683,6 +685,12 @@
       <!-- 4択選択肢 -->
       <div id="quiz-options-container" class="space-y-3"></div>
 
+      <!-- 正誤判定後の「次へ」進行ボタン（画面タップでも進行可） -->
+      <button type="button" id="quiz-next-btn" onclick="proceedToNextQuestion(event)" class="hidden w-full py-4 bg-slate-900 hover:bg-slate-800 active:scale-[0.99] text-white font-bold rounded-xl shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer select-none">
+        <span class="text-base font-extrabold">タップして次へ</span>
+        <span class="text-xs text-slate-300">➔</span>
+      </button>
+
       <!-- 中断ボタン -->
       <div class="text-center pt-2">
         <button type="button" onclick="abortQuiz()" class="text-xs font-semibold text-slate-400 hover:text-rose-500 p-2 rounded-lg transition cursor-pointer">
@@ -719,24 +727,24 @@
       </div>
 
       <!-- 前称号 / 後称号 / アバター / 実績切替タブ -->
-      <div class="flex flex-wrap bg-slate-200/70 p-1 rounded-xl gap-1">
-        <button type="button" id="shop-tab-prefix" onclick="switchShopTab('prefix')" class="flex-1 py-2 text-[11px] font-bold rounded-lg bg-white shadow-sm text-slate-900 transition-all flex items-center justify-center gap-1 cursor-pointer">
+      <div class="flex flex-nowrap overflow-x-auto bg-slate-200/70 p-1 rounded-xl gap-1 no-scrollbar" style="-webkit-overflow-scrolling: touch;">
+        <button type="button" id="shop-tab-prefix" onclick="switchShopTab('prefix')" class="flex-1 min-w-[70px] shrink-0 py-2 px-1 text-[11px] font-bold rounded-lg bg-white shadow-sm text-slate-900 transition-all flex items-center justify-center gap-1 cursor-pointer whitespace-nowrap">
           <span>🏷️ 前称号</span>
           <span id="prefix-owned-count" class="text-[10px] bg-emerald-100 text-emerald-800 px-1.5 py-0.2 rounded-full">1/70</span>
         </button>
-        <button type="button" id="shop-tab-suffix" onclick="switchShopTab('suffix')" class="flex-1 py-2 text-[11px] font-bold rounded-lg text-slate-600 hover:text-slate-900 transition-all flex items-center justify-center gap-1 cursor-pointer">
+        <button type="button" id="shop-tab-suffix" onclick="switchShopTab('suffix')" class="flex-1 min-w-[70px] shrink-0 py-2 px-1 text-[11px] font-bold rounded-lg text-slate-600 hover:text-slate-900 transition-all flex items-center justify-center gap-1 cursor-pointer whitespace-nowrap">
           <span>🎖️ 後称号</span>
           <span id="suffix-owned-count" class="text-[10px] bg-slate-200 text-slate-600 px-1.5 py-0.2 rounded-full">1/70</span>
         </button>
-        <button type="button" id="shop-tab-frame" onclick="switchShopTab('frame')" class="flex-1 py-2 text-[11px] font-bold rounded-lg text-slate-600 hover:text-slate-900 transition-all flex items-center justify-center gap-1 cursor-pointer">
+        <button type="button" id="shop-tab-frame" onclick="switchShopTab('frame')" class="flex-1 min-w-[70px] shrink-0 py-2 px-1 text-[11px] font-bold rounded-lg text-slate-600 hover:text-slate-900 transition-all flex items-center justify-center gap-1 cursor-pointer whitespace-nowrap">
           <span>🖼️ フレーム</span>
           <span id="frame-owned-count" class="text-[10px] bg-slate-200 text-slate-600 px-1.5 py-0.2 rounded-full">1/27</span>
         </button>
-        <button type="button" id="shop-tab-avatar" onclick="switchShopTab('avatar')" class="flex-1 py-2 text-[11px] font-bold rounded-lg text-slate-600 hover:text-slate-900 transition-all flex items-center justify-center gap-1 cursor-pointer">
+        <button type="button" id="shop-tab-avatar" onclick="switchShopTab('avatar')" class="flex-1 min-w-[64px] shrink-0 py-2 px-1 text-[11px] font-bold rounded-lg text-slate-600 hover:text-slate-900 transition-all flex items-center justify-center gap-1 cursor-pointer whitespace-nowrap">
           <span>🦉 絵柄</span>
           <span id="avatar-owned-count" class="text-[10px] bg-slate-200 text-slate-600 px-1.5 py-0.2 rounded-full">1/15</span>
         </button>
-        <button type="button" onclick="openAchievementsModal()" class="flex-1 py-2 text-[11px] font-bold rounded-lg text-slate-600 hover:text-slate-900 transition-all flex items-center justify-center gap-1 cursor-pointer">
+        <button type="button" onclick="openAchievementsModal()" class="flex-1 min-w-[50px] shrink-0 py-2 px-1 text-[11px] font-bold rounded-lg text-slate-600 hover:text-slate-900 transition-all flex items-center justify-center gap-1 cursor-pointer whitespace-nowrap">
           <span>🏆</span>
           <span id="shop-achievement-count" class="text-[10px] bg-emerald-100 text-emerald-800 px-1.5 py-0.2 rounded-full">0/0</span>
         </button>
@@ -897,13 +905,20 @@
         </div>
 
         <div class="bg-white border border-slate-200 rounded-2xl p-5 text-center space-y-2 shadow-sm">
-          <p id="affix-rush-ja" class="text-xs font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-full px-3 py-1 inline-block">予測する</p>
-          <p id="affix-rush-formula" class="text-xl font-extrabold text-slate-900 tracking-tight">[ pre- ] + [ ？ ]</p>
+          <p class="text-[11px] font-bold text-slate-400">▼ 作る単語の意味（問題）</p>
+          <div class="py-1">
+            <span id="affix-rush-ja" class="text-2xl sm:text-3xl font-extrabold text-emerald-800 tracking-tight leading-snug break-words">予測する</span>
+          </div>
+          <p id="affix-rush-formula" class="text-base sm:text-lg font-bold text-slate-600 tracking-tight">[ pre- ] + [ ？ ]</p>
           <p class="text-[11px] text-slate-400">語根のコアイメージを手がかりに選ぼう</p>
         </div>
 
         <div id="affix-rush-options" class="grid grid-cols-2 gap-3"></div>
         <p id="affix-rush-feedback" class="hidden text-xs leading-relaxed bg-slate-50 border border-slate-200 rounded-xl p-3 text-slate-600"></p>
+        <button type="button" id="affix-rush-next-btn" onclick="proceedToNextAffixRushQuestion(event)" class="hidden w-full py-3.5 bg-amber-500 hover:bg-amber-600 active:scale-[0.99] text-slate-950 font-bold rounded-xl shadow-md transition cursor-pointer text-sm flex items-center justify-center gap-1.5 select-none">
+          <span>タップして次へ</span>
+          <span class="text-xs font-extrabold">➔</span>
+        </button>
       </div>
 
       <div id="affix-rush-result" class="hidden bg-white border border-slate-200 rounded-2xl p-5 text-center space-y-4 shadow-sm">
@@ -4487,10 +4502,11 @@
         const blocked = optionMode === "word" ? blockedWords : blockedMeanings;
         const distractors = pickDistractorWords(targetWord, optionMode, usedKeys, blocked, 3);
         const options = shuffleArray([
-          { text: correctText, isCorrect: true },
+          { text: correctText, isCorrect: true, word: targetWord },
           ...distractors.map(w => ({
             text: optionMode === "word" ? String(w.word || "") : String(w.meaning || ""),
-            isCorrect: false
+            isCorrect: false,
+            word: w
           }))
         ]);
         return {
@@ -4888,6 +4904,9 @@
           feedbackEl.classList.add("hidden");
           feedbackEl.textContent = "";
         }
+        quizState.waitingNext = false;
+        const nextBtn = document.getElementById("quiz-next-btn");
+        if (nextBtn) nextBtn.classList.add("hidden");
         // 品詞記号バッジ（データがある単語のみ表示）
         applyPosBadge(document.getElementById("quiz-word-pos"), q.word);
         applyPosBadge(document.getElementById("quiz-context-pos"), q.word);
@@ -5076,13 +5095,48 @@
           if (quizState.timeLeftMs <= 0) quizState.endReason = "timeup";
         }
         if (quizGameMode === "sudden") quizState.endReason = "sudden";
-
-        clickedBtn.classList.remove("bg-white", "hover:bg-slate-50", "border-slate-200");
-        clickedBtn.classList.add("bg-rose-50", "border-rose-400", "text-rose-900");
-        buttons.forEach((btn, idx) => {
-          if (q.options[idx].isCorrect) btn.classList.add("bg-emerald-50", "border-emerald-500", "text-emerald-900");
-        });
       }
+
+      // 全選択肢ボタンの正誤判定スタイル適用 ＆ 不正解選択肢も含めた日本語訳の表示
+      buttons.forEach((btn, idx) => {
+        const opt = q.options[idx];
+        if (!opt) return;
+        const isCorrect = opt.isCorrect;
+        const isChosen = opt === selectedOption;
+
+        btn.classList.remove("bg-white", "hover:bg-slate-50", "border-slate-200");
+        if (isCorrect) {
+          btn.classList.add("bg-emerald-50", "border-emerald-500", "text-emerald-900");
+        } else if (isChosen) {
+          btn.classList.add("bg-rose-50", "border-rose-400", "text-rose-900");
+        } else {
+          btn.classList.add("bg-slate-50/70", "border-slate-200", "text-slate-600", "opacity-85");
+        }
+
+        const badgeClass = isCorrect ? "bg-emerald-200 text-emerald-800" : (isChosen ? "bg-rose-200 text-rose-800" : "bg-slate-200 text-slate-600");
+        const numBadge = `<span class="w-6 h-6 rounded-md ${badgeClass} text-xs font-bold flex items-center justify-center shrink-0 border border-slate-200 pointer-events-none">${idx + 1}</span>`;
+
+        if (q.type === "word") {
+          // 例文クイズ（選択肢が英単語）：全選択肢にそれぞれの日本語訳を表示
+          const meaning = (opt.word && opt.word.meaning) || "";
+          btn.innerHTML = `${numBadge}<div class="min-w-0 flex-1 pointer-events-none text-left"><div class="text-sm font-bold leading-snug">${escapeHtml(opt.text)}</div>${meaning ? `<div class="text-xs text-slate-600 mt-1 font-medium bg-white/70 rounded px-1.5 py-0.5 inline-block border border-slate-200/60">${escapeHtml(meaning)}</div>` : ""}`;
+        } else {
+          // 通常クイズ（選択肢が日本語訳）：全選択肢に対応する英単語を表示
+          const enWord = (opt.word && opt.word.word) || "";
+          btn.innerHTML = `${numBadge}<div class="min-w-0 flex-1 pointer-events-none text-left"><div class="text-sm font-bold leading-snug">${escapeHtml(opt.text)}</div>${enWord ? `<div class="text-xs text-slate-500 mt-1 font-medium bg-white/70 rounded px-1.5 py-0.5 inline-block border border-slate-200/60">英: ${escapeHtml(enWord)}</div>` : ""}`;
+        }
+        if (isCorrect) {
+          btn.innerHTML += `<span class="text-xs font-bold text-emerald-700 bg-emerald-100/80 px-2 py-0.5 rounded-full shrink-0">✓ 正解</span>`;
+        }
+        btn.innerHTML += `</div>`;
+
+        // 解答後はタップで次へ進めるように pointer-events を有効化して次へハンドラを設定
+        btn.style.pointerEvents = "auto";
+        btn.onclick = (e) => {
+          e.preventDefault();
+          proceedToNextQuestion(e);
+        };
+      });
 
       if (q.type === "word") {
         revealContextAnswer(q);
@@ -5096,25 +5150,42 @@
       const liveCoins = document.getElementById("quiz-live-coins");
       if (liveCoins) liveCoins.textContent = `🪙 +${quizState.earnedCoins}`;
 
-      // 通常クイズ・例文クイズで同じテンポにする
-      const feedbackDelay = 1100;
-      setTimeout(() => {
-        if (quizState.endReason) {
-          finishQuiz(false, quizState.endReason);
-          return;
-        }
-        quizState.currentIndex++;
-        if (quizState.currentIndex < quizState.questions.length) {
-          renderQuestion();
-        } else {
-          finishQuiz(false);
-        }
-      }, feedbackDelay);
+      // ユーザーがタップするまで自動で進まないように待機
+      quizState.waitingNext = true;
+      const nextBtn = document.getElementById("quiz-next-btn");
+      if (nextBtn) {
+        nextBtn.classList.remove("hidden");
+        try { nextBtn.scrollIntoView({ behavior: "smooth", block: "nearest" }); } catch (e) {}
+      }
+    }
+
+    function proceedToNextQuestion(e) {
+      if (e && e.stopPropagation) e.stopPropagation();
+      if (!quizState.waitingNext) return;
+      quizState.waitingNext = false;
+      const nextBtn = document.getElementById("quiz-next-btn");
+      if (nextBtn) nextBtn.classList.add("hidden");
+
+      if (quizState.endReason) {
+        finishQuiz(false, quizState.endReason);
+        return;
+      }
+      quizState.currentIndex++;
+      if (quizState.currentIndex < quizState.questions.length) {
+        renderQuestion();
+      } else {
+        finishQuiz(false);
+      }
     }
 
     window.addEventListener("keydown", (e) => {
       const quizScreen = document.getElementById("screen-quiz");
-      if (!quizScreen || quizScreen.classList.contains("hidden") || quizState.isAnswered || quizState.isMasked) return;
+      if (!quizScreen || quizScreen.classList.contains("hidden")) return;
+      if (quizState.waitingNext) {
+        proceedToNextQuestion(e);
+        return;
+      }
+      if (quizState.isAnswered || quizState.isMasked) return;
       if (["1", "2", "3", "4"].includes(e.key)) {
         const buttons = document.getElementById("quiz-options-container").querySelectorAll("button");
         const idx = parseInt(e.key) - 1;
@@ -5997,8 +6068,8 @@ listContainer.appendChild(row);
         frame: document.getElementById("shop-tab-frame"),
         avatar: document.getElementById("shop-tab-avatar")
       };
-      const activeClass = "flex-1 py-2 text-[11px] font-bold rounded-lg bg-white shadow-sm text-slate-900 transition-all flex items-center justify-center gap-1 cursor-pointer";
-      const idleClass = "flex-1 py-2 text-[11px] font-bold rounded-lg text-slate-600 hover:text-slate-900 transition-all flex items-center justify-center gap-1 cursor-pointer";
+      const activeClass = "flex-1 min-w-[70px] shrink-0 py-2 px-1 text-[11px] font-bold rounded-lg bg-white shadow-sm text-slate-900 transition-all flex items-center justify-center gap-1 cursor-pointer whitespace-nowrap";
+      const idleClass = "flex-1 min-w-[70px] shrink-0 py-2 px-1 text-[11px] font-bold rounded-lg text-slate-600 hover:text-slate-900 transition-all flex items-center justify-center gap-1 cursor-pointer whitespace-nowrap";
       Object.keys(tabs).forEach(key => {
         if (!tabs[key]) return;
         tabs[key].className = key === tab ? activeClass : idleClass;
@@ -6404,6 +6475,9 @@ listContainer.appendChild(row);
     function nextAffixRushQuestion() {
       if (!affixRush || affixRush.ended) return;
       affixRush.locked = false;
+      affixRush.waitingNext = false;
+      const nextBtn = document.getElementById("affix-rush-next-btn");
+      if (nextBtn) nextBtn.classList.add("hidden");
       affixRush.current = pickAffixRushQuestion(affixRush.type);
       renderAffixRushQuestion();
     }
@@ -6447,17 +6521,37 @@ listContainer.appendChild(row);
       const isCorrect = option.core === q.target.core;
       r.total += 1;
 
+      // 正誤判定・確認中はタイマーを一時停止
+      stopAffixRushTimer();
+
       const wrap = document.getElementById("affix-rush-options");
       if (wrap) {
         Array.from(wrap.querySelectorAll("button")).forEach(btn => {
-          if (btn.dataset.core === q.target.core) {
-            btn.className = "p-3 rounded-xl border-2 border-emerald-500 bg-emerald-50 text-center cursor-default";
-          } else if (btn.dataset.core === option.core) {
-            btn.className = "p-3 rounded-xl border-2 border-rose-400 bg-rose-50 text-center cursor-default";
+          const core = btn.dataset.core;
+          const opt = q.options.find(o => o.core === core);
+          const isTarget = core === q.target.core;
+          const isChosen = core === option.core;
+
+          if (isTarget) {
+            btn.className = "p-3 rounded-xl border-2 border-emerald-500 bg-emerald-50 text-center cursor-pointer";
+          } else if (isChosen) {
+            btn.className = "p-3 rounded-xl border-2 border-rose-400 bg-rose-50 text-center cursor-pointer";
           } else {
-            btn.className = "p-3 rounded-xl border border-slate-200 bg-white text-center opacity-60 cursor-default";
+            btn.className = "p-3 rounded-xl border border-slate-200 bg-slate-50/70 text-center opacity-85 cursor-pointer";
           }
-          btn.disabled = true;
+
+          // 全選択肢（不正解含む）に、完成する単語と日本語訳を表示
+          if (opt) {
+            btn.innerHTML = `<span class="block text-sm font-extrabold ${isTarget ? 'text-emerald-900' : 'text-slate-800'} leading-tight">${escapeHtml(opt.core)}（${escapeHtml(opt.root)}）</span>`
+              + `<span class="block text-xs font-bold ${isTarget ? 'text-emerald-700' : 'text-indigo-600'} mt-1 truncate">➔ ${escapeHtml(opt.word)}</span>`
+              + `<span class="block text-[11px] text-slate-500 truncate font-normal">「${escapeHtml(opt.ja)}」</span>`;
+          }
+
+          btn.disabled = false;
+          btn.onclick = (e) => {
+            e.preventDefault();
+            proceedToNextAffixRushQuestion(e);
+          };
         });
       }
 
@@ -6482,11 +6576,27 @@ listContainer.appendChild(row);
       }
       updateAffixRushHud();
 
-      const timeoutId = setTimeout(() => {
-        if (!affixRush || affixRush.ended) return;
-        nextAffixRushQuestion();
-      }, isCorrect ? 520 : 1400);
-      r.timeoutIds.push(timeoutId);
+      // ユーザーがタップするまで自動で進まないように待機
+      r.waitingNext = true;
+      const nextBtn = document.getElementById("affix-rush-next-btn");
+      if (nextBtn) {
+        nextBtn.classList.remove("hidden");
+        try { nextBtn.scrollIntoView({ behavior: "smooth", block: "nearest" }); } catch (e) {}
+      }
+    }
+
+    function proceedToNextAffixRushQuestion(e) {
+      if (e && e.stopPropagation) e.stopPropagation();
+      const r = affixRush;
+      if (!r || r.ended || !r.waitingNext) return;
+      r.waitingNext = false;
+      const nextBtn = document.getElementById("affix-rush-next-btn");
+      if (nextBtn) nextBtn.classList.add("hidden");
+      // 制限時間タイマーを再開
+      if (!r.intervalId && r.timeLeft > 0) {
+        r.intervalId = setInterval(tickAffixRush, 100);
+      }
+      nextAffixRushQuestion();
     }
 
     function updateAffixRushHud() {
@@ -7185,6 +7295,18 @@ listContainer.appendChild(row);
       initAchievements();
       syncAffixTypeUi();
       updateReaderPreview();
+      // 画面タップで次へ進むハンドラ（待機時のみ有効）
+      document.getElementById("screen-quiz")?.addEventListener("click", (e) => {
+        if (!quizState.waitingNext) return;
+        if (e.target.closest("button#btn-replay-voice") || e.target.closest("button[onclick*='speak']") || e.target.closest("button[onclick*='abortQuiz']")) return;
+        proceedToNextQuestion(e);
+      });
+      document.getElementById("screen-affix-rush")?.addEventListener("click", (e) => {
+        const r = affixRush;
+        if (!r || !r.waitingNext) return;
+        if (e.target.closest("button[onclick*='abortAffixRush']")) return;
+        proceedToNextAffixRushQuestion(e);
+      });
       showPwaBanner();
       if ("serviceWorker" in navigator) {
         navigator.serviceWorker.register("./sw.js").then((reg) => {
