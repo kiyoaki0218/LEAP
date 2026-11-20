@@ -8,7 +8,8 @@ const DATA_DIR = path.join(ROOT, "LEAP単語データ");
 const WORD_FILES = [
   "001_101.txt", "102_203.txt", "204_301.txt", "302_400.txt",
   "401_505.txt", "506_603.txt", "604_702.txt", "703_807.txt",
-  "808_1000.txt", "1001_1217.txt", "1218_1578.txt"
+  "808_1000.txt", "1001_1217.txt", "1218_1578.txt",
+  "1579_2000.txt", "2001_2300.txt"
 ];
 
 const POS_MAP = {
@@ -61,10 +62,10 @@ function parseHead(head) {
   if (!ipa && ipaTokens.length) ipa = ipaTokens[0];
   rest = rest.replace(/[\s\u3000]{2,}/g, " ").trim();
 
-  // 「自：… 他：…」のような品詞マーカーで分割
+  // 「自：… 他：…」や「他②…」のような品詞マーカーで分割
   const senses = [];
   const POS_TOKEN = "(?:自動|他動|動詞|名詞|形容動詞|形容詞|副詞|前置詞|接続詞|代名詞|助動詞|間投詞|自|他|動|名|形動|形|副|前|接|代|助|間)";
-  const re = new RegExp("(" + POS_TOKEN + "(?:・" + POS_TOKEN + ")*)：", "g");
+  const re = new RegExp("(" + POS_TOKEN + "(?:・" + POS_TOKEN + ")*)(?:[：:]|(?=[①-⑳]))", "g");
   let match;
   const marks = [];
   while ((match = re.exec(rest)) !== null) {
@@ -252,7 +253,10 @@ WORD_FILES.forEach(file => {
   entries.forEach(e => {
     const head = parseHead(e.headLines.join(" "));
     if (!head.word || !head.ipa) anomalies.push(`${file} #${e.id}: head=${e.headLines.join(" | ")}`);
-    const exs = e.rawExamples.map(line => parseExampleLine(line, head.word)).filter(x => x && x.en);
+    // 2001以降は例文なし（語義・コラムのみ）
+    const exs = (e.id >= 2001)
+      ? []
+      : e.rawExamples.map(line => parseExampleLine(line, head.word)).filter(x => x && x.en);
     exs.forEach((ex, i) => {
       const key = e.id + ":" + i;
       const mark = jaOverrides[key];
@@ -279,7 +283,8 @@ WORD_FILES.forEach(file => {
       notes: e.notes,
       examples: exs
     };
-    if (!exs.length) anomalies.push(`${file} #${e.id}: no example`);
+    // 2001以降は例文なしが前提
+    if (!exs.length && e.id <= 2000) anomalies.push(`${file} #${e.id}: no example`);
   });
 });
 
@@ -386,13 +391,51 @@ const LEAP_REFERENCE_DATA = ${JSON.stringify(reference, null, 0)};
 `;
 fs.writeFileSync(refPath, refBody, "utf8");
 
-console.log("words:", Object.keys(details).length);
+// ===== words_data.js の更新（Part 5: 2001-2300 を追加） =====
+function extractMeaning(senses) {
+  const parts = [];
+  senses.forEach(s => {
+    let t = s.text.trim();
+    if (!t) return;
+    if (/^[\(（][^\)）]+[\)）](\s*[\/／]\s*[\(（][^\)）]+[\)）])*$/.test(t)) return;
+    const splits = t.split(/[\s\u3000]*[①-⑳]+[\s\u3000]*/).map(x => x.trim()).filter(Boolean);
+    if (splits.length) {
+      parts.push(...splits);
+    } else {
+      parts.push(t);
+    }
+  });
+  return parts.map(p => p.replace(/^[、,・\s]+|[、,・\s]+$/g, "").replace(/，/g, "、")).filter(Boolean).join("、");
+}
+
+const wordsPath = path.join(ROOT, "words_data.js");
+const wordsSrc = fs.readFileSync(wordsPath, "utf8");
+const existingWords = new Function(wordsSrc + "; return LEAP_WORDS_DATA;")();
+const existingMap = new Map(existingWords.map(w => [w.id, w]));
+
+Object.keys(details).map(Number).sort((a, b) => a - b).forEach(id => {
+  if (id >= 2001 && id <= 2300 && !existingMap.has(id)) {
+    const d = details[id];
+    existingMap.set(id, {
+      id: id,
+      word: d.word,
+      meaning: extractMeaning(d.senses),
+      part: 5
+    });
+  }
+});
+
+const updatedWords = Array.from(existingMap.values()).sort((a, b) => a.id - b.id);
+fs.writeFileSync(wordsPath, "const LEAP_WORDS_DATA = " + JSON.stringify(updatedWords) + ";\n", "utf8");
+console.log("LEAP_WORDS_DATA updated: total words =", updatedWords.length);
+
+console.log("words in details:", Object.keys(details).length);
 console.log("examples:", Object.keys(exData).length);
 console.log("reference chapters:", reference.map(c => `${c.title}(${c.words.length}w/${c.blocks.length}l)`).join(" / "));
 console.log("anomalies:", anomalies.length);
+if (anomalies.length) console.log(anomalies.slice(0, 15).join("\n"));
 console.log("ja highlight overrides:", usedOverrides.size, "/", Object.keys(jaOverrides).length);
 if (badOverrides.length) console.log("invalid overrides:\n" + badOverrides.join("\n"));
 const unused = Object.keys(jaOverrides).filter(k => !usedOverrides.has(k));
 if (unused.length) console.log("unused overrides:", unused.length, unused.slice(0, 10).join(", "));
-console.log(anomalies.slice(0, 15).join("\n"));
-console.log("size details:", fs.statSync(outPath).size, "ref:", fs.statSync(refPath).size);
+console.log("size details:", fs.statSync(outPath).size, "ref:", fs.statSync(refPath).size, "words:", fs.statSync(wordsPath).size);
