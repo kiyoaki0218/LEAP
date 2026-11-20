@@ -2974,13 +2974,16 @@
         row.appendChild(body);
         frag.appendChild(row);
 
+        const numVal = (typeof w.num === "number") ? w.num : w.id;
         dictionaryEntries.push({
           el: row,
           id: w.id,
+          num: numVal,
           part: String(w.part || 1),
           status: getWordStatus(w.id),
           searchKana: normalizeSearchText([w.reading || "", w.yomi || "", kanaFromKanji(w.word)].filter(Boolean).join(" ")),
           idText: String(w.id),
+          numText: String(numVal),
           word: String(w.word || "").toLowerCase(),
           meaningNorm: String(w.meaning || "").normalize("NFKC").toLowerCase()
         });
@@ -3026,7 +3029,12 @@
     function openWordDetail(wordId) {
       const w = ALL_WORDS.find(x => x.id === Number(wordId));
       if (!w) return;
-      openWordSheet(w, `ID: #${w.id} ・ Part ${w.part || "-"}`);
+      const isKobun = isKobunZone();
+      const numOrId = (isKobun && typeof w.num === "number") ? `単語番号: #${w.num}` : `ID: #${w.id}`;
+      const partName = isKobun
+        ? (PARTS.find(p => p.id === w.part)?.name || `Part ${w.part || "-"}`)
+        : `Part ${w.part || "-"}`;
+      openWordSheet(w, `${numOrId} ・ ${partName}`);
     }
 
     // 参考資料（第1部の基礎単語）も辞典と同じシートで表示する
@@ -3326,10 +3334,23 @@
         const active = pid === "all" ? dictionaryFilter.parts.length === 0 : dictionaryFilter.parts.includes(pid);
         btn.className = dictChip(active);
       });
+      const isKobun = isKobunZone();
       const startEl = document.getElementById("dict-range-start");
       const endEl = document.getElementById("dict-range-end");
-      if (startEl && document.activeElement !== startEl) startEl.value = dictionaryFilter.start;
-      if (endEl && document.activeElement !== endEl) endEl.value = dictionaryFilter.end;
+      if (startEl) {
+        startEl.placeholder = isKobun ? "開始番号" : "開始ID";
+        if (document.activeElement !== startEl) startEl.value = dictionaryFilter.start;
+      }
+      if (endEl) {
+        endEl.placeholder = isKobun ? "終了番号" : "終了ID";
+        if (document.activeElement !== endEl) endEl.value = dictionaryFilter.end;
+      }
+      const searchEl = document.getElementById("dictionary-search");
+      if (searchEl) {
+        searchEl.placeholder = isKobun
+          ? "番号・古文・現代語訳で検索（例: 1 / をかし / 趣がある）"
+          : "番号・英語・日本語で検索（例: 1 / debate / 討論）";
+      }
       document.querySelectorAll("[data-dict-status]").forEach(btn => {
         const st = btn.dataset.dictStatus;
         const active = st === "all" ? dictionaryFilter.statuses.length === 0 : dictionaryFilter.statuses.includes(st);
@@ -3405,22 +3426,38 @@
       const hasRange = (startNum !== null && !Number.isNaN(startNum)) || (endNum !== null && !Number.isNaN(endNum));
       const countEl = document.getElementById("dictionary-count");
       const emptyEl = document.getElementById("dictionary-empty");
+      const isKobun = isKobunZone();
 
       const matches = [];
       dictionaryEntries.forEach(entry => {
         let hit = true;
         if (dictionaryFilter.parts.length > 0 && !dictionaryFilter.parts.includes(entry.part)) hit = false;
         if (hit && dictionaryFilter.statuses.length > 0 && !dictionaryFilter.statuses.includes(entry.status)) hit = false;
-        if (hit && startNum !== null && !Number.isNaN(startNum) && entry.id < startNum) hit = false;
-        if (hit && endNum !== null && !Number.isNaN(endNum) && entry.id > endNum) hit = false;
+        const targetNum = (isKobun && typeof entry.num === "number") ? entry.num : entry.id;
+        if (hit && startNum !== null && !Number.isNaN(startNum) && targetNum < startNum) hit = false;
+        if (hit && endNum !== null && !Number.isNaN(endNum) && targetNum > endNum) hit = false;
         if (hit && query) {
-          hit = entry.idText.includes(query)
+          const numberHit = isKobun
+            ? (entry.numText.includes(query) || entry.idText.includes(query))
+            : entry.idText.includes(query);
+          hit = numberHit
             || normalizeSearchText(entry.word).includes(query)
             || entry.searchKana.includes(query)
             || entry.meaningNorm.includes(query);
         }
         if (hit) matches.push(entry);
       });
+
+      if (query && /^\d+$/.test(query)) {
+        // 数字検索時、単語番号が完全一致するものを先頭に優先表示する
+        matches.sort((a, b) => {
+          const aTarget = isKobun ? a.numText : a.idText;
+          const bTarget = isKobun ? b.numText : b.idText;
+          if (aTarget === query && bTarget !== query) return -1;
+          if (bTarget === query && aTarget !== query) return 1;
+          return 0;
+        });
+      }
 
       const total = dictionaryEntries.length;
       const pageCount = Math.max(1, Math.ceil(matches.length / DICT_PAGE_SIZE));
