@@ -14,7 +14,7 @@
 
 - アプリ本体: `index.html`（HTML/CSS/JS を内包、ビルド不要）
 - データ: `words_data.js`, `examples_data.js`, `reference_data.js`, `affix_data.js`, `kobun/kobun_words_data.js`
-- 永続化: localStorage のみ（バックエンド・アカウントなし）
+- 永続化: localStorage（常時）＋ 任意の Supabase（Auth / クラウド同期 / フレンド。未設定でもローカルのみで動作）
 - 元データ: `LEAP単語データ/`、生成: `patches/build_leap_data.js`
 
 詳細は `SERVICE.md` を参照。

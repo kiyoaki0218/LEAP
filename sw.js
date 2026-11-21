@@ -1,4 +1,4 @@
-const CACHE = "leap-v20";
+const CACHE = "leap-v24";
 const ASSETS = [
   "./",
   "./index.html",
@@ -39,6 +39,16 @@ self.addEventListener("fetch", (e) => {
   if (e.request.method !== "GET") return;
 
   const url = new URL(e.request.url);
+
+  // Supabase（API・認証・Realtime）と認証リダイレクトは絶対にキャッシュしない（Network-Only）。
+  // 古い進捗やセッションがキャッシュから返ると、同期が破綻するため。
+  const isSupabase = url.hostname === "supabase.co" || url.hostname.endsWith(".supabase.co") || url.hostname.endsWith(".supabase.in");
+  const isAuthCallback = url.searchParams.has("code") || url.searchParams.has("access_token") || (url.hash || "").indexOf("access_token") >= 0;
+  if (isSupabase || isAuthCallback) {
+    e.respondWith(fetch(e.request));
+    return;
+  }
+
   const isNavigate = e.request.mode === "navigate" || url.pathname.endsWith(".html") || url.pathname.endsWith("/");
 
   if (isNavigate) {

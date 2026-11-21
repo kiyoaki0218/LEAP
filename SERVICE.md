@@ -18,11 +18,11 @@
 
 - **何か**: 大学受験英単語帳「LEAP」の 4択クイズ × ゲーム要素の学習 PWA。加えて「裏世界」ゾーンで古文単語クイズも遊べる。
 - **構成**: ビルド不要の**静的サイト**。`index.html` 1ファイルに HTML/CSS/JS をほぼ全部持ち、データは `*_data.js` の JS 定数。
-- **バックエンドなし**: アカウント・サーバー・DB なし。進捗はすべてブラウザの **localStorage**。
+- **バックエンドは任意**: 基本は **localStorage** のみでオフライン動作。`SUPABASE_CONFIG` を設定すると **Supabase**（Auth / Postgres / RLS）によるクラウド同期と相互フレンドが有効になる。未設定なら従来どおりローカルのみで正常動作する。
 - **収録**: 英単語 2,300 語（Part 1〜5）／例文・単語詳細 2,300 語分・例文クイズ 2,000 語分／参考資料 5 章／接辞 32 グループ・132 語根／古文単語 150 語（2 章）。
-- **主な遊び**: 通常4択・例文穴埋め・60秒スプリント・サドンデス、デイリーチャレンジ、忘却曲線の苦手復習、コイン/EXP/レベル、称号・フレーム・アバター、実績 93 種、共有URL（挑戦状）。
+- **主な遊び**: 通常4択・例文穴埋め・60秒スプリント・サドンデス、デイリーチャレンジ、忘却曲線の苦手復習、コイン/EXP/レベル、称号・フレーム・アバター、実績 93 種、共有URL（挑戦状）、任意ログインによるクラウド同期・相互フレンドの詳細ステータス閲覧。
 - **ホスティング**: 静的ホスティング（Vercel 想定。`vercel.json` なし、`.vercel/` は gitignore）。
-- **主要ファイル**: `index.html`（アプリ本体）、`words_data.js`、`examples_data.js`、`reference_data.js`、`affix_data.js`、`kobun/kobun_words_data.js`、`sw.js`、`manifest.json`、`LEAP単語データ/`（元データ）、`patches/`（データ生成・一括改修スクリプト）。
+- **主要ファイル**: `index.html`（アプリ本体）、`words_data.js`、`examples_data.js`、`reference_data.js`、`affix_data.js`、`kobun/kobun_words_data.js`、`sw.js`、`manifest.json`、`supabase/schema.sql`（DB/RLS）、`LEAP単語データ/`（元データ）、`patches/`（データ生成・一括改修スクリプト）。
 
 ---
 
@@ -35,8 +35,10 @@
 | 対象 | 高校生・受験生（スマホ利用が主。ホーム画面に追加してアプリ風に使う） |
 | 言語 | UI は日本語。学習対象は英単語（＋古文単語） |
 | 課金 | なし。コインは学習で貯まるゲーム内通貨のみ |
-| アカウント | なし。端末ローカル保存のみ（端末間同期なし） |
-| オフライン | Service Worker により、初回読み込み後はオフライン起動可 |
+| アカウント | 任意（Google OAuth / Supabase）。未ログインでも全機能をプレイ可能 |
+| 端末間同期 | ログイン時のみ Supabase 経由で同期（未ログインは localStorage のみ） |
+| フレンド | ログイン時のみ。フレンドコード検索 → 申請 → 承認で相互フレンド成立 |
+| オフライン | Service Worker により、初回読み込み後はオフライン起動可（Supabase 通信は対象外） |
 | 公開 | 静的ファイル一式をそのまま配信（ビルド工程なし） |
 
 ### コンセプト
@@ -67,14 +69,15 @@
 | フォント | Google Fonts（Inter / Noto Sans JP） | |
 | 画像生成 | html2canvas 1.4.1（CDN） | 結果カードのスクリーンショット保存 |
 | 音声 | Web Speech API（`speechSynthesis`） | 英単語は `en-US`、古文は `ja-JP` |
-| 永続化 | localStorage | キー一覧は §11 |
-| オフライン | `sw.js`（Cache API） | キャッシュ名 `leap-v20`、Network-First |
+| 永続化 | localStorage（＋任意で Supabase） | キー一覧は §11 |
+| クラウド（任意） | Supabase JS v2（CDN） / Postgres / Auth / RLS | `SUPABASE_CONFIG` 未設定時は初期化しない |
+| オフライン | `sw.js`（Cache API） | キャッシュ名 `leap-v24`、Network-First。Supabase と認証コールバックは Network-Only |
 | PWA | `manifest.json`、アイコン各種 | standalone 表示、theme `#059669` |
 | ビルド | なし | `.js` データは `<script>` で直接読む |
 
 ### キャッシュ更新の仕組み
 
-- `index.html` 冒頭の `APP_VER`（現在 `leap-v3-51fixautotap`）が `localStorage.LEAP_APP_CACHE_VER` と違えば、全 Cache を削除。
+- `index.html` 冒頭の `APP_VER`（現在 `leap-v5-cloud3`）が `localStorage.LEAP_APP_CACHE_VER` と違えば、全 Cache を削除。
 - `sw.js` は `install` で `skipWaiting()`、`activate` で旧キャッシュ削除＋`clients.claim()`。
 - 取得は Network-First（HTML は常に最新、オフライン時のみキャッシュ）。
 - **フロントを更新したら `sw.js` の `CACHE` 名と `index.html` の `APP_VER` を上げる**のが運用ルール。
@@ -90,6 +93,7 @@
 | `screen-quiz` | クイズ | 問題カード、4択、タイマー、コンボ、次へ |
 | `screen-result` | 結果 | スコア、正答率、間違い一覧、共有・画像保存・再挑戦 |
 | `screen-shop` | ショップ | 前称号／後称号／フレーム／アバターの購入・装着 |
+| `screen-social` | ☁️ アカウント・同期 | Google ログイン、フレンドコード、申請一覧、公開範囲設定、手動同期 |
 | `screen-dictionary` | 単語辞典 | 検索・Part/ID範囲/学習状況フィルタ・ページ送り・単語詳細 |
 | `screen-reference` | 参考資料 | 語源・接頭辞・接尾辞・発音・英作文の解説と確認クイズ |
 | `screen-affix` | 語源ラッシュ ハブ | ラッシュ／神経衰弱への入口、ベスト記録 |
@@ -97,7 +101,7 @@
 | `screen-affix-memory` | 接辞神経衰弱 | カードめくりで語根と意味を一致させる |
 | `screen-reader` | レベル別リーダー | 例文から長文を自動生成して読む（**現在 UI 入口なし＝休眠機能**） |
 
-モーダル／ダイアログ: 実績、苦手単語一覧、単語詳細シート、リーダー単語ポップ、確認ダイアログ（`showConfirm`/`showAlert`）、トースト。
+モーダル／ダイアログ: 実績、苦手単語一覧、単語詳細シート、フレンド詳細ステータスシート、初回ログイン時の競合解決ダイアログ、リーダー単語ポップ、確認ダイアログ（`showConfirm`/`showAlert`）、トースト。
 
 ---
 
@@ -420,6 +424,9 @@ expRequiredForLevel(level) = 100 + (level - 1) * 50
 | `LEAP_AFFIX_TYPE_V1` | 語源ラッシュの接頭辞/接尾辞 |
 | `LEAP_PWA_BANNER_DISMISSED_V1` | PWA バナーを閉じたか |
 | `LEAP_APP_CACHE_VER` | アプリのキャッシュバージョン（`APP_VER` と比較） |
+| `LEAP_CLOUD_META_V1` | 直近にクラウドへ保存した `client_updated_at`（初回ログイン時の競合判定用） |
+| `LEAP_CLOUD_SHARE_DETAILS_V1` | 詳細ログ公開フラグ（`"1"` = 公開 / `"0"` = 集計とバッジのみ） |
+| `LEAP_CLOUD_DISPLAY_NAME_V1` | フレンド一覧に表示する表示名（ローカル控え） |
 
 ### 11.2 `userData` の主なフィールド
 
@@ -442,13 +449,104 @@ expRequiredForLevel(level) = 100 + (level - 1) * 50
 
 ---
 
-## 12. ファイル構成
+## 12. クラウド同期・フレンド（Supabase・任意）
+
+`index.html` 冒頭の `SUPABASE_CONFIG`（`url` / `anonKey`）を設定したときだけ有効になる。未設定・CDN 失敗時は `supabaseClient = null` のまま、すべてのクラウド UI が「ローカルのみ」表示になり従来動作を維持する（画面は落ちない）。
+
+### 12.1 設定と初期化
+
+```js
+const SUPABASE_CONFIG = { url: "https://xxxx.supabase.co", anonKey: "sb_publishable_..." };
+```
+
+- Supabase JS は `<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">` で読み込む（ビルド工程なし）。
+- クライアントは `auth: { persistSession, autoRefreshToken, detectSessionInUrl, flowType: "pkce" }` で生成。
+- OAuth プロバイダは `OAUTH_PROVIDERS` 配列。追加するとログインボタンが自動で増える（現在は Google と LINE）。
+- **LINE は Supabase の組み込みプロバイダではない**ため、`custom:line` という Custom OAuth Provider として登録する（Manual 構成）。手順は `docs/SUPABASE_SETUP.md` §5。
+- OAuth 失敗時はコールバック URL の `error_description` をサイト内ダイアログで表示する（`checkAuthErrorParam`）。
+- ログイン導線はホームの「☁️ アカウント・同期」→ `screen-social`。起動直後のログインは要求しない。
+
+### 12.2 同期フロー
+
+1. 起動時は localStorage を読んで即描画（`loadUserData`）。ログイン済みセッションがあれば裏で `bootstrapCloudUser()`。
+2. プロフィール（`profiles`）を取得。無ければフレンドコード `LEAP-XXXX` を生成して作成（衝突時は再試行）。
+3. クラウドの `user_progress` を取得し、端末とクラウドの両方に学習データがあり、かつ `LEAP_CLOUD_META_V1.lastPushedAt` がクラウドの `client_updated_at` と一致しない場合だけ競合ダイアログを表示。
+   - **端末のデータで上書き** → そのまま `cloudPush`。
+   - **クラウドのデータを復元** → `user_data` / `achievements` を localStorage に書き戻して `loadUserData()`。
+   - **統合（おすすめ）** → `mergeProgressData()` で合算。
+4. 解決後に `cloudPush()` で `profiles.quick_stats` と `user_progress` を保存。
+
+自動同期のタイミング: クイズ完走（`cloudPushSoon("quiz")`）、ショップ購入（`"shop"`）、装備変更（`"equip"`）、表示名・公開範囲の変更、手動「今すぐ同期」。1問ごとの保存では同期しない。
+
+### 12.3 統合（マージ）ルール
+
+| 項目 | 扱い |
+|---|---|
+| `coins` / `exp` / 各種回数・`streak` | 大きい方 |
+| `wordStats` | 単語ごとに「出題回数が多い方」、同数なら正解数が多い方 |
+| `weakWords` | 和集合。同じ単語はミス回数が多い方、`nextReview` は早い方 |
+| `scoreHistory` | 結合して重複除去し、先頭 5 件 |
+| 所持称号・フレーム・アバター・実績 | 和集合 |
+| `affixStats` | ラッシュは最大スコア、神経衰弱は手数が少ない方 |
+| `prefix` / `suffix` / 装着中アイテム | 端末側を優先 |
+
+### 12.4 フレンド機能
+
+- 自分のフレンドコード（`LEAP-XXXX`）をコピー／招待リンク（`?friend=LEAP-XXXX`）で共有。招待リンクを開くとコード入力欄へ自動入力。
+- コード検索 → 申請（`pending`）→ 相手が承認（`accepted`）で相互フレンド。拒否・申請取消・解除あり。重複申請は DB のユニーク制約で防止。
+- フレンド一覧カード: アバター／フレーム／前称号＋後称号／Lv／連続学習日数／マスター率／通算正答率／実績解放状況。
+- フレンドをタップ → `friend-detail-modal` に以下を表示（`accepted` のみ。RLS でも保証）。
+  - 総合・LEAP 全体・古文全体・Part 1〜5 別・古文 1〜2 章別の「未学習／学習中／苦手／マスター」内訳とマスター率、累計解答・正解、最大コンボ。
+  - 前称号（86）・後称号（84）・フレーム（27）・アバター（17）・実績（93）の解放率と獲得バッジ一覧。
+  - 直近のプレイ履歴（`scoreHistory` 最大5件）、苦手単語 TOP10（`weakWords` ＋ 正答率60%未満の単語）、語源ラッシュ／接辞神経衰弱のベスト。
+  - 苦手単語セットで自分がクイズに挑戦する導線（`startFriendWeakQuiz`）。
+- **公開範囲**: `user_progress.share_detailed_logs`。`false` のときフレンドには集計率・バッジのみ表示し、履歴・苦手単語はロック表示。設定は「設定」タブから切替。
+
+### 12.5 DB / RLS（`supabase/schema.sql`）
+
+| テーブル | 主な列 | RLS |
+|---|---|---|
+| `profiles` | `id`(auth.users FK), `friend_code` unique, `display_name`, `equipped_avatar/frame`, `prefix/suffix`, `quick_stats` jsonb, `updated_at` | 認証済みは SELECT 可。INSERT/UPDATE/DELETE は本人のみ |
+| `friendships` | `id`, `requester_id`, `addressee_id`, `status` (pending/accepted), 日時 | 当事者のみ SELECT/DELETE。INSERT は requester 本人。UPDATE（承認）は addressee のみ |
+| `user_progress` | `user_id` PK, `user_data` jsonb, `achievements` jsonb, `share_detailed_logs`, `client_updated_at`, `updated_at` | 書き込みは本人のみ。SELECT は本人または `accepted` フレンド |
+
+- `(least(requester_id, addressee_id), greatest(...))` のユニークインデックスで双方向の重複を防止。
+- `auth.users` の INSERT トリガー `leap_handle_new_user()` がプロフィールとフレンドコードを自動作成。
+- フレンドコード生成は `leap_new_friend_code()`（`LEAP-` + 英数字4桁、衝突回避ループ）。
+- クライアント側でもプロフィールが無い場合に作成するフォールバックあり。
+- 詳細ログの非公開はアプリ側の表示制御（RLS はフレンドに `user_progress` 全体を許可するため、機密度が高い拡張をする場合はビュー／RPC 化を検討）。
+
+### 12.6 セットアップ手順（要約）
+
+詳細・画面ごとの操作・トラブルシューティングは **`docs/SUPABASE_SETUP.md`** に集約している。
+
+1. Supabase でプロジェクト作成 → **SQL Editor** で `supabase/schema.sql` を実行。
+2. **Project Settings → API** の Project URL と anon / publishable key を `index.html` の `SUPABASE_CONFIG` に貼り付け（`service_role` は使わない）。
+3. **Authentication → URL Configuration** に Site URL（本番）と Redirect URLs（`https://本番/**`, `https://*.vercel.app/**`, `http://localhost:8000/**`）を登録。
+4. **Authentication → Sign In / Providers → Google** を有効化。Google Cloud の OAuth クライアント（Web）で Authorized redirect URI に `https://<project-ref>.supabase.co/auth/v1/callback` を登録し、Client ID / Secret を貼る。
+5. **LINE ログイン**: LINE Developers で「LINE ログイン」チャネル（ウェブアプリ）を作成し、コールバック URL に Supabase の Callback URL を登録。Supabase の **Custom OAuth Providers → New Provider → Manual** で以下を作成する。
+
+   | 項目 | 値 |
+   |---|---|
+   | Identifier | `custom:line` |
+   | Authorization URL | `https://access.line.me/oauth2/v2.1/authorize` |
+   | Token URL | `https://api.line.me/oauth2/v2.1/token` |
+   | UserInfo URL | `https://api.line.me/oauth2/v2.1/userinfo` |
+   | Scopes | `openid profile`（メール取得承認済みなら `email` も） |
+   | Allow users without email | ON |
+
+   ※ LINE の Web ログインは ID Token が HS256 のため OIDC 自動 discovery では検証に失敗する。必ず Manual 構成にする。
+6. `APP_VER` / `sw.js` の `CACHE` を更新してデプロイ。
+
+---
+
+## 13. ファイル構成
 
 ```
 /
 ├── index.html                 アプリ本体（HTML + CSS + JS、約38万文字）
 ├── manifest.json              PWA マニフェスト
-├── sw.js                      Service Worker（キャッシュ leap-v20 / Network-First）
+├── sw.js                      Service Worker（キャッシュ leap-v24 / Network-First）
 ├── words_data.js              LEAP_WORDS_DATA（2,300語）
 ├── examples_data.js           LEAP_WORD_DETAILS（2,300語）+ LEAP_EXAMPLE_DATA（2,000語）
 ├── reference_data.js          LEAP_REFERENCE_DATA（5章）
@@ -458,11 +556,14 @@ expRequiredForLevel(level) = 100 + (level - 1) * 50
 │   ├── kobun_config.js        未使用の設定足場（enabled=false）
 │   └── kobun_loader.js        未使用の統合ヘルパー（window.KOBUN）
 ├── docs/
-│   └── 古文単語330_追加構想.md  古文5章330語の設計・実装手順メモ
+│   ├── 古文単語330_追加構想.md  古文5章330語の設計・実装手順メモ
+│   └── SUPABASE_SETUP.md      Supabase / Google / LINE ログインの詳細設定手順
 ├── LEAP単語データ/
 │   ├── 001_101.txt … 2001_2300.txt   元テキスト（語義・IPA・コラム）
 │   ├── code_artifact.txt             参考資料の元テキスト
 │   └── words.json                    英単語 JSON
+├── supabase/
+│   └── schema.sql             Supabase のテーブル・RLS・トリガー（SQL Editor で実行）
 ├── patches/                   データ生成・一括改修スクリプト（開発用、実行は任意）
 ├── favicon.png / icon.svg / icon-192.png / icon-512.png / apple-touch-icon.png
 └── SERVICE.md                 このファイル（サービス全体仕様・更新履歴）
@@ -487,7 +588,7 @@ expRequiredForLevel(level) = 100 + (level - 1) * 50
 
 ---
 
-## 13. 開発・確認手順
+## 14. 開発・確認手順
 
 ```bash
 # 依存パッケージなし。静的配信のみ。
@@ -512,9 +613,13 @@ node patches/build_leap_data.js
 
 ---
 
-## 14. 既知の制約・注意点
+## 15. 既知の制約・注意点
 
-- **端末間同期なし**。localStorage を消すと全進捗が消える（エクスポート機能なし）。
+- **クラウドは任意**。`SUPABASE_CONFIG` 未設定なら端末間同期・フレンドは使えない（localStorage のみ）。設定してもログインしなければ従来どおり。
+- **localStorage を消すと未同期の進捗は消える**（手動エクスポート機能はなし）。ログイン済みならクラウドから復元できる。
+- **Supabase の通信は Service Worker でキャッシュしない**（Network-Only）。オフライン中の同期は失敗し、次回オンライン時の操作で再送される。
+- **LINE ログインは追加設定が必要**。Supabase に `custom:line` の Custom OAuth Provider を作らないとボタンからログインできない（未設定時はエラーダイアログで案内）。
+- 詳細ログの非公開（`share_detailed_logs`）はアプリ側の表示制御。RLS は承認済みフレンドに `user_progress` 全体を許可する。
 - **例文クイズは ID 1〜2000 のみ**（2001〜2300 は語義4択のみ）。
 - **古文は 150 語（2章）まで**。330 語構想の 3〜5 章は未投入。
 - `kobun/kobun_config.js` / `kobun_loader.js` は未使用。設定を変えても現行 `index.html` には影響しない。
@@ -526,12 +631,15 @@ node patches/build_leap_data.js
 
 ---
 
-## 15. 更新履歴
+## 16. 更新履歴
 
 > ここに**日付・変更内容**を追記していく。新しいものが上。
 
 | 日付 | 変更内容 |
 |---|---|
+| 2026-11-21 | クラウド同期の不具合修正: 同期済み判定を文字列比較から時刻比較（`sameCloudInstant`、2秒許容）に変更し、再読込ごとに競合ダイアログが出る問題を解消。プロフィール保存を upsert 化、初期化失敗時に再試行可能に、OAuth リダイレクト後も招待コードを復元。`APP_VER=leap-v5-cloud3` / `CACHE=leap-v24`。 |
+| 2026-11-21 | LINE ログインを追加（Supabase の Custom OAuth Provider `custom:line`）。ログインボタンをプロバイダ別スタイルに対応させ、OAuth 失敗時のエラー表示を追加。`docs/SUPABASE_SETUP.md` に Google / LINE / RLS / トラブルシューティングを含む詳細手順を新規作成。`APP_VER=leap-v4-cloud2` / `CACHE=leap-v22`。 |
+| 2026-11-21 | Supabase（Auth / Postgres / RLS）を任意バックエンドとして導入。Google ログイン、localStorage 併用のクラウド同期（初回競合の3択解決・統合マージ・自動同期）、相互フレンド（フレンドコード・申請/承認・詳細ステータス・公開範囲設定）を追加。`supabase/schema.sql` 追加、`screen-social` とフレンド詳細シート追加、SW は Supabase を Network-Only に。`APP_VER=leap-v4-cloud1` / `CACHE=leap-v21`。 |
 | 2026-11-21 | `SERVICE.md`（このファイル）を新規作成。サービス全体の仕様・データ・保存形式・運用手順を文書化。`AGENTS.md` に更新ルールを追加。 |
 | 2026-11-21 | LEAP 単語詳細を 1579〜2300 に追加（Part 5 を開放、例文は 1579〜2000）。 |
 | 2026-11-20 | 古文辞典で単語番号検索・ID 範囲フィルタに対応。 |
