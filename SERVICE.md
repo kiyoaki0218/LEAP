@@ -88,7 +88,7 @@
 
 | id | 画面 | 役割 |
 |---|---|---|
-| `screen-home` | ホーム | ゾーン切替、プレイヤーカード、連続学習、苦手バナー、各機能への入口 |
+| `screen-home` | ホーム | ゾーン切替、プレイヤーカード、連続学習、苦手バナー、主要導線（クイズ・デイリー・辞典・語源）＋「⚙️ 設定・その他」シート |
 | `screen-select` | 出題範囲＆設定 | スタイル／ゲームモード／Part・カスタム範囲／出題数／学習状況フィルタ |
 | `screen-quiz` | クイズ | 問題カード、4択、タイマー、コンボ、次へ |
 | `screen-result` | 結果 | スコア、正答率、間違い一覧、共有・画像保存・再挑戦 |
@@ -101,7 +101,9 @@
 | `screen-affix-memory` | 接辞神経衰弱 | カードめくりで語根と意味を一致させる |
 | `screen-reader` | レベル別リーダー | 例文から長文を自動生成して読む（**現在 UI 入口なし＝休眠機能**） |
 
-モーダル／ダイアログ: 実績、苦手単語一覧、単語詳細シート、フレンド詳細ステータスシート、初回ログイン時の競合解決ダイアログ、リーダー単語ポップ、確認ダイアログ（`showConfirm`/`showAlert`）、トースト。
+モーダル／ダイアログ: **設定・その他シート（`settings-modal`）**、実績、苦手単語一覧、単語詳細シート、フレンド詳細ステータスシート、結果のフレンド共有シート、初回ログイン時の競合解決ダイアログ、リーダー単語ポップ、確認ダイアログ（`showConfirm`/`showAlert`）、トースト。
+
+ホームの副次的な入口（実績・ショップ・アカウント／同期・自分の詳細・音声ON/OFF・追加JSON読込）は「⚙️ 設定・その他」シートに集約している（`openSettingsModal` / `closeSettingsModal`）。各ボタンは既存IDを保つため、バッジやラベルの自動更新はそのまま動作する。
 
 ---
 
@@ -380,7 +382,8 @@ expRequiredForLevel(level) = 100 + (level - 1) * 50
   "t2": "称号", "rs": 開始ID, "re": 終了ID, "rl": "範囲ラベル", "z": "leap|kobun" }
 ```
 
-- 共有先: **フレンドに共有**（Web Share API で OS の共有シートを開く。ログイン中は先に `cloudPush("share")` してフレンド詳細の直近プレイ履歴にも即反映。共有 API 非対応端末ではコピーに退避）、X（Twitter）投稿、LINE 共有、URL コピー。
+- 共有先: **サービス内のフレンド共有**（ログイン中のみ。フレンドを選んで送ると、相手の「📥 共有」タブに届き、同じ範囲で挑戦できる）、X（Twitter）投稿、LINE 共有、URL コピー。
+- **サービス内共有の仕組み**: 専用テーブルは追加せず、送信者の `user_progress.user_data.sharedResults` に最大 20 件を保存して `cloudPush("share")` する。承認済みフレンドは RLS で `user_progress` を読めるため、受信側はフレンドの `sharedResults` から自分宛て（`to` に自分の UID を含む）のものを集めて表示する（`collectFriendShares`）。宛先が空配列なら全フレンド宛て。
 - **画像保存**: html2canvas で結果カードを PNG 化してダウンロード（共有ボックスは撮影時に非表示）。
 - **挑戦状**: `?r=` 付き URL を開くと結果画面に「🔥 友達からの挑戦状！出題範囲: …」を表示し、同じ範囲で再挑戦できる（`checkIncomingChallenge`）。
 
@@ -400,7 +403,10 @@ expRequiredForLevel(level) = 100 + (level - 1) * 50
 - **ダークモード**: ヘッダーの月/太陽ボタン。`LEAP_DARK_MODE_V1`。Tailwind クラスを CSS で上書きする方式（`html.dark [class~="bg-white"]` など）。コントラスト確保のため独自調整あり。古文ゾーンは紫系テーマ（`body.kobun-mode`）。
 - **PWA**: `manifest.json`（standalone）。ホームにインストールバナー（iOS Safari は手順文言を変更、`LEAP_PWA_BANNER_DISMISSED_V1` で非表示）。
 - **音声読み上げ**: `voiceEnabled`（初期 ON）。クイズの単語、例文、辞典の詳細、リーダー本文を読み上げ。ゾーンで言語を切替。
-- **自動再生制限対策**: 最初の `pointerdown` / `touchstart` / `keydown` で `unlockSpeech()` を呼び、無音（`volume=0`）の発話を1回して iOS Safari / Chrome の音声をアンロックする。`initSpeechSynthesis()` が `voiceschanged` を購読して声を再取得し、`pickTtsVoice()` が `en-US` / `ja-JP` に合う声を選ぶ。`cancel()` 直後の `speak()` が Safari で無視される問題を避けるため次のタスクで発話し、一時エラー時は一度再試行する。
+- **自動再生制限対策（iOS/iPadOS）**: 最初のユーザー操作（`pointerdown` / `touchstart` / `touchend` / `click` / `keydown`、capture）で `unlockSpeech()` を呼び、**空文字の発話を同期実行**して音声エンジンをアンロックする。iPadOS は `pointerdown` だけでは不十分なことがあるため `click` / `touchend` でも再試行し、アンロック用の発話は直後の `cancel()` で消さない。
+- **発話の同期実行**: 操作から 1 秒以内の `speakEnglish()` はユーザー操作内とみなして `speak()` を**同期的に**呼ぶ（iOS/iPadOS は `setTimeout` 経由の初回発話を無視する）。それ以外は `cancel()` 後に短い遅延を置いて発話する。
+- **声の選択**: `initSpeechSynthesis()` が `voiceschanged` を購読して声を再取得し、`pickTtsVoice()` が `en-US` / `ja-JP` に合う声を選ぶ。Safari は `utter.voice` が未設定だと発話せず止まることがある（WebKit bug 243055）ため、言語一致がなければ先頭の声を必ず割り当てる。一時エラー時は一度再試行する。
+- **iPad で音が出ない場合の環境要因**: iPadOS のコントロールセンターのミュート（ソフトミュート）が ON だと、Safari の音声合成だけが無音になる（他の音は鳴ることがある）。音量・ミュート解除を確認する。iOS 26 系では特定の声・文字列で音声合成が停止する既知不具合もある（Safari 再起動で復帰）。
 - **明示操作の再生**: 🔊 ボタン（`speakWord(true)`・詳細シート・例文）は `voiceEnabled` が OFF でも鳴る。自動読み上げだけが設定に従う。
 
 ---
@@ -429,6 +435,7 @@ expRequiredForLevel(level) = 100 + (level - 1) * 50
 | `LEAP_CLOUD_META_V1` | 直近にクラウドへ保存した `client_updated_at`（初回ログイン時の競合判定用） |
 | `LEAP_CLOUD_SHARE_DETAILS_V1` | 詳細ログ公開フラグ（`"1"` = 公開 / `"0"` = 集計とバッジのみ） |
 | `LEAP_CLOUD_DISPLAY_NAME_V1` | フレンド一覧に表示する表示名（ローカル控え） |
+| `LEAP_SHARED_RESULTS_SEEN_V1` | 既読にしたフレンド共有結果の ID 配列（「📥 共有」の未読バッジ用） |
 
 ### 11.2 `userData` の主なフィールド
 
@@ -440,6 +447,7 @@ expRequiredForLevel(level) = 100 + (level - 1) * 50
   wordStats: { [wordId]: { correct, total } },      // 単語別の正解/出題回数
   weakWords: { [wordId]: { id, word, meaning, count, stage, nextReview, lastReviewed } },
   scoreHistory: [ { score, correct, total, accuracy, combo, coins, range, date, isDaily } ], // 最大5件
+  sharedResults: [ { id, at, to[], subject, range{start,end,label}, correct, total, accuracy, combo, score, title } ], // フレンド共有 最大20件
   totalQuizzes, maxComboEver,
   streak, lastPlayDate, lastDailyDate, dailyClears, reviewClears,
   voiceEnabled, affixStats: {}, readerRuns, dictOpened
@@ -466,7 +474,7 @@ const SUPABASE_CONFIG = { url: "https://xxxx.supabase.co", anonKey: "sb_publisha
 - OAuth プロバイダは `OAUTH_PROVIDERS` 配列。追加するとログインボタンが自動で増える（現在は Google と LINE）。
 - **LINE は Supabase の組み込みプロバイダではない**ため、`custom:line` という Custom OAuth Provider として登録する（Manual 構成）。手順は `docs/SUPABASE_SETUP.md` §5。
 - OAuth 失敗時はコールバック URL の `error_description` をサイト内ダイアログで表示する（`checkAuthErrorParam`）。
-- ログイン導線はホームの「☁️ アカウント・同期」→ `screen-social`。起動直後のログインは要求しない。
+- ログイン導線はホームの「⚙️ 設定・その他」→「☁️ アカウント・同期」→ `screen-social`。起動直後のログインは要求しない。
 
 ### 12.2 同期フロー
 
@@ -503,6 +511,8 @@ const SUPABASE_CONFIG = { url: "https://xxxx.supabase.co", anonKey: "sb_publisha
   - 直近のプレイ履歴（`scoreHistory` 最大5件）、苦手単語 TOP10（`weakWords` ＋ 正答率60%未満の単語）、語源ラッシュ／接辞神経衰弱のベスト。
   - 苦手単語セットで自分がクイズに挑戦する導線（`startFriendWeakQuiz`）。
 - **公開範囲**: `user_progress.share_detailed_logs`。`false` のときフレンドには集計率・バッジのみ表示し、履歴・苦手単語はロック表示。設定は「設定」タブから切替。
+- **自分の詳細**: ホームの「⚙️ 設定・その他」→「📊 自分の詳細」、および「☁️ アカウント・同期」画面右上の「📊 自分の詳細」から、フレンド詳細と同じシート（`friend-detail-modal` + `renderFriendDetail`）を自分のローカルデータで表示する（`openSelfDetail`。ログイン不要）。このとき「解除」ボタンは隠す。
+- **サービス内の結果共有**: 結果画面の「👥 フレンドに共有」→ フレンド選択シート（`share-result-modal`）→ `sendResultShare` で `userData.sharedResults` に追加し `cloudPush("share")`。受信側は「📥 共有」タブに一覧表示し、未読バッジ（`LEAP_SHARED_RESULTS_SEEN_V1`）と「⚔️ 同じ範囲で挑戦する」（`startSharedResultChallenge`）を提供。未ログイン時はログイン導線を表示。
 
 ### 12.5 DB / RLS（`supabase/schema.sql`）
 
@@ -639,6 +649,9 @@ node patches/build_leap_data.js
 
 | 日付 | 変更内容 |
 |---|---|
+| 2026-11-21 | ホーム画面の副次的ボタンを「⚙️ 設定・その他」シートに集約（実績・ショップ・アカウント／同期・自分の詳細・音声ON/OFF・追加JSON読込）。音声トグル時にラベルを即時更新。 |
+| 2026-11-21 | iPadOS で読み上げが無音になる問題を調査・修正: ユーザー操作内での `speak()` 同期実行、空文字発話によるアンロックの再試行（`pointerdown`/`touchstart`/`touchend`/`click`/`keydown`）、アンロック発話のキャンセル回避、`voice` 未設定時のフォールバックを追加。iPad のソフトミュート／iOS 26 の既知不具合も SERVICE.md に明記。 |
+| 2026-11-21 | 結果共有をサービス内で完結するように変更（フレンド選択シート→「📥 共有」タブ・未読バッジ・同じ範囲で挑戦、`userData.sharedResults` を使用し DB 変更なし）。「📊 自分の詳細」でフレンド詳細と同じ画面を自分でも確認可能に。`APP_VER=leap-v5-cloud5` / `CACHE=leap-v26`。 |
 | 2026-11-21 | 音声読み上げの修正: 初回タップでの音声アンロック、声の読み込み待ち・Safari の `cancel()` 直後対策・一時エラー再試行を追加し、🔊 ボタンは設定 OFF でも再生するようにした。結果画面に「フレンドに共有」を追加（OS 共有シート＋ログイン中はクラウド即同期、非対応端末はコピー）。`APP_VER=leap-v5-cloud4` / `CACHE=leap-v25`。 |
 | 2026-11-21 | クラウド同期の不具合修正: 同期済み判定を文字列比較から時刻比較（`sameCloudInstant`、2秒許容）に変更し、再読込ごとに競合ダイアログが出る問題を解消。プロフィール保存を upsert 化、初期化失敗時に再試行可能に、OAuth リダイレクト後も招待コードを復元。`APP_VER=leap-v5-cloud3` / `CACHE=leap-v24`。 |
 | 2026-11-21 | LINE ログインを追加（Supabase の Custom OAuth Provider `custom:line`）。ログインボタンをプロバイダ別スタイルに対応させ、OAuth 失敗時のエラー表示を追加。`docs/SUPABASE_SETUP.md` に Google / LINE / RLS / トラブルシューティングを含む詳細手順を新規作成。`APP_VER=leap-v4-cloud2` / `CACHE=leap-v22`。 |

@@ -11,7 +11,7 @@
     <script>
     // キャッシュ強制更新ロジック: 新バージョン検知時に古いServiceWorkerキャッシュを破棄
     (function() {
-      const APP_VER = "leap-v5-cloud4";
+      const APP_VER = "leap-v5-cloud5";
       try {
         const storedVer = localStorage.getItem("LEAP_APP_CACHE_VER");
         if (storedVer !== APP_VER) {
@@ -453,34 +453,13 @@
           <span>📖 単語辞典（番号順）</span>
         </button>
 
-                <!-- 実績・トロフィーボタン -->
-        <button type="button" onclick="openAchievementsModal()" class="w-full py-3.5 bg-white hover:bg-slate-50 active:bg-slate-100 border border-slate-200 text-slate-700 font-semibold rounded-xl shadow-sm transition-all flex items-center justify-between px-4 cursor-pointer">
-          <div class="flex items-center gap-2">
-            <span class="text-lg">🏆</span>
-            <span class="text-sm font-bold text-slate-800">実績・トロフィー</span>
-          </div>
-          <div class="flex items-center gap-1.5">
-            <span class="text-xs text-slate-400 font-medium">達成状況:</span>
-            <span id="home-achievement-count-badge" class="text-xs font-extrabold bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full">0/39</span>
-          </div>
-        </button>
-        <button type="button" onclick="navigate('screen-shop')" class="w-full py-3.5 bg-white hover:bg-slate-100 active:scale-[0.99] border border-slate-200 text-slate-700 font-semibold rounded-xl shadow-sm transition-all flex items-center justify-center gap-2 cursor-pointer">
-          <span>🛍️ 称号・アバターショップ</span>
-        </button>
-
-        <!-- アカウント・クラウド同期・フレンド -->
-        <button type="button" onclick="openAccount()" class="w-full px-4 py-3 bg-white hover:bg-slate-50 active:bg-slate-100 border border-slate-200 rounded-xl shadow-sm transition-all flex items-center justify-between cursor-pointer">
+        <!-- 設定・その他（実績 / ショップ / 同期 / 自分の詳細 / 音声など） -->
+        <button type="button" onclick="openSettingsModal()" class="w-full px-4 py-3 bg-white hover:bg-slate-50 active:bg-slate-100 border border-slate-200 rounded-xl shadow-sm transition-all flex items-center justify-between cursor-pointer">
           <span class="flex items-center gap-2 min-w-0">
-            <span class="text-lg">☁️</span>
-            <span class="text-sm font-bold text-slate-800">アカウント・同期</span>
+            <span class="text-lg">⚙️</span>
+            <span class="text-sm font-bold text-slate-800">設定・その他</span>
           </span>
-          <span id="account-btn-state" class="text-[10px] font-extrabold bg-slate-100 text-slate-500 px-2 py-0.5 rounded-full shrink-0">未ログイン</span>
-        </button>
-
-        <!-- 音声ON/OFFボタン -->
-        <button type="button" id="btn-voice-toggle" onclick="toggleVoice()" class="w-full py-2.5 bg-white hover:bg-slate-50 active:scale-[0.99] border border-slate-200 text-slate-600 text-sm font-semibold rounded-xl shadow-sm transition-all flex items-center justify-center gap-2 cursor-pointer">
-          <span id="voice-toggle-icon">🔊</span>
-          <span id="voice-toggle-label">音声読み上げ ON</span>
+          <span class="text-[10px] font-bold text-slate-400 shrink-0">実績・ショップ・同期など</span>
         </button>
       </div>
 
@@ -493,14 +472,6 @@
         <div id="score-history-list" class="hidden px-4 pb-4 space-y-2"></div>
       </div>
 
-      <!-- 単語データ情報・手動読込 -->
-      <div class="pt-3 border-t border-slate-200/80 text-xs text-slate-400 flex flex-col items-center gap-2">
-        <p id="data-status-text">LEAP実データ (ID: 1〜1000) 読込済</p>
-        <label class="cursor-pointer text-emerald-600 hover:underline">
-          <span>[+] 追加のJSONファイルを読み込む</span>
-          <input type="file" id="json-file-input" accept=".json" class="hidden" onchange="handleCustomDataUpload(event)">
-        </label>
-      </div>
     </section>
 
     <!-- 2. Part / 範囲選択画面 -->
@@ -772,7 +743,10 @@
           <h2 class="text-xl font-bold text-slate-900">☁️ アカウント・同期</h2>
           <p class="text-xs text-slate-400">ログインは任意。未ログインでも今まで通り遊べます。</p>
         </div>
-        <button type="button" onclick="navigate('screen-home')" class="text-sm text-slate-500 hover:text-slate-800 font-medium">戻る</button>
+        <div class="flex items-center gap-2 shrink-0">
+          <button type="button" onclick="openSelfDetail()" class="px-2.5 py-1.5 bg-white border border-slate-200 hover:bg-slate-50 text-slate-600 text-[11px] font-bold rounded-lg transition cursor-pointer">📊 自分の詳細</button>
+          <button type="button" onclick="navigate('screen-home')" class="text-sm text-slate-500 hover:text-slate-800 font-medium">戻る</button>
+        </div>
       </div>
 
       <!-- 未ログイン -->
@@ -822,9 +796,10 @@
         </div>
 
         <div class="flex bg-slate-200/70 p-1 rounded-xl gap-1">
-          <button type="button" id="social-tab-friends" onclick="switchSocialTab('friends')" class="flex-1 py-2 text-xs font-bold rounded-lg transition cursor-pointer">👥 フレンド</button>
-          <button type="button" id="social-tab-requests" onclick="switchSocialTab('requests')" class="flex-1 py-2 text-xs font-bold rounded-lg transition cursor-pointer">📨 申請 <span id="social-request-badge" class="hidden text-[10px] bg-rose-500 text-white px-1.5 py-0.2 rounded-full ml-0.5">0</span></button>
-          <button type="button" id="social-tab-settings" onclick="switchSocialTab('settings')" class="flex-1 py-2 text-xs font-bold rounded-lg transition cursor-pointer">⚙️ 設定</button>
+          <button type="button" id="social-tab-friends" onclick="switchSocialTab('friends')" class="flex-1 py-2 text-[11px] font-bold rounded-lg transition cursor-pointer whitespace-nowrap">👥 フレンド</button>
+          <button type="button" id="social-tab-requests" onclick="switchSocialTab('requests')" class="flex-1 py-2 text-[11px] font-bold rounded-lg transition cursor-pointer whitespace-nowrap">📨 申請 <span id="social-request-badge" class="hidden text-[10px] bg-rose-500 text-white px-1.5 py-0.2 rounded-full ml-0.5">0</span></button>
+          <button type="button" id="social-tab-shares" onclick="switchSocialTab('shares')" class="flex-1 py-2 text-[11px] font-bold rounded-lg transition cursor-pointer whitespace-nowrap">📥 共有 <span id="social-share-badge" class="hidden text-[10px] bg-emerald-500 text-white px-1.5 py-0.2 rounded-full ml-0.5">0</span></button>
+          <button type="button" id="social-tab-settings" onclick="switchSocialTab('settings')" class="flex-1 py-2 text-[11px] font-bold rounded-lg transition cursor-pointer whitespace-nowrap">⚙️ 設定</button>
         </div>
 
         <div id="social-panel-friends" class="space-y-3">
@@ -837,6 +812,14 @@
             <p id="friend-request-hint" class="text-[10px] text-slate-400 leading-relaxed">相手の承認でフレンド成立。フレンド同士だけが詳細ステータスを見られます。</p>
           </div>
           <div id="social-friend-list" class="space-y-2"></div>
+        </div>
+
+        <div id="social-panel-shares" class="hidden space-y-3">
+          <div class="flex items-center justify-between px-1">
+            <p class="text-xs font-bold text-slate-500">フレンドから届いた結果</p>
+            <button type="button" onclick="refreshSocial()" class="text-[10px] font-bold text-slate-400 hover:text-slate-700 transition cursor-pointer">↻ 更新</button>
+          </div>
+          <div id="social-shares-list" class="space-y-2"></div>
         </div>
 
         <div id="social-panel-requests" class="hidden space-y-3">
@@ -1238,7 +1221,7 @@
           </button>
 
           <p class="text-xs font-semibold text-slate-500">結果をシェアして挑戦状を送る</p>
-          <button type="button" onclick="shareResultToFriend()" class="w-full py-3 bg-emerald-600 hover:bg-emerald-700 active:scale-[0.99] text-white rounded-xl text-xs font-bold flex items-center justify-center gap-2 shadow-sm transition cursor-pointer">
+          <button type="button" onclick="openShareResultModal()" class="w-full py-3 bg-emerald-600 hover:bg-emerald-700 active:scale-[0.99] text-white rounded-xl text-xs font-bold flex items-center justify-center gap-2 shadow-sm transition cursor-pointer">
             <span>👥</span>
             <span>フレンドに共有</span>
           </button>
@@ -1348,6 +1331,78 @@
     </div>
   </div>
 
+  <!-- 設定・その他シート -->
+  <div id="settings-modal" class="fixed inset-0 z-[65] hidden items-end sm:items-center justify-center p-0 sm:p-4" role="dialog" aria-modal="true" aria-labelledby="settings-title">
+    <div class="backdrop-in absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onclick="closeSettingsModal()"></div>
+    <div class="sheet-in relative bg-white w-full sm:max-w-md max-h-[88vh] rounded-t-3xl sm:rounded-3xl shadow-2xl flex flex-col overflow-hidden">
+      <div class="px-5 pt-4 pb-3 border-b border-slate-100 flex items-start gap-3">
+        <span class="w-10 h-10 rounded-xl bg-slate-100 border border-slate-200 flex items-center justify-center text-xl shrink-0">⚙️</span>
+        <div class="min-w-0 flex-1">
+          <h3 id="settings-title" class="text-lg font-extrabold text-slate-900">設定・その他</h3>
+          <p class="text-[11px] text-slate-400">実績・ショップ・同期・音声などをまとめています。</p>
+        </div>
+        <button type="button" onclick="closeSettingsModal()" class="text-slate-400 hover:text-slate-700 text-lg font-bold p-1 shrink-0">✕</button>
+      </div>
+
+      <div class="px-4 py-3 overflow-y-auto space-y-4">
+        <div class="space-y-2">
+          <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400 px-1">学習・コレクション</p>
+          <button type="button" onclick="closeSettingsModal(); openAchievementsModal()" class="w-full py-3 px-4 bg-white hover:bg-slate-50 active:bg-slate-100 border border-slate-200 text-slate-700 font-semibold rounded-xl shadow-sm transition-all flex items-center justify-between cursor-pointer">
+            <span class="flex items-center gap-2">
+              <span class="text-lg">🏆</span>
+              <span class="text-sm font-bold text-slate-800">実績・トロフィー</span>
+            </span>
+            <span class="flex items-center gap-1.5">
+              <span class="text-[10px] text-slate-400 font-medium">達成:</span>
+              <span id="home-achievement-count-badge" class="text-[11px] font-extrabold bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full">0/39</span>
+            </span>
+          </button>
+          <button type="button" onclick="closeSettingsModal(); navigate('screen-shop')" class="w-full py-3 px-4 bg-white hover:bg-slate-100 active:scale-[0.99] border border-slate-200 text-slate-700 font-semibold rounded-xl shadow-sm transition-all flex items-center gap-2 cursor-pointer">
+            <span class="text-lg">🛍️</span>
+            <span class="text-sm font-bold text-slate-800">称号・アバターショップ</span>
+          </button>
+          <button type="button" onclick="closeSettingsModal(); openSelfDetail()" class="w-full py-3 px-4 bg-white hover:bg-slate-50 active:bg-slate-100 border border-slate-200 rounded-xl shadow-sm transition-all flex items-center justify-between cursor-pointer">
+            <span class="flex items-center gap-2 min-w-0">
+              <span class="text-lg">📊</span>
+              <span class="text-sm font-bold text-slate-800">自分の詳細</span>
+            </span>
+            <span class="text-[10px] font-bold text-slate-400 shrink-0">フレンドと同じ表示</span>
+          </button>
+        </div>
+
+        <div class="space-y-2 pt-3 border-t border-slate-100">
+          <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400 px-1">アカウント・音声</p>
+          <button type="button" onclick="closeSettingsModal(); openAccount()" class="w-full py-3 px-4 bg-white hover:bg-slate-50 active:bg-slate-100 border border-slate-200 rounded-xl shadow-sm transition-all flex items-center justify-between cursor-pointer">
+            <span class="flex items-center gap-2 min-w-0">
+              <span class="text-lg">☁️</span>
+              <span class="text-sm font-bold text-slate-800">アカウント・同期</span>
+            </span>
+            <span id="account-btn-state" class="text-[10px] font-extrabold bg-slate-100 text-slate-500 px-2 py-0.5 rounded-full shrink-0">未ログイン</span>
+          </button>
+          <button type="button" id="btn-voice-toggle" onclick="toggleVoice()" class="w-full py-3 px-4 bg-white hover:bg-slate-50 active:scale-[0.99] border border-slate-200 text-slate-600 text-sm font-semibold rounded-xl shadow-sm transition-all flex items-center justify-center gap-2 cursor-pointer">
+            <span id="voice-toggle-icon">🔊</span>
+            <span id="voice-toggle-label">音声読み上げ ON</span>
+          </button>
+        </div>
+
+        <div class="space-y-2 pt-3 border-t border-slate-100">
+          <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400 px-1">データ</p>
+          <div class="text-xs text-slate-400 flex flex-col items-center gap-2 bg-slate-50 border border-slate-200 rounded-xl px-3 py-3">
+            <p id="data-status-text">LEAP実データ (ID: 1〜1000) 読込済</p>
+            <label class="cursor-pointer text-emerald-600 hover:underline">
+              <span>[+] 追加のJSONファイルを読み込む</span>
+              <input type="file" id="json-file-input" accept=".json" class="hidden" onchange="handleCustomDataUpload(event)">
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div class="px-4 py-3 border-t border-slate-100 bg-slate-50">
+        <button type="button" onclick="closeSettingsModal()" class="w-full py-2.5 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold rounded-xl transition cursor-pointer">閉じる</button>
+      </div>
+    </div>
+  </div>
+
   <!-- 単語詳細シート（辞典の単語タップで表示） -->
   <div id="word-detail-modal" class="fixed inset-0 z-[70] hidden items-end sm:items-center justify-center p-0 sm:p-4" role="dialog" aria-modal="true" aria-labelledby="word-detail-title">
     <div class="backdrop-in absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onclick="closeWordDetail()"></div>
@@ -1405,6 +1460,28 @@
       <div class="px-5 py-3 border-t border-slate-100 bg-slate-50 flex gap-2">
         <button type="button" onclick="closeFriendDetail()" class="flex-1 py-2.5 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold rounded-xl transition cursor-pointer">閉じる</button>
         <button type="button" id="friend-detail-remove" onclick="removeActiveFriend()" class="px-3 py-2.5 bg-white hover:bg-rose-50 border border-slate-200 text-rose-600 text-xs font-bold rounded-xl transition cursor-pointer">解除</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 結果をサービス内でフレンドに共有するシート -->
+  <div id="share-result-modal" class="fixed inset-0 z-[70] hidden items-end sm:items-center justify-center p-0 sm:p-4" role="dialog" aria-modal="true" aria-labelledby="share-result-title">
+    <div class="backdrop-in absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onclick="closeShareResultModal()"></div>
+    <div class="sheet-in relative bg-white w-full sm:max-w-md max-h-[85vh] rounded-t-3xl sm:rounded-3xl shadow-2xl flex flex-col overflow-hidden">
+      <div class="px-5 pt-4 pb-3 border-b border-slate-100 flex items-start gap-3">
+        <span class="w-10 h-10 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center text-xl shrink-0">👥</span>
+        <div class="min-w-0 flex-1">
+          <h3 id="share-result-title" class="text-lg font-extrabold text-slate-900">フレンドに共有</h3>
+          <p class="text-[11px] text-slate-400 leading-relaxed">選んだフレンドの「📥 共有」に結果が届きます。</p>
+        </div>
+        <button type="button" onclick="closeShareResultModal()" class="text-slate-400 hover:text-slate-700 text-lg font-bold p-1 shrink-0">✕</button>
+      </div>
+      <div class="px-4 py-3 overflow-y-auto space-y-2">
+        <div id="share-result-friends" class="space-y-2"></div>
+      </div>
+      <div class="px-4 py-3 border-t border-slate-100 bg-slate-50 flex gap-2">
+        <button type="button" onclick="closeShareResultModal()" class="flex-1 py-2.5 bg-white hover:bg-slate-100 border border-slate-200 text-slate-700 text-xs font-bold rounded-xl transition cursor-pointer">キャンセル</button>
+        <button type="button" onclick="sendResultShare()" class="flex-1 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl transition cursor-pointer">共有する</button>
       </div>
     </div>
   </div>
@@ -2007,6 +2084,7 @@
       purchasedSuffixes: ["suf_beginner"],
       weakWords: {}, // { id: { id, word, meaning, count } }
       scoreHistory: [], // 最近5回のスコア履歴
+      sharedResults: [], // フレンドに共有した結果（最大20件）
       lastDailyDate: "", // "YYYY-MM-DD"
       voiceEnabled: true, // 音声読み上げON/OFF
       exp: 0, // 累計EXP（正解1問 +10）
@@ -2609,6 +2687,7 @@
           if (!userData.suffix) userData.suffix = "ビギナー";
           if (!userData.weakWords) userData.weakWords = {};
           if (!userData.scoreHistory) userData.scoreHistory = [];
+          if (!Array.isArray(userData.sharedResults)) userData.sharedResults = [];
           if (!userData.lastDailyDate) userData.lastDailyDate = "";
           if (userData.voiceEnabled === undefined) userData.voiceEnabled = true;
           if (typeof userData.exp !== "number" || !isFinite(userData.exp) || userData.exp < 0) userData.exp = 0;
@@ -5763,6 +5842,8 @@
     // 1回行って音声出力をアンロックする（以降の自動読み上げも許可される）。
     let ttsVoices = [];
     let ttsUnlocked = false;
+    let ttsPriming = false;
+    let ttsLastGestureAt = 0;
 
     function refreshTtsVoices() {
       try {
@@ -5783,31 +5864,43 @@
         || (base === "ja"
           ? voices.find(v => /japan|日本語/i.test(v.name || ""))
           : voices.find(v => /english|united states|united kingdom/i.test(v.name || "")))
+        // Safari は voice が未設定だと発話せず止まることがあるため、最後は先頭の声を使う
+        || voices[0]
         || null;
     }
 
+    // ユーザー操作内で無音の発話を行い、iOS/iPadOS の音声エンジンをアンロックする。
+    // iPadOS は pointerdown だけでなく click / touchend でもアンロックを試す。
     function unlockSpeech() {
-      if (ttsUnlocked || !window.speechSynthesis) return;
-      ttsUnlocked = true;
+      ttsLastGestureAt = Date.now();
+      const synth = window.speechSynthesis;
+      if (!synth || ttsUnlocked) return;
       try {
-        // volume 0 の発話で音声エンジンを起動（タップ直後に呼ぶこと）
-        const prime = new SpeechSynthesisUtterance(" ");
+        synth.resume();
+        // 空文字の発話でも「ユーザー操作内の初回 speak」として扱われる
+        const prime = new SpeechSynthesisUtterance("");
         prime.volume = 0;
-        prime.rate = 2;
+        prime.rate = 10;
         prime.lang = "en-US";
-        window.speechSynthesis.speak(prime);
+        ttsPriming = true;
+        prime.onstart = () => { ttsUnlocked = true; };
+        prime.onend = () => { ttsUnlocked = true; ttsPriming = false; };
+        prime.onerror = () => { ttsPriming = false; };
+        synth.speak(prime);
         refreshTtsVoices();
-      } catch (e) {}
+        setTimeout(() => { ttsPriming = false; }, 500);
+      } catch (e) {
+        ttsPriming = false;
+      }
     }
 
     function initSpeechSynthesis() {
       if (!window.speechSynthesis) return;
       refreshTtsVoices();
       try { window.speechSynthesis.onvoiceschanged = refreshTtsVoices; } catch (e) {}
-      // 最初の操作でアンロック（click より前の pointerdown / touchstart で確実に）
-      const prime = () => unlockSpeech();
-      ["pointerdown", "touchstart", "keydown"].forEach((evt) => {
-        document.addEventListener(evt, prime, { capture: true, passive: true });
+      // 最初の操作でアンロック。iPadOS は click/touchend を要求することがあるため全部拾う。
+      ["pointerdown", "touchstart", "touchend", "click", "keydown"].forEach((evt) => {
+        document.addEventListener(evt, unlockSpeech, { capture: true, passive: true });
       });
     }
 
@@ -5819,39 +5912,47 @@
         const options = opts || {};
         const clean = String(text).replace(/\s+/g, " ").trim();
         if (!clean) return false;
-        unlockSpeech();
+        refreshTtsVoices();
 
         const lang = options.lang || "en-US";
         const speakOnce = (attempt) => {
-          try { synth.cancel(); } catch (e) {}
-          // cancel 直後の speak は Safari で無視されることがあるため次のタスクで発話する
-          setTimeout(() => {
-            try {
-              const utter = new SpeechSynthesisUtterance(clean);
-              utter.lang = lang;
-              utter.rate = typeof options.rate === "number" ? options.rate : 0.9;
-              utter.pitch = typeof options.pitch === "number" ? options.pitch : 1.0;
-              const voice = pickTtsVoice(lang);
-              if (voice) utter.voice = voice;
-              utter.onerror = (ev) => {
-                const reason = ev && ev.error;
-                // 声の読み込み待ちなど一時的な失敗は一度だけ再試行する
-                if (attempt < 1 && reason && reason !== "not-allowed" && reason !== "interrupted" && reason !== "canceled") {
-                  refreshTtsVoices();
-                  setTimeout(() => speakOnce(attempt + 1), 200);
-                }
-              };
-              synth.speak(utter);
-              // Chrome は speak 直後に paused 状態になることがあるので明示的に再開
-              setTimeout(() => {
-                try { if (synth.paused) synth.resume(); } catch (e) {}
-              }, 120);
-            } catch (e) {
-              console.warn("speechSynthesis error:", e);
-            }
-          }, 0);
+          try {
+            const utter = new SpeechSynthesisUtterance(clean);
+            utter.lang = lang;
+            utter.rate = typeof options.rate === "number" ? options.rate : 0.9;
+            utter.pitch = typeof options.pitch === "number" ? options.pitch : 1.0;
+            const voice = pickTtsVoice(lang);
+            if (voice) utter.voice = voice;
+            utter.onerror = (ev) => {
+              const reason = ev && ev.error;
+              // 声の読み込み待ちなどの一時的な失敗は一度だけ再試行
+              if (attempt < 1 && reason && reason !== "not-allowed" && reason !== "interrupted" && reason !== "canceled") {
+                refreshTtsVoices();
+                setTimeout(() => {
+                  if (synth.speaking || synth.pending) { try { synth.cancel(); } catch (e) {} }
+                  setTimeout(() => speakOnce(attempt + 1), 120);
+                }, 200);
+              }
+            };
+            synth.speak(utter);
+            // Chrome は speak 直後に paused 状態になることがあるので明示的に再開
+            setTimeout(() => { try { synth.resume(); } catch (e) {} }, 150);
+          } catch (e) {
+            console.warn("speechSynthesis error:", e);
+          }
         };
-        speakOnce(0);
+
+        const active = !!(synth.speaking || synth.pending);
+        const inGesture = (Date.now() - ttsLastGestureAt) < 1000;
+        if (inGesture && !active && !ttsPriming) {
+          // iOS/iPadOS はユーザー操作内の speak を同期的に呼ぶ必要がある
+          speakOnce(0);
+        } else {
+          // アンロック用の空発話はキャンセルしない（iPadOS でアンロックが無効になる）
+          if (active && !ttsPriming) { try { synth.cancel(); } catch (e) {} }
+          const delay = (active ? 80 : 0) + (ttsPriming ? 120 : 0);
+          setTimeout(() => speakOnce(0), delay);
+        }
         return true;
       } catch (e) {
         console.warn("speechSynthesis error:", e);
@@ -5902,6 +6003,10 @@
     function toggleVoice() {
       userData.voiceEnabled = !userData.voiceEnabled;
       saveUserData();
+      const icon = document.getElementById("voice-toggle-icon");
+      const label = document.getElementById("voice-toggle-label");
+      if (icon) icon.textContent = userData.voiceEnabled ? "🔊" : "🔇";
+      if (label) label.textContent = userData.voiceEnabled ? "音声読み上げ ON" : "音声読み上げ OFF";
       showToast(userData.voiceEnabled ? "🔊 音声読み上げをONにしました" : "🔇 音声読み上げをOFFにしました");
     }
 
@@ -6249,46 +6354,221 @@ listContainer.appendChild(row);
       }
     }
 
-    // 結果をフレンドに共有：OSの共有シートを開き、ログイン中ならクラウドにも即同期して
-    // フレンド詳細の「直近のプレイ履歴」にすぐ反映させる。共有不可の端末ではコピーに退避。
-    async function shareResultToFriend() {
+    // ===== 設定・その他シート =====
+    function openSettingsModal() {
+      const modal = document.getElementById("settings-modal");
+      if (!modal) return;
+      modal.classList.remove("hidden");
+      modal.classList.add("flex");
+    }
+    function closeSettingsModal() {
+      const modal = document.getElementById("settings-modal");
+      if (!modal) return;
+      modal.classList.add("hidden");
+      modal.classList.remove("flex");
+    }
+
+    // ===== 自分の詳細（フレンド詳細と同じシートを自分のデータで表示） =====
+    function openSelfDetail() {
+      const selfProfile = {
+        display_name: cloudDisplayName(),
+        friend_code: (cloudState.profile && cloudState.profile.friend_code) || "LOCAL",
+        equipped_avatar: userData.equippedAvatar,
+        equipped_frame: userData.equippedFrame,
+        prefix: userData.prefix,
+        suffix: userData.suffix,
+        quick_stats: buildCloudQuickStats(userData, unlockedAchievements)
+      };
+      const selfFriend = {
+        userId: cloudState.user ? cloudState.user.id : "self",
+        profile: selfProfile,
+        progress: { user_data: userData, achievements: unlockedAchievements, share_detailed_logs: true }
+      };
+      cloudState.activeFriendId = null;
+      cloudState.viewingSelf = true;
+      renderFriendDetail(selfFriend);
+      const removeBtn = document.getElementById("friend-detail-remove");
+      if (removeBtn) removeBtn.classList.add("hidden");
+      const modal = document.getElementById("friend-detail-modal");
+      if (modal) { modal.classList.remove("hidden"); modal.classList.add("flex"); }
+    }
+
+    // ===== サービス内フレンド共有 =====
+    const SHARE_SEEN_KEY = "LEAP_SHARED_RESULTS_SEEN_V1";
+    const SHARE_MAX = 20;
+    let shareResultSelection = new Set();
+
+    function getSeenShareIds() {
       try {
-        const resultUrl = generateResultUrl();
-        const totalQ = quizState.questions ? quizState.questions.length : 10;
-        const accuracy = totalQ > 0 ? Math.round((quizState.correctCount / totalQ) * 100) : 0;
-        const titleName = getFullTitle();
-        const message = `【LEAP 4択英単語 挑戦状🔥】\n` +
-                        `範囲: ${selectedRange.label}\n` +
-                        `称号: 【${titleName}】\n` +
-                        `成績: ${quizState.correctCount}/${totalQ}問正解 (正答率: ${accuracy}% / 最大コンボ: ${quizState.maxCombo}回)\n\n` +
-                        `👇結果カードを見る＆挑戦する！`;
+        const arr = JSON.parse(localStorage.getItem(SHARE_SEEN_KEY) || "[]");
+        return Array.isArray(arr) ? arr : [];
+      } catch (e) { return []; }
+    }
 
-        // クラウドのフレンドにも結果をすぐ見えるようにする
-        if (CLOUD_ENABLED && cloudState.user) {
-          try { await cloudPush("share"); } catch (e) {}
-        }
+    function markSharesSeen(ids) {
+      if (!ids || !ids.length) return;
+      try {
+        const seen = new Set(getSeenShareIds());
+        ids.forEach((id) => seen.add(id));
+        localStorage.setItem(SHARE_SEEN_KEY, JSON.stringify(Array.from(seen).slice(-300)));
+      } catch (e) {}
+    }
 
-        if (navigator.share) {
-          try {
-            await navigator.share({ title: "LEAP 4択英単語 挑戦状🔥", text: message, url: resultUrl });
-            showToast("結果を共有しました！");
-            return;
-          } catch (e) {
-            if (e && e.name === "AbortError") return;
-          }
-        }
-        const ok = await copyTextToClipboard(`${message}\n${resultUrl}`);
-        if (ok) {
-          showToast(CLOUD_ENABLED && cloudState.user
-            ? "結果をコピー＆フレンドに公開しました！"
-            : "結果をコピーしました。フレンドに送ってね！");
-        } else {
-          showToast("共有できませんでした");
-        }
-      } catch (err) {
-        console.error("shareResultToFriend error:", err);
-        showToast("共有処理でエラーが発生しました");
+    // フレンドの user_progress に入っている共有結果のうち、自分宛てのものを集める
+    function collectFriendShares() {
+      const mine = cloudState.user ? cloudState.user.id : "";
+      if (!mine) return [];
+      const rows = [];
+      (cloudState.friends || []).forEach((friend) => {
+        const data = friend.progress && friend.progress.user_data;
+        const list = data && Array.isArray(data.sharedResults) ? data.sharedResults : [];
+        list.forEach((entry) => {
+          if (!entry || !entry.id) return;
+          const to = Array.isArray(entry.to) ? entry.to : [];
+          if (to.length && to.indexOf(mine) < 0) return;
+          rows.push({ entry, friend });
+        });
+      });
+      rows.sort((x, y) => String(y.entry.at || "").localeCompare(String(x.entry.at || "")));
+      return rows;
+    }
+
+    function renderShareResultFriendList() {
+      const wrap = document.getElementById("share-result-friends");
+      if (!wrap) return;
+      if (!cloudState.friends.length) {
+        wrap.innerHTML = `<p class="text-[11px] text-slate-400 bg-white border border-dashed border-slate-300 rounded-xl p-4 text-center">共有できるフレンドがいません。</p>`;
+        return;
       }
+      wrap.innerHTML = cloudState.friends.map((f) => {
+        const checked = shareResultSelection.has(f.userId);
+        return `<label class="flex items-center gap-3 bg-white border ${checked ? "border-emerald-300 ring-1 ring-emerald-200" : "border-slate-200"} rounded-xl px-3 py-2.5 cursor-pointer transition">
+          <input type="checkbox" ${checked ? "checked" : ""} onchange="toggleShareResultFriend('${f.userId}', this.checked)" class="w-4 h-4 accent-emerald-600 shrink-0">
+          ${friendAvatarHtml(f.profile, "w-9 h-9")}
+          <span class="min-w-0 flex-1">
+            <span class="block text-xs font-extrabold text-slate-900 truncate">${escapeHtml(friendTitle(f.profile))}</span>
+            <span class="block text-[10px] text-slate-400">Lv.${cloudNum(friendQuickStats(f).level) || 1}</span>
+          </span>
+        </label>`;
+      }).join("");
+    }
+
+    function openShareResultModal() {
+      if (!CLOUD_ENABLED || !cloudState.user) {
+        showAlert({
+          title: "ログインが必要です",
+          message: "サービス内でフレンドに共有するにはログインしてください。\nログインすると、フレンドの「📥 共有」に結果が届きます。",
+          icon: "☁️"
+        });
+        navigate("screen-social");
+        renderCloudAccount();
+        return;
+      }
+      const open = () => {
+        if (!cloudState.friends.length) {
+          showAlert({ title: "フレンドがいません", message: "先にフレンドを追加すると、結果をサービス内で共有できます。", icon: "👥" });
+          navigate("screen-social");
+          switchSocialTab("friends");
+          return;
+        }
+        shareResultSelection = new Set(cloudState.friends.map(f => f.userId));
+        renderShareResultFriendList();
+        const modal = document.getElementById("share-result-modal");
+        if (modal) { modal.classList.remove("hidden"); modal.classList.add("flex"); }
+      };
+      if (!cloudState.friends.length) {
+        loadSocialData().then(() => { renderSocial(); open(); }).catch(() => open());
+      } else {
+        open();
+      }
+    }
+
+    function closeShareResultModal() {
+      const modal = document.getElementById("share-result-modal");
+      if (modal) { modal.classList.add("hidden"); modal.classList.remove("flex"); }
+    }
+
+    function toggleShareResultFriend(uid, checked) {
+      if (checked) shareResultSelection.add(uid);
+      else shareResultSelection.delete(uid);
+      renderShareResultFriendList();
+    }
+
+    async function sendResultShare() {
+      const to = Array.from(shareResultSelection);
+      if (!to.length) { showToast("共有するフレンドを選んでください"); return; }
+      const total = quizState.questions ? quizState.questions.length : 0;
+      const entry = {
+        id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
+        at: new Date().toISOString(),
+        to,
+        subject: currentSubject,
+        range: { start: selectedRange.start, end: selectedRange.end, label: selectedRange.label },
+        correct: quizState.correctCount,
+        total,
+        accuracy: total > 0 ? Math.round((quizState.correctCount / total) * 100) : 0,
+        combo: quizState.maxCombo,
+        score: typeof quizState.score === "number" ? quizState.score : 0,
+        title: getFullTitle()
+      };
+      if (!Array.isArray(userData.sharedResults)) userData.sharedResults = [];
+      userData.sharedResults.unshift(entry);
+      if (userData.sharedResults.length > SHARE_MAX) userData.sharedResults = userData.sharedResults.slice(0, SHARE_MAX);
+      saveUserData();
+      closeShareResultModal();
+      const pushed = await cloudPush("share");
+      showToast(pushed ? "👥 フレンドに結果を共有しました" : "結果を保存しました。同期されるとフレンドに届きます");
+    }
+
+    function renderSharedResults() {
+      const wrap = document.getElementById("social-shares-list");
+      if (!wrap) return;
+      const rows = collectFriendShares();
+      if (!rows.length) {
+        wrap.innerHTML = `<div class="bg-white border border-dashed border-slate-300 rounded-2xl p-6 text-center"><p class="text-2xl">📥</p><p class="text-xs font-bold text-slate-600 mt-2">共有された結果はまだありません</p><p class="text-[11px] text-slate-400 mt-1">結果画面の「フレンドに共有」から送れます。</p></div>`;
+        return;
+      }
+      wrap.innerHTML = rows.map(({ entry, friend }) => {
+        const p = friend.profile || {};
+        const subj = entry.subject === "kobun" ? "kobun" : "leap";
+        const start = cloudNum(entry.range && entry.range.start);
+        const end = cloudNum(entry.range && entry.range.end);
+        const label = (entry.range && entry.range.label) || `ID: ${start}〜${end}`;
+        return `<div class="bg-white border border-slate-200 rounded-2xl p-3 shadow-sm space-y-2">
+          <div class="flex items-center gap-2">
+            ${friendAvatarHtml(p, "w-9 h-9")}
+            <div class="min-w-0 flex-1">
+              <p class="text-xs font-extrabold text-slate-900 truncate">${escapeHtml(friendTitle(p))} さんの結果</p>
+              <p class="text-[10px] text-slate-400 truncate">${escapeHtml(label)} ・ ${formatCloudTime(entry.at)}</p>
+            </div>
+            <span class="text-[10px] font-bold bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded-full shrink-0">${subj === "kobun" ? "古文" : "LEAP"}</span>
+          </div>
+          <div class="grid grid-cols-3 gap-2 text-center">
+            <div class="bg-slate-50 border border-slate-100 rounded-xl py-1.5"><p class="text-[9px] text-slate-400 font-bold">スコア</p><p class="text-sm font-extrabold text-slate-900 tabular-nums">${cloudNum(entry.correct)}/${cloudNum(entry.total)}</p></div>
+            <div class="bg-slate-50 border border-slate-100 rounded-xl py-1.5"><p class="text-[9px] text-slate-400 font-bold">正答率</p><p class="text-sm font-extrabold text-emerald-700 tabular-nums">${cloudNum(entry.accuracy)}%</p></div>
+            <div class="bg-slate-50 border border-slate-100 rounded-xl py-1.5"><p class="text-[9px] text-slate-400 font-bold">最大コンボ</p><p class="text-sm font-extrabold text-amber-600 tabular-nums">${cloudNum(entry.combo)}</p></div>
+          </div>
+          <button type="button" onclick="startSharedResultChallenge('${subj}', ${start}, ${end})" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl transition cursor-pointer">⚔️ 同じ範囲で挑戦する</button>
+        </div>`;
+      }).join("");
+    }
+
+    function startSharedResultChallenge(subject, start, end) {
+      const subj = subject === "kobun" ? "kobun" : "leap";
+      if (subj !== currentSubject) {
+        applySubject(subj, { silent: true });
+        loadPartSelection();
+      }
+      const source = subj === "kobun" ? KOBUN_SOURCE : LEAP_SOURCE;
+      const s = Number(start);
+      const e = Number(end);
+      const pool = source.filter(w => Number(w.id) >= s && Number(w.id) <= e);
+      if (!pool.length) { showToast("挑戦できる単語がありません"); return; }
+      isDailyMode = false;
+      isWeakMode = false;
+      selectedRange = { start: s, end: e, label: `フレンドの挑戦状（ID: ${s}〜${e}）` };
+      questionLimit = Math.min(pool.length, 10);
+      startQuizWithPool(pool, { forceNormalMode: true, forceNormalStyle: true });
     }
 
     function fallbackCopy(text) {
@@ -7688,6 +7968,7 @@ listContainer.appendChild(row);
       user: null,
       profile: null,
       shareDetailedLogs: true,
+      viewingSelf: false,
       syncing: false,
       pendingPush: false,
       lastSyncedAt: "",
@@ -7951,6 +8232,14 @@ listContainer.appendChild(row);
         affixStats.memoryBest[k] = score(am) <= score(bm) ? (am || { moves: 0, seconds: 0 }) : (bm || { moves: 0, seconds: 0 });
       });
       merged.affixStats = affixStats;
+
+      const shared = [...(Array.isArray(a.sharedResults) ? a.sharedResults : []), ...(Array.isArray(b.sharedResults) ? b.sharedResults : [])];
+      const seenShares = new Set();
+      merged.sharedResults = shared.filter((s) => {
+        if (!s || !s.id || seenShares.has(s.id)) return false;
+        seenShares.add(s.id);
+        return true;
+      }).sort((x, y) => String(y.at || "").localeCompare(String(x.at || ""))).slice(0, 20);
       merged.level = getLevelState(merged.exp).level;
 
       const achievements = Array.from(new Set([
@@ -8373,7 +8662,7 @@ listContainer.appendChild(row);
     }
 
     function switchSocialTab(tab) {
-      cloudState.socialTab = ["friends", "requests", "settings"].indexOf(tab) >= 0 ? tab : "friends";
+      cloudState.socialTab = ["friends", "requests", "shares", "settings"].indexOf(tab) >= 0 ? tab : "friends";
       renderSocial();
     }
 
@@ -8398,8 +8687,8 @@ listContainer.appendChild(row);
 
     function renderSocial() {
       const signedIn = !!cloudState.user;
-      const tabs = { friends: "social-tab-friends", requests: "social-tab-requests", settings: "social-tab-settings" };
-      const panels = { friends: "social-panel-friends", requests: "social-panel-requests", settings: "social-panel-settings" };
+      const tabs = { friends: "social-tab-friends", requests: "social-tab-requests", shares: "social-tab-shares", settings: "social-tab-settings" };
+      const panels = { friends: "social-panel-friends", requests: "social-panel-requests", shares: "social-panel-shares", settings: "social-panel-settings" };
       const activeCls = "flex-1 py-2 text-xs font-bold rounded-lg bg-white shadow-sm text-slate-900 transition cursor-pointer";
       const idleCls = "flex-1 py-2 text-xs font-bold rounded-lg text-slate-500 hover:text-slate-800 transition cursor-pointer";
       Object.keys(tabs).forEach((k) => {
@@ -8413,9 +8702,22 @@ listContainer.appendChild(row);
         badge.textContent = String(cloudState.incoming.length);
         badge.classList.toggle("hidden", cloudState.incoming.length === 0);
       }
+      const shareRows = signedIn ? collectFriendShares() : [];
+      // 「共有」タブを開いている間は既読扱いにする
+      if (signedIn && cloudState.socialTab === "shares") {
+        markSharesSeen(shareRows.map(r => r.entry.id));
+      }
+      const seenShareIds = new Set(getSeenShareIds());
+      const unseenShares = shareRows.filter(r => !seenShareIds.has(r.entry.id)).length;
+      const shareBadge = document.getElementById("social-share-badge");
+      if (shareBadge) {
+        shareBadge.textContent = String(unseenShares);
+        shareBadge.classList.toggle("hidden", unseenShares === 0);
+      }
       if (!signedIn) return;
       renderFriendList();
       renderRequestLists();
+      renderSharedResults();
     }
 
     function renderFriendList() {
@@ -8777,7 +9079,10 @@ listContainer.appendChild(row);
       const friend = cloudState.friends.find(f => f.userId === uid);
       if (!friend) return;
       cloudState.activeFriendId = uid;
+      cloudState.viewingSelf = false;
       renderFriendDetail(friend);
+      const removeBtn = document.getElementById("friend-detail-remove");
+      if (removeBtn) removeBtn.classList.remove("hidden");
       const modal = document.getElementById("friend-detail-modal");
       if (modal) { modal.classList.remove("hidden"); modal.classList.add("flex"); }
     }
@@ -8785,6 +9090,7 @@ listContainer.appendChild(row);
       const modal = document.getElementById("friend-detail-modal");
       if (modal) { modal.classList.add("hidden"); modal.classList.remove("flex"); }
       cloudState.activeFriendId = null;
+      cloudState.viewingSelf = false;
     }
 
     function startFriendWeakQuiz(ids) {
