@@ -11,7 +11,7 @@
     <script>
     // キャッシュ強制更新ロジック: 新バージョン検知時に古いServiceWorkerキャッシュを破棄
     (function() {
-      const APP_VER = "leap-v5-cloud3";
+      const APP_VER = "leap-v5-cloud4";
       try {
         const storedVer = localStorage.getItem("LEAP_APP_CACHE_VER");
         if (storedVer !== APP_VER) {
@@ -686,7 +686,7 @@
           <div class="flex items-center gap-3">
             <h3 id="quiz-word" class="text-4xl font-extrabold text-slate-900 tracking-tight">agree</h3>
             <span id="quiz-word-pos" class="hidden"></span>
-            <button type="button" id="btn-replay-voice" onclick="speakWord()" title="発音を聞く" class="w-7 h-7 rounded-full bg-white border border-slate-200 text-slate-500 hover:text-emerald-600 hover:border-emerald-300 flex items-center justify-center text-sm transition cursor-pointer shrink-0">🔊</button>
+            <button type="button" id="btn-replay-voice" onclick="speakWord(true)" title="発音を聞く" class="w-7 h-7 rounded-full bg-white border border-slate-200 text-slate-500 hover:text-emerald-600 hover:border-emerald-300 flex items-center justify-center text-sm transition cursor-pointer shrink-0">🔊</button>
           </div>
           <p id="quiz-word-ipa" class="hidden text-sm font-medium text-slate-500 tracking-wide"></p>
         </div>
@@ -1238,6 +1238,10 @@
           </button>
 
           <p class="text-xs font-semibold text-slate-500">結果をシェアして挑戦状を送る</p>
+          <button type="button" onclick="shareResultToFriend()" class="w-full py-3 bg-emerald-600 hover:bg-emerald-700 active:scale-[0.99] text-white rounded-xl text-xs font-bold flex items-center justify-center gap-2 shadow-sm transition cursor-pointer">
+            <span>👥</span>
+            <span>フレンドに共有</span>
+          </button>
           <div class="grid grid-cols-3 gap-2">
             <button type="button" onclick="shareResult('line')" class="py-2.5 px-2 bg-[#06C755] hover:opacity-90 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 shadow-sm transition cursor-pointer">
               <span>LINE で送る</span>
@@ -5755,17 +5759,103 @@
     }
 
     // ===== 音声読み上げ(TTS) =====
-    function speakEnglish(text) {
+    // iOS/Safari は「ユーザー操作なしの発話」を無視するため、最初のタップで無音の発話を
+    // 1回行って音声出力をアンロックする（以降の自動読み上げも許可される）。
+    let ttsVoices = [];
+    let ttsUnlocked = false;
+
+    function refreshTtsVoices() {
       try {
-        if (!window.speechSynthesis || !text) return;
-        window.speechSynthesis.cancel();
-        const utter = new SpeechSynthesisUtterance(text);
-        utter.lang = "en-US";
-        utter.rate = 0.9;
-        utter.pitch = 1.0;
-        window.speechSynthesis.speak(utter);
+        ttsVoices = (window.speechSynthesis && window.speechSynthesis.getVoices()) || [];
+      } catch (e) {
+        ttsVoices = [];
+      }
+      return ttsVoices;
+    }
+
+    function pickTtsVoice(lang) {
+      const want = String(lang || "en-US").toLowerCase().replace("_", "-");
+      const base = want.split("-")[0];
+      const voices = ttsVoices.length ? ttsVoices : refreshTtsVoices();
+      if (!voices.length) return null;
+      return voices.find(v => String(v.lang || "").toLowerCase().replace("_", "-") === want)
+        || voices.find(v => String(v.lang || "").toLowerCase().replace("_", "-").indexOf(base + "-") === 0)
+        || (base === "ja"
+          ? voices.find(v => /japan|日本語/i.test(v.name || ""))
+          : voices.find(v => /english|united states|united kingdom/i.test(v.name || "")))
+        || null;
+    }
+
+    function unlockSpeech() {
+      if (ttsUnlocked || !window.speechSynthesis) return;
+      ttsUnlocked = true;
+      try {
+        // volume 0 の発話で音声エンジンを起動（タップ直後に呼ぶこと）
+        const prime = new SpeechSynthesisUtterance(" ");
+        prime.volume = 0;
+        prime.rate = 2;
+        prime.lang = "en-US";
+        window.speechSynthesis.speak(prime);
+        refreshTtsVoices();
+      } catch (e) {}
+    }
+
+    function initSpeechSynthesis() {
+      if (!window.speechSynthesis) return;
+      refreshTtsVoices();
+      try { window.speechSynthesis.onvoiceschanged = refreshTtsVoices; } catch (e) {}
+      // 最初の操作でアンロック（click より前の pointerdown / touchstart で確実に）
+      const prime = () => unlockSpeech();
+      ["pointerdown", "touchstart", "keydown"].forEach((evt) => {
+        document.addEventListener(evt, prime, { capture: true, passive: true });
+      });
+    }
+
+    // opts: { lang, rate, pitch }
+    function speakEnglish(text, opts) {
+      try {
+        const synth = window.speechSynthesis;
+        if (!synth || !text) return false;
+        const options = opts || {};
+        const clean = String(text).replace(/\s+/g, " ").trim();
+        if (!clean) return false;
+        unlockSpeech();
+
+        const lang = options.lang || "en-US";
+        const speakOnce = (attempt) => {
+          try { synth.cancel(); } catch (e) {}
+          // cancel 直後の speak は Safari で無視されることがあるため次のタスクで発話する
+          setTimeout(() => {
+            try {
+              const utter = new SpeechSynthesisUtterance(clean);
+              utter.lang = lang;
+              utter.rate = typeof options.rate === "number" ? options.rate : 0.9;
+              utter.pitch = typeof options.pitch === "number" ? options.pitch : 1.0;
+              const voice = pickTtsVoice(lang);
+              if (voice) utter.voice = voice;
+              utter.onerror = (ev) => {
+                const reason = ev && ev.error;
+                // 声の読み込み待ちなど一時的な失敗は一度だけ再試行する
+                if (attempt < 1 && reason && reason !== "not-allowed" && reason !== "interrupted" && reason !== "canceled") {
+                  refreshTtsVoices();
+                  setTimeout(() => speakOnce(attempt + 1), 200);
+                }
+              };
+              synth.speak(utter);
+              // Chrome は speak 直後に paused 状態になることがあるので明示的に再開
+              setTimeout(() => {
+                try { if (synth.paused) synth.resume(); } catch (e) {}
+              }, 120);
+            } catch (e) {
+              console.warn("speechSynthesis error:", e);
+            }
+          }, 0);
+        };
+        speakOnce(0);
+        return true;
       } catch (e) {
         console.warn("speechSynthesis error:", e);
+        return false;
       }
     }
 
@@ -5792,27 +5882,18 @@
       speakEnglish(ex.plain || ex.en || "");
     }
 
-    function speakWord() {
+    function speakWord(force) {
       try {
-        if (!userData.voiceEnabled) return;
-        if (!window.speechSynthesis) return;
+        if (!force && !userData.voiceEnabled) return;
+        if (!window.speechSynthesis) {
+          if (force) showToast("この端末は読み上げに対応していません");
+          return;
+        }
         const wordEl = document.getElementById("quiz-word");
         const word = wordEl ? wordEl.textContent.trim() : "";
         if (!word) return;
-        window.speechSynthesis.cancel();
-        const utter = new SpeechSynthesisUtterance(word);
         const isKobun = currentSubject === "kobun";
-        utter.lang = isKobun ? "ja-JP" : "en-US";
-        utter.rate = isKobun ? 1.0 : 0.9;
-        utter.pitch = 1.0;
-        if (isKobun) {
-          try {
-            const voices = window.speechSynthesis.getVoices() || [];
-            const jaVoice = voices.find(v => /^ja/i.test(v.lang)) || voices.find(v => /japan/i.test(v.name));
-            if (jaVoice) utter.voice = jaVoice;
-          } catch (e) {}
-        }
-        window.speechSynthesis.speak(utter);
+        speakEnglish(word, { lang: isKobun ? "ja-JP" : "en-US", rate: isKobun ? 1.0 : 0.9 });
       } catch (e) {
         console.warn("speechSynthesis error:", e);
       }
@@ -6164,6 +6245,48 @@ listContainer.appendChild(row);
         }
       } catch (err) {
         console.error("shareResult error:", err);
+        showToast("共有処理でエラーが発生しました");
+      }
+    }
+
+    // 結果をフレンドに共有：OSの共有シートを開き、ログイン中ならクラウドにも即同期して
+    // フレンド詳細の「直近のプレイ履歴」にすぐ反映させる。共有不可の端末ではコピーに退避。
+    async function shareResultToFriend() {
+      try {
+        const resultUrl = generateResultUrl();
+        const totalQ = quizState.questions ? quizState.questions.length : 10;
+        const accuracy = totalQ > 0 ? Math.round((quizState.correctCount / totalQ) * 100) : 0;
+        const titleName = getFullTitle();
+        const message = `【LEAP 4択英単語 挑戦状🔥】\n` +
+                        `範囲: ${selectedRange.label}\n` +
+                        `称号: 【${titleName}】\n` +
+                        `成績: ${quizState.correctCount}/${totalQ}問正解 (正答率: ${accuracy}% / 最大コンボ: ${quizState.maxCombo}回)\n\n` +
+                        `👇結果カードを見る＆挑戦する！`;
+
+        // クラウドのフレンドにも結果をすぐ見えるようにする
+        if (CLOUD_ENABLED && cloudState.user) {
+          try { await cloudPush("share"); } catch (e) {}
+        }
+
+        if (navigator.share) {
+          try {
+            await navigator.share({ title: "LEAP 4択英単語 挑戦状🔥", text: message, url: resultUrl });
+            showToast("結果を共有しました！");
+            return;
+          } catch (e) {
+            if (e && e.name === "AbortError") return;
+          }
+        }
+        const ok = await copyTextToClipboard(`${message}\n${resultUrl}`);
+        if (ok) {
+          showToast(CLOUD_ENABLED && cloudState.user
+            ? "結果をコピー＆フレンドに公開しました！"
+            : "結果をコピーしました。フレンドに送ってね！");
+        } else {
+          showToast("共有できませんでした");
+        }
+      } catch (err) {
+        console.error("shareResultToFriend error:", err);
         showToast("共有処理でエラーが発生しました");
       }
     }
@@ -8714,6 +8837,7 @@ listContainer.appendChild(row);
     // 初期化
     window.addEventListener("DOMContentLoaded", () => {
       initDarkMode();
+      initSpeechSynthesis();
       loadUserData();
       hydrateLeapDetails();
       loadUiModes();

@@ -380,7 +380,7 @@ expRequiredForLevel(level) = 100 + (level - 1) * 50
   "t2": "称号", "rs": 開始ID, "re": 終了ID, "rl": "範囲ラベル", "z": "leap|kobun" }
 ```
 
-- 共有先: X（Twitter）投稿、LINE 共有、URL コピー。
+- 共有先: **フレンドに共有**（Web Share API で OS の共有シートを開く。ログイン中は先に `cloudPush("share")` してフレンド詳細の直近プレイ履歴にも即反映。共有 API 非対応端末ではコピーに退避）、X（Twitter）投稿、LINE 共有、URL コピー。
 - **画像保存**: html2canvas で結果カードを PNG 化してダウンロード（共有ボックスは撮影時に非表示）。
 - **挑戦状**: `?r=` 付き URL を開くと結果画面に「🔥 友達からの挑戦状！出題範囲: …」を表示し、同じ範囲で再挑戦できる（`checkIncomingChallenge`）。
 
@@ -400,6 +400,8 @@ expRequiredForLevel(level) = 100 + (level - 1) * 50
 - **ダークモード**: ヘッダーの月/太陽ボタン。`LEAP_DARK_MODE_V1`。Tailwind クラスを CSS で上書きする方式（`html.dark [class~="bg-white"]` など）。コントラスト確保のため独自調整あり。古文ゾーンは紫系テーマ（`body.kobun-mode`）。
 - **PWA**: `manifest.json`（standalone）。ホームにインストールバナー（iOS Safari は手順文言を変更、`LEAP_PWA_BANNER_DISMISSED_V1` で非表示）。
 - **音声読み上げ**: `voiceEnabled`（初期 ON）。クイズの単語、例文、辞典の詳細、リーダー本文を読み上げ。ゾーンで言語を切替。
+- **自動再生制限対策**: 最初の `pointerdown` / `touchstart` / `keydown` で `unlockSpeech()` を呼び、無音（`volume=0`）の発話を1回して iOS Safari / Chrome の音声をアンロックする。`initSpeechSynthesis()` が `voiceschanged` を購読して声を再取得し、`pickTtsVoice()` が `en-US` / `ja-JP` に合う声を選ぶ。`cancel()` 直後の `speak()` が Safari で無視される問題を避けるため次のタスクで発話し、一時エラー時は一度再試行する。
+- **明示操作の再生**: 🔊 ボタン（`speakWord(true)`・詳細シート・例文）は `voiceEnabled` が OFF でも鳴る。自動読み上げだけが設定に従う。
 
 ---
 
@@ -637,6 +639,7 @@ node patches/build_leap_data.js
 
 | 日付 | 変更内容 |
 |---|---|
+| 2026-11-21 | 音声読み上げの修正: 初回タップでの音声アンロック、声の読み込み待ち・Safari の `cancel()` 直後対策・一時エラー再試行を追加し、🔊 ボタンは設定 OFF でも再生するようにした。結果画面に「フレンドに共有」を追加（OS 共有シート＋ログイン中はクラウド即同期、非対応端末はコピー）。`APP_VER=leap-v5-cloud4` / `CACHE=leap-v25`。 |
 | 2026-11-21 | クラウド同期の不具合修正: 同期済み判定を文字列比較から時刻比較（`sameCloudInstant`、2秒許容）に変更し、再読込ごとに競合ダイアログが出る問題を解消。プロフィール保存を upsert 化、初期化失敗時に再試行可能に、OAuth リダイレクト後も招待コードを復元。`APP_VER=leap-v5-cloud3` / `CACHE=leap-v24`。 |
 | 2026-11-21 | LINE ログインを追加（Supabase の Custom OAuth Provider `custom:line`）。ログインボタンをプロバイダ別スタイルに対応させ、OAuth 失敗時のエラー表示を追加。`docs/SUPABASE_SETUP.md` に Google / LINE / RLS / トラブルシューティングを含む詳細手順を新規作成。`APP_VER=leap-v4-cloud2` / `CACHE=leap-v22`。 |
 | 2026-11-21 | Supabase（Auth / Postgres / RLS）を任意バックエンドとして導入。Google ログイン、localStorage 併用のクラウド同期（初回競合の3択解決・統合マージ・自動同期）、相互フレンド（フレンドコード・申請/承認・詳細ステータス・公開範囲設定）を追加。`supabase/schema.sql` 追加、`screen-social` とフレンド詳細シート追加、SW は Supabase を Network-Only に。`APP_VER=leap-v4-cloud1` / `CACHE=leap-v21`。 |
