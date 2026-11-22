@@ -17,12 +17,12 @@
 ## 0. 30秒サマリ（AI向け）
 
 - **何か**: 大学受験英単語帳「LEAP」の 4択クイズ × ゲーム要素の学習 PWA。加えて「裏世界」ゾーンで古文単語クイズも遊べる。
-- **構成**: ビルド不要の**静的サイト**。`index.html` に HTML（マークアップ）とインライン JS を持ち、アプリ固有 CSS は `assets/css/app.css`（外部ファイル）、データは `*_data.js` の JS 定数。
+- **構成**: ビルド不要の**静的サイト**。`index.html` に HTML（マークアップ）とアプリ本体のインライン JS を持ち、基盤 JS は `js/core.js`、アプリ固有 CSS は `assets/css/app.css`（いずれも外部ファイル）、データは `*_data.js` の JS 定数。
 - **バックエンドは任意**: 基本は **localStorage** のみでオフライン動作。`SUPABASE_CONFIG` を設定すると **Supabase**（Auth / Postgres / RLS）によるクラウド同期と相互フレンドが有効になる。未設定なら従来どおりローカルのみで正常動作する。
 - **収録**: 英単語 2,300 語（Part 1〜5）／例文・単語詳細 2,300 語分・例文クイズ 2,000 語分／参考資料 5 章／接辞 32 グループ・132 語根／古文単語 150 語（2 章）。
 - **主な遊び**: 通常4択・例文穴埋め・60秒スプリント・サドンデス、デイリーチャレンジ、忘却曲線の苦手復習、コイン/EXP/レベル、称号・フレーム・アバター、実績 93 種、共有URL（挑戦状）、任意ログインによるクラウド同期・相互フレンドの詳細ステータス閲覧。
 - **ホスティング**: 静的ホスティング（Vercel 想定。`vercel.json` なし、`.vercel/` は gitignore）。
-- **主要ファイル**: `index.html`（アプリ本体）、`assets/css/app.css`（アプリ固有 CSS）、`words_data.js`、`examples_data.js`、`reference_data.js`、`affix_data.js`、`kobun/kobun_words_data.js`、`sw.js`、`manifest.json`、`supabase/schema.sql`（DB/RLS）、`LEAP単語データ/`（元データ）、`patches/`（データ生成・一括改修スクリプト）。
+- **主要ファイル**: `index.html`（アプリ本体）、`js/core.js`（称号・ゾーン・画面遷移の基盤）、`assets/css/app.css`（アプリ固有 CSS）、`words_data.js`、`examples_data.js`、`reference_data.js`、`affix_data.js`、`kobun/kobun_words_data.js`、`sw.js`、`manifest.json`、`supabase/schema.sql`（DB/RLS）、`LEAP単語データ/`（元データ）、`patches/`（データ生成・一括改修スクリプト）。
 
 ---
 
@@ -64,20 +64,20 @@
 
 | 層 | 採用技術 | 備考 |
 |---|---|---|
-| マークアップ | 単一 `index.html` | 画面（section）＋モーダル＋インライン JS。アプリ固有 CSS は外部ファイル |
-| スタイル | Tailwind CSS（CDN: `cdn.tailwindcss.com`）＋ `assets/css/app.css` | 旧インライン `<style>`（236 行）を分離。ダークモードは `html.dark` / `data-theme="dark"` の CSS 上書き |
+| マークアップ | 単一 `index.html` | 画面（section）＋モーダル＋アプリ本体のインライン JS。基盤 JS と CSS は外部ファイル |
+| スタイル | Tailwind CSS（CDN: `cdn.tailwindcss.com`）＋ `assets/css/app.css` | 旧インライン `<style>` を分離（結果カード画像の専用スタイルもここ）。ダークモードは `html.dark` / `data-theme="dark"` の CSS 上書き |
 | フォント | Google Fonts（Inter / Noto Sans JP） | |
-| 画像生成 | html2canvas 1.4.1（CDN） | 結果カードのスクリーンショット保存 |
+| 画像生成 | html2canvas 1.4.1（CDN） | 結果カードのスクリーンショット保存（`#result-share-card` を撮影） |
 | 音声 | Web Speech API（`speechSynthesis`） | 英単語は `en-US`、古文は `ja-JP` |
 | 永続化 | localStorage（＋任意で Supabase） | キー一覧は §11 |
 | クラウド（任意） | Supabase JS v2（CDN） / Postgres / Auth / RLS | `SUPABASE_CONFIG` 未設定時は初期化しない |
-| オフライン | `sw.js`（Cache API） | キャッシュ名 `leap-v27`、Network-First。Supabase と認証コールバックは Network-Only |
+| オフライン | `sw.js`（Cache API） | キャッシュ名 `leap-v28`、Network-First。Supabase と認証コールバックは Network-Only |
 | PWA | `manifest.json`、アイコン各種 | standalone 表示、theme `#059669` |
 | ビルド | なし | `.js` データは `<script>` で直接読む |
 
 ### キャッシュ更新の仕組み
 
-- `index.html` 冒頭の `APP_VER`（現在 `leap-v6-split1`）が `localStorage.LEAP_APP_CACHE_VER` と違えば、全 Cache を削除。
+- `index.html` 冒頭の `APP_VER`（現在 `leap-v7-split2`）が `localStorage.LEAP_APP_CACHE_VER` と違えば、全 Cache を削除。
 - `sw.js` は `install` で `skipWaiting()`、`activate` で旧キャッシュ削除＋`clients.claim()`。
 - 取得は Network-First（HTML は常に最新、オフライン時のみキャッシュ）。
 - **フロントを更新したら `sw.js` の `CACHE` 名と `index.html` の `APP_VER` を上げる**のが運用ルール。
@@ -233,7 +233,8 @@ const KOBUN_PARTS = [
 - **Part から選択**: Part を複数選択（`selectedRange.partIds`）。全選択／全解除あり。
 - **カスタム範囲**: 開始 ID・終了 ID を直接入力（`getCustomRangeSelection()`）。ゾーンごとに保存キーが別。
 - 出題数: 10 / 20 / 50 / 100 / 全問 / 自由入力（1〜1000）。
-- 学習状況フィルタ（複数選択・OR）: `すべて` / `未学習` / `苦手` / `学習中` / `マスター`。
+- 学習状況フィルタ（複数選択・OR）: `すべて` / `未学習` / `苦手` / `学習中` / `マスター`。各チップには現在の範囲での該当語数を表示する（`updateQuizStatusCounts`）。
+- 例文・文脈テストでも同じ `wordStats` を更新するため、学習状況は通常4択と共通。例文モードでは「例文のある語」に絞ったうえで学習状況フィルタを適用し、ヒントに `該当 n 語 / 例文あり m 語` を表示する。
 
 学習状況の判定（`getWordStatus`）:
 
@@ -254,6 +255,7 @@ const KOBUN_PARTS = [
 - 出題スタイルは `LEAP_QUIZ_STYLE_V1` に保存。
 - 例文クイズは `LEAP_WORD_DETAILS` の `examples[].prompt`（空所化済み）を優先。無ければ `LEAP_EXAMPLE_DATA` から `buildCloze()` で空所化。
 - 例文があるのは ID 1〜2000。範囲に例文付き単語が無い場合は UI が「例文あり 0 語」と警告。
+- 例文モードで正解・不正解した単語も `userData.wordStats[id]` に加算され、辞典・出題絞り込みの学習状況（未学習/苦手/学習中/マスター）に反映される。
 
 ### 4.3 ダミー選択肢（`pickDistractorWords`）
 
@@ -375,6 +377,7 @@ expRequiredForLevel(level) = 100 + (level - 1) * 50
 ## 8. 結果画面・共有・挑戦状
 
 - 結果画面に表示: スコア、正答数、正答率、最大コンボ、獲得コイン、EXP、レベルアップ、称号、間違えた単語一覧、デイリーバッジ。
+- クイズ画面の「タップして次へ」は解答直後に即表示する。誤タップ防止は `NEXT_TAP_GUARD_MS`（120ms）の短いガードのみ（旧 350ms 待ちを廃止）。
 - **共有URL**（`generateResultUrl`）: 現在の URL に `?r=` を付け、以下の JSON を UTF-8 安全 Base64 にしたもの。
 
 ```json
@@ -384,7 +387,7 @@ expRequiredForLevel(level) = 100 + (level - 1) * 50
 
 - 共有先: **サービス内のフレンド共有**（ログイン中のみ。フレンドを選んで送ると、相手の「📥 共有」タブに届き、同じ範囲で挑戦できる）、X（Twitter）投稿、LINE 共有、URL コピー。
 - **サービス内共有の仕組み**: 専用テーブルは追加せず、送信者の `user_progress.user_data.sharedResults` に最大 20 件を保存して `cloudPush("share")` する。承認済みフレンドは RLS で `user_progress` を読めるため、受信側はフレンドの `sharedResults` から自分宛て（`to` に自分の UID を含む）のものを集めて表示する（`collectFriendShares`）。宛先が空配列なら全フレンド宛て。
-- **画像保存**: html2canvas で結果カードを PNG 化してダウンロード（共有ボックスは撮影時に非表示）。
+- **画像保存**: 画面外の専用カード `#result-share-card`（常時ダーク配色・440px 幅）に結果を流し込み、html2canvas で PNG 化してダウンロードする（`buildResultShareCard` / `captureResultBlob`）。画面の結果カードとは独立しているため、ライト/ダークどちらでも同じ見た目になる。正答率・前回比・正解数・最大コンボ・コイン・連続学習・間違えた単語（最大6件、残りは件数）・範囲・日付を表示。
 - **挑戦状**: `?r=` 付き URL を開くと結果画面に「🔥 友達からの挑戦状！出題範囲: …」を表示し、同じ範囲で再挑戦できる（`checkIncomingChallenge`）。
 
 ---
@@ -556,11 +559,13 @@ const SUPABASE_CONFIG = { url: "https://xxxx.supabase.co", anonKey: "sb_publisha
 
 ```
 /
-├── index.html                 アプリ本体（HTML + マークアップ + インライン JS）
+├── index.html                 アプリ本体（HTML + マークアップ + アプリ本体のインライン JS）
+├── js/
+│   └── core.js               アプリ基盤（称号・アイテムのマスタ、ゾーン、画面遷移、確認ダイアログ）
 ├── assets/
-│   └── css/app.css            アプリ固有 CSS（旧 index.html 内の <style> 236 行）
+│   └── css/app.css            アプリ固有 CSS（旧 index.html 内の <style> ほか）
 ├── manifest.json              PWA マニフェスト
-├── sw.js                      Service Worker（キャッシュ leap-v27 / Network-First）
+├── sw.js                      Service Worker（キャッシュ leap-v28 / Network-First）
 ├── words_data.js              LEAP_WORDS_DATA（2,300語）
 ├── examples_data.js           LEAP_WORD_DETAILS（2,300語）+ LEAP_EXAMPLE_DATA（2,000語）
 ├── reference_data.js          LEAP_REFERENCE_DATA（5章）
@@ -572,7 +577,7 @@ const SUPABASE_CONFIG = { url: "https://xxxx.supabase.co", anonKey: "sb_publisha
 ├── docs/
 │   ├── 古文単語330_追加構想.md  古文5章330語の設計・実装手順メモ
 │   ├── SUPABASE_SETUP.md      Supabase / Google / LINE ログインの詳細設定手順
-│   └── ファイル分割計画.md    index.html を段階分割する手順（Stage 2 以降）
+│   └── ファイル分割計画.md    index.html を段階分割する手順（Stage 2 完了・Stage 3 以降）
 ├── LEAP単語データ/
 │   ├── 001_101.txt … 2001_2300.txt   元テキスト（語義・IPA・コラム）
 │   ├── code_artifact.txt             参考資料の元テキスト
@@ -635,6 +640,7 @@ node patches/build_leap_data.js
 - **Supabase の通信は Service Worker でキャッシュしない**（Network-Only）。オフライン中の同期は失敗し、次回オンライン時の操作で再送される。
 - **LINE ログインは追加設定が必要**。Supabase に `custom:line` の Custom OAuth Provider を作らないとボタンからログインできない（未設定時はエラーダイアログで案内）。
 - 詳細ログの非公開（`share_detailed_logs`）はアプリ側の表示制御。RLS は承認済みフレンドに `user_progress` 全体を許可する。
+- `index.html` のインライン JS は `js/core.js` より後に実行される。**トップレベルの宣言名を両ファイルで重複させない**（クラシックスクリプトのため `const` 重複は全画面停止につながる）。
 - **例文クイズは ID 1〜2000 のみ**（2001〜2300 は語義4択のみ）。
 - **古文は 150 語（2章）まで**。330 語構想の 3〜5 章は未投入。
 - `kobun/kobun_config.js` / `kobun_loader.js` は未使用。設定を変えても現行 `index.html` には影響しない。
@@ -652,6 +658,7 @@ node patches/build_leap_data.js
 
 | 日付 | 変更内容 |
 |---|---|
+| 2026-11-22 | 結果カードのスクショを刷新: 画面外の専用カード `#result-share-card`（常時ダーク・440px）を新設し、文字の重なりを解消（正答率ヒーロー、正解数/正答率/最大コンボ、コイン/連続学習、要復習リスト最大6件、範囲・日付）。結果画面の間違い一覧も折り返し対応。例文・文脈テストでも学習状況を共通記録し、出題設定の学習状況チップに該当語数と例文モードの絞り込み結果を表示。クイズの「タップして次へ」を解答直後に即表示（誤タップガードを 350ms → 120ms）。ファイル分割 Stage 2 として `js/core.js`（称号・アイテム・ゾーン・画面遷移・確認ダイアログ）を分離。`APP_VER=leap-v7-split2` / `CACHE=leap-v28`（`assets/css/app.css` と `js/core.js` を ASSETS に追加）。 |
 | 2026-11-22 | `index.html` のインライン CSS（旧 L59–296・236 行）を `assets/css/app.css` へ分離（ファイル分割 第 1 段階）。CSS の内容は元と同一。`sw.js` の `ASSETS` に追加し `CACHE=leap-v27`、`APP_VER=leap-v6-split1` へ更新。§0・§2・§13 を追随。Stage 2 以降の分割手順と確認項目を `docs/ファイル分割計画.md` に文書化。 |
 | 2026-11-21 | ホーム画面の副次的ボタンを「⚙️ 設定・その他」シートに集約（実績・ショップ・アカウント／同期・自分の詳細・音声ON/OFF・追加JSON読込）。音声トグル時にラベルを即時更新。 |
 | 2026-11-21 | iPadOS で読み上げが無音になる問題を調査・修正: ユーザー操作内での `speak()` 同期実行、空文字発話によるアンロックの再試行（`pointerdown`/`touchstart`/`touchend`/`click`/`keydown`）、アンロック発話のキャンセル回避、`voice` 未設定時のフォールバックを追加。iPad のソフトミュート／iOS 26 の既知不具合も SERVICE.md に明記。 |

@@ -234,3 +234,77 @@ html.dark .reader-ja { color: #b6c3d4; }
 }
 .reader-target:hover { background: #fde68a; }
 html.dark .reader-target { background: rgba(217,119,6,0.35); color: #fde68a; border-bottom-color: #f59e0b; }
+
+/* ===== 出題の学習状況フィルター（チップ内の語数） ===== */
+[data-quiz-status] { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px; line-height: 1.2; }
+[data-quiz-status] .quiz-status-count { font-size: 9px; font-weight: 700; opacity: 0.65; font-variant-numeric: tabular-nums; }
+
+/* ===== 結果カード画像（スクショ専用・常時ダーク） ===== */
+/* html2canvas は flex の一部しか解釈しないため、重なり防止に min-width:0 と折り返しを明示する */
+#result-share-card {
+  position: fixed;
+  top: 0;
+  left: -10000px;
+  width: 440px;
+  box-sizing: border-box;
+  padding: 26px 24px 20px;
+  border-radius: 28px;
+  border: 1px solid rgba(94, 234, 212, 0.22);
+  background: linear-gradient(160deg, #0c1426 0%, #14203a 55%, #0b1220 100%);
+  color: #e2e8f0;
+  font-family: 'Inter', 'Noto Sans JP', sans-serif;
+  text-align: left;
+  pointer-events: none;
+}
+#result-share-card .shc-hidden { display: none !important; }
+#result-share-card p { margin: 0; }
+
+#result-share-card .shc-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+#result-share-card .shc-head { flex: 1 1 auto; min-width: 0; }
+#result-share-card .shc-kicker { font-size: 11px; letter-spacing: 0.18em; font-weight: 800; color: #7dd3fc; }
+#result-share-card .shc-title { margin-top: 6px; font-size: 25px; line-height: 1.28; font-weight: 800; color: #a7f3d0; word-break: break-word; overflow-wrap: break-word; }
+#result-share-card .shc-note { margin-top: 5px; font-size: 11px; font-weight: 600; color: #94a3b8; }
+#result-share-card .shc-accuracy { flex: 0 0 auto; text-align: right; }
+#result-share-card .shc-accuracy-label { font-size: 10px; letter-spacing: 0.14em; font-weight: 800; color: #94a3b8; }
+#result-share-card .shc-accuracy-value { margin-top: 2px; font-size: 42px; line-height: 1.05; font-weight: 800; color: #34d399; }
+#result-share-card .shc-unit { font-size: 17px; margin-left: 2px; color: #6ee7b7; }
+#result-share-card .shc-delta { display: inline-block; margin-top: 9px; padding: 2px 8px; border-radius: 999px; font-size: 11px; font-weight: 800; color: #cbd5e1; background: rgba(148, 163, 184, 0.14); border: 1px solid rgba(148, 163, 184, 0.28); }
+#result-share-card .shc-delta.is-up { color: #6ee7b7; background: rgba(16, 185, 129, 0.16); border-color: rgba(16, 185, 129, 0.4); }
+#result-share-card .shc-delta.is-down { color: #fda4af; background: rgba(225, 29, 72, 0.14); border-color: rgba(225, 29, 72, 0.35); }
+
+#result-share-card .shc-player { display: flex; align-items: center; gap: 12px; margin-top: 20px; padding: 12px 14px; border-radius: 18px; background: rgba(148, 163, 184, 0.08); border: 1px solid rgba(148, 163, 184, 0.16); }
+#result-share-card .shc-avatar-tile { width: 46px; height: 46px; flex: 0 0 auto; box-sizing: border-box; border-radius: 14px; border: 1px solid rgba(148, 163, 184, 0.28); display: flex; align-items: center; justify-content: center; font-size: 24px; overflow: hidden; }
+#result-share-card .shc-player-main { flex: 1 1 auto; min-width: 0; }
+#result-share-card .shc-label { font-size: 9px; letter-spacing: 0.16em; font-weight: 800; color: #94a3b8; }
+#result-share-card .shc-player-name { margin-top: 4px; font-size: 15px; font-weight: 800; color: #f1f5f9; line-height: 1.4; word-break: break-word; }
+#result-share-card #shc-level { color: #cbd5e1; }
+#result-share-card .shc-dot { margin: 0 6px; color: #64748b; }
+#result-share-card #shc-player-title { color: #a7f3d0; }
+#result-share-card .shc-exp { flex: 0 0 auto; text-align: right; }
+#result-share-card .shc-exp-value { margin-top: 4px; font-size: 15px; font-weight: 800; color: #a5b4fc; font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+#result-share-card .shc-stats { display: flex; margin-top: 16px; border-radius: 18px; background: rgba(15, 23, 42, 0.55); border: 1px solid rgba(148, 163, 184, 0.16); overflow: hidden; }
+#result-share-card .shc-stat { flex: 1 1 0; min-width: 0; padding: 12px 4px; text-align: center; }
+#result-share-card .shc-stat + .shc-stat { border-left: 1px solid rgba(148, 163, 184, 0.16); }
+#result-share-card .shc-stat-label { font-size: 10px; font-weight: 700; color: #94a3b8; }
+#result-share-card .shc-stat-value { margin-top: 4px; font-size: 25px; line-height: 1.1; font-weight: 800; color: #f8fafc; font-variant-numeric: tabular-nums; white-space: nowrap; }
+#result-share-card .shc-stat-unit { margin-left: 2px; font-size: 11px; font-weight: 700; color: #94a3b8; }
+#result-share-card #shc-rate-small { color: #34d399; }
+
+#result-share-card .shc-rewards { display: flex; gap: 8px; margin-top: 12px; }
+#result-share-card .shc-coin { flex: 1 1 0; min-width: 0; padding: 10px 8px; border-radius: 14px; background: rgba(217, 119, 6, 0.16); border: 1px solid rgba(251, 191, 36, 0.32); color: #fcd34d; font-size: 13px; font-weight: 800; text-align: center; white-space: nowrap; }
+#result-share-card .shc-streak { flex: 1 1 0; min-width: 0; padding: 10px 8px; border-radius: 14px; background: rgba(234, 88, 12, 0.16); border: 1px solid rgba(251, 146, 60, 0.34); color: #fdba74; font-size: 13px; font-weight: 800; text-align: center; white-space: nowrap; }
+
+#result-share-card .shc-mistakes { margin-top: 16px; padding: 12px 14px 8px; border-radius: 18px; background: rgba(190, 18, 60, 0.08); border: 1px solid rgba(244, 63, 94, 0.24); }
+#result-share-card .shc-mistakes-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 10px; font-weight: 800; letter-spacing: 0.08em; color: #fda4af; }
+#result-share-card .shc-mistake-list { list-style: none; margin: 4px 0 0; padding: 0; }
+#result-share-card .shc-mistake { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; padding: 7px 0; border-bottom: 1px solid rgba(148, 163, 184, 0.12); }
+#result-share-card .shc-mistake:last-child { border-bottom: 0; }
+#result-share-card .shc-mistake-word { flex: 0 0 auto; max-width: 46%; font-size: 13px; font-weight: 800; color: #f8fafc; word-break: break-word; overflow-wrap: break-word; }
+#result-share-card .shc-mistake-id { margin-left: 5px; font-size: 9px; font-weight: 700; color: #94a3b8; white-space: nowrap; }
+#result-share-card .shc-mistake-meaning { flex: 1 1 auto; min-width: 0; text-align: right; font-size: 11px; line-height: 1.55; font-weight: 600; color: #cbd5e1; word-break: break-word; overflow-wrap: break-word; }
+#result-share-card .shc-mistake-more { display: block; text-align: center; font-size: 10px; font-weight: 700; color: #fda4af; }
+
+#result-share-card .shc-footer { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 16px; padding-top: 12px; border-top: 1px solid rgba(148, 163, 184, 0.16); font-size: 10px; font-weight: 700; color: #94a3b8; }
+#result-share-card #shc-range { flex: 1 1 auto; min-width: 0; word-break: break-word; }
+#result-share-card #shc-date { flex: 0 0 auto; font-variant-numeric: tabular-nums; }

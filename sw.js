@@ -1,7 +1,9 @@
-const CACHE = "leap-v27";
+const CACHE = "leap-v28";
 const ASSETS = [
   "./",
   "./index.html",
+  "./assets/css/app.css",
+  "./js/core.js",
   "./words_data.js",
   "./examples_data.js",
   "./reference_data.js",
