@@ -10,19 +10,19 @@
 > 3. 数値（収録語数・実績数・ショップ点数など）や保存キーを変えた場合は、本文中の該当箇所も直す。
 > 4. このルールは `AGENTS.md` にも記載している。
 
-最終更新: 2026-11-21
+最終更新: 2026-11-22
 
 ---
 
 ## 0. 30秒サマリ（AI向け）
 
 - **何か**: 大学受験英単語帳「LEAP」の 4択クイズ × ゲーム要素の学習 PWA。加えて「裏世界」ゾーンで古文単語クイズも遊べる。
-- **構成**: ビルド不要の**静的サイト**。`index.html` 1ファイルに HTML/CSS/JS をほぼ全部持ち、データは `*_data.js` の JS 定数。
+- **構成**: ビルド不要の**静的サイト**。`index.html` に HTML（マークアップ）とインライン JS を持ち、アプリ固有 CSS は `assets/css/app.css`（外部ファイル）、データは `*_data.js` の JS 定数。
 - **バックエンドは任意**: 基本は **localStorage** のみでオフライン動作。`SUPABASE_CONFIG` を設定すると **Supabase**（Auth / Postgres / RLS）によるクラウド同期と相互フレンドが有効になる。未設定なら従来どおりローカルのみで正常動作する。
 - **収録**: 英単語 2,300 語（Part 1〜5）／例文・単語詳細 2,300 語分・例文クイズ 2,000 語分／参考資料 5 章／接辞 32 グループ・132 語根／古文単語 150 語（2 章）。
 - **主な遊び**: 通常4択・例文穴埋め・60秒スプリント・サドンデス、デイリーチャレンジ、忘却曲線の苦手復習、コイン/EXP/レベル、称号・フレーム・アバター、実績 93 種、共有URL（挑戦状）、任意ログインによるクラウド同期・相互フレンドの詳細ステータス閲覧。
 - **ホスティング**: 静的ホスティング（Vercel 想定。`vercel.json` なし、`.vercel/` は gitignore）。
-- **主要ファイル**: `index.html`（アプリ本体）、`words_data.js`、`examples_data.js`、`reference_data.js`、`affix_data.js`、`kobun/kobun_words_data.js`、`sw.js`、`manifest.json`、`supabase/schema.sql`（DB/RLS）、`LEAP単語データ/`（元データ）、`patches/`（データ生成・一括改修スクリプト）。
+- **主要ファイル**: `index.html`（アプリ本体）、`assets/css/app.css`（アプリ固有 CSS）、`words_data.js`、`examples_data.js`、`reference_data.js`、`affix_data.js`、`kobun/kobun_words_data.js`、`sw.js`、`manifest.json`、`supabase/schema.sql`（DB/RLS）、`LEAP単語データ/`（元データ）、`patches/`（データ生成・一括改修スクリプト）。
 
 ---
 
@@ -64,20 +64,20 @@
 
 | 層 | 採用技術 | 備考 |
 |---|---|---|
-| マークアップ | 単一 `index.html` | 画面（section）＋モーダル＋インライン JS/CSS |
-| スタイル | Tailwind CSS（CDN: `cdn.tailwindcss.com`）＋ インライン CSS | ダークモードは `html.dark` / `data-theme="dark"` の CSS 上書き |
+| マークアップ | 単一 `index.html` | 画面（section）＋モーダル＋インライン JS。アプリ固有 CSS は外部ファイル |
+| スタイル | Tailwind CSS（CDN: `cdn.tailwindcss.com`）＋ `assets/css/app.css` | 旧インライン `<style>`（236 行）を分離。ダークモードは `html.dark` / `data-theme="dark"` の CSS 上書き |
 | フォント | Google Fonts（Inter / Noto Sans JP） | |
 | 画像生成 | html2canvas 1.4.1（CDN） | 結果カードのスクリーンショット保存 |
 | 音声 | Web Speech API（`speechSynthesis`） | 英単語は `en-US`、古文は `ja-JP` |
 | 永続化 | localStorage（＋任意で Supabase） | キー一覧は §11 |
 | クラウド（任意） | Supabase JS v2（CDN） / Postgres / Auth / RLS | `SUPABASE_CONFIG` 未設定時は初期化しない |
-| オフライン | `sw.js`（Cache API） | キャッシュ名 `leap-v24`、Network-First。Supabase と認証コールバックは Network-Only |
+| オフライン | `sw.js`（Cache API） | キャッシュ名 `leap-v27`、Network-First。Supabase と認証コールバックは Network-Only |
 | PWA | `manifest.json`、アイコン各種 | standalone 表示、theme `#059669` |
 | ビルド | なし | `.js` データは `<script>` で直接読む |
 
 ### キャッシュ更新の仕組み
 
-- `index.html` 冒頭の `APP_VER`（現在 `leap-v5-cloud3`）が `localStorage.LEAP_APP_CACHE_VER` と違えば、全 Cache を削除。
+- `index.html` 冒頭の `APP_VER`（現在 `leap-v6-split1`）が `localStorage.LEAP_APP_CACHE_VER` と違えば、全 Cache を削除。
 - `sw.js` は `install` で `skipWaiting()`、`activate` で旧キャッシュ削除＋`clients.claim()`。
 - 取得は Network-First（HTML は常に最新、オフライン時のみキャッシュ）。
 - **フロントを更新したら `sw.js` の `CACHE` 名と `index.html` の `APP_VER` を上げる**のが運用ルール。
@@ -556,9 +556,11 @@ const SUPABASE_CONFIG = { url: "https://xxxx.supabase.co", anonKey: "sb_publisha
 
 ```
 /
-├── index.html                 アプリ本体（HTML + CSS + JS、約38万文字）
+├── index.html                 アプリ本体（HTML + マークアップ + インライン JS）
+├── assets/
+│   └── css/app.css            アプリ固有 CSS（旧 index.html 内の <style> 236 行）
 ├── manifest.json              PWA マニフェスト
-├── sw.js                      Service Worker（キャッシュ leap-v24 / Network-First）
+├── sw.js                      Service Worker（キャッシュ leap-v27 / Network-First）
 ├── words_data.js              LEAP_WORDS_DATA（2,300語）
 ├── examples_data.js           LEAP_WORD_DETAILS（2,300語）+ LEAP_EXAMPLE_DATA（2,000語）
 ├── reference_data.js          LEAP_REFERENCE_DATA（5章）
@@ -569,7 +571,8 @@ const SUPABASE_CONFIG = { url: "https://xxxx.supabase.co", anonKey: "sb_publisha
 │   └── kobun_loader.js        未使用の統合ヘルパー（window.KOBUN）
 ├── docs/
 │   ├── 古文単語330_追加構想.md  古文5章330語の設計・実装手順メモ
-│   └── SUPABASE_SETUP.md      Supabase / Google / LINE ログインの詳細設定手順
+│   ├── SUPABASE_SETUP.md      Supabase / Google / LINE ログインの詳細設定手順
+│   └── ファイル分割計画.md    index.html を段階分割する手順（Stage 2 以降）
 ├── LEAP単語データ/
 │   ├── 001_101.txt … 2001_2300.txt   元テキスト（語義・IPA・コラム）
 │   ├── code_artifact.txt             参考資料の元テキスト
@@ -649,6 +652,7 @@ node patches/build_leap_data.js
 
 | 日付 | 変更内容 |
 |---|---|
+| 2026-11-22 | `index.html` のインライン CSS（旧 L59–296・236 行）を `assets/css/app.css` へ分離（ファイル分割 第 1 段階）。CSS の内容は元と同一。`sw.js` の `ASSETS` に追加し `CACHE=leap-v27`、`APP_VER=leap-v6-split1` へ更新。§0・§2・§13 を追随。Stage 2 以降の分割手順と確認項目を `docs/ファイル分割計画.md` に文書化。 |
 | 2026-11-21 | ホーム画面の副次的ボタンを「⚙️ 設定・その他」シートに集約（実績・ショップ・アカウント／同期・自分の詳細・音声ON/OFF・追加JSON読込）。音声トグル時にラベルを即時更新。 |
 | 2026-11-21 | iPadOS で読み上げが無音になる問題を調査・修正: ユーザー操作内での `speak()` 同期実行、空文字発話によるアンロックの再試行（`pointerdown`/`touchstart`/`touchend`/`click`/`keydown`）、アンロック発話のキャンセル回避、`voice` 未設定時のフォールバックを追加。iPad のソフトミュート／iOS 26 の既知不具合も SERVICE.md に明記。 |
 | 2026-11-21 | 結果共有をサービス内で完結するように変更（フレンド選択シート→「📥 共有」タブ・未読バッジ・同じ範囲で挑戦、`userData.sharedResults` を使用し DB 変更なし）。「📊 自分の詳細」でフレンド詳細と同じ画面を自分でも確認可能に。`APP_VER=leap-v5-cloud5` / `CACHE=leap-v26`。 |

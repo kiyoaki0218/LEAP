@@ -1,0 +1,236 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;500;700&display=swap');
+body { font-family: 'Inter', 'Noto Sans JP', sans-serif; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+.no-scrollbar::-webkit-scrollbar { display: none; }
+/* forwards を付けない: 終了後も transform が残ると中の position: sticky がずれるため */
+.fade-in { animation: fadeIn 0.2s ease-in-out; }
+/* 辞典は中に sticky な絞り込みバーがあるため、transform を使わないフェードにする */
+#screen-dictionary.fade-in { animation-name: fadeInFlat; }
+@keyframes fadeInFlat { from { opacity: 0; } to { opacity: 1; } }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ===== Fever演出アニメーション ===== */
+@keyframes feverPulse5 {
+  0%   { background-color: transparent; }
+  25%  { background-color: rgba(251, 191, 36, 0.18); }
+  50%  { background-color: transparent; }
+  75%  { background-color: rgba(251, 191, 36, 0.18); }
+  100% { background-color: transparent; }
+}
+@keyframes feverPulse10 {
+  0%   { background-color: transparent; }
+  20%  { background-color: rgba(239, 68, 68, 0.18); }
+  40%  { background-color: transparent; }
+  60%  { background-color: rgba(239, 68, 68, 0.18); }
+  80%  { background-color: transparent; }
+  100% { background-color: rgba(239, 68, 68, 0.1); }
+}
+@keyframes comboPop {
+  0%   { transform: scale(1); }
+  40%  { transform: scale(1.35); }
+  70%  { transform: scale(0.92); }
+  100% { transform: scale(1); }
+}
+@keyframes feverTextGlow {
+  0%,100% { text-shadow: none; }
+  50%      { text-shadow: 0 0 12px rgba(251,191,36,0.9), 0 0 24px rgba(251,191,36,0.5); }
+}
+@keyframes feverTextGlow10 {
+  0%,100% { text-shadow: none; }
+  50%      { text-shadow: 0 0 12px rgba(239,68,68,0.9), 0 0 24px rgba(239,68,68,0.5); }
+}
+.fever-5-active  { animation: feverPulse5  0.7s ease-out; }
+.fever-10-active { animation: feverPulse10 0.7s ease-out; }
+.combo-pop-anim  { animation: comboPop 0.35s cubic-bezier(.36,.07,.19,.97); }
+.fever-5-active  #quiz-combo-badge { animation: feverTextGlow   0.7s ease-out; }
+.fever-10-active #quiz-combo-badge { animation: feverTextGlow10 0.7s ease-out; }
+
+/* ===== 自力想起（ブレイン・ファースト）＆選択肢スライドイン ===== */
+@keyframes brainMaskPulse {
+  0%,100% { opacity: 0.55; }
+  50%     { opacity: 1; }
+}
+.brain-mask .brain-emoji { animation: brainMaskPulse 1.2s ease-in-out infinite; }
+@keyframes optionSlideIn {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.option-reveal { animation: optionSlideIn 0.22s ease-out both; }
+
+/* ===== 単語詳細シート ===== */
+@keyframes sheetUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.sheet-in { animation: sheetUp 0.22s ease-out both; }
+@keyframes backdropIn { from { opacity: 0; } to { opacity: 1; } }
+.backdrop-in { animation: backdropIn 0.18s ease-out both; }
+
+/* スマホでのタップ反応速度向上（300ms遅延・誤スクロール判定防止） */
+button, a, input, select {
+  touch-action: manipulation;
+}
+
+/* ===== ダークモード（.dark / data-theme="dark"） ===== */
+html.dark, html[data-theme="dark"] { color-scheme: dark; }
+html.dark body, html[data-theme="dark"] body {
+  background-color: #0b1120 !important;
+  color: #e2e8f0 !important;
+}
+
+/* --- 面（背景） --- */
+html.dark [class~="bg-white"], html.dark [class*="bg-white/"],
+html.dark [class~="bg-slate-50"], html.dark [class*="bg-slate-50/"] {
+  background-color: #172033 !important;
+}
+/* body 自体はページ背景色を優先（カードが沈まないように） */
+html.dark body[class~="bg-slate-50"], html[data-theme="dark"] body[class~="bg-slate-50"] {
+  background-color: #0b1120 !important;
+}
+html.dark [class~="bg-slate-100"], html.dark [class*="bg-slate-100/"] {
+  background-color: #334155 !important;
+}
+html.dark [class~="bg-slate-200"], html.dark [class*="bg-slate-200/"] {
+  background-color: #263449 !important;
+}
+html.dark [class~="bg-emerald-50"], html.dark [class*="bg-emerald-50/"] { background-color: rgba(16,185,129,0.18) !important; }
+html.dark [class~="bg-emerald-100"], html.dark [class*="bg-emerald-100/"] { background-color: rgba(16,185,129,0.28) !important; }
+html.dark [class~="bg-emerald-200"], html.dark [class*="bg-emerald-200/"] { background-color: rgba(16,185,129,0.34) !important; }
+html.dark [class~="bg-amber-50"], html.dark [class*="bg-amber-50/"] { background-color: rgba(217,119,6,0.20) !important; }
+html.dark [class~="bg-amber-100"], html.dark [class*="bg-amber-100/"] { background-color: rgba(217,119,6,0.30) !important; }
+html.dark [class~="bg-rose-50"], html.dark [class*="bg-rose-50/"] { background-color: rgba(225,29,72,0.20) !important; }
+html.dark [class~="bg-rose-100"], html.dark [class*="bg-rose-100/"] { background-color: rgba(225,29,72,0.30) !important; }
+html.dark [class~="bg-red-50"], html.dark [class*="bg-red-50/"] { background-color: rgba(220,38,38,0.20) !important; }
+html.dark [class~="bg-red-100"], html.dark [class*="bg-red-100/"] { background-color: rgba(220,38,38,0.30) !important; }
+html.dark [class~="bg-sky-50"], html.dark [class*="bg-sky-50/"] { background-color: rgba(2,132,199,0.20) !important; }
+html.dark [class~="bg-sky-100"], html.dark [class*="bg-sky-100/"] { background-color: rgba(2,132,199,0.30) !important; }
+html.dark [class~="bg-indigo-50"], html.dark [class*="bg-indigo-50/"] { background-color: rgba(79,70,229,0.22) !important; }
+html.dark [class~="bg-indigo-100"], html.dark [class*="bg-indigo-100/"] { background-color: rgba(79,70,229,0.32) !important; }
+html.dark [class~="bg-orange-50"], html.dark [class*="bg-orange-50/"] { background-color: rgba(234,88,12,0.20) !important; }
+html.dark [class~="bg-orange-100"], html.dark [class*="bg-orange-100/"] { background-color: rgba(234,88,12,0.30) !important; }
+html.dark [class~="bg-yellow-50"], html.dark [class*="bg-yellow-50/"] { background-color: rgba(202,138,4,0.20) !important; }
+html.dark [class~="bg-yellow-100"], html.dark [class*="bg-yellow-100/"] { background-color: rgba(202,138,4,0.30) !important; }
+html.dark [class~="bg-purple-100"], html.dark [class*="bg-purple-100/"] { background-color: rgba(147,51,234,0.30) !important; }
+html.dark [class~="bg-teal-100"], html.dark [class*="bg-teal-100/"] { background-color: rgba(13,148,136,0.30) !important; }
+/* 白文字を乗せる強い緑は少し濃くしてコントラストを確保 */
+html.dark [class~="bg-emerald-400"], html.dark [class~="bg-emerald-500"] { background-color: #047857 !important; }
+html.dark [class~="bg-amber-400"], html.dark [class~="bg-amber-500"] { background-color: #b45309 !important; }
+html.dark [class~="bg-rose-500"], html.dark [class~="bg-rose-600"] { background-color: #be123c !important; }
+/* 主要ボタン（濃いスレート）はページに沈むため一段明るく */
+html.dark [class~="bg-slate-900"] { background-color: #334155 !important; }
+html.dark [class~="bg-slate-800"] { background-color: #3f4e66 !important; }
+html.dark [class~="hover:bg-slate-800"]:hover { background-color: #475569 !important; }
+html.dark [class~="hover:bg-slate-900"]:hover { background-color: #475569 !important; }
+
+/* --- 文字色 --- */
+html.dark [class~="text-slate-900"], html.dark [class~="text-slate-800"] { color: #f8fafc !important; }
+html.dark [class~="text-slate-700"], html.dark [class~="text-slate-600"] { color: #dbe4ef !important; }
+html.dark [class~="text-slate-500"] { color: #b6c3d4 !important; }
+html.dark [class~="text-slate-400"] { color: #cbd5e1 !important; }
+html.dark [class~="text-emerald-600"], html.dark [class~="text-emerald-700"] { color: #6ee7b7 !important; }
+html.dark [class~="text-emerald-800"], html.dark [class~="text-emerald-900"] { color: #a7f3d0 !important; }
+html.dark [class~="text-amber-600"], html.dark [class~="text-amber-700"],
+html.dark [class~="text-amber-800"], html.dark [class~="text-amber-900"] { color: #fcd34d !important; }
+html.dark [class~="text-rose-600"], html.dark [class~="text-rose-700"],
+html.dark [class~="text-rose-800"] { color: #fda4af !important; }
+html.dark [class~="text-red-600"], html.dark [class~="text-red-700"] { color: #fca5a5 !important; }
+html.dark [class~="text-sky-600"], html.dark [class~="text-sky-700"] { color: #7dd3fc !important; }
+html.dark [class~="text-indigo-600"], html.dark [class~="text-indigo-700"] { color: #a5b4fc !important; }
+html.dark [class~="text-orange-600"], html.dark [class~="text-orange-700"] { color: #fdba74 !important; }
+html.dark [class~="text-yellow-600"], html.dark [class~="text-yellow-700"] { color: #fde68a !important; }
+html.dark [class~="text-purple-600"] { color: #d8b4fe !important; }
+html.dark [class~="text-teal-600"], html.dark [class~="text-teal-700"] { color: #5eead4 !important; }
+html.dark [class~="text-slate-300"] { color: #e2e8f0 !important; }
+
+/* --- 枠線 --- */
+html.dark [class~="border-slate-100"], html.dark [class~="border-slate-200"],
+html.dark [class~="border-slate-300"], html.dark [class*="border-slate-200/"] {
+  border-color: #334155 !important;
+}
+html.dark [class~="border-emerald-200"], html.dark [class~="border-emerald-300"] { border-color: rgba(16,185,129,0.45) !important; }
+html.dark [class~="border-amber-200"], html.dark [class~="border-amber-300"] { border-color: rgba(217,119,6,0.45) !important; }
+html.dark [class~="border-rose-200"] { border-color: rgba(225,29,72,0.45) !important; }
+html.dark [class~="border-slate-700"] { border-color: #334155 !important; }
+
+/* --- フォーム・その他 --- */
+html.dark input, html.dark select, html.dark textarea {
+  background-color: #1e293b !important;
+  color: #f8fafc !important;
+  border-color: #475569 !important;
+}
+html.dark input::placeholder, html.dark textarea::placeholder { color: #94a3b8 !important; }
+html.dark header { border-color: #334155 !important; }
+html.dark footer { color: #94a3b8 !important; }
+html.dark #toast { background-color: #f8fafc !important; color: #0f172a !important; }
+/* 白文字を乗せるブランド色ボタンをダーク時に濃くする */
+html.dark [class*="bg-[#06C755]"] { background-color: #047d45 !important; }
+html.dark [class*="from-amber-500"] { background-image: linear-gradient(to right, #b45309, #c2410c) !important; }
+
+/* 進行バー・選択状態などが沈まないように */
+html.dark .bg-emerald-200\/60 { background-color: rgba(16,185,129,0.35) !important; }
+
+/* ===== 裏世界（古文単語）ゾーン ===== */
+body.kobun-mode { background-color: #f7f5ff; }
+html.dark body.kobun-mode { background-color: #0b0b1a; }
+.zone-hero { border-radius: 1rem; }
+body.kobun-mode .zone-hero { background-image: linear-gradient(135deg, #ede9fe 0%, #e0e7ff 55%, #f5f3ff 100%); }
+html.dark body.kobun-mode .zone-hero { background-image: linear-gradient(135deg, #2e1065 0%, #312e81 100%); }
+body.kobun-mode #zone-label { background-color: #7c3aed; }
+body.kobun-mode #home-hero-title { color: #4c1d95; }
+html.dark body.kobun-mode #home-hero-title { color: #ddd6fe; }
+body.kobun-mode #home-hero-sub { color: #6d28d9; }
+html.dark body.kobun-mode #home-hero-sub { color: #c4b5fd; }
+
+/* ===== 接辞クイズ（神経衰弱）のカード ===== */
+.memo-card {
+  perspective: 800px;
+  aspect-ratio: 1 / 1;
+  cursor: pointer;
+}
+.memo-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transition: transform 0.32s ease;
+}
+.memo-card.flipped .memo-inner,
+.memo-card.matched .memo-inner { transform: rotateY(180deg); }
+.memo-face {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  border-radius: 0.75rem;
+  padding: 0.25rem;
+  text-align: center;
+  overflow: hidden;
+}
+.memo-front { background: #0f172a; color: #e2e8f0; font-weight: 800; font-size: 1.1rem; }
+.memo-back { transform: rotateY(180deg); background: #fff; border: 1px solid #cbd5e1; }
+.memo-card.matched .memo-back { border-color: #059669; background: #ecfdf5; box-shadow: inset 0 0 0 1px rgba(5,150,105,0.35); }
+html.dark .memo-front { background: #334155; }
+html.dark .memo-back { background: #172033; border-color: #475569; }
+html.dark .memo-card.matched .memo-back { background: rgba(16,185,129,0.18); border-color: #10b981; }
+
+/* ===== レベル別リーダー ===== */
+.reader-sentence { line-height: 2; }
+.reader-ja { display: block; font-size: 0.8rem; line-height: 1.75; color: #64748b; margin-top: 0.1rem; }
+html.dark .reader-ja { color: #b6c3d4; }
+.reader-target {
+  display: inline;
+  background: #fef3c7;
+  color: #92400e;
+  border-bottom: 2px solid #f59e0b;
+  border-radius: 0.2rem;
+  padding: 0 0.1rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+.reader-target:hover { background: #fde68a; }
+html.dark .reader-target { background: rgba(217,119,6,0.35); color: #fde68a; border-bottom-color: #f59e0b; }
