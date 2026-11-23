@@ -127,6 +127,40 @@
         </div>
       </div>
 
+      <!-- 意見箱 -->
+      <div id="panel-feedback" class="hidden space-y-4">
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 space-y-3">
+          <div class="flex items-center justify-between gap-2">
+            <div>
+              <h2 class="text-sm font-extrabold text-slate-900">📮 意見箱</h2>
+              <p class="text-[10px] text-slate-400">感想・要望・不具合の一覧。状態と管理メモ（ユーザーには非表示）を更新できます。</p>
+            </div>
+            <button type="button" id="fb-refresh" class="text-[10px] font-bold text-slate-500 hover:text-slate-800 cursor-pointer">🔄 更新</button>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+            <select id="fb-category" class="w-full p-2 border border-slate-300 rounded-lg bg-white text-[11px] font-bold">
+              <option value="">すべての種別</option>
+              <option value="opinion">💬 感想</option>
+              <option value="request">💡 要望</option>
+              <option value="bug">🐞 不具合</option>
+              <option value="praise">👏 称賛</option>
+              <option value="other">📝 その他</option>
+            </select>
+            <select id="fb-status" class="w-full p-2 border border-slate-300 rounded-lg bg-white text-[11px] font-bold">
+              <option value="">すべての状態</option>
+              <option value="new">新規</option>
+              <option value="reading">確認中</option>
+              <option value="done">対応済み</option>
+              <option value="archived">アーカイブ</option>
+            </select>
+            <input id="fb-q" type="search" placeholder="本文・連絡先・画面名で検索" class="w-full p-2 border border-slate-300 rounded-lg text-[11px]">
+          </div>
+          <p id="fb-count" class="text-[10px] text-slate-400 tabular-nums"></p>
+        </div>
+
+        <div id="fb-list" class="space-y-3"></div>
+      </div>
+
       <!-- 模試管理 -->
       <div id="panel-mock" class="hidden space-y-4">
         <!-- 模試作成・編集フォーム -->

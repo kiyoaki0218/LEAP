@@ -24,6 +24,15 @@ const MOCK_UNIV_GROUPS = {
   wakayama_ri: { name: "和歌山大学（理系）", univ: "和歌山大学", tier: 3, category: "国公立" },
   shiga_bun: { name: "滋賀大学（文系）", univ: "滋賀大学", tier: 3, category: "国公立" },
   shiga_ri: { name: "滋賀大学（理系）", univ: "滋賀大学", tier: 3, category: "国公立" },
+  kyotokogeisen_ri: { name: "京都工芸繊維大学（理系）", univ: "京都工芸繊維大学", tier: 2, category: "国公立" },
+  kyotokyoiku_edu: { name: "京都教育大学（教育）", univ: "京都教育大学", tier: 3, category: "国公立" },
+  osakakyoiku_edu: { name: "大阪教育大学（教育）", univ: "大阪教育大学", tier: 3, category: "国公立" },
+  narakyoiku_edu: { name: "奈良教育大学（教育）", univ: "奈良教育大学", tier: 3, category: "国公立" },
+  shigakenritsu_bun: { name: "滋賀県立大学（文系）", univ: "滋賀県立大学", tier: 3, category: "国公立" },
+  shigakenritsu_ri: { name: "滋賀県立大学（理系）", univ: "滋賀県立大学", tier: 3, category: "国公立" },
+  hyogokenritsu_bun: { name: "兵庫県立大学（文系）", univ: "兵庫県立大学", tier: 3, category: "国公立" },
+  hyogokenritsu_ri: { name: "兵庫県立大学（理系）", univ: "兵庫県立大学", tier: 3, category: "国公立" },
+  kobeshidai_bun: { name: "神戸市外国語大学（文系）", univ: "神戸市外国語大学", tier: 2, category: "国公立" },
 
   // ==== 国公立（関西圏以外の有名大） ====
   todai_bun: { name: "東京大学（文系）", univ: "東京大学", tier: 1, category: "国公立" },
@@ -44,6 +53,14 @@ const MOCK_UNIV_GROUPS = {
   hiroshima_ri: { name: "広島大学（理系）", univ: "広島大学", tier: 2, category: "国公立" },
   okayama_bun: { name: "岡山大学（文系）", univ: "岡山大学", tier: 2, category: "国公立" },
   okayama_ri: { name: "岡山大学（理系）", univ: "岡山大学", tier: 2, category: "国公立" },
+  chiba_bun: { name: "千葉大学（文系）", univ: "千葉大学", tier: 2, category: "国公立" },
+  chiba_ri: { name: "千葉大学（理系）", univ: "千葉大学", tier: 2, category: "国公立" },
+  yokohama_bun: { name: "横浜国立大学（文系）", univ: "横浜国立大学", tier: 2, category: "国公立" },
+  yokohama_ri: { name: "横浜国立大学（理系）", univ: "横浜国立大学", tier: 2, category: "国公立" },
+  kanazawa_bun: { name: "金沢大学（文系）", univ: "金沢大学", tier: 2, category: "国公立" },
+  kanazawa_ri: { name: "金沢大学（理系）", univ: "金沢大学", tier: 2, category: "国公立" },
+  kumamoto_bun: { name: "熊本大学（文系）", univ: "熊本大学", tier: 2, category: "国公立" },
+  kumamoto_ri: { name: "熊本大学（理系）", univ: "熊本大学", tier: 2, category: "国公立" },
 
   // ==== 関関同立 ====
   doshisha_bun: { name: "同志社大学（文系）", univ: "同志社大学", tier: 2, category: "関関同立" },
@@ -71,6 +88,13 @@ const MOCK_UNIV_GROUPS = {
   settsu_bun: { name: "摂南大学（文系）", univ: "摂南大学", tier: 4, category: "関西中堅私立" },
   settsu_ri: { name: "摂南大学（理系）", univ: "摂南大学", tier: 4, category: "関西中堅私立" },
   bukkyo_bun: { name: "佛教大学（文系）", univ: "佛教大学", tier: 4, category: "関西中堅私立" },
+  oit_ri: { name: "大阪工業大学（理系）", univ: "大阪工業大学", tier: 3, category: "関西中堅私立" },
+  kansaimed_ri: { name: "関西医科大学（理系）", univ: "関西医科大学", tier: 3, category: "関西中堅私立" },
+  osakayakka_ri: { name: "大阪医科薬科大学（理系）", univ: "大阪医科薬科大学", tier: 3, category: "関西中堅私立" },
+  mukogawa_bun: { name: "武庫川女子大学（文系）", univ: "武庫川女子大学", tier: 3, category: "関西中堅私立" },
+  kobegakuin_bun: { name: "神戸学院大学（文系）", univ: "神戸学院大学", tier: 4, category: "関西中堅私立" },
+  kobegakuin_ri: { name: "神戸学院大学（理系）", univ: "神戸学院大学", tier: 4, category: "関西中堅私立" },
+  apu_bun: { name: "立命館アジア太平洋大学（文系）", univ: "立命館アジア太平洋大学", tier: 3, category: "関西中堅私立" },
 
   // ==== 早慶 ====
   waseda_bun: { name: "早稲田大学（文系）", univ: "早稲田大学", tier: 1, category: "早慶" },
@@ -91,7 +115,8 @@ const MOCK_UNIV_GROUPS = {
   chuo_ri: { name: "中央大学（理系）", univ: "中央大学", tier: 2, category: "MARCH" },
   hosei_bun: { name: "法政大学（文系）", univ: "法政大学", tier: 2, category: "MARCH" },
   hosei_ri: { name: "法政大学（理系）", univ: "法政大学", tier: 2, category: "MARCH" },
-  rika_ri: { name: "東京理科大学（理系）", univ: "東京理科大学", tier: 2, category: "関東難関私立" }
+  rika_ri: { name: "東京理科大学（理系）", univ: "東京理科大学", tier: 2, category: "関東難関私立" },
+  shibaura_ri: { name: "芝浦工業大学（理系）", univ: "芝浦工業大学", tier: 2, category: "関東難関私立" }
 };
 
 // 学部マスタ（画面の選択肢）。集計は groupId 単位。
@@ -155,6 +180,40 @@ const MOCK_FACULTIES = [
   { id: "shiga_bun_economics", univ: "滋賀大学", faculty: "経済学部", groupId: "shiga_bun" },
   { id: "shiga_bun_education", univ: "滋賀大学", faculty: "教育学部", groupId: "shiga_bun" },
   { id: "shiga_ri_data_science", univ: "滋賀大学", faculty: "データサイエンス学部", groupId: "shiga_ri" },
+
+  // 京都工芸繊維大学
+  { id: "kyotokogeisen_ri_applied_bio", univ: "京都工芸繊維大学", faculty: "工芸科学部（応用生物学課程）", groupId: "kyotokogeisen_ri" },
+  { id: "kyotokogeisen_ri_materials", univ: "京都工芸繊維大学", faculty: "工芸科学部（物質・材料科学課程）", groupId: "kyotokogeisen_ri" },
+  { id: "kyotokogeisen_ri_design_arch", univ: "京都工芸繊維大学", faculty: "工芸科学部（デザイン・建築学課程）", groupId: "kyotokogeisen_ri" },
+  { id: "kyotokogeisen_ri_electronics", univ: "京都工芸繊維大学", faculty: "工芸科学部（電子・情報科学課程）", groupId: "kyotokogeisen_ri" },
+  { id: "kyotokogeisen_ri_mechanics", univ: "京都工芸繊維大学", faculty: "工芸科学部（機械・システム工学課程）", groupId: "kyotokogeisen_ri" },
+
+  // 京都教育大学・大阪教育大学・奈良教育大学
+  { id: "kyotokyoiku_edu_school", univ: "京都教育大学", faculty: "教育学部（学校教育教員養成課程）", groupId: "kyotokyoiku_edu" },
+  { id: "kyotokyoiku_edu_develop", univ: "京都教育大学", faculty: "教育学部（発達教育課程）", groupId: "kyotokyoiku_edu" },
+  { id: "kyotokyoiku_edu_special", univ: "京都教育大学", faculty: "教育学部（特別支援教育課程）", groupId: "kyotokyoiku_edu" },
+  { id: "osakakyoiku_edu_school", univ: "大阪教育大学", faculty: "教育学部（学校教育教員養成課程）", groupId: "osakakyoiku_edu" },
+  { id: "osakakyoiku_edu_global", univ: "大阪教育大学", faculty: "教育学部（グローバル教育コース）", groupId: "osakakyoiku_edu" },
+  { id: "narakyoiku_edu_school", univ: "奈良教育大学", faculty: "教育学部（学校教育教員養成課程）", groupId: "narakyoiku_edu" },
+  { id: "narakyoiku_edu_general", univ: "奈良教育大学", faculty: "教育学部（総合教育課程）", groupId: "narakyoiku_edu" },
+
+  // 滋賀県立大学
+  { id: "shigakenritsu_bun_culture", univ: "滋賀県立大学", faculty: "人間文化学部（地域文化学科）", groupId: "shigakenritsu_bun" },
+  { id: "shigakenritsu_bun_life_design", univ: "滋賀県立大学", faculty: "人間文化学部（生活デザイン学科）", groupId: "shigakenritsu_bun" },
+  { id: "shigakenritsu_ri_environment", univ: "滋賀県立大学", faculty: "環境科学部（環境生態学科）", groupId: "shigakenritsu_ri" },
+  { id: "shigakenritsu_ri_materials", univ: "滋賀県立大学", faculty: "工学部（材料科学科）", groupId: "shigakenritsu_ri" },
+  { id: "shigakenritsu_ri_nursing", univ: "滋賀県立大学", faculty: "人間看護学部（看護学科）", groupId: "shigakenritsu_ri" },
+
+  // 兵庫県立大学・神戸市外国語大学
+  { id: "hyogokenritsu_bun_intl_econ", univ: "兵庫県立大学", faculty: "国際商経学部（国際経済学科）", groupId: "hyogokenritsu_bun" },
+  { id: "hyogokenritsu_bun_management", univ: "兵庫県立大学", faculty: "国際商経学部（経営学科）", groupId: "hyogokenritsu_bun" },
+  { id: "hyogokenritsu_bun_human_env", univ: "兵庫県立大学", faculty: "環境人間学部（環境人間学科）", groupId: "hyogokenritsu_bun" },
+  { id: "hyogokenritsu_ri_science", univ: "兵庫県立大学", faculty: "理学部（物質科学科）", groupId: "hyogokenritsu_ri" },
+  { id: "hyogokenritsu_ri_mechanics", univ: "兵庫県立大学", faculty: "工学部（機械・材料工学科）", groupId: "hyogokenritsu_ri" },
+  { id: "hyogokenritsu_ri_electronics", univ: "兵庫県立大学", faculty: "工学部（電子・情報工学科）", groupId: "hyogokenritsu_ri" },
+  { id: "kobeshidai_bun_english", univ: "神戸市外国語大学", faculty: "外国語学部（英米学科）", groupId: "kobeshidai_bun" },
+  { id: "kobeshidai_bun_russian", univ: "神戸市外国語大学", faculty: "外国語学部（ロシア学科）", groupId: "kobeshidai_bun" },
+  { id: "kobeshidai_bun_intl_relations", univ: "神戸市外国語大学", faculty: "外国語学部（国際関係学科）", groupId: "kobeshidai_bun" },
 
   // 東京大学
   { id: "todai_bun_law", univ: "東京大学", faculty: "法学部", groupId: "todai_bun" },
@@ -228,6 +287,30 @@ const MOCK_FACULTIES = [
   { id: "okayama_ri_science", univ: "岡山大学", faculty: "理学部", groupId: "okayama_ri" },
   { id: "okayama_ri_engineering", univ: "岡山大学", faculty: "工学部", groupId: "okayama_ri" },
   { id: "okayama_ri_medicine", univ: "岡山大学", faculty: "医学部（医学科）", groupId: "okayama_ri" },
+
+  // 千葉大学・横浜国立大学・金沢大学・熊本大学
+  { id: "chiba_bun_law_politics", univ: "千葉大学", faculty: "法政経学部", groupId: "chiba_bun" },
+  { id: "chiba_bun_letters", univ: "千葉大学", faculty: "文学部", groupId: "chiba_bun" },
+  { id: "chiba_bun_education", univ: "千葉大学", faculty: "教育学部", groupId: "chiba_bun" },
+  { id: "chiba_ri_science", univ: "千葉大学", faculty: "理学部", groupId: "chiba_ri" },
+  { id: "chiba_ri_engineering", univ: "千葉大学", faculty: "工学部", groupId: "chiba_ri" },
+  { id: "chiba_ri_medicine", univ: "千葉大学", faculty: "医学部（医学科）", groupId: "chiba_ri" },
+  { id: "yokohama_bun_economics", univ: "横浜国立大学", faculty: "経済学部", groupId: "yokohama_bun" },
+  { id: "yokohama_bun_business", univ: "横浜国立大学", faculty: "経営学部", groupId: "yokohama_bun" },
+  { id: "yokohama_ri_science_eng", univ: "横浜国立大学", faculty: "理工学部", groupId: "yokohama_ri" },
+  { id: "yokohama_ri_urban", univ: "横浜国立大学", faculty: "都市科学部", groupId: "yokohama_ri" },
+  { id: "kanazawa_bun_law", univ: "金沢大学", faculty: "法学類", groupId: "kanazawa_bun" },
+  { id: "kanazawa_bun_economics", univ: "金沢大学", faculty: "経済学類", groupId: "kanazawa_bun" },
+  { id: "kanazawa_bun_humanities", univ: "金沢大学", faculty: "人文学類", groupId: "kanazawa_bun" },
+  { id: "kanazawa_ri_science", univ: "金沢大学", faculty: "理学類", groupId: "kanazawa_ri" },
+  { id: "kanazawa_ri_engineering", univ: "金沢大学", faculty: "工学類", groupId: "kanazawa_ri" },
+  { id: "kanazawa_ri_medicine", univ: "金沢大学", faculty: "医薬保健学域（医学類）", groupId: "kanazawa_ri" },
+  { id: "kumamoto_bun_letters", univ: "熊本大学", faculty: "文学部", groupId: "kumamoto_bun" },
+  { id: "kumamoto_bun_law", univ: "熊本大学", faculty: "法学部", groupId: "kumamoto_bun" },
+  { id: "kumamoto_bun_economics", univ: "熊本大学", faculty: "経済学部", groupId: "kumamoto_bun" },
+  { id: "kumamoto_ri_science", univ: "熊本大学", faculty: "理学部", groupId: "kumamoto_ri" },
+  { id: "kumamoto_ri_engineering", univ: "熊本大学", faculty: "工学部", groupId: "kumamoto_ri" },
+  { id: "kumamoto_ri_medicine", univ: "熊本大学", faculty: "医学部（医学科）", groupId: "kumamoto_ri" },
 
   // 同志社大学
   { id: "doshisha_bun_theology", univ: "同志社大学", faculty: "神学部", groupId: "doshisha_bun" },
@@ -326,6 +409,26 @@ const MOCK_FACULTIES = [
   { id: "bukkyo_bun_letters", univ: "佛教大学", faculty: "文学部", groupId: "bukkyo_bun" },
   { id: "bukkyo_bun_education", univ: "佛教大学", faculty: "教育学部", groupId: "bukkyo_bun" },
 
+  // 大阪工業大学・関西医科大学・大阪医科薬科大学・武庫川女子大学・神戸学院大学・立命館アジア太平洋大学
+  { id: "oit_ri_electronics", univ: "大阪工業大学", faculty: "工学部（電気電子システム工学科）", groupId: "oit_ri" },
+  { id: "oit_ri_mechanics", univ: "大阪工業大学", faculty: "工学部（機械工学科）", groupId: "oit_ri" },
+  { id: "oit_ri_info_systems", univ: "大阪工業大学", faculty: "情報科学部（情報システム学科）", groupId: "oit_ri" },
+  { id: "oit_ri_robot", univ: "大阪工業大学", faculty: "ロボティクス＆デザイン工学部（ロボット工学科）", groupId: "oit_ri" },
+  { id: "kansaimed_ri_medicine", univ: "関西医科大学", faculty: "医学部（医学科）", groupId: "kansaimed_ri" },
+  { id: "kansaimed_ri_nursing", univ: "関西医科大学", faculty: "看護学部（看護学科）", groupId: "kansaimed_ri" },
+  { id: "osakayakka_ri_medicine", univ: "大阪医科薬科大学", faculty: "医学部（医学科）", groupId: "osakayakka_ri" },
+  { id: "osakayakka_ri_pharmacy", univ: "大阪医科薬科大学", faculty: "薬学部（薬学科）", groupId: "osakayakka_ri" },
+  { id: "mukogawa_bun_letters", univ: "武庫川女子大学", faculty: "文学部（日本語日本文学科）", groupId: "mukogawa_bun" },
+  { id: "mukogawa_bun_education", univ: "武庫川女子大学", faculty: "教育学部（教育学科）", groupId: "mukogawa_bun" },
+  { id: "mukogawa_bun_life_env", univ: "武庫川女子大学", faculty: "生活環境学部（生活環境学科）", groupId: "mukogawa_bun" },
+  { id: "kobegakuin_bun_law", univ: "神戸学院大学", faculty: "法学部（法律学科）", groupId: "kobegakuin_bun" },
+  { id: "kobegakuin_bun_economics", univ: "神戸学院大学", faculty: "経済学部（経済学科）", groupId: "kobegakuin_bun" },
+  { id: "kobegakuin_bun_society", univ: "神戸学院大学", faculty: "現代社会学部（現代社会学科）", groupId: "kobegakuin_bun" },
+  { id: "kobegakuin_ri_pharmacy", univ: "神戸学院大学", faculty: "薬学部（薬学科）", groupId: "kobegakuin_ri" },
+  { id: "kobegakuin_ri_rehab", univ: "神戸学院大学", faculty: "総合リハビリテーション学部（理学療法学専攻）", groupId: "kobegakuin_ri" },
+  { id: "apu_bun_asia_pacific", univ: "立命館アジア太平洋大学", faculty: "アジア太平洋学部（アジア太平洋学科）", groupId: "apu_bun" },
+  { id: "apu_bun_intl_management", univ: "立命館アジア太平洋大学", faculty: "国際経営学部（国際経営学科）", groupId: "apu_bun" },
+
   // 早稲田大学
   { id: "waseda_bun_political", univ: "早稲田大学", faculty: "政治経済学部", groupId: "waseda_bun" },
   { id: "waseda_bun_law", univ: "早稲田大学", faculty: "法学部", groupId: "waseda_bun" },
@@ -400,7 +503,12 @@ const MOCK_FACULTIES = [
   { id: "rika_ri_science", univ: "東京理科大学", faculty: "理学部", groupId: "rika_ri" },
   { id: "rika_ri_engineering", univ: "東京理科大学", faculty: "工学部", groupId: "rika_ri" },
   { id: "rika_ri_science_tech", univ: "東京理科大学", faculty: "創域理工学部", groupId: "rika_ri" },
-  { id: "rika_ri_pharmacy", univ: "東京理科大学", faculty: "薬学部", groupId: "rika_ri" }
+  { id: "rika_ri_pharmacy", univ: "東京理科大学", faculty: "薬学部", groupId: "rika_ri" },
+
+  // 芝浦工業大学
+  { id: "shibaura_ri_mechanics", univ: "芝浦工業大学", faculty: "工学部（機械工学課程）", groupId: "shibaura_ri" },
+  { id: "shibaura_ri_electronics", univ: "芝浦工業大学", faculty: "システム理工学部（電子情報システム学科）", groupId: "shibaura_ri" },
+  { id: "shibaura_ri_architecture", univ: "芝浦工業大学", faculty: "建築学部（建築学科）", groupId: "shibaura_ri" }
 ];
 
 const MOCK_TIER_LABELS = { 1: "最難関", 2: "難関", 3: "中堅", 4: "チャレンジ" };

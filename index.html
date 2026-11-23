@@ -11,7 +11,7 @@
     <script>
     // キャッシュ強制更新ロジック: 新バージョン検知時に古いServiceWorkerキャッシュを破棄
     (function() {
-      const APP_VER = "leap-v15-announcement-fix";
+      const APP_VER = "leap-v16-mock-schools";
       try {
         const storedVer = localStorage.getItem("LEAP_APP_CACHE_VER");
         if (storedVer !== APP_VER) {
@@ -4333,6 +4333,7 @@
     let mockExamStartedAt = 0;
     let mockLastMistakes = [];
     let mockBusy = false;
+    let mockSchoolFilter = { category: "", tier: "", query: "" };
 
     function mockIsReady() { return !!supabaseClient && !!(typeof cloudState !== "undefined" && cloudState && cloudState.user); }
     function mockCurrentExam() { return mockExamsCache.find(e => e.id === mockSelectedExamId) || null; }
@@ -4499,15 +4500,93 @@
     }
 
     // ---- エントリー操作 ----
+    function mockSchoolCategories() {
+      const list = [];
+      (MOCK_FACULTIES || []).forEach(f => {
+        const g = mockGroupDef(f.groupId) || {};
+        if (g.category && !list.includes(g.category)) list.push(g.category);
+      });
+      return list;
+    }
+
+    function mockSchoolFilterMatch(f) {
+      const g = mockGroupDef(f.groupId) || {};
+      const flt = mockSchoolFilter || {};
+      if (flt.category && g.category !== flt.category) return false;
+      if (flt.tier && String(g.tier) !== String(flt.tier)) return false;
+      const q = String(flt.query || "").trim().toLowerCase();
+      if (q) {
+        const hay = `${f.univ} ${f.faculty} ${g.name || ""}`.toLowerCase();
+        if (!hay.includes(q)) return false;
+      }
+      return true;
+    }
+
+    function mockSchoolFilteredFaculties() {
+      return (MOCK_FACULTIES || []).filter(mockSchoolFilterMatch);
+    }
+
+    function mockSchoolUnivs(facs) {
+      const list = [];
+      (facs || []).forEach(f => { if (!list.includes(f.univ)) list.push(f.univ); });
+      return list;
+    }
+
+    function mockFacultyOptions(facs) {
+      return facs.map(f => {
+        const g = mockGroupDef(f.groupId) || {};
+        return `<option value="${escapeHtml(f.id)}">${escapeHtml(f.faculty)}（${escapeHtml(g.name || "")}）</option>`;
+      }).join("");
+    }
+
+    // 絞り込み条件に合わせて「大学」「学部」セレクトを作り直す
+    function renderMockSchoolSelectors(keepUniv) {
+      const univSel = document.getElementById("mock-univ-select");
+      const facSel = document.getElementById("mock-faculty-select");
+      if (!univSel || !facSel) return;
+      const facs = mockSchoolFilteredFaculties();
+      const univs = mockSchoolUnivs(facs);
+      const countEl = document.getElementById("mock-filter-count");
+      if (countEl) countEl.textContent = `${univs.length}大学 ・ ${facs.length}学部`;
+      if (!univs.length) {
+        univSel.innerHTML = `<option value="">条件に合う大学がありません</option>`;
+        facSel.innerHTML = `<option value="">絞り込み条件を変えてください</option>`;
+        return;
+      }
+      const prev = keepUniv || univSel.value;
+      const selected = univs.includes(prev) ? prev : univs[0];
+      univSel.innerHTML = univs.map(u => `<option value="${escapeHtml(u)}"${u === selected ? " selected" : ""}>${escapeHtml(u)}</option>`).join("");
+      facSel.innerHTML = mockFacultyOptions(facs.filter(f => f.univ === selected));
+    }
+
     function renderMockFacultySelect() {
       const univSel = document.getElementById("mock-univ-select");
       const facSel = document.getElementById("mock-faculty-select");
       if (!univSel || !facSel) return;
-      const list = (MOCK_FACULTIES || []).filter(f => f.univ === univSel.value);
-      facSel.innerHTML = list.map(f => {
-        const g = mockGroupDef(f.groupId) || {};
-        return `<option value="${escapeHtml(f.id)}">${escapeHtml(f.faculty)}（${escapeHtml(g.name || "")}）</option>`;
-      }).join("");
+      facSel.innerHTML = mockFacultyOptions(mockSchoolFilteredFaculties().filter(f => f.univ === univSel.value));
+    }
+
+    function onMockSchoolFilterChange() {
+      const cat = document.getElementById("mock-filter-category");
+      const tier = document.getElementById("mock-filter-tier");
+      const q = document.getElementById("mock-filter-query");
+      mockSchoolFilter = {
+        category: cat ? cat.value : "",
+        tier: tier ? tier.value : "",
+        query: q ? q.value : ""
+      };
+      renderMockSchoolSelectors();
+    }
+
+    function clearMockSchoolFilter() {
+      mockSchoolFilter = { category: "", tier: "", query: "" };
+      const cat = document.getElementById("mock-filter-category");
+      const tier = document.getElementById("mock-filter-tier");
+      const q = document.getElementById("mock-filter-query");
+      if (cat) cat.value = "";
+      if (tier) tier.value = "";
+      if (q) q.value = "";
+      renderMockSchoolSelectors();
     }
 
     function addMockChoice() {
@@ -4736,15 +4815,9 @@
         return;
       }
       const locked = mockPhase(exam) === "closed";
-      const univs = [];
-      facs.forEach(f => { if (!univs.includes(f.univ)) univs.push(f.univ); });
-      const lastUniv = mockEntryChoices.length ? mockEntryChoices[mockEntryChoices.length - 1].univ : univs[0];
-      const defaultUniv = univs.includes(lastUniv) ? lastUniv : univs[0];
-      const univOpts = univs.map(u => `<option value="${escapeHtml(u)}"${u === defaultUniv ? " selected" : ""}>${escapeHtml(u)}</option>`).join("");
-      const facOpts = facs.filter(f => f.univ === defaultUniv).map(f => {
-        const g = mockGroupDef(f.groupId) || {};
-        return `<option value="${escapeHtml(f.id)}">${escapeHtml(f.faculty)}（${escapeHtml(g.name || "")}）</option>`;
-      }).join("");
+      const lastUniv = mockEntryChoices.length ? mockEntryChoices[mockEntryChoices.length - 1].univ : "";
+      const catOpts = mockSchoolCategories().map(c => `<option value="${escapeHtml(c)}"${mockSchoolFilter.category === c ? " selected" : ""}>${escapeHtml(c)}</option>`).join("");
+      const tierOpts = [1, 2, 3, 4].map(t => `<option value="${t}"${String(mockSchoolFilter.tier) === String(t) ? " selected" : ""}>${escapeHtml(mockTierLabel(t))}</option>`).join("");
       const rows = mockEntryChoices.map((c, i) => `<div class="flex items-center gap-2 text-[11px] bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5">
         <span class="w-5 h-5 rounded-full bg-slate-900 text-white text-[10px] font-extrabold flex items-center justify-center shrink-0">${i + 1}</span>
         <span class="min-w-0 flex-1 truncate"><span class="font-bold text-slate-800">${escapeHtml(c.univ)}</span> ${escapeHtml(c.faculty)}</span>
@@ -4757,14 +4830,31 @@
           <span class="text-[10px] font-bold text-slate-500">${mockEntryChoices.length}/5</span>
         </div>
         ${locked ? "" : `<div class="space-y-2">
-          <select id="mock-univ-select" onchange="renderMockFacultySelect()" class="w-full p-2.5 border border-slate-300 rounded-xl text-xs font-bold bg-white cursor-pointer">${univOpts}</select>
-          <select id="mock-faculty-select" class="w-full p-2.5 border border-slate-300 rounded-xl text-xs font-bold bg-white cursor-pointer">${facOpts}</select>
+          <div class="rounded-xl border border-slate-200 bg-slate-50 p-2.5 space-y-2">
+            <p class="text-[10px] font-bold text-slate-500">🔎 大学を絞り込む</p>
+            <input id="mock-filter-query" type="search" value="${escapeHtml(mockSchoolFilter.query)}" oninput="onMockSchoolFilterChange()" placeholder="大学名・学部名で検索（例: 工芸繊維）" class="w-full p-2 border border-slate-300 rounded-lg text-[11px] font-bold bg-white placeholder:font-normal">
+            <div class="grid grid-cols-2 gap-2">
+              <select id="mock-filter-category" onchange="onMockSchoolFilterChange()" class="w-full p-2 border border-slate-300 rounded-lg text-[11px] font-bold bg-white cursor-pointer">
+                <option value="">すべてのカテゴリ</option>${catOpts}
+              </select>
+              <select id="mock-filter-tier" onchange="onMockSchoolFilterChange()" class="w-full p-2 border border-slate-300 rounded-lg text-[11px] font-bold bg-white cursor-pointer">
+                <option value="">すべての難易度</option>${tierOpts}
+              </select>
+            </div>
+            <div class="flex items-center justify-between gap-2">
+              <span id="mock-filter-count" class="text-[10px] text-slate-400 tabular-nums"></span>
+              <button type="button" onclick="clearMockSchoolFilter()" class="text-[10px] font-bold text-slate-500 hover:text-slate-900 transition cursor-pointer shrink-0">条件をクリア</button>
+            </div>
+          </div>
+          <select id="mock-univ-select" onchange="renderMockFacultySelect()" class="w-full p-2.5 border border-slate-300 rounded-xl text-xs font-bold bg-white cursor-pointer"></select>
+          <select id="mock-faculty-select" class="w-full p-2.5 border border-slate-300 rounded-xl text-xs font-bold bg-white cursor-pointer"></select>
           <button type="button" onclick="addMockChoice()" class="w-full py-2 bg-slate-900 hover:bg-slate-700 text-white text-[11px] font-bold rounded-xl transition cursor-pointer">＋ 志望校に追加</button>
         </div>`}
         <div class="space-y-1.5">${rows || `<p class="text-[11px] text-slate-400">まだ登録がありません。第1志望から追加してください。</p>`}</div>
         ${locked ? `<p class="text-[10px] text-slate-400">エントリーの受付は終了しました。</p>` : `<button type="button" onclick="saveMockEntry()" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-bold rounded-xl transition cursor-pointer">この内容でエントリーする</button>`}
         <p class="text-[10px] text-slate-400 leading-relaxed">集計・判定は「大学×文理（groupId）」単位。第1〜第5志望まで登録できます。</p>
       </div>`;
+      if (!locked) renderMockSchoolSelectors(lastUniv);
     }
 
     function mockRenderActionSection(exam) {
@@ -4911,12 +5001,18 @@
       const all = (rep && rep.allGroups) || [];
       if (all.length) {
         parts.push(`<div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-2">
-          <p class="text-xs font-bold text-slate-700">🏫 全大学×文理群の目安一覧</p>
-          <div class="space-y-1.5 max-h-72 overflow-y-auto">
-            ${all.map(g => `<div class="flex items-center justify-between gap-2 text-[10px] bg-slate-50 border border-slate-100 rounded-lg px-2.5 py-1.5">
+          <p class="text-xs font-bold text-slate-700">🏫 全大学×文理群の目安一覧（${all.length}群）</p>
+          <div class="space-y-2 max-h-72 overflow-y-auto">
+            ${all.map((g, i) => {
+              const cat = (mockGroupDef(g.groupId) || {}).category || g.category || "その他";
+              const prevDef = i > 0 ? (mockGroupDef(all[i - 1].groupId) || {}) : {};
+              const prevCat = i > 0 ? (prevDef.category || all[i - 1].category || "その他") : "";
+              const head = cat !== prevCat ? `<p class="text-[10px] font-extrabold text-slate-500 pt-1">${escapeHtml(cat)}</p>` : "";
+              return head + `<div class="flex items-center justify-between gap-2 text-[10px] bg-slate-50 border border-slate-100 rounded-lg px-2.5 py-1.5">
               <span class="min-w-0 truncate font-bold text-slate-700">${escapeHtml(g.groupName || g.groupId)}</span>
               <span class="shrink-0 text-slate-500 tabular-nums">志望 ${Number(g.applicants) || 0}人 ／ 平均 ${g.avgScore === null || g.avgScore === undefined ? "-" : g.avgScore}${g.provisional ? "（参考）" : ""}</span>
-            </div>`).join("")}
+            </div>`;
+            }).join("")}
           </div>
         </div>`);
       }

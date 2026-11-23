@@ -78,7 +78,7 @@
 
 ### キャッシュ更新の仕組み
 
-- `index.html` 冒頭の `APP_VER`（現在 `leap-v15-announcement-fix`）が `localStorage.LEAP_APP_CACHE_VER` と違えば、全 Cache を削除。
+- `index.html` 冒頭の `APP_VER`（現在 `leap-v16-mock-schools`）が `localStorage.LEAP_APP_CACHE_VER` と違えば、全 Cache を削除。
 - `sw.js` は `install` で `skipWaiting()`、`activate` で旧キャッシュ削除＋`clients.claim()`。
 - 取得は Network-First（HTML は常に最新、オフライン時のみキャッシュ）。
 - **フロントを更新したら `sw.js` の `CACHE` 名と `index.html` の `APP_VER` を上げる**のが運用ルール。
@@ -248,7 +248,8 @@ const MOCK_TIER_LABELS = { 1: "最難関", 2: "難関", 3: "中堅", 4: "チャ�
 
 - **画面では大学＋学部を選ぶ**が、**集計・判定は `groupId`（大学×文理）単位**。
 - `tier`（1=最難関 / 2=難関 / 3=中堅 / 4=チャレンジ）と `category`（国公立 / 関関同立 / 産近甲龍 / 早慶 / MARCH など）をグループに持たせ、母数不足時のフォールバック集計に使う。
-- 収録: 関西の国公立（京都・大阪・神戸・大阪公立・京都府立ほか）、関関同立、産近甲龍、関西中堅私立、関東の難関（東京・一橋・東京科学・早慶・上智・MARCH・東京理科 ほか）。
+- 収録: 関西の国公立（京都・大阪・神戸・大阪公立・京都府立・**京都工芸繊維**・滋賀県立・兵庫県立・神戸市外国語・教育大系 ほか）、関関同立、産近甲龍、関西中堅私立（大阪工業・関西医科・大阪医科薬科・武庫川女子・神戸学院・立命館APU ほか）、関東の難関（東京・一橋・東京科学・千葉・横浜国立・金沢・熊本・早慶・上智・MARCH・東京理科・芝浦工業 ほか）。
+- 志望校の選択 UI は **検索＋カテゴリ＋難易度（tier）の絞り込み** 付き。絞り込みは `mockSchoolFilter`（画面内の状態）で行い、大学セレクトは該当大学だけ、学部セレクトはその大学の該当学部だけを出す（該当件数を「◯大学・◯学部」と表示、「条件をクリア」で解除）。絞り込みはエントリーの下書きには保存しない。
 - 学部を追加するときは `MOCK_FACULTIES` に1行追加（既存 `groupId` を使えば同じ集計単位に入る）。新しい大学×文理を作る場合は `MOCK_UNIV_GROUPS` も追加する。
 - `sw.js` の `ASSETS` に含める（キャッシュ更新時は `CACHE` と `APP_VER` も上げる）。
 
@@ -372,7 +373,8 @@ expRequiredForLevel(level) = 100 + (level - 1) * 50
 - **出題**: `mock_exams.question_ids` の単語をそのまま出題（`subject` = `leap` / `kobun`）。通常4択固定。
 - **開始時刻の保持**: 開始時に `mockExamStartedAt` を記録し、`elapsed_sec` を提出。終了時刻を過ぎた提出は `is_late = true`（参考記録）として保存し、正規受験の集計から除外する。
 - **エントリー**: 第1〜第5志望を `mock_exam_entries.choices`（jsonb 配列）に保存。各要素は `{ facultyId, univ, faculty, groupId, groupName, tier, category }` の自己記述形式で、これだけで大学×文理／tier／category の集計ができる。ローカル下書きは `LEAP_MOCK_CHOICES_V1`。
-- **成績表**: `get_mock_exam_report` の返却値を表示。偏差値・順位・上位パーセンタイル・受験者数 N・平均・トリム平均・理論平均・実効SD・志望校判定（A/B/C/D または判定保留）・全大学×文理群の目安一覧。
+  - 選択 UI は「大学名・学部名の検索」＋「カテゴリ」「難易度（tier）」の絞り込みを備え、該当する大学・学部だけをセレクトに出す（件数表示・条件クリア付き）。
+- **成績表**: `get_mock_exam_report` の返却値を表示。偏差値・順位・上位パーセンタイル・受験者数 N・平均・トリム平均・理論平均・実効SD・志望校判定（A/B/C/D または判定保留）・全大学×文理群の目安一覧（カテゴリ見出し付き・スクロール）。
 - **判定**（`mockJudgeFor`）: 偏差値と `tier` 別しきい値（tier1: 63/57/50、tier2: 60/54/47、tier3: 56/50/44、tier4: 52/46/40）で A〜D を決め、志望者内パーセンタイルが上位25%なら1段上げ、下位20%なら1段下げる。**N < 5 または暫定フラグ時は「判定保留（暫定）」**。
 - **復習導線**: 結果画面と同じく間違えた単語を `startQuizWithPool` で復習できる（`reviewMockMistakes`）。`html2canvas` の `#result-share-card` に偏差値・得点・要復習を流し込んで画像保存できる（`downloadMockResultImage`）。
 - **中断**: 模試中に中断した場合は提出せず、成績表画面へ戻る（コイン・EXP の獲得分は残る）。
@@ -873,6 +875,8 @@ node patches/build_leap_data.js
 
 | 日付 | 変更内容 |
 |---|---|
+| 2026-11-23 | 🐞 管理ダッシュボード（`admin.html`）の「📮 意見箱」タブが空になる不具合を修正。`js/admin.js` 側にだけ存在した描画先（`#panel-feedback` / `#fb-list` / `#fb-count` / `#fb-category` / `#fb-status` / `#fb-q` / `#fb-refresh`）の HTML が `admin.html` に無く、タブを切り替えても何も表示されなかった。他タブと同じカード構成で、種別・状態・キーワードの絞り込み、件数表示、更新ボタン、一覧カードを追加。`admin.html` は Service Worker の `ASSETS` 対象外なので `APP_VER` / `CACHE` は据え置き。 |
+| 2026-11-23 | 🏫 全国一斉模試の志望校マスタを拡充し、選択 UI に絞り込みを追加。`mock_schools_data.js` に京都工芸繊維大学（工芸科学部5課程）をはじめ、京都教育・大阪教育・奈良教育・滋賀県立・兵庫県立・神戸市外国語・千葉・横浜国立・金沢・熊本・大阪工業・関西医科・大阪医科薬科・武庫川女子・神戸学院・立命館アジア太平洋・芝浦工業の大学×文理グループと学部を追加。エントリー画面に大学名/学部名の検索、カテゴリ・難易度（tier）の絞り込み、該当件数表示、条件クリアを追加（`mockSchoolFilter` / `renderMockSchoolSelectors`）。成績表の全大学×文理群の目安一覧はカテゴリ見出し付きに変更。`APP_VER=leap-v16-mock-schools` / `CACHE=leap-v37`。 |
 | 2026-11-23 | お知らせ投稿時の `null value in column "publish_start" violates not-null constraint` エラーを修正。旧サービスと共用している `announcements` テーブルの旧列（`publish_start`, `publish_end`, `content`）に対応した互換ペイロードと自動フォールバックを `js/admin.js` に実装。`supabase/schema.sql` および `supabase/migration_community.sql` に旧テーブル存在時の NOT NULL 制約緩和 DDL を追加。`APP_VER=leap-v15-announcement-fix` / `CACHE=leap-v36`。 |
 | 2026-11-23 | 🏫 LEAP 管理ダッシュボード（`admin.html`）に「模試管理」タブを追加。新規模試の作成（タイトル・科目・出題範囲プリセット・単語自動抽出・開催期間・制限時間設定）、模試一覧、過去の模試結果集約（エントリー数・受験者数・平均点/正答率・最高点/最低点・平均所要時間）、受験者一覧テーブル（得点・正答率・所要時間・提出日時・遅延判定）の閲覧・編集・削除を実装。`supabase/schema.sql` および `supabase/migration_community.sql` に管理者の `mock_exams` (ALL)、`mock_exam_results` (SELECT)、`mock_exam_entries` (SELECT) RLS ポリシーを追加。公開側（`screen-mock-exam` および設定シート）に管理ダッシュボードへの導線を追加。`APP_VER=leap-v14-mock-dashboard` / `CACHE=leap-v35`。 |
 | 2026-11-23 | 旧サービスと共用している `announcements` テーブルの混在対策。旧サービスは `content` 列を使い `body` が空のため、公開側（`loadCommunityAnnouncements`）と管理画面（`loadAnnouncements`）の取得を `body is not null` で絞り込み、旧サービスのお知らせが LEAP に表示されないようにした。`APP_VER=leap-v13-community` / `CACHE=leap-v34`。 |
