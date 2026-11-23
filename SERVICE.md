@@ -10,7 +10,7 @@
 > 3. 数値（収録語数・実績数・ショップ点数など）や保存キーを変えた場合は、本文中の該当箇所も直す。
 > 4. このルールは `AGENTS.md` にも記載している。
 
-最終更新: 2026-11-22
+最終更新: 2026-11-23
 
 ---
 
@@ -20,7 +20,7 @@
 - **構成**: ビルド不要の**静的サイト**。`index.html` に HTML（マークアップ）とアプリ本体のインライン JS を持ち、基盤 JS は `js/core.js`、アプリ固有 CSS は `assets/css/app.css`（いずれも外部ファイル）、データは `*_data.js` の JS 定数。
 - **バックエンドは任意**: 基本は **localStorage** のみでオフライン動作。`SUPABASE_CONFIG` を設定すると **Supabase**（Auth / Postgres / RLS）によるクラウド同期と相互フレンドが有効になる。未設定なら従来どおりローカルのみで正常動作する。
 - **収録**: 英単語 2,300 語（Part 1〜5）／例文・単語詳細 2,300 語分・例文クイズ 2,000 語分／参考資料 5 章／接辞 32 グループ・132 語根／古文単語 150 語（2 章）。
-- **主な遊び**: 通常4択・例文穴埋め・60秒スプリント・サドンデス、デイリーチャレンジ、忘却曲線の苦手復習、コイン/EXP/レベル、称号・フレーム・アバター、実績 93 種、共有URL（挑戦状）、任意ログインによるクラウド同期・相互フレンドの詳細ステータス閲覧。
+- **主な遊び**: 通常4択・例文穴埋め・リスニング4択・スペル入力・60秒スプリント・サドンデス、到達度テスト（50問・25分・S〜D判定）、デイリーチャレンジ、忘却曲線の苦手復習、学習カレンダー/Part別マスター率の振り返り、コイン/EXP/レベル、称号・フレーム・アバター、実績 93 種、共有URL（挑戦状）、任意ログインによるクラウド同期・相互フレンドの詳細ステータス閲覧。
 - **ホスティング**: 静的ホスティング（Vercel 想定。`vercel.json` なし、`.vercel/` は gitignore）。
 - **主要ファイル**: `index.html`（アプリ本体）、`js/core.js`（称号・ゾーン・画面遷移の基盤）、`assets/css/app.css`（アプリ固有 CSS）、`words_data.js`、`examples_data.js`、`reference_data.js`、`affix_data.js`、`kobun/kobun_words_data.js`、`sw.js`、`manifest.json`、`supabase/schema.sql`（DB/RLS）、`LEAP単語データ/`（元データ）、`patches/`（データ生成・一括改修スクリプト）。
 
@@ -100,6 +100,8 @@
 | `screen-affix-rush` | 語源ラッシュ | 60秒・接辞の4択ラッシュ |
 | `screen-affix-memory` | 接辞神経衰弱 | カードめくりで語根と意味を一致させる |
 | `screen-reader` | レベル別リーダー | 例文から長文を自動生成して読む（**現在 UI 入口なし＝休眠機能**） |
+| `screen-exam` | 🎓 到達度テスト | 範囲（全範囲／Part単位）を選んで 50問・25分のテスト。S〜D判定と過去の記録を表示 |
+| `screen-stats` | 📊 学習記録 | 直近12週の日別ヒートマップ（学習カレンダー）、連続学習・累計解答・マスター/苦手語数、Part別マスター率 |
 
 モーダル／ダイアログ: **設定・その他シート（`settings-modal`）**、実績、苦手単語一覧、単語詳細シート、フレンド詳細ステータスシート、結果のフレンド共有シート、初回ログイン時の競合解決ダイアログ、リーダー単語ポップ、確認ダイアログ（`showConfirm`/`showAlert`）、トースト。
 
@@ -251,8 +253,12 @@ const KOBUN_PARTS = [
 |---|---|---|
 | `normal`（通常4択） | 英単語を見て日本語の語義を4択で選ぶ | 選択肢表示前に「自力想起」の待ち時間（`brainFirstDelayMs()`: 通常1200ms / スプリント800ms） |
 | `context`（例文・文脈テスト） | 例文の空所に入る語を4択で選ぶ。和訳表示・例文読み上げあり | 英単語ゾーンのみ。古文は強制 `normal` |
+| `listening`（リスニング4択） | 見出し語を隠し、音声だけを聞いて日本語の語義を4択で選ぶ。解答後に見出し語・IPAを開示 | 英単語ゾーンのみ。古文は強制 `normal`。音声は `voiceEnabled` に関係なく出題時に自動再生（🔊で再再生） |
+| `spelling`（スペル入力） | 日本語の語義（＋品詞バッジ）を見て英単語を入力する。大文字・小文字は区別しない | 英単語ゾーンのみ。古文は強制 `normal`。選択肢は表示しない |
 
-- 出題スタイルは `LEAP_QUIZ_STYLE_V1` に保存。
+- 出題スタイルは `LEAP_QUIZ_STYLE_V1` に保存（`normal` / `context` / `listening`。未知の値は `normal` にフォールバック）。
+- スペル入力では `quiz-spelling-box`（語義＋入力欄＋決定）を表示し、見出し語と選択肢を隠す。採点は `submitSpellingAnswer()` が入力値を突き合わせ、**コイン・EXP・苦手登録・実績・学習状況は4択と同じ `handleAnswer()` に委譲**する（学習記録の整合性を保つため）。解答後は見出し語・IPAを開示し、誤答時は「あなたの解答 / 正解」を表示する。
+- リスニングでは `quiz-listening-box` を表示し、`quiz-word-row`（見出し語・IPA）を隠す。出題直後に `speakListeningWord()` で再生し、選択肢の自力想起マスクは他スタイルと同じく `brainFirstDelayMs()` だけ待つ。解答後は `revealListeningAnswer()` が見出し語を開示する。
 - 例文クイズは `LEAP_WORD_DETAILS` の `examples[].prompt`（空所化済み）を優先。無ければ `LEAP_EXAMPLE_DATA` から `buildCloze()` で空所化。
 - 例文があるのは ID 1〜2000。範囲に例文付き単語が無い場合は UI が「例文あり 0 語」と警告。
 - 例文モードで正解・不正解した単語も `userData.wordStats[id]` に加算され、辞典・出題絞り込みの学習状況（未学習/苦手/学習中/マスター）に反映される。
@@ -271,6 +277,7 @@ const KOBUN_PARTS = [
 | 通常 | `normal` | 時間制限なし。スコアは `100 / 出題数` を1問正解ごとに加算 |
 | 60秒スプリント | `sprint` | 60秒開始。5コンボごとに +3秒、誤答で -2秒。1問10点 |
 | サドンデス | `sudden` | 1問8秒。誤答または時間切れで即終了。1問10点 |
+| 到達度テスト | `exam` | ホーム→`screen-exam`から開始。50問（範囲の語数が少ない場合はその語数）・25分・通常4択固定。S/A/B/C/D判定 |
 
 - 定数: `SPRINT_TOTAL_MS=60000` / `SPRINT_BONUS_MS=3000` / `SPRINT_PENALTY_MS=2000` / `SUDDEN_MS=8000`。
 - 選択は `LEAP_GAME_MODE_V1` に保存。
@@ -312,6 +319,19 @@ expRequiredForLevel(level) = 100 + (level - 1) * 50
 
 - `recordPlayDay()` がクイズ完走時に `lastPlayDate` / `streak` を更新（前日なら+1、同日据え置き、途切れで1）。
 - ホームに「連続学習 n 日」を表示。
+
+---
+
+### 4.9 到達度テスト（`screen-exam`）
+
+- ホームの「🎓 到達度テスト（50問・25分）」から。`navigate("screen-exam")` で `renderExamScreen()` が描画される。
+- **範囲**: 「全範囲」（現在のゾーン全体）または Part 単体（現在のゾーンの有効 Part）。選択は `LEAP_EXAM_RANGE_V1` に保存。
+- **出題**: 選んだ範囲からランダムに `EXAM_QUESTION_COUNT = 50` 問（範囲の語数が50未満ならその語数）。スタイルは通常4択固定（リスニング・例文は使わない）、学習状況フィルタは適用しない。
+- **制限時間**: `EXAM_TOTAL_MS = 25分`の全体カウントダウン（`startExamClock()`、1秒刻み、延長・誤答ペナルティなし）。0で `finishQuiz(false, "examtime")`。残り時間は既存の `quiz-timer-wrap` に `分:秒` で表示。
+- **判定**: 正答率で5段階（`examGradeFor`）。S=95%以上 / A=85%以上 / B=70%以上 / C=55%以上 / D=55%未満。
+- **記録**: `userData.examHistory`（最大20件）に `{ id, date, subject, range, correct, total, accuracy, grade, seconds }` を保存。中断時は保存しない（コイン・EXPの獲得分は残る）。
+- 結果画面の `result-exam-banner` に判定・範囲・前回比を表示。再挑戦は `retryCurrentQuiz()` が到達度テストを再開する。
+- クイズのゲームモード定義（`GAME_MODES`）には `exam` を含むが、出題範囲画面のモードボタンには出さない（専用画面から開始する）。
 
 ---
 
@@ -374,6 +394,17 @@ expRequiredForLevel(level) = 100 + (level - 1) * 50
 
 ---
 
+## 7.5 学習記録（`screen-stats`）
+
+- ホームの「📊 学習記録（カレンダー）」から `navigate("screen-stats")` で開き、`renderStatsScreen()` が描画する。対象は**現在のゾーン**。
+- **集計カード**: 連続学習（`userData.streak`）／累計解答（`dailyLog` の合計）／マスター語数（`getWordStatus() === "mastered"`）／苦手語数（`weakWords` のうち現在のゾーンに属するもの）。
+- **学習カレンダー**: 直近12週（今日を含む・日曜始まり・最大84日）のヒートマップ。`userData.dailyLog` の日別解答数で色を段階分け（0 / 1–9 / 10–29 / 30–59 / 60+）。セルの `title` に日付と解答数を表示。スタイルは `assets/css/app.css` の `.cal-cell`（ダークモードは `html.dark` / `data-theme="dark"` で上書き）。
+- **Part別マスター率**: 現在のゾーンの有効 Part ごとに、マスター語数・割合バー・学習済み語数を表示。
+- **記録の仕組み**: `bumpDailyLog()` がクイズの1問解答ごと（正誤共通）に `dailyLog[today]` を +1 する。400日を超えた古い記録は削除。
+- 端末間の統合では同じ日付の解答数を**大きい方（max）**で採用する（合算による二重計上を避けるため）。
+
+---
+
 ## 8. 結果画面・共有・挑戦状
 
 - 結果画面に表示: スコア、正答数、正答率、最大コンボ、獲得コイン、EXP、レベルアップ、称号、間違えた単語一覧、デイリーバッジ。
@@ -382,10 +413,14 @@ expRequiredForLevel(level) = 100 + (level - 1) * 50
 
 ```json
 { "s": 正解数, "t": 出題数, "a": 正答率, "c": 最大コンボ,
-  "t2": "称号", "rs": 開始ID, "re": 終了ID, "rl": "範囲ラベル", "z": "leap|kobun" }
+  "t2": "称号", "rs": 開始ID, "re": 終了ID, "rl": "範囲ラベル", "z": "leap|kobun",
+  "ex": 0|1, "ep": Part ID または null }
 ```
 
+- `ex: 1` は到達度テストの共有。このとき `rl` は範囲名（全範囲／Part名）、`ep` は範囲の Part ID（全範囲は `null`）。受け取った側の「⚔️ この挑戦を受けて立つ！」は `acceptChallenge()` → `startExamChallenge()` で同じ範囲の到達度テストを開始する。
+
 - 共有先: **サービス内のフレンド共有**（ログイン中のみ。フレンドを選んで送ると、相手の「📥 共有」タブに届き、同じ範囲で挑戦できる）、X（Twitter）投稿、LINE 共有、URL コピー。
+- **到達度テストの共有**: 結果カード画像は `EXAM RESULT` と「到達度テストの記録」「判定X」を表示。サービス内共有の `sharedResults` エントリには `exam: { grade, partId }` が入り、受け取った側の一覧には「🎓 到達度テスト・範囲・判定X」と「🎓 同じ範囲でテストに挑戦」（`startExamChallenge`）が出る。
 - **サービス内共有の仕組み**: 専用テーブルは追加せず、送信者の `user_progress.user_data.sharedResults` に最大 20 件を保存して `cloudPush("share")` する。承認済みフレンドは RLS で `user_progress` を読めるため、受信側はフレンドの `sharedResults` から自分宛て（`to` に自分の UID を含む）のものを集めて表示する（`collectFriendShares`）。宛先が空配列なら全フレンド宛て。
 - **画像保存**: 画面外の専用カード `#result-share-card`（常時ダーク配色・440px 幅）に結果を流し込み、html2canvas で PNG 化してダウンロードする（`buildResultShareCard` / `captureResultBlob`）。画面の結果カードとは独立しているため、ライト/ダークどちらでも同じ見た目になる。正答率・前回比・正解数・最大コンボ・コイン・連続学習・間違えた単語（最大6件、残りは件数）・範囲・日付を表示。
 - **挑戦状**: `?r=` 付き URL を開くと結果画面に「🔥 友達からの挑戦状！出題範囲: …」を表示し、同じ範囲で再挑戦できる（`checkIncomingChallenge`）。
@@ -427,7 +462,7 @@ expRequiredForLevel(level) = 100 + (level - 1) * 50
 | `LEAP_SELECTED_PARTS_V1` | 英単語で選択中の Part ID 配列 |
 | `LEAP_KOBUN_SELECTED_PARTS_V1` | 古文で選択中の Part ID 配列 |
 | `LEAP_CUSTOM_RANGE_V1` / `LEAP_KOBUN_CUSTOM_RANGE_V1` | カスタム ID 範囲（開始・終了） |
-| `LEAP_QUIZ_STYLE_V1` | `"normal"` / `"context"` |
+| `LEAP_QUIZ_STYLE_V1` | `"normal"` / `"context"` / `"listening"` / `"spelling"` |
 | `LEAP_GAME_MODE_V1` | `"normal"` / `"sprint"` / `"sudden"` |
 | `LEAP_QUIZ_STATUS_FILTER_V2` | 学習状況フィルタ（配列。V1 は旧形式） |
 | `LEAP_DICTIONARY_FILTER_V1` | 辞典の Part / ID範囲 / 学習状況フィルタ |
@@ -439,6 +474,7 @@ expRequiredForLevel(level) = 100 + (level - 1) * 50
 | `LEAP_CLOUD_SHARE_DETAILS_V1` | 詳細ログ公開フラグ（`"1"` = 公開 / `"0"` = 集計とバッジのみ） |
 | `LEAP_CLOUD_DISPLAY_NAME_V1` | フレンド一覧に表示する表示名（ローカル控え） |
 | `LEAP_SHARED_RESULTS_SEEN_V1` | 既読にしたフレンド共有結果の ID 配列（「📥 共有」の未読バッジ用） |
+| `LEAP_EXAM_RANGE_V1` | 到達度テストの範囲（Part ID。空文字 = 全範囲） |
 
 ### 11.2 `userData` の主なフィールド
 
@@ -451,6 +487,8 @@ expRequiredForLevel(level) = 100 + (level - 1) * 50
   weakWords: { [wordId]: { id, word, meaning, count, stage, nextReview, lastReviewed } },
   scoreHistory: [ { score, correct, total, accuracy, combo, coins, range, date, isDaily } ], // 最大5件
   sharedResults: [ { id, at, to[], subject, range{start,end,label}, correct, total, accuracy, combo, score, title } ], // フレンド共有 最大20件
+  examHistory: [ { id, date, subject, range, correct, total, accuracy, grade, seconds } ], // 到達度テスト 最大20件
+  dailyLog: { "YYYY-MM-DD": n }, // 学習カレンダー用の日別解答数（最大400日分）
   totalQuizzes, maxComboEver,
   streak, lastPlayDate, lastDailyDate, dailyClears, reviewClears,
   voiceEnabled, affixStats: {}, readerRuns, dictOpened
@@ -499,6 +537,8 @@ const SUPABASE_CONFIG = { url: "https://xxxx.supabase.co", anonKey: "sb_publisha
 | `wordStats` | 単語ごとに「出題回数が多い方」、同数なら正解数が多い方 |
 | `weakWords` | 和集合。同じ単語はミス回数が多い方、`nextReview` は早い方 |
 | `scoreHistory` | 結合して重複除去し、先頭 5 件 |
+| `examHistory` | 結合して（subject・範囲・日付・正解数・出題数）で重複除去し、先頭 20 件 |
+| `dailyLog` | 日付ごとに大きい方（max）を採用 |
 | 所持称号・フレーム・アバター・実績 | 和集合 |
 | `affixStats` | ラッシュは最大スコア、神経衰弱は手数が少ない方 |
 | `prefix` / `suffix` / 装着中アイテム | 端末側を優先 |
@@ -658,6 +698,9 @@ node patches/build_leap_data.js
 
 | 日付 | 変更内容 |
 |---|---|
+| 2026-11-23 | 到達度テストの結果を画像・共有・挑戦状に反映（共有カードは `EXAM RESULT`／判定表示、共有URLに `ex`/`ep`、フレンド共有に `exam: {grade, partId}`、受信側は同じ範囲の到達度テストに挑戦）。📊 学習記録画面（`screen-stats`）を追加: 直近12週の日別ヒートマップ（`userData.dailyLog`）、連続学習・累計解答・マスター/苦手語数、Part別マスター率。🔤 スペル入力モード（`LEAP_QUIZ_STYLE_V1=spelling`）を追加し、採点は `handleAnswer` に委譲。`APP_VER=leap-v10-stats-spell` / `CACHE=leap-v31`。 |
+| 2026-11-23 | 🎓 到達度テストを追加: `screen-exam`（範囲＝全範囲またはPart単体、50問・25分・S〜D判定、最高判定と直近5件の履歴表示）。クイズ基盤にゲームモード `exam` を追加し、25分の全体カウントダウン・専用結果バナー（判定・範囲・前回比）・`userData.examHistory`（最大20件、クラウド統合対応）を実装。`APP_VER=leap-v9-exam` / `CACHE=leap-v30`。 |
+| 2026-11-23 | 出題スタイルに「🎧 リスニング4択」を追加（`LEAP_QUIZ_STYLE_V1` = `listening`）。見出し語を隠して音声だけで出題し、解答後に単語・IPAを開示。音声は読み上げ設定に関係なく出題時に再生し、🔊で再再生できる。古文ゾーンでは通常4択に固定。`APP_VER=leap-v8-listening` / `CACHE=leap-v29`。 |
 | 2026-11-22 | 結果カードのスクショを刷新: 画面外の専用カード `#result-share-card`（常時ダーク・440px）を新設し、文字の重なりを解消（正答率ヒーロー、正解数/正答率/最大コンボ、コイン/連続学習、要復習リスト最大6件、範囲・日付）。結果画面の間違い一覧も折り返し対応。例文・文脈テストでも学習状況を共通記録し、出題設定の学習状況チップに該当語数と例文モードの絞り込み結果を表示。クイズの「タップして次へ」を解答直後に即表示（誤タップガードを 350ms → 120ms）。ファイル分割 Stage 2 として `js/core.js`（称号・アイテム・ゾーン・画面遷移・確認ダイアログ）を分離。`APP_VER=leap-v7-split2` / `CACHE=leap-v28`（`assets/css/app.css` と `js/core.js` を ASSETS に追加）。 |
 | 2026-11-22 | `index.html` のインライン CSS（旧 L59–296・236 行）を `assets/css/app.css` へ分離（ファイル分割 第 1 段階）。CSS の内容は元と同一。`sw.js` の `ASSETS` に追加し `CACHE=leap-v27`、`APP_VER=leap-v6-split1` へ更新。§0・§2・§13 を追随。Stage 2 以降の分割手順と確認項目を `docs/ファイル分割計画.md` に文書化。 |
 | 2026-11-21 | ホーム画面の副次的ボタンを「⚙️ 設定・その他」シートに集約（実績・ショップ・アカウント／同期・自分の詳細・音声ON/OFF・追加JSON読込）。音声トグル時にラベルを即時更新。 |

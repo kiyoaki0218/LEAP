@@ -11,7 +11,7 @@
     <script>
     // キャッシュ強制更新ロジック: 新バージョン検知時に古いServiceWorkerキャッシュを破棄
     (function() {
-      const APP_VER = "leap-v7-split2";
+      const APP_VER = "leap-v10-stats-spell";
       try {
         const storedVer = localStorage.getItem("LEAP_APP_CACHE_VER");
         if (storedVer !== APP_VER) {
@@ -198,6 +198,26 @@
           <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg>
         </button>
 
+        <!-- 到達度テスト -->
+        <button type="button" onclick="navigate('screen-exam')" class="w-full text-left px-4 py-3 bg-white hover:bg-slate-50 active:bg-slate-100 border border-slate-200 rounded-xl shadow-sm transition-all flex items-center gap-3 cursor-pointer">
+          <span class="w-9 h-9 rounded-xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-lg shrink-0">🎓</span>
+          <span class="min-w-0 flex-1">
+            <span class="block text-sm font-bold text-slate-800">到達度テスト（50問・25分）</span>
+            <span class="block text-[11px] text-slate-400 mt-0.5 truncate">S〜Dの5段階判定で実力をチェック</span>
+          </span>
+          <span class="text-slate-300 text-sm shrink-0">›</span>
+        </button>
+
+        <!-- 学習記録 -->
+        <button type="button" onclick="navigate('screen-stats')" class="w-full text-left px-4 py-3 bg-white hover:bg-slate-50 active:bg-slate-100 border border-slate-200 rounded-xl shadow-sm transition-all flex items-center gap-3 cursor-pointer">
+          <span class="w-9 h-9 rounded-xl bg-sky-50 border border-sky-100 flex items-center justify-center text-lg shrink-0">📊</span>
+          <span class="min-w-0 flex-1">
+            <span class="block text-sm font-bold text-slate-800">学習記録（カレンダー）</span>
+            <span class="block text-[11px] text-slate-400 mt-0.5 truncate">每日の積み上げと Part別のマスター率</span>
+          </span>
+          <span class="text-slate-300 text-sm shrink-0">›</span>
+        </button>
+
         <!-- 語源ラッシュ -->
         <button type="button" onclick="openAffixHub()" class="w-full text-left px-4 py-3 bg-white hover:bg-slate-50 active:bg-slate-100 border border-slate-200 rounded-xl shadow-sm transition-all flex items-center gap-3 cursor-pointer">
           <span class="w-9 h-9 rounded-xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-lg shrink-0">🧩</span>
@@ -253,8 +273,10 @@
           <span id="context-coverage-badge" class="text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-1.5 py-0.5 rounded-md">例文 0 語</span>
         </div>
         <div class="flex bg-slate-200/70 p-1 rounded-xl gap-1">
-          <button type="button" id="style-btn-normal" onclick="setQuizStyle('normal')" class="flex-1 py-2 text-xs font-bold rounded-lg bg-white shadow-sm text-slate-900 transition-all cursor-pointer">⚡ 通常4択モード</button>
-          <button type="button" id="style-btn-context" onclick="setQuizStyle('context')" class="flex-1 py-2 text-xs font-bold rounded-lg text-slate-500 hover:text-slate-800 transition-all cursor-pointer">📝 例文・文脈テスト</button>
+          <button type="button" id="style-btn-normal" onclick="setQuizStyle('normal')" class="flex-1 py-2 px-1 text-[10px] leading-tight font-bold rounded-lg bg-white shadow-sm text-slate-900 transition-all cursor-pointer">⚡ 通常4択</button>
+          <button type="button" id="style-btn-context" onclick="setQuizStyle('context')" class="flex-1 py-2 px-1 text-[10px] leading-tight font-bold rounded-lg text-slate-500 hover:text-slate-800 transition-all cursor-pointer">📝 文脈</button>
+          <button type="button" id="style-btn-listening" onclick="setQuizStyle('listening')" class="flex-1 py-2 px-1 text-[10px] leading-tight font-bold rounded-lg text-slate-500 hover:text-slate-800 transition-all cursor-pointer">🎧 リスニング</button>
+          <button type="button" id="style-btn-spelling" onclick="setQuizStyle('spelling')" class="flex-1 py-2 px-1 text-[10px] leading-tight font-bold rounded-lg text-slate-500 hover:text-slate-800 transition-all cursor-pointer">🔤 スペル</button>
         </div>
         <p id="style-hint" class="text-[11px] text-slate-400 leading-relaxed">英単語を見て日本語の語義を選ぶ通常モード。選択肢が出る前に“自力想起”の時間があります。</p>
       </div>
@@ -425,6 +447,27 @@
             <button type="button" id="btn-replay-voice" onclick="speakWord(true)" title="発音を聞く" class="w-7 h-7 rounded-full bg-white border border-slate-200 text-slate-500 hover:text-emerald-600 hover:border-emerald-300 flex items-center justify-center text-sm transition cursor-pointer shrink-0">🔊</button>
           </div>
           <p id="quiz-word-ipa" class="hidden text-sm font-medium text-slate-500 tracking-wide"></p>
+        </div>
+        <!-- リスニング表示（見出し語を隠し、音声だけで出題） -->
+        <div id="quiz-listening-box" class="hidden w-full space-y-3 py-1">
+          <span class="text-[11px] font-bold text-sky-700 bg-sky-50 border border-sky-200 px-2 py-0.5 rounded-full inline-block">🎧 音声を聞いて意味を選べ</span>
+          <div class="flex justify-center">
+            <button type="button" onclick="speakListeningWord()" title="もう一度聞く" class="w-20 h-20 rounded-full bg-sky-50 border-2 border-sky-200 text-sky-600 hover:bg-sky-100 active:scale-95 flex items-center justify-center text-3xl transition cursor-pointer">🔊</button>
+          </div>
+          <p class="text-[11px] text-slate-400 leading-relaxed">タップでもう一度再生（音が出ないときは端末の音量・マナーモードを確認）</p>
+        </div>
+        <!-- スペル入力表示（見出し語を隠し、語義から英単語を入力させる） -->
+        <div id="quiz-spelling-box" class="hidden w-full space-y-3 py-1">
+          <span class="text-[11px] font-bold text-indigo-700 bg-indigo-50 border border-indigo-200 px-2 py-0.5 rounded-full inline-block">🔤 語義に合う英単語を入力せよ</span>
+          <div class="flex items-center justify-center gap-1.5 flex-wrap">
+            <span id="quiz-spelling-pos" class="hidden"></span>
+            <p id="quiz-spelling-meaning" class="text-lg sm:text-xl font-bold leading-relaxed text-slate-900"></p>
+          </div>
+          <div class="flex gap-2">
+            <input id="quiz-spelling-input" type="text" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="英単語を入力" onkeydown="if(event.key==='Enter'){event.preventDefault();submitSpellingAnswer();}" class="flex-1 min-w-0 px-3 py-3 bg-slate-50 border border-slate-200 rounded-xl text-base font-bold text-slate-900 placeholder:text-slate-300 placeholder:font-normal focus:outline-none focus:ring-2 focus:ring-indigo-300">
+            <button type="button" id="quiz-spelling-submit" onclick="submitSpellingAnswer()" class="px-4 py-3 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl transition shrink-0 cursor-pointer">決定</button>
+          </div>
+          <p class="text-[11px] text-slate-400">大文字・小文字は区別しません ・ Enter でも決定</p>
         </div>
         <p id="quiz-answer-feedback" class="hidden w-full text-[11px] font-semibold text-slate-600 bg-slate-50 border border-slate-200 rounded-xl px-3 py-1.5 text-center leading-relaxed"></p>
       </div>
@@ -908,6 +951,102 @@
       </div>
     </section>
 
+    <!-- 学習記録（カレンダー・Part別マスター率） -->
+    <section id="screen-stats" class="fade-in hidden space-y-5">
+      <div class="flex items-center justify-between pb-2 border-b border-slate-200">
+        <div>
+          <h2 class="text-xl font-bold text-slate-900">📊 学習記録</h2>
+          <p class="text-xs text-slate-400">毎日の積み上げと分野別の定着度</p>
+        </div>
+        <button type="button" onclick="navigate('screen-home')" class="text-sm text-slate-500 hover:text-slate-800">戻る</button>
+      </div>
+
+      <div class="grid grid-cols-2 gap-2">
+        <div class="bg-white border border-slate-200 rounded-xl p-3 shadow-sm">
+          <p class="text-[10px] font-bold text-slate-400">連続学習</p>
+          <p class="text-xl font-extrabold text-orange-600"><span id="stats-streak">0</span><span class="text-xs font-bold text-slate-400 ml-1">日</span></p>
+        </div>
+        <div class="bg-white border border-slate-200 rounded-xl p-3 shadow-sm">
+          <p class="text-[10px] font-bold text-slate-400">累計解答</p>
+          <p class="text-xl font-extrabold text-slate-900"><span id="stats-answered">0</span><span class="text-xs font-bold text-slate-400 ml-1">問</span></p>
+        </div>
+        <div class="bg-white border border-slate-200 rounded-xl p-3 shadow-sm">
+          <p class="text-[10px] font-bold text-slate-400">マスター</p>
+          <p class="text-xl font-extrabold text-emerald-600"><span id="stats-mastered">0</span><span class="text-xs font-bold text-slate-400 ml-1">語</span></p>
+        </div>
+        <div class="bg-white border border-slate-200 rounded-xl p-3 shadow-sm">
+          <p class="text-[10px] font-bold text-slate-400">苦手</p>
+          <p class="text-xl font-extrabold text-rose-600"><span id="stats-weak">0</span><span class="text-xs font-bold text-slate-400 ml-1">語</span></p>
+        </div>
+      </div>
+
+      <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm space-y-3">
+        <div class="flex items-center justify-between">
+          <p class="text-xs font-bold text-slate-700">学習カレンダー</p>
+          <span class="text-[10px] font-bold text-slate-400">直近12週（日別の解答数）</span>
+        </div>
+        <div id="stats-calendar" class="flex gap-1 overflow-x-auto pb-1"></div>
+        <div class="flex items-center justify-end gap-1.5 text-[10px] text-slate-400">
+          <span>少</span>
+          <span class="cal-cell w-3 h-3"></span>
+          <span class="cal-cell l1 w-3 h-3"></span>
+          <span class="cal-cell l2 w-3 h-3"></span>
+          <span class="cal-cell l3 w-3 h-3"></span>
+          <span class="cal-cell l4 w-3 h-3"></span>
+          <span>多</span>
+        </div>
+      </div>
+
+      <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm space-y-3">
+        <div class="flex items-center justify-between">
+          <p class="text-xs font-bold text-slate-700">Part別マスター率</p>
+          <span id="stats-zone-badge" class="text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-1.5 py-0.5 rounded-md">LEAP</span>
+        </div>
+        <div id="stats-parts" class="space-y-2.5"></div>
+      </div>
+    </section>
+
+    <!-- 到達度テスト（50問・25分・5段階判定） -->
+    <section id="screen-exam" class="fade-in hidden space-y-5">
+      <div class="flex items-center justify-between pb-2 border-b border-slate-200">
+        <div>
+          <h2 class="text-xl font-bold text-slate-900">🎓 到達度テスト</h2>
+          <p class="text-xs text-slate-400">実力を測る 50問・25分の腕試し</p>
+        </div>
+        <button type="button" onclick="navigate('screen-home')" class="text-sm text-slate-500 hover:text-slate-800">戻る</button>
+      </div>
+
+      <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-2">
+        <p class="text-xs font-bold text-slate-700">ルール</p>
+        <ul class="text-[11px] text-slate-500 leading-relaxed space-y-1 list-disc pl-4">
+          <li>選んだ範囲からランダムに最大50問（通常4択）</li>
+          <li>制限時間は25分。時間切れはその時点までの結果で判定</li>
+          <li>正答率で S / A / B / C / D の5段階判定</li>
+          <li>中断した場合は記録されません（コイン・EXPの獲得済み分は残ります）</li>
+        </ul>
+      </div>
+
+      <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-2">
+        <div class="flex items-center justify-between gap-2">
+          <span class="text-xs font-bold text-slate-700">範囲</span>
+          <span id="exam-range-summary" class="text-[10px] font-bold text-indigo-700 bg-indigo-50 border border-indigo-200 px-1.5 py-0.5 rounded-md">全範囲</span>
+        </div>
+        <div id="exam-part-buttons" class="grid grid-cols-2 gap-1.5"></div>
+      </div>
+
+      <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-3">
+        <div class="flex items-center justify-between gap-2">
+          <span class="text-xs font-bold text-slate-700">これまでの記録</span>
+          <span id="exam-best-grade" class="text-[10px] font-bold text-slate-400">最高判定: -</span>
+        </div>
+        <div id="exam-history-list" class="space-y-1.5"></div>
+      </div>
+
+      <button type="button" onclick="startExam()" class="w-full py-4 bg-indigo-600 hover:bg-indigo-700 active:scale-[0.99] text-white font-bold rounded-xl shadow-md transition flex items-center justify-center gap-2 cursor-pointer">
+        🎓 テストを開始する
+      </button>
+    </section>
+
     <!-- 5. 結果画面 -->
     <section id="screen-result" class="fade-in hidden space-y-6">
       <!-- スコアカードUI -->
@@ -922,6 +1061,14 @@
             🌟 デイリーチャレンジ達成！コイン2倍ボーナス！
           </p>
           <p id="result-history-compare" class="hidden text-xs font-semibold text-slate-500 mt-1"></p>
+          <div id="result-exam-banner" class="hidden bg-indigo-50 border border-indigo-200 rounded-xl p-3 text-left space-y-1 mt-2">
+            <p class="text-[10px] font-bold uppercase tracking-wider text-indigo-500">🎓 到達度テスト</p>
+            <p class="text-sm font-extrabold text-indigo-900 flex items-center gap-2">
+              <span id="result-exam-grade" class="border rounded-lg px-2 py-0.5 text-base">A</span>
+              <span id="result-exam-range" class="text-xs font-bold text-indigo-600"></span>
+            </p>
+            <p id="result-exam-compare" class="text-[11px] font-semibold text-indigo-700"></p>
+          </div>
         </div>
 
         <!-- プレイヤー情報（レベル・称号・アバター） -->
@@ -1365,6 +1512,8 @@
       weakWords: {}, // { id: { id, word, meaning, count } }
       scoreHistory: [], // 最近5回のスコア履歴
       sharedResults: [], // フレンドに共有した結果（最大20件）
+      examHistory: [], // 到達度テストの結果（最大20件）
+      dailyLog: {}, // 学習カレンダー用の日別解答数 { "YYYY-MM-DD": n }
       lastDailyDate: "", // "YYYY-MM-DD"
       voiceEnabled: true, // 音声読み上げON/OFF
       exp: 0, // 累計EXP（正解1問 +10）
@@ -1944,6 +2093,8 @@
           if (!userData.weakWords) userData.weakWords = {};
           if (!userData.scoreHistory) userData.scoreHistory = [];
           if (!Array.isArray(userData.sharedResults)) userData.sharedResults = [];
+          if (!Array.isArray(userData.examHistory)) userData.examHistory = [];
+          if (!userData.dailyLog || typeof userData.dailyLog !== "object") userData.dailyLog = {};
           if (!userData.lastDailyDate) userData.lastDailyDate = "";
           if (userData.voiceEnabled === undefined) userData.voiceEnabled = true;
           if (typeof userData.exp !== "number" || !isFinite(userData.exp) || userData.exp < 0) userData.exp = 0;
@@ -3864,11 +4015,136 @@
       return picked;
     }
 
+    // ===== 到達度テスト（50問・25分・S〜D判定）=====
+    const EXAM_QUESTION_COUNT = 50;
+    const EXAM_TOTAL_MS = 25 * 60 * 1000;
+    const EXAM_RANGE_KEY = "LEAP_EXAM_RANGE_V1";
+    const EXAM_GRADES = [
+      { grade: "S", min: 95, label: "完璧", cls: "text-fuchsia-700 bg-fuchsia-50 border-fuchsia-300" },
+      { grade: "A", min: 85, label: "優秀", cls: "text-emerald-700 bg-emerald-50 border-emerald-300" },
+      { grade: "B", min: 70, label: "合格圈", cls: "text-sky-700 bg-sky-50 border-sky-300" },
+      { grade: "C", min: 55, label: "要復習", cls: "text-amber-700 bg-amber-50 border-amber-300" },
+      { grade: "D", min: 0, label: "基礎から", cls: "text-rose-700 bg-rose-50 border-rose-300" }
+    ];
+    let examPartId = null; // null = 現在のゾーンの全範囲
+    let examRunning = false;
+    let examStartedAt = 0;
+
+    function examGradeFor(accuracy) {
+      return EXAM_GRADES.find(g => accuracy >= g.min) || EXAM_GRADES[EXAM_GRADES.length - 1];
+    }
+
+    function loadExamRange() {
+      try {
+        const raw = localStorage.getItem(EXAM_RANGE_KEY);
+        const id = raw ? Number(raw) : NaN;
+        examPartId = Number.isFinite(id) && PARTS.some(p => p.id === id) ? id : null;
+      } catch (e) { examPartId = null; }
+    }
+
+    function examRangeLabel() {
+      const part = examPartId ? PARTS.find(p => p.id === examPartId) : null;
+      return part ? part.name : "全範囲";
+    }
+
+    function renderExamScreen() {
+      loadExamRange();
+      const wrap = document.getElementById("exam-part-buttons");
+      if (wrap) {
+        wrap.innerHTML = "";
+        const options = [{ id: null, name: "全範囲" }].concat(getAvailableParts().map(p => ({ id: p.id, name: p.name })));
+        options.forEach((opt) => {
+          const btn = document.createElement("button");
+          btn.type = "button";
+          const on = examPartId === opt.id;
+          btn.className = "py-2 px-2 text-[11px] font-bold border rounded-lg transition cursor-pointer " +
+            (on ? "bg-indigo-600 text-white border-indigo-600" : "bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100");
+          btn.textContent = opt.name;
+          btn.addEventListener("click", () => {
+            examPartId = opt.id;
+            try { localStorage.setItem(EXAM_RANGE_KEY, opt.id === null ? "" : String(opt.id)); } catch (e) {}
+            renderExamScreen();
+          });
+          wrap.appendChild(btn);
+        });
+      }
+
+      const summary = document.getElementById("exam-range-summary");
+      if (summary) {
+        const part = examPartId ? PARTS.find(p => p.id === examPartId) : null;
+        const words = part ? getPoolForParts([part]) : ALL_WORDS;
+        summary.textContent = `${examRangeLabel()} ・ ${words.length}語`;
+      }
+
+      const history = Array.isArray(userData.examHistory) ? userData.examHistory : [];
+      const bestEl = document.getElementById("exam-best-grade");
+      if (bestEl) {
+        if (history.length === 0) {
+          bestEl.textContent = "最高判定: -";
+        } else {
+          const best = history.reduce((mx, h) => Math.max(mx, Number(h.accuracy) || 0), 0);
+          bestEl.textContent = `最高判定: ${examGradeFor(best).grade}（${Math.round(best)}%）`;
+        }
+      }
+
+      const list = document.getElementById("exam-history-list");
+      if (list) {
+        list.innerHTML = "";
+        if (history.length === 0) {
+          const empty = document.createElement("p");
+          empty.className = "text-[11px] text-slate-400";
+          empty.textContent = "まだ記録がありません。最初のテストを受けてみましょう。";
+          list.appendChild(empty);
+        } else {
+          history.slice(0, 5).forEach((h) => {
+            const g = examGradeFor(Number(h.accuracy) || 0);
+            const row = document.createElement("div");
+            row.className = "flex items-center justify-between gap-2 text-[11px] bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5";
+            const left = document.createElement("span");
+            left.className = "min-w-0 truncate text-slate-600";
+            left.textContent = `${h.date || ""} ・ ${h.range || ""}`;
+            const right = document.createElement("span");
+            right.className = "shrink-0 flex items-center gap-2";
+            right.innerHTML = `<span class="font-bold text-slate-800 tabular-nums">${Number(h.correct) || 0}/${Number(h.total) || 0}（${Math.round(Number(h.accuracy) || 0)}%）</span><span class="font-extrabold border rounded-md px-1.5 py-0.5 ${g.cls}">${g.grade}</span>`;
+            row.appendChild(left);
+            row.appendChild(right);
+            list.appendChild(row);
+          });
+        }
+      }
+    }
+
+    // フレンドが共有した到達度テストと同じ範囲で挑戦する
+    function startExamChallenge(subject, partId) {
+      const subj = subject === "kobun" ? "kobun" : "leap";
+      if (subj !== currentSubject) {
+        applySubject(subj, { silent: true });
+        loadPartSelection();
+      }
+      examPartId = (partId === null || partId === undefined || partId === "null" || partId === "") ? null : Number(partId);
+      if (examPartId && !PARTS.some(p => p.id === examPartId)) examPartId = null;
+      try { localStorage.setItem(EXAM_RANGE_KEY, examPartId === null ? "" : String(examPartId)); } catch (e) {}
+      startExam();
+    }
+
+    function startExam() {
+      const part = examPartId ? PARTS.find(p => p.id === examPartId) : null;
+      const pool = part ? getPoolForParts([part]) : [...ALL_WORDS];
+      if (pool.length === 0) {
+        showAlert({ title: "単語がありません", message: "この範囲には単語データがありません。", icon: "🔍" });
+        return;
+      }
+      startQuizWithPool(pool, { examMode: true });
+    }
+
     function startQuizWithPool(pool, options) {
       const forceNormal = !!(options && options.forceNormalMode);
       const forceNormalStyle = !!(options && options.forceNormalStyle);
-      const style = forceNormalStyle ? "normal" : effectiveQuizStyle();
-      const mode = forceNormal ? "normal" : gameMode;
+      const examRun = !!(options && options.examMode);
+      examRunning = examRun;
+      examStartedAt = examRun ? Date.now() : 0;
+      const style = (forceNormalStyle || examRun) ? "normal" : effectiveQuizStyle();
+      const mode = examRun ? "exam" : (forceNormal ? "normal" : gameMode);
       quizGameMode = mode;
       quizState.style = style;
       let candidates = shuffleArray([...pool]);
@@ -3892,6 +4168,8 @@
       let targetCount;
       if (mode === "sprint") {
         targetCount = Math.min(80, Math.max(30, candidates.length));
+      } else if (mode === "exam") {
+        targetCount = Math.min(EXAM_QUESTION_COUNT, candidates.length);
       } else {
         targetCount = questionLimit === 0 ? candidates.length : Math.min(questionLimit, candidates.length);
       }
@@ -3963,15 +4241,18 @@
       quizState.isAborted = false;
       quizState.answeredCount = 0;
       quizState.endReason = "";
-      quizState.timeLeftMs = SPRINT_TOTAL_MS;
+      quizState.timeLeftMs = mode === "exam" ? EXAM_TOTAL_MS : SPRINT_TOTAL_MS;
       quizState.questionTimeLeftMs = SUDDEN_MS;
       quizState.startLevel = getLevelState(userData.exp).level;
 
       const rInfo = document.getElementById("quiz-range-info");
       if (rInfo) {
         const modeTag = mode === "normal" ? "" : ` ・ ${GAME_MODES[mode].icon}${GAME_MODES[mode].label}`;
-        const styleTag = style === "context" ? " ・ 📝例文" : "";
-        rInfo.textContent = `${selectedRange.label}${styleTag}${modeTag}`;
+        const styleTag = style === "context" ? " ・ 📝例文"
+          : style === "listening" ? " ・ 🎧音声"
+          : style === "spelling" ? " ・ 🔤スペル"
+          : "";
+        rInfo.textContent = `${examRun ? examRangeLabel() : selectedRange.label}${styleTag}${modeTag}`;
       }
       const liveCoins = document.getElementById("quiz-live-coins");
       if (liveCoins) liveCoins.textContent = `🪙 +0`;
@@ -4011,6 +4292,12 @@
         return;
       }
       if (wrap) wrap.classList.remove("hidden");
+      if (quizGameMode === "exam") {
+        quizState.timeLeftMs = EXAM_TOTAL_MS;
+        startExamClock();
+        updateTimerUi();
+        return;
+      }
       if (quizGameMode === "sprint") {
         quizState.timeLeftMs = SPRINT_TOTAL_MS;
         startSprintClock();
@@ -4033,6 +4320,20 @@
         }
         updateTimerUi();
       }, 100);
+    }
+
+    // 到達度テスト: 25分のカウントダウン（延長・誤答ペナルティなし）
+    function startExamClock() {
+      stopQuizClock();
+      quizClockTimer = setInterval(() => {
+        quizState.timeLeftMs = Math.max(0, (quizState.timeLeftMs || 0) - 1000);
+        if (quizState.timeLeftMs <= 0) {
+          updateTimerUi();
+          finishQuiz(false, "examtime");
+          return;
+        }
+        updateTimerUi();
+      }, 1000);
     }
 
     function startSuddenClock() {
@@ -4068,6 +4369,15 @@
       const note = document.getElementById("quiz-timer-note");
       const urgentClass = "h-full rounded-full bg-rose-500 transition-all duration-100";
       const normalClass = "h-full rounded-full bg-amber-500 transition-all duration-100";
+      if (quizGameMode === "exam") {
+        const left = Math.max(0, quizState.timeLeftMs || 0);
+        const m = Math.floor(left / 60000);
+        const s = Math.floor((left % 60000) / 1000);
+        if (label) label.textContent = `🎓 残り ${m}:${String(s).padStart(2, "0")}`;
+        if (bar) { bar.style.width = `${Math.min(100, (left / EXAM_TOTAL_MS) * 100)}%`; bar.className = left <= 300000 ? urgentClass : normalClass; }
+        if (note) note.textContent = "時間切れで自動終了";
+        return;
+      }
       if (quizGameMode === "sprint") {
         const left = Math.max(0, quizState.timeLeftMs || 0);
         if (label) label.textContent = `⏱️ 60秒スプリント: ${(left / 1000).toFixed(1)}s`;
@@ -4182,7 +4492,9 @@
       container.innerHTML = "";
       const hint = activeQuizStyle() === "context"
         ? "空欄に入りそうな単語を想像してみよう…"
-        : "日本語の語義を思い出してみよう…";
+        : activeQuizStyle() === "listening"
+          ? "聞こえた単語の意味を思い出してみよう…"
+          : "日本語の語義を思い出してみよう…";
       const mask = document.createElement("div");
       mask.className = "brain-mask rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-6 text-center space-y-2";
       mask.innerHTML = `
@@ -4256,6 +4568,109 @@
       el.classList.remove("hidden");
     }
 
+    // ===== 学習記録（カレンダー・Part別マスター率）=====
+    // 日別の解答数を記録する（学習カレンダー用。正誤を問わず1問1カウント）
+    function bumpDailyLog() {
+      const today = getTodayString();
+      if (!userData.dailyLog || typeof userData.dailyLog !== "object") userData.dailyLog = {};
+      userData.dailyLog[today] = (Number(userData.dailyLog[today]) || 0) + 1;
+      const keys = Object.keys(userData.dailyLog).sort();
+      if (keys.length > 400) keys.slice(0, keys.length - 400).forEach(k => { delete userData.dailyLog[k]; });
+    }
+
+    function calendarLevel(count) {
+      if (count <= 0) return "";
+      if (count < 10) return "l1";
+      if (count < 30) return "l2";
+      if (count < 60) return "l3";
+      return "l4";
+    }
+
+    function renderStatsScreen() {
+      const log = (userData.dailyLog && typeof userData.dailyLog === "object") ? userData.dailyLog : {};
+      const answered = Object.keys(log).reduce((sum, k) => sum + (Number(log[k]) || 0), 0);
+      const words = ALL_WORDS || [];
+      const stats = userData.wordStats || {};
+      const mastered = words.filter(w => getWordStatus(w.id) === "mastered").length;
+      const weak = Object.keys(userData.weakWords || {}).filter(id => Number(id) >= 10000 ? currentSubject === "kobun" : currentSubject === "leap").length;
+
+      const setText = (id, text) => { const el = document.getElementById(id); if (el) el.textContent = text; };
+      setText("stats-streak", String(userData.streak || 0));
+      setText("stats-answered", String(answered));
+      setText("stats-mastered", String(mastered));
+      setText("stats-weak", String(weak));
+      const zoneBadge = document.getElementById("stats-zone-badge");
+      if (zoneBadge) {
+        zoneBadge.textContent = currentSubject === "kobun" ? "古文" : "LEAP";
+        zoneBadge.className = currentSubject === "kobun"
+          ? "text-[10px] font-bold text-violet-700 bg-violet-50 border border-violet-200 px-1.5 py-0.5 rounded-md"
+          : "text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-1.5 py-0.5 rounded-md";
+      }
+
+      // カレンダー: 直近12週（今日を含む・日曜始まり）
+      const cal = document.getElementById("stats-calendar");
+      if (cal) {
+        cal.innerHTML = "";
+        const todayStr = getTodayString();
+        const dow = new Date().getDay();
+        const totalDays = 11 * 7 + dow + 1;
+        const startDate = addDaysToDate(todayStr, -(totalDays - 1));
+        for (let w = 0; w < 12; w++) {
+          const col = document.createElement("div");
+          col.className = "grid gap-1";
+          col.style.gridTemplateRows = "repeat(7, 12px)";
+          for (let d = 0; d < 7; d++) {
+            const offset = w * 7 + d;
+            const cell = document.createElement("div");
+            if (offset > totalDays - 1) {
+              cell.className = "w-3 h-3";
+              cell.style.visibility = "hidden";
+            } else {
+              const dateStr = addDaysToDate(startDate, offset);
+              const count = Number(log[dateStr] || 0);
+              cell.className = `cal-cell w-3 h-3 ${calendarLevel(count)}`;
+              cell.title = `${dateStr} ・ ${count}問`;
+            }
+            col.appendChild(cell);
+          }
+          cal.appendChild(col);
+        }
+      }
+
+      // Part別マスター率
+      const wrap = document.getElementById("stats-parts");
+      if (wrap) {
+        wrap.innerHTML = "";
+        const parts = getAvailableParts();
+        if (!parts.length) {
+          const empty = document.createElement("p");
+          empty.className = "text-[11px] text-slate-400";
+          empty.textContent = "対象のPartがありません。";
+          wrap.appendChild(empty);
+        }
+        parts.forEach((p) => {
+          const partWords = getPoolForParts([p]);
+          const total = partWords.length;
+          const m = partWords.filter(w => getWordStatus(w.id) === "mastered").length;
+          const studied = partWords.filter(w => (stats[w.id] && Number(stats[w.id].total) > 0)).length;
+          const rate = total > 0 ? Math.round((m / total) * 100) : 0;
+          const row = document.createElement("div");
+          row.className = "space-y-1";
+          row.innerHTML = `
+            <div class="flex items-center justify-between gap-2 text-[11px]">
+              <span class="min-w-0 truncate font-bold text-slate-700">${escapeHtml(p.name || `Part ${p.id}`)}</span>
+              <span class="shrink-0 text-slate-500 tabular-nums"><span class="font-extrabold text-emerald-700">${m}</span>/${total}語 ・ ${rate}%</span>
+            </div>
+            <div class="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
+              <div class="bg-emerald-500 h-full rounded-full" style="width:${rate}%"></div>
+            </div>
+            <p class="text-[10px] text-slate-400">学習済み ${studied}/${total} 語</p>
+          `;
+          wrap.appendChild(row);
+        });
+      }
+    }
+
     function renderQuestion() {
       try {
         if (!quizState.questions || quizState.questions.length === 0 || !quizState.questions[quizState.currentIndex]) {
@@ -4298,11 +4713,31 @@
         applyWordIpa(document.getElementById("quiz-word-ipa"), q.word);
 
         // 例文・文脈テストでは単語と語義を隠し、例文の空欄を見せる
+        // リスニングでは見出し語を隠し、音声だけで出題する
         const isContext = q.type === "word";
+        const isListening = activeQuizStyle() === "listening";
+        const isSpelling = activeQuizStyle() === "spelling";
         const wordRow = document.getElementById("quiz-word-row");
         const contextBox = document.getElementById("quiz-context-box");
-        if (wordRow) wordRow.classList.toggle("hidden", isContext);
+        const listeningBox = document.getElementById("quiz-listening-box");
+        const spellingBox = document.getElementById("quiz-spelling-box");
+        if (wordRow) wordRow.classList.toggle("hidden", isContext || isListening || isSpelling);
         if (contextBox) contextBox.classList.toggle("hidden", !isContext);
+        if (listeningBox) listeningBox.classList.toggle("hidden", !isListening);
+        if (spellingBox) spellingBox.classList.toggle("hidden", !isSpelling);
+        if (isSpelling) {
+          const meaningEl = document.getElementById("quiz-spelling-meaning");
+          if (meaningEl) meaningEl.textContent = q.word.meaning || "";
+          applyPosBadge(document.getElementById("quiz-spelling-pos"), q.word);
+          const input = document.getElementById("quiz-spelling-input");
+          if (input) {
+            input.value = "";
+            input.disabled = false;
+            input.className = "flex-1 min-w-0 px-3 py-3 bg-slate-50 border border-slate-200 rounded-xl text-base font-bold text-slate-900 placeholder:text-slate-300 placeholder:font-normal focus:outline-none focus:ring-2 focus:ring-indigo-300";
+          }
+          const submitBtn = document.getElementById("quiz-spelling-submit");
+          if (submitBtn) submitBtn.disabled = false;
+        }
         if (isContext) {
           const sentenceEl = document.getElementById("quiz-context-sentence");
           if (sentenceEl) sentenceEl.textContent = q.sentence;
@@ -4353,8 +4788,21 @@
         }
 
 
+        // スペル入力では選択肢を使わない（マスクも不要）
+        if (isSpelling) {
+          const optionsWrap = document.getElementById("quiz-options-container");
+          if (optionsWrap) optionsWrap.innerHTML = "";
+          quizState.isMasked = false;
+          startQuestionClock();
+          updateTimerUi();
+          return;
+        }
+
         const container = document.getElementById("quiz-options-container");
         if (!container) return;
+
+        // リスニングは音声そのものが問題文なので、選択肢のマスク前（出題直後）に再生する
+        if (isListening) setTimeout(() => { try { speakListeningWord(); } catch (e) {} }, 60);
 
         // ブレイン・ファースト: 1〜1.2秒は選択肢を隠して自力想起を促す
         quizState.isMasked = true;
@@ -4369,7 +4817,7 @@
           if (isContext) {
             // 例文クイズも通常クイズと同じタイミングで自動読み上げ（設定ON時のみ）
             if (userData.voiceEnabled) setTimeout(() => { try { speakQuizExample(); } catch (e) {} }, 60);
-          } else {
+          } else if (!isListening) {
             setTimeout(() => { try { speakWord(); } catch (e) {} }, 30);
           }
         }, brainFirstDelayMs());
@@ -4430,6 +4878,9 @@
       const q = quizState.questions[quizState.currentIndex];
       const container = document.getElementById("quiz-options-container");
       const buttons = container ? container.querySelectorAll("button") : [];
+
+      // 学習カレンダー用に日別の解答数を記録
+      bumpDailyLog();
 
       // 単語ごとの学習履歴データ (userData.wordStats) を蓄積
       if (!userData.wordStats) userData.wordStats = {};
@@ -4565,6 +5016,7 @@
           setTimeout(() => { try { speakEnglish(q.word.word); } catch (e) {} }, 260);
         }
       }
+      if (activeQuizStyle() === "listening") revealListeningAnswer(q);
       showAnswerFeedback(q);
 
       const liveCoins = document.getElementById("quiz-live-coins");
@@ -4670,11 +5122,33 @@
       quizState.isAborted = !!isAborted;
       quizState.endReason = endReason || quizState.endReason || "";
       const reason = quizState.endReason;
-      const endedEarly = !!isAborted || reason === "timeup" || reason === "sudden";
+      const endedEarly = !!isAborted || reason === "timeup" || reason === "sudden" || reason === "examtime";
       const answeredSoFar = Math.max(quizState.answeredCount || 0, 0);
       const totalQ = endedEarly ? answeredSoFar : quizState.questions.length;
       const accuracy = totalQ > 0 ? Math.round((quizState.correctCount / totalQ) * 100) : 0;
       const finalScore = Math.round(quizState.score);
+
+      // 到達度テスト: 判定と履歴保存（中断時は記録しない）
+      let examSummary = null;
+      if (examRunning && !isAborted && totalQ > 0) {
+        const grade = examGradeFor(accuracy);
+        const rangeName = examRangeLabel();
+        const history = Array.isArray(userData.examHistory) ? userData.examHistory : [];
+        const prevSame = history.find(h => h && (h.subject || "leap") === currentSubject && h.range === rangeName) || null;
+        const seconds = Math.max(0, Math.min(Math.round((Date.now() - (examStartedAt || Date.now())) / 1000), Math.round(EXAM_TOTAL_MS / 1000)));
+        userData.examHistory = [{
+          id: `exam-${Date.now()}`,
+          date: getTodayString(),
+          subject: currentSubject,
+          range: rangeName,
+          correct: quizState.correctCount,
+          total: totalQ,
+          accuracy: accuracy,
+          grade: grade.grade,
+          seconds: seconds
+        }, ...history].slice(0, 20);
+        examSummary = { grade: grade, rangeName: rangeName, prevSame: prevSame, seconds: seconds };
+      }
 
       // デイリーチャレンジ: コイン2倍（獲得済みの同額を追加付与）
       let isDailyBonus = false;
@@ -4707,9 +5181,12 @@
           accuracy: accuracy,
           combo: quizState.maxCombo,
           coins: quizState.earnedCoins,
-          range: selectedRange.label
-            + (quizGameMode === "normal" ? "" : ` ・ ${GAME_MODES[quizGameMode].icon}${GAME_MODES[quizGameMode].label}`)
-            + (quizState.questions[0] && quizState.questions[0].type === "word" ? " ・ 📝例文" : ""),
+          range: examRunning
+            ? `${examRangeLabel()} ・ 🎓到達度テスト`
+            : selectedRange.label
+              + (quizGameMode === "normal" ? "" : ` ・ ${GAME_MODES[quizGameMode].icon}${GAME_MODES[quizGameMode].label}`)
+              + (quizState.style === "listening" ? " ・ 🎧音声" : quizState.style === "spelling" ? " ・ 🔤スペル" : "")
+              + (quizState.questions[0] && quizState.questions[0].type === "word" ? " ・ 📝例文" : ""),
           date: getTodayString(),
           isDaily: isDailyBonus
         });
@@ -4737,8 +5214,11 @@
 
       if (rHead) {
         if (isAborted) rHead.textContent = "QUIZ ABORTED (中断結果)";
+        else if (examRunning) rHead.textContent = "🎓 到達度テスト RESULT";
         else if (reason === "timeup") rHead.textContent = "⏱ TIME ATTACK RESULT";
         else if (reason === "sudden") rHead.textContent = "💀 SUDDEN DEATH RESULT";
+        else if (quizState.style === "spelling") rHead.textContent = "🔤 SPELLING RESULT";
+        else if (quizState.style === "listening") rHead.textContent = "🎧 LISTENING RESULT";
         else if (quizState.questions[0] && quizState.questions[0].type === "word") rHead.textContent = "📝 CONTEXT TEST RESULT";
         else rHead.textContent = "QUIZ RESULT";
       }
@@ -4752,6 +5232,37 @@
       if (dailyBadgeEl) {
         if (isDailyBonus) dailyBadgeEl.classList.remove("hidden");
         else dailyBadgeEl.classList.add("hidden");
+      }
+
+      // 到達度テストの判定バナー
+      const examBanner = document.getElementById("result-exam-banner");
+      if (examBanner) {
+        if (examSummary) {
+          const gradeEl = document.getElementById("result-exam-grade");
+          if (gradeEl) {
+            gradeEl.textContent = examSummary.grade.grade;
+            gradeEl.className = `border rounded-lg px-2 py-0.5 text-base font-extrabold ${examSummary.grade.cls}`;
+          }
+          const rangeEl = document.getElementById("result-exam-range");
+          if (rangeEl) rangeEl.textContent = `${examSummary.rangeName} ・ ${examSummary.grade.label}`;
+          const compareEl = document.getElementById("result-exam-compare");
+          if (compareEl) {
+            const prev = examSummary.prevSame;
+            if (!prev) {
+              compareEl.textContent = `初回受験 ・ 所要 ${Math.max(1, Math.round(examSummary.seconds / 60))}分`;
+            } else {
+              const diff = accuracy - (Number(prev.accuracy) || 0);
+              compareEl.textContent = diff > 0
+                ? `前回比 +${diff}%（前回 ${prev.grade || "-"}）`
+                : diff < 0
+                  ? `前回比 ${diff}%（前回 ${prev.grade || "-"}）`
+                  : `前回と同じ正答率（前回 ${prev.grade || "-"}）`;
+            }
+          }
+          examBanner.classList.remove("hidden");
+        } else {
+          examBanner.classList.add("hidden");
+        }
       }
 
       // スコア履歴との比較表示
@@ -4842,7 +5353,8 @@
     }
 
     function retryCurrentQuiz() {
-      if (isWeakMode) startWeakWordsQuiz();
+      if (examRunning) startExam();
+      else if (isWeakMode) startWeakWordsQuiz();
       else startQuiz();
     }
 
@@ -5101,6 +5613,69 @@
       speakEnglish(spoken);
     }
 
+    // リスニング出題の音声（音声そのものが問題文なので voiceEnabled に関係なく再生する）
+    function speakListeningWord() {
+      const q = quizState.questions && quizState.questions[quizState.currentIndex];
+      const word = q && q.word && q.word.word;
+      if (!word) return;
+      if (!window.speechSynthesis) {
+        showToast("この端末は読み上げに対応していません");
+        return;
+      }
+      speakEnglish(word, { lang: "en-US", rate: 0.9 });
+    }
+
+    // スペル入力モード: 入力語を採点する（採点・報酬・記録は handleAnswer に委譲して4択と共通にする）
+    function submitSpellingAnswer() {
+      if (quizState.isAnswered) return;
+      const q = quizState.questions && quizState.questions[quizState.currentIndex];
+      if (!q || !q.word) return;
+      const input = document.getElementById("quiz-spelling-input");
+      const typed = String((input && input.value) || "").trim();
+      if (!typed) {
+        showToast("英単語を入力してください");
+        if (input) input.focus();
+        return;
+      }
+      const correctWord = String(q.word.word || "");
+      const isCorrect = typed.toLowerCase() === correctWord.toLowerCase();
+      if (input) {
+        input.disabled = true;
+        input.className = "flex-1 min-w-0 px-3 py-3 rounded-xl text-base font-bold border " +
+          (isCorrect ? "bg-emerald-50 border-emerald-400 text-emerald-900" : "bg-rose-50 border-rose-400 text-rose-900");
+      }
+      const submitBtn = document.getElementById("quiz-spelling-submit");
+      if (submitBtn) submitBtn.disabled = true;
+      // 4択の採点・コイン・EXP・苦手登録・実績は handleAnswer をそのまま使う（ボタン要素は画面外のダミー）
+      handleAnswer({ isCorrect: isCorrect }, document.createElement("div"));
+      // 答え（見出し語・IPA）を開示
+      const wordRow = document.getElementById("quiz-word-row");
+      if (wordRow) wordRow.classList.remove("hidden");
+      const wordEl = document.getElementById("quiz-word");
+      if (wordEl) wordEl.textContent = correctWord;
+      applyWordIpa(document.getElementById("quiz-word-ipa"), q.word);
+      if (!isCorrect) {
+        const feedback = document.getElementById("quiz-answer-feedback");
+        if (feedback) {
+          feedback.textContent = `あなたの解答: ${typed} ／ 正解: ${correctWord}（${q.word.meaning}）`;
+          feedback.classList.remove("hidden");
+        }
+      }
+      if (userData.voiceEnabled) setTimeout(() => { try { speakEnglish(correctWord); } catch (e) {} }, 260);
+    }
+
+    // リスニング: 解答後に見出し語と発音記号を開示する
+    function revealListeningAnswer(q) {
+      if (!q || !q.word) return;
+      const box = document.getElementById("quiz-listening-box");
+      if (box) box.classList.add("hidden");
+      const wordRow = document.getElementById("quiz-word-row");
+      if (wordRow) wordRow.classList.remove("hidden");
+      const wordEl = document.getElementById("quiz-word");
+      if (wordEl) wordEl.textContent = q.word.word;
+      applyWordIpa(document.getElementById("quiz-word-ipa"), q.word);
+    }
+
     // 単語詳細シートの各例文の読み上げ
     function speakDetailExample(index) {
       const d = currentDetailWord && currentDetailWord.detail;
@@ -5354,10 +5929,12 @@ listContainer.appendChild(row);
         a: accuracy,
         c: quizState.maxCombo,
         t2: getFullTitle(),
-        rs: selectedRange.start,
-        re: selectedRange.end,
-        rl: selectedRange.label,
-        z: currentSubject
+        rs: examRunning ? 0 : selectedRange.start,
+        re: examRunning ? 0 : selectedRange.end,
+        rl: examRunning ? examRangeLabel() : selectedRange.label,
+        z: currentSubject,
+        ex: examRunning ? 1 : 0,
+        ep: examRunning ? examPartId : null
       };
       const jsonStr = JSON.stringify(data);
       const b64 = safeBtoa(jsonStr);
@@ -5383,12 +5960,13 @@ listContainer.appendChild(row);
       };
 
       setText("shc-kicker", quizState.isAborted ? "QUIZ ABORTED"
+        : examRunning ? "EXAM RESULT"
         : reason === "timeup" ? "TIME ATTACK RESULT"
         : reason === "sudden" ? "SUDDEN DEATH RESULT"
         : isContext ? "CONTEXT TEST RESULT"
         : "QUIZ RESULT");
       setText("shc-title", getFullTitle());
-      setText("shc-title-note", quizState.isAborted ? "中断時点の記録" : "1セットの記録");
+      setText("shc-title-note", quizState.isAborted ? "中断時点の記録" : examRunning ? "到達度テストの記録" : "1セットの記録");
       setText("shc-level", `Lv.${userData.level}`);
       setText("shc-player-title", getFullTitle());
       setText("shc-exp", `+${quizState.earnedExp || 0} EXP`);
@@ -5425,11 +6003,15 @@ listContainer.appendChild(row);
       }
 
       // 出題範囲・スタイル・日付
-      const styleTag = isContext ? "・📝例文" : "";
+      const styleTag = isContext ? "・📝例文"
+        : quizState.style === "listening" ? "・🎧音声"
+        : quizState.style === "spelling" ? "・🔤スペル"
+        : "";
       const modeTag = quizGameMode && quizGameMode !== "normal" && GAME_MODES[quizGameMode]
         ? `・${GAME_MODES[quizGameMode].icon}${GAME_MODES[quizGameMode].label}`
         : "";
-      setText("shc-range", `${selectedRange.label}${styleTag}${modeTag}`);
+      const examTag = examRunning && totalQ > 0 ? `・判定${examGradeFor(accuracy).grade}` : "";
+      setText("shc-range", `${examRunning ? examRangeLabel() : selectedRange.label}${styleTag}${modeTag}${examTag}`);
       setText("shc-date", getTodayString().replace(/-/g, "."));
 
       // 間違えた単語（最大6件。残りは件数だけ示す）
@@ -5717,18 +6299,24 @@ listContainer.appendChild(row);
       const to = Array.from(shareResultSelection);
       if (!to.length) { showToast("共有するフレンドを選んでください"); return; }
       const total = quizState.questions ? quizState.questions.length : 0;
+      const accuracy = total > 0 ? Math.round((quizState.correctCount / total) * 100) : 0;
       const entry = {
         id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
         at: new Date().toISOString(),
         to,
         subject: currentSubject,
-        range: { start: selectedRange.start, end: selectedRange.end, label: selectedRange.label },
+        range: {
+          start: examRunning ? 0 : selectedRange.start,
+          end: examRunning ? 0 : selectedRange.end,
+          label: examRunning ? examRangeLabel() : selectedRange.label
+        },
         correct: quizState.correctCount,
         total,
-        accuracy: total > 0 ? Math.round((quizState.correctCount / total) * 100) : 0,
+        accuracy,
         combo: quizState.maxCombo,
         score: typeof quizState.score === "number" ? quizState.score : 0,
-        title: getFullTitle()
+        title: getFullTitle(),
+        exam: examRunning ? { grade: examGradeFor(accuracy).grade, partId: examPartId } : null
       };
       if (!Array.isArray(userData.sharedResults)) userData.sharedResults = [];
       userData.sharedResults.unshift(entry);
@@ -5752,7 +6340,9 @@ listContainer.appendChild(row);
         const subj = entry.subject === "kobun" ? "kobun" : "leap";
         const start = cloudNum(entry.range && entry.range.start);
         const end = cloudNum(entry.range && entry.range.end);
-        const label = (entry.range && entry.range.label) || `ID: ${start}〜${end}`;
+        const isExam = !!(entry.exam && entry.exam.grade);
+        const baseLabel = (entry.range && entry.range.label) || `ID: ${start}〜${end}`;
+        const label = isExam ? `🎓 到達度テスト ・ ${baseLabel} ・ 判定${entry.exam.grade}` : baseLabel;
         return `<div class="bg-white border border-slate-200 rounded-2xl p-3 shadow-sm space-y-2">
           <div class="flex items-center gap-2">
             ${friendAvatarHtml(p, "w-9 h-9")}
@@ -5760,14 +6350,14 @@ listContainer.appendChild(row);
               <p class="text-xs font-extrabold text-slate-900 truncate">${escapeHtml(friendTitle(p))} さんの結果</p>
               <p class="text-[10px] text-slate-400 truncate">${escapeHtml(label)} ・ ${formatCloudTime(entry.at)}</p>
             </div>
-            <span class="text-[10px] font-bold bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded-full shrink-0">${subj === "kobun" ? "古文" : "LEAP"}</span>
+            <span class="text-[10px] font-bold bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded-full shrink-0">${subj === "kobun" ? "古文" : "LEAP"}${isExam ? " 🎓" : ""}</span>
           </div>
           <div class="grid grid-cols-3 gap-2 text-center">
             <div class="bg-slate-50 border border-slate-100 rounded-xl py-1.5"><p class="text-[9px] text-slate-400 font-bold">スコア</p><p class="text-sm font-extrabold text-slate-900 tabular-nums">${cloudNum(entry.correct)}/${cloudNum(entry.total)}</p></div>
             <div class="bg-slate-50 border border-slate-100 rounded-xl py-1.5"><p class="text-[9px] text-slate-400 font-bold">正答率</p><p class="text-sm font-extrabold text-emerald-700 tabular-nums">${cloudNum(entry.accuracy)}%</p></div>
             <div class="bg-slate-50 border border-slate-100 rounded-xl py-1.5"><p class="text-[9px] text-slate-400 font-bold">最大コンボ</p><p class="text-sm font-extrabold text-amber-600 tabular-nums">${cloudNum(entry.combo)}</p></div>
           </div>
-          <button type="button" onclick="startSharedResultChallenge('${subj}', ${start}, ${end})" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl transition cursor-pointer">⚔️ 同じ範囲で挑戦する</button>
+          <button type="button" onclick="${isExam ? `startExamChallenge('${subj}', ${entry.exam.partId === null || entry.exam.partId === undefined ? "null" : Number(entry.exam.partId)})` : `startSharedResultChallenge('${subj}', ${start}, ${end})`}" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl transition cursor-pointer">${isExam ? "🎓 同じ範囲でテストに挑戦" : "⚔️ 同じ範囲で挑戦する"}</button>
         </div>`;
       }).join("");
     }
@@ -5817,6 +6407,7 @@ listContainer.appendChild(row);
 
     // 挑戦状URL受領時の自動復元
     let incomingChallengeRange = null;
+    let incomingChallengeExam = null;
 
     function checkIncomingChallenge() {
       const params = new URLSearchParams(window.location.search);
@@ -5842,6 +6433,7 @@ listContainer.appendChild(row);
         label: rl
       };
       selectedRange = incomingChallengeRange;
+      incomingChallengeExam = d.ex ? { partId: (d.ep === null || d.ep === undefined) ? null : Number(d.ep) } : null;
 
       try {
         const totalQ = d.t || d.tq || 10;
@@ -5853,7 +6445,9 @@ listContainer.appendChild(row);
 
         const challengeBadge = document.getElementById("result-challenge-badge");
         if (challengeBadge) {
-          challengeBadge.textContent = `🔥 友達からの挑戦状！出題範囲: ${rl}`;
+          challengeBadge.textContent = d.ex
+            ? `🔥 友達からの挑戦状！🎓 到達度テスト（${rl}）`
+            : `🔥 友達からの挑戦状！出題範囲: ${rl}`;
           challengeBadge.classList.remove("hidden");
         }
 
@@ -5882,6 +6476,12 @@ listContainer.appendChild(row);
     }
 
     function acceptChallenge() {
+      if (incomingChallengeExam) {
+        const partId = incomingChallengeExam.partId;
+        incomingChallengeExam = null;
+        startExamChallenge(currentSubject, partId);
+        return;
+      }
       if (incomingChallengeRange) selectedRange = incomingChallengeRange;
       isWeakMode = false;
       startQuiz();
@@ -7431,6 +8031,22 @@ listContainer.appendChild(row);
         });
       });
       merged.weakWords = weakWords;
+
+      const al = a.dailyLog || {}, bl = b.dailyLog || {};
+      const dailyLog = {};
+      new Set([...Object.keys(al), ...Object.keys(bl)]).forEach((k) => {
+        dailyLog[k] = Math.max(cloudNum(al[k]), cloudNum(bl[k]));
+      });
+      merged.dailyLog = dailyLog;
+
+      const exams = [...(Array.isArray(a.examHistory) ? a.examHistory : []), ...(Array.isArray(b.examHistory) ? b.examHistory : [])];
+      const seenExams = new Set();
+      merged.examHistory = exams.filter((x) => {
+        const key = [x && x.subject, x && x.range, x && x.date, x && x.correct, x && x.total].join("|");
+        if (seenExams.has(key)) return false;
+        seenExams.add(key);
+        return true;
+      }).slice(0, 20);
 
       const hist = [...(Array.isArray(a.scoreHistory) ? a.scoreHistory : []), ...(Array.isArray(b.scoreHistory) ? b.scoreHistory : [])];
       const seen = new Set();

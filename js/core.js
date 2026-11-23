@@ -321,7 +321,9 @@
     const GAME_MODES = {
       normal: { id: "normal", label: "通常", icon: "📚", desc: "時間制限なしでじっくり" },
       sprint: { id: "sprint", label: "60秒スプリント", icon: "⏱️", desc: "5コンボ +3秒 / 誤答 -2秒" },
-      sudden: { id: "sudden", label: "サドンデス", icon: "💀", desc: "1問8秒・ミス即終了" }
+      sudden: { id: "sudden", label: "サドンデス", icon: "💀", desc: "1問8秒・ミス即終了" },
+      // 到達度テスト専用（出題範囲画面のボタンには出さず、専用画面から開始する）
+      exam: { id: "exam", label: "到達度テスト", icon: "🎓", desc: "50問・25分・判定つき" }
     };
     const SPRINT_TOTAL_MS = 60000;
     const SPRINT_BONUS_MS = 3000;
@@ -345,23 +347,29 @@
     function loadUiModes() {
       try {
         const s = localStorage.getItem(QUIZ_STYLE_KEY);
-        if (s === "context" || s === "normal") quizStyle = s;
+        if (s === "context" || s === "listening" || s === "spelling" || s === "normal") quizStyle = s;
         const g = localStorage.getItem(GAME_MODE_KEY);
         if (GAME_MODES[g]) gameMode = g;
       } catch (e) {}
       syncModeUi();
     }
 
+    const QUIZ_STYLES = ["normal", "context", "listening", "spelling"];
+
     function setQuizStyle(style) {
-      if (style === "context" && currentSubject === "kobun") {
+      if (style !== "normal" && currentSubject === "kobun") {
         showAlert({
-          title: "例文モードはLEAP専用です",
-          message: "古文単語には例文データがないため、通常4択モードで出題します。",
-          icon: "📝"
+          title: "このモードはLEAP専用です",
+          message: style === "listening"
+            ? "古文単語は読み上げの音声だけで出題する設計にしていないため、通常4択モードで出題します。"
+            : style === "spelling"
+              ? "古文単語はスペル入力の対象外のため、通常4択モードで出題します。"
+              : "古文単語には例文データがないため、通常4択モードで出題します。",
+          icon: style === "listening" ? "🎧" : (style === "spelling" ? "🔤" : "📝")
         });
         return;
       }
-      quizStyle = style === "context" ? "context" : "normal";
+      quizStyle = QUIZ_STYLES.includes(style) ? style : "normal";
       try { localStorage.setItem(QUIZ_STYLE_KEY, quizStyle); } catch (e) {}
       syncModeUi();
       renderPartSelectList();
@@ -382,12 +390,24 @@
       const idleCls = "flex-1 py-2 text-xs font-bold rounded-lg text-slate-500 hover:text-slate-800 transition-all cursor-pointer";
       const normalBtn = document.getElementById("style-btn-normal");
       const contextBtn = document.getElementById("style-btn-context");
+      const listeningBtn = document.getElementById("style-btn-listening");
+      const spellingBtn = document.getElementById("style-btn-spelling");
       const style = effectiveQuizStyle();
       if (normalBtn) normalBtn.className = style === "normal" ? activeCls : idleCls;
       if (contextBtn) {
         contextBtn.className = style === "context" ? activeCls : idleCls;
         contextBtn.disabled = currentSubject === "kobun";
         contextBtn.classList.toggle("opacity-40", currentSubject === "kobun");
+      }
+      if (listeningBtn) {
+        listeningBtn.className = style === "listening" ? activeCls : idleCls;
+        listeningBtn.disabled = currentSubject === "kobun";
+        listeningBtn.classList.toggle("opacity-40", currentSubject === "kobun");
+      }
+      if (spellingBtn) {
+        spellingBtn.className = style === "spelling" ? activeCls : idleCls;
+        spellingBtn.disabled = currentSubject === "kobun";
+        spellingBtn.classList.toggle("opacity-40", currentSubject === "kobun");
       }
       document.querySelectorAll("[data-game-mode]").forEach(btn => {
         const on = btn.dataset.gameMode === gameMode;
@@ -399,6 +419,12 @@
         if (currentSubject === "kobun") {
           badge.textContent = "古文は通常モードのみ";
           badge.className = "text-[10px] font-bold text-slate-400 bg-slate-100 px-1.5 py-0.5 rounded-md";
+        } else if (style === "listening") {
+          badge.textContent = `音声で出題 ${ALL_WORDS.length} 語`;
+          badge.className = "text-[10px] font-bold text-sky-700 bg-sky-50 border border-sky-200 px-1.5 py-0.5 rounded-md";
+        } else if (style === "spelling") {
+          badge.textContent = `スペル入力 ${ALL_WORDS.length} 語`;
+          badge.className = "text-[10px] font-bold text-indigo-700 bg-indigo-50 border border-indigo-200 px-1.5 py-0.5 rounded-md";
         } else {
           const total = ALL_WORDS.length;
           const withEx = ALL_WORDS.filter(w => getContextData(w)).length;
@@ -412,7 +438,11 @@
       if (styleHint) {
         styleHint.textContent = style === "context"
           ? "例文の空欄に入る英単語を選ぶ「学校小テスト風」モード。日本語訳の強調部分をヒントに英文を完成させよう（例文ありの単語のみ出題）。"
-          : "英単語を見て日本語の語義を選ぶ通常モード。選択肢が出る前に“自力想起”の時間があります。";
+          : style === "listening"
+            ? "音声を聞いて日本語の語義を選ぶリスニングモード。解答後に見出し語と発音記号が出ます。音声は読み上げ設定に関係なく出題時に再生されます。"
+            : style === "spelling"
+              ? "日本語の語義を見て英単語を入力するスペルモード。大文字・小文字は区別しません。正解・不正解の記録は4択と共通です。"
+              : "英単語を見て日本語の語義を選ぶ通常モード。選択肢が出る前に“自力想起”の時間があります。";
       }
       const gameHint = document.getElementById("game-mode-hint");
       if (gameHint) {
@@ -577,7 +607,7 @@
     }
 
     // 画面遷移
-    const SCREENS = ["screen-home", "screen-select", "screen-quiz", "screen-shop", "screen-social", "screen-dictionary", "screen-reference", "screen-affix", "screen-affix-rush", "screen-affix-memory", "screen-reader", "screen-result"];
+    const SCREENS = ["screen-home", "screen-select", "screen-quiz", "screen-shop", "screen-social", "screen-dictionary", "screen-reference", "screen-affix", "screen-affix-rush", "screen-affix-memory", "screen-reader", "screen-exam", "screen-stats", "screen-result"];
     function currentScreenId() {
       const found = SCREENS.find(id => {
         const el = document.getElementById(id);
@@ -671,6 +701,8 @@
         updateDictFilterBadge();
         applyDictionaryFilters();
       }
+      if (screenId === "screen-exam" && typeof renderExamScreen === "function") renderExamScreen();
+      if (screenId === "screen-stats" && typeof renderStatsScreen === "function") renderStatsScreen();
       if (screenId === "screen-home") updateUserUI();
 
       if (!options.fromHistory) {
