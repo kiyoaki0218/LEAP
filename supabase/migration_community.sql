@@ -282,3 +282,22 @@ revoke all on function public.submit_feedback(text, text, integer, text, text, t
 grant execute on function public.submit_feedback(text, text, integer, text, text, text, uuid, text) to anon, authenticated;
 
 comment on function public.submit_feedback(text, text, integer, text, text, text, uuid, text) is '意見箱の投稿（匿名可・レート制限・ハニーポット付き）';
+
+-- ------------------------------------------------------------
+-- 模試管理用 RLS（管理者用）
+-- ------------------------------------------------------------
+drop policy if exists mock_exams_admin_all on public.mock_exams;
+create policy mock_exams_admin_all on public.mock_exams
+  for all to authenticated
+  using (public.is_admin())
+  with check (public.is_admin());
+
+drop policy if exists mock_exam_entries_admin_select on public.mock_exam_entries;
+create policy mock_exam_entries_admin_select on public.mock_exam_entries
+  for select to authenticated
+  using (public.is_admin());
+
+drop policy if exists mock_exam_results_admin_select on public.mock_exam_results;
+create policy mock_exam_results_admin_select on public.mock_exam_results
+  for select to authenticated
+  using (public.is_admin());

@@ -24,7 +24,11 @@
     session: null,
     announcements: [],
     feedback: [],
+    mockExams: [],
+    mockResults: [],
+    mockEntries: [],
     editingAnnouncementId: null,
+    editingMockId: null,
     tab: "announcements",
     busy: false
   };
@@ -176,7 +180,7 @@
     const logout = $("admin-logout");
     if (logout) logout.classList.remove("hidden");
     setLoginMessage("");
-    await Promise.all([loadAnnouncements(), loadFeedback()]);
+    await Promise.all([loadAnnouncements(), loadFeedback(), loadMockExams()]);
   }
 
   function showLogin() {
@@ -251,7 +255,7 @@
 
   // ===== タブ =====
   function switchTab(tab) {
-    state.tab = tab === "feedback" ? "feedback" : "announcements";
+    state.tab = ["announcements", "feedback", "mock"].includes(tab) ? tab : "announcements";
     document.querySelectorAll("[data-admin-tab]").forEach((btn) => {
       const on = btn.dataset.adminTab === state.tab;
       btn.classList.toggle("is-active", on);
@@ -259,8 +263,13 @@
     });
     const ann = $("panel-announcements");
     const fb = $("panel-feedback");
+    const mock = $("panel-mock");
     if (ann) ann.classList.toggle("hidden", state.tab !== "announcements");
     if (fb) fb.classList.toggle("hidden", state.tab !== "feedback");
+    if (mock) mock.classList.toggle("hidden", state.tab !== "mock");
+    if (state.tab === "mock" && (!state.mockExams || state.mockExams.length === 0)) {
+      loadMockExams();
+    }
   }
 
   // ===== お知らせ =====
@@ -551,15 +560,479 @@
     }
   }
 
+  // ===== 模試管理 =====
+  function formatIsoForInput(date) {
+    if (!date) return "";
+    const d = new Date(date);
+    if (isNaN(d.getTime())) return "";
+    const pad = (n) => String(n).padStart(2, "0");
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  }
+
+  function resetMockForm() {
+    state.editingMockId = null;
+    const idEl = $("mock-id");
+    const titleEl = $("mock-title");
+    const subEl = $("mock-subject");
+    const durEl = $("mock-duration");
+    const startEl = $("mock-start");
+    const endEl = $("mock-end");
+    const qidsEl = $("mock-qids");
+    const msgEl = $("mock-message");
+    const formTitle = $("mock-form-title");
+    const saveBtn = $("mock-save");
+    const resetBtn = $("mock-reset");
+    const qBadge = $("mock-qcount-badge");
+
+    if (idEl) idEl.value = "";
+    if (titleEl) titleEl.value = "";
+    if (subEl) subEl.value = "leap";
+    if (durEl) durEl.value = "1500";
+    if (qidsEl) qidsEl.value = "";
+    if (msgEl) msgEl.textContent = "";
+    if (formTitle) formTitle.textContent = "新規模試の作成";
+    if (saveBtn) saveBtn.textContent = "模試を保存・公開する";
+    if (resetBtn) resetBtn.classList.add("hidden");
+    if (qBadge) qBadge.textContent = "0 問選択中";
+
+    // 既定の開始日時（明日の9:00）と終了日時（14日後の23:59）
+    const now = new Date();
+    const start = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 9, 0);
+    const end = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 14, 23, 59);
+    if (startEl) startEl.value = formatIsoForInput(start);
+    if (endEl) endEl.value = formatIsoForInput(end);
+  }
+
+  function generateMockQuestions() {
+    const rangeVal = $("mock-preset-range") ? $("mock-preset-range").value : "all";
+    const countVal = $("mock-preset-count") ? parseInt($("mock-preset-count").value, 10) : 50;
+    const subVal = $("mock-subject") ? $("mock-subject").value : "leap";
+
+    let pool = [];
+    if (subVal === "kobun") {
+      for (let i = 10001; i <= 10150; i++) pool.push(i);
+    } else {
+      let minId = 1, maxId = 2000;
+      if (rangeVal === "part1") { minId = 1; maxId = 400; }
+      else if (rangeVal === "part2") { minId = 401; maxId = 1000; }
+      else if (rangeVal === "part3") { minId = 1001; maxId = 1400; }
+      else if (rangeVal === "part4") { minId = 1401; maxId = 2000; }
+      else if (rangeVal === "part1_2") { minId = 1; maxId = 1000; }
+      else if (rangeVal === "part3_4") { minId = 1001; maxId = 2000; }
+      else { minId = 1; maxId = 2000; }
+
+      for (let i = minId; i <= maxId; i++) pool.push(i);
+    }
+
+    // シャッフル
+    for (let i = pool.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [pool[i], pool[j]] = [pool[j], pool[i]];
+    }
+
+    const selected = pool.slice(0, Math.min(countVal, pool.length)).sort((a, b) => a - b);
+    const qidsEl = $("mock-qids");
+    if (qidsEl) qidsEl.value = selected.join(", ");
+    const qBadge = $("mock-qcount-badge");
+    if (qBadge) qBadge.textContent = `${selected.length} 問選択中`;
+    toast(`${selected.length} 問の単語を自動抽出しました`);
+  }
+
+  async function loadMockExams() {
+    if (!client) return;
+    const list = $("mock-exams-list");
+    if (list) list.innerHTML = `<p class="text-[11px] text-slate-400">模試データと成績を集約中…</p>`;
+
+    try {
+      // 1. 模試一覧
+      const { data: exams, error: examsErr } = await client
+        .from("mock_exams")
+        .select("*")
+        .order("start_at", { ascending: false });
+      if (examsErr) throw examsErr;
+
+      // 2. 受験結果
+      let results = [];
+      try {
+        const { data: rData, error: rErr } = await client
+          .from("mock_exam_results")
+          .select("id, exam_id, user_id, score, total, elapsed_sec, is_late, submitted_at, profiles:user_id(display_name, friend_code)");
+        if (!rErr && rData) results = rData;
+      } catch (e) {
+        console.warn("[admin] load mock results", e);
+      }
+
+      // 3. エントリー一覧
+      let entries = [];
+      try {
+        const { data: eData, error: eErr } = await client
+          .from("mock_exam_entries")
+          .select("id, exam_id, user_id");
+        if (!eErr && eData) entries = eData;
+      } catch (e) {
+        console.warn("[admin] load mock entries", e);
+      }
+
+      state.mockExams = exams || [];
+      state.mockResults = results;
+      state.mockEntries = entries;
+      renderMockExams();
+    } catch (e) {
+      console.warn("[admin] load mock exams", e);
+      if (list) list.innerHTML = `<p class="text-[11px] text-rose-600 font-bold">${escapeHtml(schemaHint(e))}</p>`;
+    }
+  }
+
+  function renderMockExams() {
+    const list = $("mock-exams-list");
+    if (!list) return;
+
+    if (!state.mockExams || state.mockExams.length === 0) {
+      list.innerHTML = `<div class="p-8 text-center text-slate-400 bg-slate-50 rounded-2xl border border-slate-200 text-xs">登録されている模試がありません。「新規模試の作成」フォームから作成してください。</div>`;
+      return;
+    }
+
+    const now = Date.now();
+
+    list.innerHTML = state.mockExams.map((exam) => {
+      const startMs = new Date(exam.start_at).getTime();
+      const endMs = new Date(exam.end_at).getTime();
+      let statusBadge = "";
+      if (now < startMs) {
+        statusBadge = `<span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-sky-50 text-sky-700 border border-sky-200">開催前（エントリー受付中）</span>`;
+      } else if (now <= endMs) {
+        statusBadge = `<span class="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-300 animate-pulse">● 開催中（本番実施中）</span>`;
+      } else {
+        statusBadge = `<span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 border border-slate-200">終了（成績確定）</span>`;
+      }
+
+      const qids = Array.isArray(exam.question_ids) ? exam.question_ids : [];
+      const examResults = (state.mockResults || []).filter((r) => r.exam_id === exam.id);
+      const examEntries = (state.mockEntries || []).filter((e) => e.exam_id === exam.id);
+
+      const entryCount = examEntries.length;
+      const totalSubmitted = examResults.length;
+      const regularResults = examResults.filter((r) => !r.is_late);
+      const lateCount = examResults.filter((r) => r.is_late).length;
+
+      // 成績集約
+      let avgScore = 0;
+      let avgPct = 0;
+      let maxScore = 0;
+      let minScore = 0;
+      let avgSec = 0;
+
+      if (regularResults.length > 0) {
+        const scores = regularResults.map((r) => r.score);
+        avgScore = Math.round((scores.reduce((a, b) => a + b, 0) / scores.length) * 10) / 10;
+        const totalQ = regularResults[0].total || qids.length || 50;
+        avgPct = Math.round((avgScore / totalQ) * 100);
+        maxScore = Math.max(...scores);
+        minScore = Math.min(...scores);
+        avgSec = Math.round(regularResults.reduce((a, b) => a + (b.elapsed_sec || 0), 0) / regularResults.length);
+      }
+
+      const durMin = Math.round((exam.duration_sec || 1500) / 60);
+
+      // 受験者一覧テーブルの行
+      const userRows = examResults.map((r, idx) => {
+        const prof = r.profiles || {};
+        const name = prof.display_name || "名無し受験生";
+        const code = prof.friend_code ? `#${prof.friend_code}` : "";
+        const m = Math.floor((r.elapsed_sec || 0) / 60);
+        const s = (r.elapsed_sec || 0) % 60;
+        const timeStr = `${m}分${s}秒`;
+        const pct = r.total > 0 ? Math.round((r.score / r.total) * 100) : 0;
+        const subDate = r.submitted_at ? new Date(r.submitted_at).toLocaleString("ja-JP", { month: "numeric", day: "numeric", hour: "2-digit", minute: "2-digit" }) : "";
+
+        return `
+          <tr class="border-b border-slate-100 hover:bg-slate-50/80 text-[11px]">
+            <td class="py-1.5 px-2 font-mono text-slate-400 text-center">${idx + 1}</td>
+            <td class="py-1.5 px-2 font-bold text-slate-800">
+              <span>${escapeHtml(name)}</span>
+              <span class="text-[9px] font-normal text-slate-400 font-mono ml-1">${escapeHtml(code)}</span>
+            </td>
+            <td class="py-1.5 px-2 text-center font-black text-indigo-600">${r.score} / ${r.total}</td>
+            <td class="py-1.5 px-2 text-center font-bold text-emerald-600">${pct}%</td>
+            <td class="py-1.5 px-2 text-center text-slate-500 font-mono">${timeStr}</td>
+            <td class="py-1.5 px-2 text-center text-[10px] text-slate-400">${escapeHtml(subDate)}</td>
+            <td class="py-1.5 px-2 text-center">
+              ${r.is_late
+                ? `<span class="text-[9px] font-bold text-amber-700 bg-amber-50 px-1 py-0.5 rounded">遅延提出</span>`
+                : `<span class="text-[9px] font-bold text-emerald-700 bg-emerald-50 px-1 py-0.5 rounded">正規</span>`}
+            </td>
+          </tr>
+        `;
+      }).join("");
+
+      return `
+        <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs space-y-3">
+          <div class="flex items-start justify-between gap-2 flex-wrap">
+            <div class="space-y-1">
+              <div class="flex items-center gap-1.5 flex-wrap">
+                ${statusBadge}
+                <span class="text-[10px] font-bold px-1.5 py-0.5 rounded ${exam.subject === 'kobun' ? 'bg-purple-50 text-purple-700 border border-purple-200' : 'bg-indigo-50 text-indigo-700 border border-indigo-200'}">
+                  ${exam.subject === 'kobun' ? '古文' : 'LEAP 英単語'}
+                </span>
+                <span class="text-[10px] text-slate-400">${qids.length}問 / 制限${durMin}分</span>
+              </div>
+              <h3 class="text-sm font-extrabold text-slate-900">${escapeHtml(exam.title)}</h3>
+              <p class="text-[11px] text-slate-500 font-mono">
+                📅 ${new Date(exam.start_at).toLocaleString("ja-JP")} 〜 ${new Date(exam.end_at).toLocaleString("ja-JP")}
+              </p>
+            </div>
+            <div class="flex items-center gap-1.5 shrink-0">
+              <button type="button" data-mock-edit="${exam.id}" class="px-2.5 py-1 text-[11px] font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg transition cursor-pointer">編集</button>
+              <button type="button" data-mock-delete="${exam.id}" class="px-2.5 py-1 text-[11px] font-bold text-rose-600 bg-rose-50 hover:bg-rose-100 rounded-lg transition cursor-pointer">削除</button>
+            </div>
+          </div>
+
+          <!-- 集約成績カード -->
+          <div class="grid grid-cols-2 sm:grid-cols-5 gap-2 text-center text-xs bg-slate-50 p-3 rounded-xl border border-slate-100">
+            <div>
+              <span class="text-[9px] text-slate-400 block">エントリー数</span>
+              <span class="text-sm font-black text-slate-800">${entryCount}名</span>
+            </div>
+            <div>
+              <span class="text-[9px] text-slate-400 block">総受験者数</span>
+              <span class="text-sm font-black text-indigo-600">${totalSubmitted}名</span>
+              <span class="text-[9px] text-slate-400 block">(正規${regularResults.length} / 遅延${lateCount})</span>
+            </div>
+            <div>
+              <span class="text-[9px] text-slate-400 block">平均点 (正答率)</span>
+              <span class="text-sm font-black text-emerald-600">${regularResults.length ? avgScore : '---'}点</span>
+              <span class="text-[9px] text-slate-400 block">${regularResults.length ? '(' + avgPct + '%)' : ''}</span>
+            </div>
+            <div>
+              <span class="text-[9px] text-slate-400 block">最高点 / 最低点</span>
+              <span class="text-sm font-black text-slate-800">${regularResults.length ? maxScore + ' / ' + minScore : '---'}</span>
+            </div>
+            <div>
+              <span class="text-[9px] text-slate-400 block">平均所要時間</span>
+              <span class="text-sm font-black text-slate-700">${regularResults.length ? Math.floor(avgSec / 60) + '分' + (avgSec % 60) + '秒' : '---'}</span>
+            </div>
+          </div>
+
+          <!-- 受験者詳細アコーディオン -->
+          <div class="pt-1">
+            <button type="button" data-mock-toggle-users="${exam.id}" class="text-[11px] font-bold text-indigo-600 hover:text-indigo-800 flex items-center gap-1 cursor-pointer">
+              <span>👥 受験者一覧・成績詳細 (${examResults.length}名)</span>
+              <span class="text-[10px]">▼</span>
+            </button>
+            <div id="mock-users-wrap-${exam.id}" class="hidden mt-2 border border-slate-200 rounded-xl overflow-hidden">
+              ${examResults.length === 0
+                ? `<div class="p-4 text-center text-slate-400 text-xs">まだ受験したユーザーはいません。</div>`
+                : `
+                  <div class="overflow-x-auto max-h-60 overflow-y-auto">
+                    <table class="w-full text-left border-collapse">
+                      <thead class="bg-slate-100 text-[10px] text-slate-500 font-bold sticky top-0">
+                        <tr>
+                          <th class="py-1.5 px-2 text-center">#</th>
+                          <th class="py-1.5 px-2">ユーザー</th>
+                          <th class="py-1.5 px-2 text-center">得点</th>
+                          <th class="py-1.5 px-2 text-center">正答率</th>
+                          <th class="py-1.5 px-2 text-center">所要時間</th>
+                          <th class="py-1.5 px-2 text-center">提出日時</th>
+                          <th class="py-1.5 px-2 text-center">区分</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        ${userRows}
+                      </tbody>
+                    </table>
+                  </div>
+                `}
+            </div>
+          </div>
+        </div>
+      `;
+    }).join("");
+  }
+
+  function editMockExam(id) {
+    const exam = state.mockExams.find((e) => e.id === id);
+    if (!exam) return;
+    state.editingMockId = id;
+
+    const idEl = $("mock-id");
+    const titleEl = $("mock-title");
+    const subEl = $("mock-subject");
+    const durEl = $("mock-duration");
+    const startEl = $("mock-start");
+    const endEl = $("mock-end");
+    const qidsEl = $("mock-qids");
+    const formTitle = $("mock-form-title");
+    const saveBtn = $("mock-save");
+    const resetBtn = $("mock-reset");
+    const qBadge = $("mock-qcount-badge");
+
+    if (idEl) idEl.value = exam.id;
+    if (titleEl) titleEl.value = exam.title;
+    if (subEl) subEl.value = exam.subject || "leap";
+    if (durEl) durEl.value = String(exam.duration_sec || 1500);
+    if (startEl) startEl.value = formatIsoForInput(exam.start_at);
+    if (endEl) endEl.value = formatIsoForInput(exam.end_at);
+    const qids = Array.isArray(exam.question_ids) ? exam.question_ids : [];
+    if (qidsEl) qidsEl.value = qids.join(", ");
+    if (qBadge) qBadge.textContent = `${qids.length} 問選択中`;
+
+    if (formTitle) formTitle.textContent = "模試を編集";
+    if (saveBtn) saveBtn.textContent = "模試の変更を保存する";
+    if (resetBtn) resetBtn.classList.remove("hidden");
+
+    const form = $("panel-mock");
+    if (form) form.scrollIntoView({ behavior: "smooth" });
+  }
+
+  async function saveMockExam() {
+    if (!client) return;
+    const msg = $("mock-message");
+    if (msg) msg.textContent = "";
+
+    const title = $("mock-title")?.value.trim();
+    const subject = $("mock-subject")?.value || "leap";
+    const durationSec = parseInt($("mock-duration")?.value, 10) || 1500;
+    const startVal = $("mock-start")?.value;
+    const endVal = $("mock-end")?.value;
+    const qidsRaw = $("mock-qids")?.value.trim() || "";
+
+    if (!title) {
+      if (msg) msg.textContent = "タイトルを入力してください。";
+      return;
+    }
+    if (!startVal || !endVal) {
+      if (msg) msg.textContent = "開始日時と終了日時を指定してください。";
+      return;
+    }
+    const startAt = new Date(startVal).toISOString();
+    const endAt = new Date(endVal).toISOString();
+    if (new Date(endAt).getTime() <= new Date(startAt).getTime()) {
+      if (msg) msg.textContent = "終了日時は開始日時より後に設定してください。";
+      return;
+    }
+
+    const qids = qidsRaw.split(/[\s,]+/).map((s) => parseInt(s, 10)).filter((n) => !isNaN(n) && n > 0);
+    if (qids.length < 5) {
+      if (msg) msg.textContent = "出題単語IDを最低5語（推奨50問）入力してください。";
+      return;
+    }
+
+    // 想定正答率（expected_rates）を自動計算
+    const expectedRates = qids.map((_, i) => Math.round((0.45 + 0.35 * (i / Math.max(qids.length - 1, 1))) * 1000) / 1000);
+    const rangeLabel = `${subject === 'kobun' ? '古文' : 'LEAP'}（${qids.length}問）`;
+
+    const payload = {
+      title,
+      subject,
+      range_label: rangeLabel,
+      question_ids: qids,
+      expected_rates: expectedRates,
+      start_at: startAt,
+      end_at: endAt,
+      duration_sec: durationSec
+    };
+
+    const btn = $("mock-save");
+    if (btn) { btn.disabled = true; btn.textContent = "保存中…"; }
+
+    try {
+      if (state.editingMockId) {
+        const { error } = await client.from("mock_exams").update(payload).eq("id", state.editingMockId);
+        if (error) throw error;
+        toast("模試を更新しました！");
+      } else {
+        const { error } = await client.from("mock_exams").insert(payload);
+        if (error) throw error;
+        toast("新規模試を登録・公開しました！");
+      }
+      resetMockForm();
+      await loadMockExams();
+    } catch (e) {
+      console.warn("[admin] save mock exam", e);
+      if (msg) msg.textContent = schemaHint(e);
+    } finally {
+      if (btn) {
+        btn.disabled = false;
+        btn.textContent = state.editingMockId ? "模試の変更を保存する" : "模試を保存・公開する";
+      }
+    }
+  }
+
+  async function deleteMockExam(id) {
+    if (!client) return;
+    const exam = state.mockExams.find((e) => e.id === id);
+    const title = exam ? exam.title : "この模試";
+    const ok = await confirmDialog(`「${title}」を削除しますか？\n※ 関連する受験者エントリーや提出結果もすべて削除されます。`, "削除する");
+    if (!ok) return;
+
+    try {
+      const { error } = await client.from("mock_exams").delete().eq("id", id);
+      if (error) throw error;
+      toast("模試を削除しました");
+      if (state.editingMockId === id) resetMockForm();
+      await loadMockExams();
+    } catch (e) {
+      console.warn("[admin] delete mock exam", e);
+      toast(schemaHint(e));
+    }
+  }
+
+  function bindMockUi() {
+    const genBtn = $("mock-generate-btn");
+    if (genBtn) genBtn.addEventListener("click", generateMockQuestions);
+
+    const saveBtn = $("mock-save");
+    if (saveBtn) saveBtn.addEventListener("click", saveMockExam);
+
+    const resetBtn = $("mock-reset");
+    if (resetBtn) resetBtn.addEventListener("click", resetMockForm);
+
+    const refreshBtn = $("mock-refresh");
+    if (refreshBtn) refreshBtn.addEventListener("click", loadMockExams);
+
+    const qidsEl = $("mock-qids");
+    if (qidsEl) {
+      qidsEl.addEventListener("input", () => {
+        const qids = qidsEl.value.split(/[\s,]+/).map((s) => parseInt(s, 10)).filter((n) => !isNaN(n) && n > 0);
+        const qBadge = $("mock-qcount-badge");
+        if (qBadge) qBadge.textContent = `${qids.length} 問選択中`;
+      });
+    }
+
+    const list = $("mock-exams-list");
+    if (list) {
+      list.addEventListener("click", (e) => {
+        const editBtn = e.target.closest("[data-mock-edit]");
+        if (editBtn) {
+          editMockExam(editBtn.dataset.mockEdit);
+          return;
+        }
+        const delBtn = e.target.closest("[data-mock-delete]");
+        if (delBtn) {
+          deleteMockExam(delBtn.dataset.mockDelete);
+          return;
+        }
+        const toggleUsersBtn = e.target.closest("[data-mock-toggle-users]");
+        if (toggleUsersBtn) {
+          const examId = toggleUsersBtn.dataset.mockToggleUsers;
+          const wrap = $(`mock-users-wrap-${examId}`);
+          if (wrap) wrap.classList.toggle("hidden");
+        }
+      });
+    }
+  }
+
   // ===== 初期化 =====
   function init() {
     bindAuthUi();
     bindAnnouncementUi();
     bindFeedbackUi();
+    bindMockUi();
     document.querySelectorAll("[data-admin-tab]").forEach((btn) => {
       btn.addEventListener("click", () => switchTab(btn.dataset.adminTab));
     });
     resetAnnouncementForm();
+    resetMockForm();
 
     if (!ready || !client) {
       setLoginMessage("Supabase が未設定です。supabase_config.js に URL と anon key を設定してください。", true);

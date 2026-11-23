@@ -11,7 +11,7 @@
     <script>
     // キャッシュ強制更新ロジック: 新バージョン検知時に古いServiceWorkerキャッシュを破棄
     (function() {
-      const APP_VER = "leap-v13-community";
+      const APP_VER = "leap-v14-mock-dashboard";
       try {
         const storedVer = localStorage.getItem("LEAP_APP_CACHE_VER");
         if (storedVer !== APP_VER) {
@@ -1089,7 +1089,13 @@
           <h2 class="text-xl font-bold text-slate-900">🏫 全国一斉模試</h2>
           <p class="text-xs text-slate-400">日時指定の時間割制・全国の受験者と比較</p>
         </div>
-        <button type="button" onclick="navigate('screen-home')" class="text-sm text-slate-500 hover:text-slate-800">戻る</button>
+        <div class="flex items-center gap-2">
+          <a href="./admin.html" class="text-xs font-bold text-indigo-600 hover:text-indigo-800 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 px-2.5 py-1.5 rounded-lg transition flex items-center gap-1">
+            <span>⚙️</span>
+            <span>模試管理</span>
+          </a>
+          <button type="button" onclick="navigate('screen-home')" class="text-sm text-slate-500 hover:text-slate-800">戻る</button>
+        </div>
       </div>
 
       <!-- 未ログイン / Supabase 未設定時の案内 -->
@@ -1437,6 +1443,13 @@
             </span>
             <span class="text-[10px] font-bold text-slate-400 shrink-0">匿名OK</span>
           </button>
+          <a href="./admin.html" onclick="closeSettingsModal()" class="w-full py-3 px-4 bg-slate-900 hover:bg-slate-800 text-white rounded-xl shadow-sm transition-all flex items-center justify-between cursor-pointer">
+            <span class="flex items-center gap-2 min-w-0">
+              <span class="text-lg">⚙️</span>
+              <span class="text-sm font-bold">管理ダッシュボード</span>
+            </span>
+            <span class="text-[10px] text-slate-300 bg-white/10 px-2 py-0.5 rounded-full shrink-0">模試・お知らせ</span>
+          </a>
         </div>
 
         <div class="space-y-2 pt-3 border-t border-slate-100">

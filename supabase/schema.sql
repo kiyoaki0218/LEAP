@@ -269,6 +269,12 @@ drop policy if exists mock_exams_select_authenticated on public.mock_exams;
 create policy mock_exams_select_authenticated on public.mock_exams
   for select to authenticated using (true);
 
+drop policy if exists mock_exams_admin_all on public.mock_exams;
+create policy mock_exams_admin_all on public.mock_exams
+  for all to authenticated
+  using (public.is_admin())
+  with check (public.is_admin());
+
 -- ------------------------------------------------------------
 create table if not exists public.mock_exam_entries (
   id uuid primary key default gen_random_uuid(),
@@ -300,6 +306,11 @@ drop policy if exists mock_exam_entries_delete_own on public.mock_exam_entries;
 create policy mock_exam_entries_delete_own on public.mock_exam_entries
   for delete to authenticated using (user_id = auth.uid());
 
+drop policy if exists mock_exam_entries_admin_select on public.mock_exam_entries;
+create policy mock_exam_entries_admin_select on public.mock_exam_entries
+  for select to authenticated
+  using (public.is_admin());
+
 -- ------------------------------------------------------------
 create table if not exists public.mock_exam_results (
   id uuid primary key default gen_random_uuid(),
@@ -326,6 +337,11 @@ create policy mock_exam_results_select_own on public.mock_exam_results
 drop policy if exists mock_exam_results_insert_own on public.mock_exam_results;
 create policy mock_exam_results_insert_own on public.mock_exam_results
   for insert to authenticated with check (user_id = auth.uid());
+
+drop policy if exists mock_exam_results_admin_select on public.mock_exam_results;
+create policy mock_exam_results_admin_select on public.mock_exam_results
+  for select to authenticated
+  using (public.is_admin());
 
 -- ------------------------------------------------------------
 -- 集計 RPC: ハイブリッド偏差値 + 志望校別（大学×文理）集計

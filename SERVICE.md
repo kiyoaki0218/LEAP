@@ -20,7 +20,7 @@
 - **構成**: ビルド不要の**静的サイト**。`index.html` に HTML（マークアップ）とアプリ本体のインライン JS を持ち、基盤 JS は `js/core.js`、アプリ固有 CSS は `assets/css/app.css`（いずれも外部ファイル）、データは `*_data.js` の JS 定数。
 - **バックエンドは任意**: 基本は **localStorage** のみでオフライン動作。`supabase_config.js` に URL / anon key を設定すると **Supabase**（Auth / Postgres / RLS）によるクラウド同期・相互フレンド・お知らせ・意見箱が有効になる。未設定なら従来どおりローカルのみで正常動作する（お知らせは非表示、意見箱は文面コピーのみ）。
 - **収録**: 英単語 2,300 語（Part 1〜5）／例文・単語詳細 2,300 語分・例文クイズ 2,000 語分／参考資料 5 章／接辞 32 グループ・132 語根／古文単語 150 語（2 章）。
-- **主な遊び**: 通常4択・例文穴埋め・リスニング4択・スペル入力・60秒スプリント・サドンデス、到達度テスト（50問・25分・S〜D判定）、**全国一斉模試（日時指定の時間割制・ハイブリッド偏差値・志望校判定）**、デイリーチャレンジ、忘却曲線の苦手復習、学習カレンダー/Part別マスター率の振り返り、コイン/EXP/レベル、称号・フレーム・アバター、実績 93 種、共有URL（挑戦状）、任意ログインによるクラウド同期・相互フレンドの詳細ステータス閲覧。運営向けに **お知らせ**（ホーム表示）と **意見箱**（匿名可）、管理者用の `admin.html`（お知らせ CRUD・意見トリアージ）を持つ。
+- **主な遊び**: 通常4択・例文穴埋め・リスニング4択・スペル入力・60秒スプリント・サドンデス、到達度テスト（50問・25分・S〜D判定）、**全国一斉模試（日時指定の時間割制・ハイブリッド偏差値・志望校判定）**、デイリーチャレンジ、忘却曲線の苦手復習、学習カレンダー/Part別マスター率の振り返り、コイン/EXP/レベル、称号・フレーム・アバター、実績 93 種、共有URL（挑戦状）、任意ログインによるクラウド同期・相互フレンドの詳細ステータス閲覧。運営向けに **お知らせ**（ホーム表示）と **意見箱**（匿名可）、管理者用の `admin.html`（模試管理・新規模試作成・過去成績集約・お知らせ CRUD・意見トリアージ）を持つ。
 - **ホスティング**: 静的ホスティング（Vercel 想定。`vercel.json` なし、`.vercel/` は gitignore）。
 - **主要ファイル**: `index.html`（アプリ本体）、`js/core.js`（称号・ゾーン・画面遷移の基盤）、`assets/css/app.css`（アプリ固有 CSS）、`admin.html` ＋ `js/admin.js`（管理者ダッシュボード）、`supabase_config.js`（Supabase 公開設定の共有）、`words_data.js`、`examples_data.js`、`reference_data.js`、`affix_data.js`、`mock_schools_data.js`（模試の志望校マスタ）、`kobun/kobun_words_data.js`、`sw.js`、`manifest.json`、`supabase/schema.sql`（DB/RLS・模試集計RPC・意見箱RPC）、`LEAP単語データ/`（元データ）、`patches/`（データ生成・一括改修スクリプト）。
 
@@ -72,13 +72,13 @@
 | 永続化 | localStorage（＋任意で Supabase） | キー一覧は §11 |
 | クラウド（任意） | Supabase JS v2（CDN） / Postgres / Auth / RLS | `supabase_config.js` が未設定なら初期化しない。anon / publishable key のみ使用（service_role は使わない） |
 | 管理画面 | `admin.html` ＋ `js/admin.js`（別ページ・`noindex`） | Supabase Auth ＋ `admin_users` 許可リスト。SW のキャッシュ対象外（Network-Only） |
-| オフライン | `sw.js`（Cache API） | キャッシュ名 `leap-v34`、Network-First。Supabase・認証コールバック・`admin.html` は Network-Only |
+| オフライン | `sw.js`（Cache API） | キャッシュ名 `leap-v35`、Network-First。Supabase・認証コールバック・`admin.html` は Network-Only |
 | PWA | `manifest.json`、アイコン各種 | standalone 表示、theme `#059669` |
 | ビルド | なし | `.js` データは `<script>` で直接読む |
 
 ### キャッシュ更新の仕組み
 
-- `index.html` 冒頭の `APP_VER`（現在 `leap-v13-community`）が `localStorage.LEAP_APP_CACHE_VER` と違えば、全 Cache を削除。
+- `index.html` 冒頭の `APP_VER`（現在 `leap-v14-mock-dashboard`）が `localStorage.LEAP_APP_CACHE_VER` と違えば、全 Cache を削除。
 - `sw.js` は `install` で `skipWaiting()`、`activate` で旧キャッシュ削除＋`clients.claim()`。
 - 取得は Network-First（HTML は常に最新、オフライン時のみキャッシュ）。
 - **フロントを更新したら `sw.js` の `CACHE` 名と `index.html` の `APP_VER` を上げる**のが運用ルール。
@@ -672,6 +672,10 @@ window.LEAP_SUPABASE_CONFIG = { url: "https://xxxx.supabase.co", anonKey: "sb_pu
 
 - `noindex, nofollow`。`sw.js` は `admin.html` を Network-Only にし、キャッシュしない。
 - Supabase Auth（メール＋パスワード）でログイン → `rpc("is_admin")` が `true` のときだけ画面を表示。権限がなければ即サインアウトする。フロント側のパスワード判定は行わない。
+- **模試管理**:
+  - **新規模試作成**: タイトル、科目（LEAP/古文）、出題範囲プリセット（全範囲/Part 1〜2/Part 3〜4/Part別）、問題数（25/50/100問）、単語の自動抽出（シャッフル＋ソート、理論正答率 `expected_rates` 自動生成）、開催開始・終了日時、制限時間（15〜40分）を設定して公開。既存模試の編集・削除も可能。
+  - **模試一覧＆過去成績アーカイブ**: 開催前・開催中・終了済みの模試一覧。エントリー数、受験者数（提出総数・正規受験・遅延受験）、平均点（正答率）、最高点/最低点、平均所要時間を集約表示。
+  - **受験者一覧・成績詳細**: 模試ごとの受験者詳細アコーディオン。表示名・フレンドコード・得点・正答率・所要時間・提出日時・区分（正規/遅延）を一覧表示。
 - **お知らせ**: 作成・編集・削除、種別、ピン留め、公開日時（未来＝公開予約）、掲載終了日時。公開中／公開予定／掲載終了を一覧に表示。
 - **意見箱**: 全件（最大300件）を新しい順に表示。種別・状態・キーワードで絞り込み、状態（新規/確認中/対応済み/アーカイブ）と管理メモを保存。管理メモはユーザーには公開されない。
 - 破壊的操作（削除）は画面内の確認ダイアログを挟む。
@@ -869,6 +873,7 @@ node patches/build_leap_data.js
 
 | 日付 | 変更内容 |
 |---|---|
+| 2026-11-23 | 🏫 LEAP 管理ダッシュボード（`admin.html`）に「模試管理」タブを追加。新規模試の作成（タイトル・科目・出題範囲プリセット・単語自動抽出・開催期間・制限時間設定）、模試一覧、過去の模試結果集約（エントリー数・受験者数・平均点/正答率・最高点/最低点・平均所要時間）、受験者一覧テーブル（得点・正答率・所要時間・提出日時・遅延判定）の閲覧・編集・削除を実装。`supabase/schema.sql` および `supabase/migration_community.sql` に管理者の `mock_exams` (ALL)、`mock_exam_results` (SELECT)、`mock_exam_entries` (SELECT) RLS ポリシーを追加。公開側（`screen-mock-exam` および設定シート）に管理ダッシュボードへの導線を追加。`APP_VER=leap-v14-mock-dashboard` / `CACHE=leap-v35`。 |
 | 2026-11-23 | 旧サービスと共用している `announcements` テーブルの混在対策。旧サービスは `content` 列を使い `body` が空のため、公開側（`loadCommunityAnnouncements`）と管理画面（`loadAnnouncements`）の取得を `body is not null` で絞り込み、旧サービスのお知らせが LEAP に表示されないようにした。`APP_VER=leap-v13-community` / `CACHE=leap-v34`。 |
 | 2026-11-23 | 📮 意見箱・📢 お知らせ・管理ダッシュボード（Phase 1）を追加。ホームに公開期間内のお知らせ（最大2件・NEW バッジ・一覧モーダル）と意見箱（種別／本文2,000字／★1〜5／連絡先／自動添付、匿名可、下書き保存、未設定時は文面コピー）を実装。新規 `admin.html` ＋ `js/admin.js`（Supabase Auth ＋ `admin_users` 許可リスト、お知らせ CRUD、意見の状態・管理メモ、noindex・SW 対象外）。新規 `supabase_config.js` に設定を集約（`index.html` と `admin.html` で共有）。`supabase/schema.sql` に `admin_users` / `announcements` / `feedback`（RLS）と `is_admin()`、匿名投稿用 RPC `submit_feedback()`（本文長・種別・評価の検証、ハニーポット、5件/時・10件/時のレート制限）を追加。模試の成績表に感想導線を追加。`APP_VER=leap-v12-community` / `CACHE=leap-v33`。既存プロジェクト向けに Phase 1 追加分だけの `supabase/migration_community.sql` を分離（全体再適用によるデッドロック回避）。同SQLは古い定義の `announcements` / `feedback` が残っていても不足列を `add column if not exists` で補修してから索引を作る。 |
 | 2026-11-23 | 🏫 全国一斉模試（全国模試モード）を追加: `screen-mock-exam`（開催スケジュール／開始前カウントダウン／第1〜第5志望のエントリー／制限時間つき受験／成績表）。新規 `mock_schools_data.js`（大学×文理の `MOCK_UNIV_GROUPS` と学部 `MOCK_FACULTIES`、関西＋有名国公立＋早慶MARCH）。`supabase/schema.sql` に `mock_exams` / `mock_exam_entries` / `mock_exam_results`（RLS・unique 制約）と集計 RPC `get_mock_exam_report` を追加。少人数向けにトリム平均・理論平均（`expected_rates`）・SD クリップを組み合わせたハイブリッド偏差値、N<5 の暫定表示、同tier／同category へのフォールバック付き志望校判定を実装。クイズ基盤は `exam` モードを開催回の `duration_sec` に対応させ、終了時刻超過は `is_late`。`APP_VER=leap-v11-mock-exam` / `CACHE=leap-v32`。 |
