@@ -11,7 +11,7 @@
     <script>
     // キャッシュ強制更新ロジック: 新バージョン検知時に古いServiceWorkerキャッシュを破棄
     (function() {
-      const APP_VER = "leap-v12-community";
+      const APP_VER = "leap-v13-community";
       try {
         const storedVer = localStorage.getItem("LEAP_APP_CACHE_VER");
         if (storedVer !== APP_VER) {
@@ -7166,6 +7166,8 @@ listContainer.appendChild(row);
         const { data, error } = await supabaseClient
           .from("announcements")
           .select("id,title,body,level,pinned,published_at")
+          // 同じ Supabase を共用する旧サービスは body ではなく content を使うため、body が空の行は表示しない
+          .not("body", "is", null)
           .lte("published_at", nowIso)
           .or(`expires_at.is.null,expires_at.gt.${nowIso}`)
           .order("pinned", { ascending: false })

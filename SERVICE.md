@@ -72,13 +72,13 @@
 | 永続化 | localStorage（＋任意で Supabase） | キー一覧は §11 |
 | クラウド（任意） | Supabase JS v2（CDN） / Postgres / Auth / RLS | `supabase_config.js` が未設定なら初期化しない。anon / publishable key のみ使用（service_role は使わない） |
 | 管理画面 | `admin.html` ＋ `js/admin.js`（別ページ・`noindex`） | Supabase Auth ＋ `admin_users` 許可リスト。SW のキャッシュ対象外（Network-Only） |
-| オフライン | `sw.js`（Cache API） | キャッシュ名 `leap-v33`、Network-First。Supabase・認証コールバック・`admin.html` は Network-Only |
+| オフライン | `sw.js`（Cache API） | キャッシュ名 `leap-v34`、Network-First。Supabase・認証コールバック・`admin.html` は Network-Only |
 | PWA | `manifest.json`、アイコン各種 | standalone 表示、theme `#059669` |
 | ビルド | なし | `.js` データは `<script>` で直接読む |
 
 ### キャッシュ更新の仕組み
 
-- `index.html` 冒頭の `APP_VER`（現在 `leap-v12-community`）が `localStorage.LEAP_APP_CACHE_VER` と違えば、全 Cache を削除。
+- `index.html` 冒頭の `APP_VER`（現在 `leap-v13-community`）が `localStorage.LEAP_APP_CACHE_VER` と違えば、全 Cache を削除。
 - `sw.js` は `install` で `skipWaiting()`、`activate` で旧キャッシュ削除＋`clients.claim()`。
 - 取得は Network-First（HTML は常に最新、オフライン時のみキャッシュ）。
 - **フロントを更新したら `sw.js` の `CACHE` 名と `index.html` の `APP_VER` を上げる**のが運用ルール。
@@ -765,7 +765,7 @@ window.LEAP_SUPABASE_CONFIG = { url: "https://xxxx.supabase.co", anonKey: "sb_pu
 ├── assets/
 │   └── css/app.css            アプリ固有 CSS（旧 index.html 内の <style> ほか）
 ├── manifest.json              PWA マニフェスト
-├── sw.js                      Service Worker（キャッシュ leap-v33 / Network-First）
+├── sw.js                      Service Worker（キャッシュ leap-v34 / Network-First）
 ├── words_data.js              LEAP_WORDS_DATA（2,300語）
 ├── examples_data.js           LEAP_WORD_DETAILS（2,300語）+ LEAP_EXAMPLE_DATA（2,000語）
 ├── reference_data.js          LEAP_REFERENCE_DATA（5章）
@@ -856,6 +856,7 @@ node patches/build_leap_data.js
 - 模試の志望校マスタを変更したら `mock_schools_data.js` と `sw.js` の `ASSETS`／`CACHE`、`APP_VER` を更新する。
 - **お知らせは Supabase 未設定時に表示されない**（静的フォールバックを置かない方針）。`announcements` を取得できない場合もホームは静かに非表示になる。
 - **意見箱は匿名投稿できる**ため、スパム対策は `submit_feedback()` のハニーポットとレート制限（同一端末 5件/時・ログイン済み 10件/時）のみ。IP 制限は行っていない。
+- 旧サービスと `announcements` テーブルを共用している。旧サービスは `content` 列を使い `body` が空になるため、公開側・管理画面の取得とも `body is not null` で絞り込み、旧サービスのお知らせを表示・編集対象にしない。
 - **管理画面は別ページ（`admin.html`）で、SW キャッシュ対象外**。`admin_users` に UID がないアカウントはログイン直後にサインアウトされる。
 - `supabase_config.js` の anon / publishable key は公開前提。**service_role キーを書かない**（全 RLS を迂回できてしまう）。
 - 古文の `meaning` は「、」区切りの現代語訳で、複数語義の整形はデータ側の表記に依存。
@@ -868,6 +869,7 @@ node patches/build_leap_data.js
 
 | 日付 | 変更内容 |
 |---|---|
+| 2026-11-23 | 旧サービスと共用している `announcements` テーブルの混在対策。旧サービスは `content` 列を使い `body` が空のため、公開側（`loadCommunityAnnouncements`）と管理画面（`loadAnnouncements`）の取得を `body is not null` で絞り込み、旧サービスのお知らせが LEAP に表示されないようにした。`APP_VER=leap-v13-community` / `CACHE=leap-v34`。 |
 | 2026-11-23 | 📮 意見箱・📢 お知らせ・管理ダッシュボード（Phase 1）を追加。ホームに公開期間内のお知らせ（最大2件・NEW バッジ・一覧モーダル）と意見箱（種別／本文2,000字／★1〜5／連絡先／自動添付、匿名可、下書き保存、未設定時は文面コピー）を実装。新規 `admin.html` ＋ `js/admin.js`（Supabase Auth ＋ `admin_users` 許可リスト、お知らせ CRUD、意見の状態・管理メモ、noindex・SW 対象外）。新規 `supabase_config.js` に設定を集約（`index.html` と `admin.html` で共有）。`supabase/schema.sql` に `admin_users` / `announcements` / `feedback`（RLS）と `is_admin()`、匿名投稿用 RPC `submit_feedback()`（本文長・種別・評価の検証、ハニーポット、5件/時・10件/時のレート制限）を追加。模試の成績表に感想導線を追加。`APP_VER=leap-v12-community` / `CACHE=leap-v33`。既存プロジェクト向けに Phase 1 追加分だけの `supabase/migration_community.sql` を分離（全体再適用によるデッドロック回避）。同SQLは古い定義の `announcements` / `feedback` が残っていても不足列を `add column if not exists` で補修してから索引を作る。 |
 | 2026-11-23 | 🏫 全国一斉模試（全国模試モード）を追加: `screen-mock-exam`（開催スケジュール／開始前カウントダウン／第1〜第5志望のエントリー／制限時間つき受験／成績表）。新規 `mock_schools_data.js`（大学×文理の `MOCK_UNIV_GROUPS` と学部 `MOCK_FACULTIES`、関西＋有名国公立＋早慶MARCH）。`supabase/schema.sql` に `mock_exams` / `mock_exam_entries` / `mock_exam_results`（RLS・unique 制約）と集計 RPC `get_mock_exam_report` を追加。少人数向けにトリム平均・理論平均（`expected_rates`）・SD クリップを組み合わせたハイブリッド偏差値、N<5 の暫定表示、同tier／同category へのフォールバック付き志望校判定を実装。クイズ基盤は `exam` モードを開催回の `duration_sec` に対応させ、終了時刻超過は `is_late`。`APP_VER=leap-v11-mock-exam` / `CACHE=leap-v32`。 |
 | 2026-11-23 | 到達度テストの結果を画像・共有・挑戦状に反映（共有カードは `EXAM RESULT`／判定表示、共有URLに `ex`/`ep`、フレンド共有に `exam: {grade, partId}`、受信側は同じ範囲の到達度テストに挑戦）。📊 学習記録画面（`screen-stats`）を追加: 直近12週の日別ヒートマップ（`userData.dailyLog`）、連続学習・累計解答・マスター/苦手語数、Part別マスター率。🔤 スペル入力モード（`LEAP_QUIZ_STYLE_V1=spelling`）を追加し、採点は `handleAnswer` に委譲。`APP_VER=leap-v10-stats-spell` / `CACHE=leap-v31`。 |

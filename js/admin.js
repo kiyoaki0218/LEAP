@@ -305,6 +305,8 @@
     if (list) list.innerHTML = `<p class="text-[11px] text-slate-400">読み込み中…</p>`;
     try {
       const { data, error } = await client.from("announcements").select("*")
+        // 旧サービス（content 列を使用）のお知らせを LEAP の管理対象に混ぜない
+        .not("body", "is", null)
         .order("pinned", { ascending: false })
         .order("published_at", { ascending: false })
         .limit(100);
