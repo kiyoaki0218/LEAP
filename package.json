@@ -1,0 +1,15 @@
+{
+  "name": "leap-quiz",
+  "version": "1.0.0",
+  "description": "LEAP 4択英単語クイズ - Japanese vocabulary quiz app",
+  "main": "index.html",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": ["quiz", "japanese", "vocabulary", "leap"],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@vercel/analytics": "^2.0.1"
+  }
+}
