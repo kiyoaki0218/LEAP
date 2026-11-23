@@ -1,13 +1,15 @@
-const CACHE = "leap-v31";
+const CACHE = "leap-v33";
 const ASSETS = [
   "./",
   "./index.html",
   "./assets/css/app.css",
   "./js/core.js",
+  "./supabase_config.js",
   "./words_data.js",
   "./examples_data.js",
   "./reference_data.js",
   "./affix_data.js",
+  "./mock_schools_data.js",
   "./kobun/kobun_words_data.js",
   "./icon.svg",
   "./icon-192.png",
@@ -51,6 +53,12 @@ self.addEventListener("fetch", (e) => {
     return;
   }
 
+  // 管理画面は常に最新を読み込む（キャッシュ・オフライン代替をしない）
+  if (url.pathname.endsWith("/admin.html")) {
+    e.respondWith(fetch(e.request));
+    return;
+  }
+
   const isNavigate = e.request.mode === "navigate" || url.pathname.endsWith(".html") || url.pathname.endsWith("/");
 
   if (isNavigate) {
@@ -69,7 +77,7 @@ self.addEventListener("fetch", (e) => {
     return;
   }
 
-  // 静的アセット（画像・単語データ等）は Stale-While-Revalidate または Cache-First
+  // 静的アセット（画像・単語データ等）は Cache-First + 裏で更新
   e.respondWith(
     caches.match(e.request).then((cached) => {
       const fetchPromise = fetch(e.request).then((networkRes) => {

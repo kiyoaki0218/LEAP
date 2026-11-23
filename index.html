@@ -11,7 +11,7 @@
     <script>
     // キャッシュ強制更新ロジック: 新バージョン検知時に古いServiceWorkerキャッシュを破棄
     (function() {
-      const APP_VER = "leap-v10-stats-spell";
+      const APP_VER = "leap-v12-community";
       try {
         const storedVer = localStorage.getItem("LEAP_APP_CACHE_VER");
         if (storedVer !== APP_VER) {
@@ -62,6 +62,8 @@
   <!-- 実データ(1〜1000)の読み込み -->
   <script src="./words_data.js"></script>
   <script src="./kobun/kobun_words_data.js"></script>
+  <!-- Supabase の公開設定（index.html と admin.html で共有。anon key は公開前提） -->
+  <script src="./supabase_config.js"></script>
   <!-- Supabase JS クライアント（CDN・ビルド不要。未設定時はローカルモードで動作） -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <!-- 例文・文脈テスト用の例文データ / 単語詳細データ -->
@@ -70,6 +72,8 @@
   <script src="./reference_data.js"></script>
   <!-- 語源ラッシュ（接頭辞・接尾辞）用データ -->
   <script src="./affix_data.js"></script>
+  <!-- 全国一斉模試の志望校マスタ（大学×文理グループ定義） -->
+  <script src="./mock_schools_data.js"></script>
   <!-- html2canvas (スクリーンショット生成) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
@@ -111,6 +115,18 @@
       <div class="flex bg-slate-200/70 p-1 rounded-xl">
         <button type="button" id="zone-btn-leap" onclick="switchSubject('leap')" class="flex-1 py-2 text-xs font-bold rounded-lg transition cursor-pointer">LEAP 英単語</button>
         <button type="button" id="zone-btn-kobun" onclick="switchSubject('kobun')" class="flex-1 py-2 text-xs font-bold rounded-lg transition cursor-pointer">🌌 裏世界（古文単語）</button>
+      </div>
+
+      <!-- お知らせ（Supabase 設定時のみ。未設定なら何も表示しない） -->
+      <div id="home-announcements" class="hidden bg-amber-50 border border-amber-200 rounded-2xl p-3 shadow-sm space-y-1.5">
+        <div class="flex items-center justify-between gap-2">
+          <p class="text-[11px] font-extrabold text-amber-900 flex items-center gap-1.5">
+            <span>📢</span> お知らせ
+            <span id="home-announcements-unread" class="hidden text-[9px] font-extrabold bg-rose-500 text-white px-1.5 py-0.5 rounded-full">NEW</span>
+          </p>
+          <button type="button" onclick="openAnnouncementsModal()" class="text-[10px] font-bold text-amber-800 hover:underline cursor-pointer shrink-0">すべて見る ›</button>
+        </div>
+        <div id="home-announcements-list" class="space-y-1"></div>
       </div>
 
       <div class="zone-hero text-center space-y-2 py-2">
@@ -208,6 +224,16 @@
           <span class="text-slate-300 text-sm shrink-0">›</span>
         </button>
 
+        <!-- 全国一斉模試 -->
+        <button type="button" onclick="navigate('screen-mock-exam')" class="w-full text-left px-4 py-3 bg-white hover:bg-slate-50 active:bg-slate-100 border border-slate-200 rounded-xl shadow-sm transition-all flex items-center gap-3 cursor-pointer">
+          <span class="w-9 h-9 rounded-xl bg-rose-50 border border-rose-100 flex items-center justify-center text-lg shrink-0">🏫</span>
+          <span class="min-w-0 flex-1">
+            <span class="block text-sm font-bold text-slate-800">全国一斉模試（時間割制）</span>
+            <span class="block text-[11px] text-slate-400 mt-0.5 truncate">日時指定の本番形式で偏差値・志望校判定</span>
+          </span>
+          <span class="text-slate-300 text-sm shrink-0">›</span>
+        </button>
+
         <!-- 学習記録 -->
         <button type="button" onclick="navigate('screen-stats')" class="w-full text-left px-4 py-3 bg-white hover:bg-slate-50 active:bg-slate-100 border border-slate-200 rounded-xl shadow-sm transition-all flex items-center gap-3 cursor-pointer">
           <span class="w-9 h-9 rounded-xl bg-sky-50 border border-sky-100 flex items-center justify-center text-lg shrink-0">📊</span>
@@ -236,6 +262,15 @@
 
         <button type="button" onclick="openDictionary()" class="w-full py-3.5 bg-white hover:bg-slate-100 active:scale-[0.99] border border-slate-200 text-slate-700 font-semibold rounded-xl shadow-sm transition-all flex items-center justify-center gap-2 cursor-pointer">
           <span>📖 単語辞典（番号順）</span>
+        </button>
+
+        <!-- 意見箱 -->
+        <button type="button" onclick="openFeedbackModal()" class="w-full px-4 py-3 bg-white hover:bg-slate-50 active:bg-slate-100 border border-slate-200 rounded-xl shadow-sm transition-all flex items-center justify-between cursor-pointer">
+          <span class="flex items-center gap-2 min-w-0">
+            <span class="text-lg">📮</span>
+            <span class="text-sm font-bold text-slate-800">ご意見・ご感想</span>
+          </span>
+          <span class="text-[10px] font-bold text-slate-400 shrink-0">運営に届きます</span>
         </button>
 
         <!-- 設定・その他（実績 / ショップ / 同期 / 自分の詳細 / 音声など） -->
@@ -1047,6 +1082,37 @@
       </button>
     </section>
 
+    <!-- 全国一斉模試（日時指定の時間割制） -->
+    <section id="screen-mock-exam" class="fade-in hidden space-y-5">
+      <div class="flex items-center justify-between pb-2 border-b border-slate-200">
+        <div>
+          <h2 class="text-xl font-bold text-slate-900">🏫 全国一斉模試</h2>
+          <p class="text-xs text-slate-400">日時指定の時間割制・全国の受験者と比較</p>
+        </div>
+        <button type="button" onclick="navigate('screen-home')" class="text-sm text-slate-500 hover:text-slate-800">戻る</button>
+      </div>
+
+      <!-- 未ログイン / Supabase 未設定時の案内 -->
+      <div id="mock-auth-notice" class="hidden bg-amber-50 border border-amber-200 rounded-2xl p-4 space-y-2"></div>
+
+      <div id="mock-main" class="space-y-4">
+        <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-2">
+          <div class="flex items-center justify-between gap-2">
+            <p class="text-xs font-bold text-slate-700">開催スケジュール</p>
+            <button type="button" onclick="loadMockExams()" class="text-[10px] font-bold text-slate-500 hover:text-slate-800 cursor-pointer">🔄 更新</button>
+          </div>
+          <div id="mock-exam-list" class="space-y-2"></div>
+        </div>
+
+        <div id="mock-exam-detail" class="hidden space-y-4">
+          <div id="mock-exam-status"></div>
+          <div id="mock-entry-section"></div>
+          <div id="mock-action-section"></div>
+          <div id="mock-report-section"></div>
+        </div>
+      </div>
+    </section>
+
     <!-- 5. 結果画面 -->
     <section id="screen-result" class="fade-in hidden space-y-6">
       <!-- スコアカードUI -->
@@ -1359,6 +1425,21 @@
         </div>
 
         <div class="space-y-2 pt-3 border-t border-slate-100">
+          <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400 px-1">サポート</p>
+          <button type="button" onclick="closeSettingsModal(); openAnnouncementsModal()" class="w-full py-3 px-4 bg-white hover:bg-slate-50 active:bg-slate-100 border border-slate-200 rounded-xl shadow-sm transition-all flex items-center gap-2 cursor-pointer">
+            <span class="text-lg">📢</span>
+            <span class="text-sm font-bold text-slate-800">お知らせ</span>
+          </button>
+          <button type="button" onclick="closeSettingsModal(); openFeedbackModal()" class="w-full py-3 px-4 bg-white hover:bg-slate-50 active:bg-slate-100 border border-slate-200 rounded-xl shadow-sm transition-all flex items-center justify-between cursor-pointer">
+            <span class="flex items-center gap-2 min-w-0">
+              <span class="text-lg">📮</span>
+              <span class="text-sm font-bold text-slate-800">ご意見・ご感想</span>
+            </span>
+            <span class="text-[10px] font-bold text-slate-400 shrink-0">匿名OK</span>
+          </button>
+        </div>
+
+        <div class="space-y-2 pt-3 border-t border-slate-100">
           <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400 px-1">データ</p>
           <div class="text-xs text-slate-400 flex flex-col items-center gap-2 bg-slate-50 border border-slate-200 rounded-xl px-3 py-3">
             <p id="data-status-text">LEAP実データ (ID: 1〜1000) 読込済</p>
@@ -1484,6 +1565,83 @@
         </button>
       </div>
       <p class="text-[10px] text-slate-400 text-center leading-relaxed">あとから「今すぐ同期」で上書きし直すこともできます。</p>
+    </div>
+  </div>
+
+  <!-- お知らせ一覧 -->
+  <div id="announcements-modal" class="fixed inset-0 z-[70] hidden items-end sm:items-center justify-center p-0 sm:p-4" role="dialog" aria-modal="true" aria-labelledby="announcements-title">
+    <div class="backdrop-in absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onclick="closeAnnouncementsModal()"></div>
+    <div class="sheet-in relative bg-white w-full sm:max-w-lg max-h-[88vh] rounded-t-3xl sm:rounded-3xl shadow-2xl flex flex-col overflow-hidden">
+      <div class="px-5 pt-4 pb-3 border-b border-slate-100 flex items-start gap-3">
+        <span class="w-10 h-10 rounded-xl bg-amber-50 border border-amber-200 flex items-center justify-center text-xl shrink-0">📢</span>
+        <div class="min-w-0 flex-1">
+          <h3 id="announcements-title" class="text-lg font-extrabold text-slate-900">お知らせ</h3>
+          <p class="text-[11px] text-slate-400">運営からの連絡です。</p>
+        </div>
+        <button type="button" onclick="closeAnnouncementsModal()" class="text-slate-400 hover:text-slate-700 text-lg font-bold p-1 shrink-0">✕</button>
+      </div>
+      <div id="announcements-list" class="px-4 py-4 overflow-y-auto space-y-3"></div>
+      <div class="px-4 py-3 border-t border-slate-100 bg-slate-50">
+        <button type="button" onclick="closeAnnouncementsModal()" class="w-full py-2.5 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold rounded-xl transition cursor-pointer">閉じる</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 意見箱 -->
+  <div id="feedback-modal" class="fixed inset-0 z-[70] hidden items-end sm:items-center justify-center p-0 sm:p-4" role="dialog" aria-modal="true" aria-labelledby="feedback-title">
+    <div class="backdrop-in absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onclick="closeFeedbackModal()"></div>
+    <div class="sheet-in relative bg-white w-full sm:max-w-lg max-h-[90vh] rounded-t-3xl sm:rounded-3xl shadow-2xl flex flex-col overflow-hidden">
+      <div class="px-5 pt-4 pb-3 border-b border-slate-100 flex items-start gap-3">
+        <span class="w-10 h-10 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center text-xl shrink-0">📮</span>
+        <div class="min-w-0 flex-1">
+          <h3 id="feedback-title" class="text-lg font-extrabold text-slate-900">ご意見・ご感想</h3>
+          <p class="text-[11px] text-slate-400">改善のヒントにさせてください。匿名でも送れます。</p>
+        </div>
+        <button type="button" onclick="closeFeedbackModal()" class="text-slate-400 hover:text-slate-700 text-lg font-bold p-1 shrink-0">✕</button>
+      </div>
+
+      <div class="px-4 py-3 overflow-y-auto space-y-4">
+        <p id="feedback-offline" class="hidden text-[11px] text-amber-800 bg-amber-50 border border-amber-200 rounded-xl px-3 py-2 leading-relaxed">
+          いまはサーバーに接続できないため、アプリからは送信できません。下の「文面をコピー」でコピーして、運営までお送りください。
+        </p>
+
+        <div class="space-y-1.5">
+          <p class="text-[11px] font-bold text-slate-500">種類</p>
+          <div id="feedback-categories" class="grid grid-cols-3 gap-1.5"></div>
+        </div>
+
+        <div class="space-y-1.5">
+          <div class="flex items-center justify-between gap-2">
+            <label for="feedback-body" class="text-[11px] font-bold text-slate-500">本文</label>
+            <span id="feedback-count" class="text-[10px] font-bold text-slate-400 tabular-nums">0 / 2000</span>
+          </div>
+          <textarea id="feedback-body" rows="6" maxlength="2000" oninput="onFeedbackInput()" placeholder="例: 例文モードが使いやすいです。Part 3 の並び替えがあると嬉しいです。" class="w-full p-3 border border-slate-300 rounded-xl text-sm focus:outline-none focus:border-emerald-600"></textarea>
+          <p id="feedback-body-error" class="hidden text-[10px] font-bold text-rose-600"></p>
+        </div>
+
+        <div class="space-y-1.5">
+          <p class="text-[11px] font-bold text-slate-500">満足度（任意）</p>
+          <div id="feedback-rating" class="flex items-center gap-1"></div>
+        </div>
+
+        <details class="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2">
+          <summary class="text-[11px] font-bold text-slate-600 cursor-pointer">連絡先を添える（任意）</summary>
+          <input id="feedback-contact" type="text" maxlength="200" autocomplete="off" placeholder="返信先のメールやSNS（公開されません）" class="mt-2 w-full p-2.5 border border-slate-300 rounded-lg text-xs bg-white">
+          <p class="text-[10px] text-slate-400 mt-1 leading-relaxed">返信が必要な場合のみ入力してください。いただいた連絡先は返信以外に使いません。</p>
+        </details>
+
+        <p id="feedback-login-note" class="hidden text-[10px] text-slate-400 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 leading-relaxed">
+          ログイン中です。送信内容はアカウントに紐づきますが、他の利用者には公開されません。
+        </p>
+
+        <input id="feedback-honeypot" type="text" tabindex="-1" autocomplete="off" aria-hidden="true" class="hidden" name="website">
+        <p id="feedback-status" class="hidden text-[11px] font-bold rounded-xl px-3 py-2"></p>
+      </div>
+
+      <div class="px-4 py-3 border-t border-slate-100 bg-slate-50 flex gap-2">
+        <button type="button" onclick="copyFeedbackText()" class="px-3 py-2.5 bg-white hover:bg-slate-100 border border-slate-200 text-slate-600 text-xs font-bold rounded-xl transition cursor-pointer shrink-0">文面をコピー</button>
+        <button type="button" id="feedback-submit" onclick="submitFeedback()" class="flex-1 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl transition cursor-pointer">送信する</button>
+      </div>
     </div>
   </div>
 
@@ -4018,6 +4176,8 @@
     // ===== 到達度テスト（50問・25分・S〜D判定）=====
     const EXAM_QUESTION_COUNT = 50;
     const EXAM_TOTAL_MS = 25 * 60 * 1000;
+    // 模試は開催回ごとの duration_sec を使うため、現在の試験の制限時間を保持する
+    let examSessionTotalMs = EXAM_TOTAL_MS;
     const EXAM_RANGE_KEY = "LEAP_EXAM_RANGE_V1";
     const EXAM_GRADES = [
       { grade: "S", min: 95, label: "完璧", cls: "text-fuchsia-700 bg-fuchsia-50 border-fuchsia-300" },
@@ -4137,12 +4297,760 @@
       startQuizWithPool(pool, { examMode: true });
     }
 
+    // ============================================================
+    // 🏫 全国一斉模試（日時指定の時間割制）
+    // ============================================================
+    const MOCK_SCREEN_ID = "screen-mock-exam";
+    const MOCK_DRAFT_KEY = "LEAP_MOCK_CHOICES_V1";
+    const MOCK_JUDGE_THRESHOLDS = { 1: [63, 57, 50], 2: [60, 54, 47], 3: [56, 50, 44], 4: [52, 46, 40] };
+    let mockExamsCache = [];
+    let mockExamsError = "";
+    let mockExamsLoaded = false;
+    let mockSelectedExamId = null;
+    let mockEntryChoices = [];
+    let mockReport = null;
+    let mockReportError = "";
+    let mockMyResult = null;
+    let mockLocalReport = null;
+    let mockSubmitNote = "";
+    let mockCountdownTimer = null;
+    let mockCountdownPhase = "";
+    let mockExamRunning = false;
+    let mockExamCurrent = null;
+    let mockExamStartedAt = 0;
+    let mockLastMistakes = [];
+    let mockBusy = false;
+
+    function mockIsReady() { return !!supabaseClient && !!(typeof cloudState !== "undefined" && cloudState && cloudState.user); }
+    function mockCurrentExam() { return mockExamsCache.find(e => e.id === mockSelectedExamId) || null; }
+    function mockGroupDef(gid) { return (MOCK_UNIV_GROUPS || {})[gid] || null; }
+    function mockTierLabel(tier) { return (MOCK_TIER_LABELS || {})[Number(tier)] || ""; }
+
+    function mockPhase(exam) {
+      if (!exam) return "closed";
+      const now = Date.now();
+      const start = Date.parse(exam.start_at);
+      const end = Date.parse(exam.end_at);
+      if (Number.isFinite(start) && now < start) return "before";
+      if (Number.isFinite(end) && now > end) return "closed";
+      return "open";
+    }
+
+    function mockFormatDateTime(value) {
+      const d = new Date(value);
+      if (isNaN(d.getTime())) return "-";
+      return `${d.getMonth() + 1}/${d.getDate()}（${'日月火水木金土'[d.getDay()]}）${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
+    }
+
+    function mockFormatCountdown(ms) {
+      const total = Math.max(0, Math.floor(ms / 1000));
+      const d = Math.floor(total / 86400);
+      const h = Math.floor((total % 86400) / 3600);
+      const m = Math.floor((total % 3600) / 60);
+      const s = total % 60;
+      const hms = `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
+      return d > 0 ? `${d}日 ${hms}` : hms;
+    }
+
+    function mockSaveDraft() {
+      try { localStorage.setItem(MOCK_DRAFT_KEY, JSON.stringify({ examId: mockSelectedExamId, choices: mockEntryChoices })); } catch (e) {}
+    }
+
+    function mockLoadDraft(examId) {
+      try {
+        const raw = JSON.parse(localStorage.getItem(MOCK_DRAFT_KEY) || "null");
+        if (raw && raw.examId === examId && Array.isArray(raw.choices)) {
+          return raw.choices.filter(c => c && c.facultyId && c.groupId);
+        }
+      } catch (e) {}
+      return [];
+    }
+
+    function mockChoiceFromFaculty(f) {
+      const g = mockGroupDef(f.groupId) || {};
+      return {
+        facultyId: f.id, faculty: f.faculty, univ: f.univ, groupId: f.groupId,
+        groupName: g.name || `${f.univ}（${f.faculty}）`,
+        tier: String(g.tier || ""), category: g.category || ""
+      };
+    }
+
+    function mockTheoryMeanForExam(exam) {
+      const ids = Array.isArray(exam && exam.question_ids) ? exam.question_ids : [];
+      const rates = Array.isArray(exam && exam.expected_rates) ? exam.expected_rates : [];
+      if (!ids.length) return 50 * 0.55;
+      let sum = 0;
+      ids.forEach((id, i) => {
+        let r = Number(rates[i]);
+        if (!Number.isFinite(r) || r <= 0 || r > 1) {
+          const st = (userData.wordStats || {})[id];
+          if (st && Number(st.total) > 0) r = Math.min(0.95, Math.max(0.2, Number(st.correct) / Number(st.total)));
+          else r = 0.55;
+        }
+        sum += r;
+      });
+      return sum;
+    }
+
+    // RPC が使えないときのフォールバック（理論平均だけを使った参考値）
+    function mockBuildLocalReport(exam, result) {
+      const total = Math.max(1, Number(result && result.total) || 1);
+      const score = Number(result && result.score) || 0;
+      const theory = mockTheoryMeanForExam(exam);
+      const p = Math.min(0.95, Math.max(0.05, theory / total));
+      const sd = Math.max(Math.sqrt(total * p * (1 - p)), Math.max(total * 0.06, 2));
+      const dev = Math.round(Math.min(75, Math.max(25, 50 + 10 * (score - theory) / sd)) * 10) / 10;
+      return {
+        ok: true, local: true,
+        stats: {
+          n: 1, n_all: 1, n_late: result && result.is_late ? 1 : 0, mean: score,
+          trimmed_mean: score, theory_mean: Math.round(theory * 10) / 10,
+          hybrid_mean: Math.round(theory * 10) / 10, sd_sample: 0,
+          sd_effective: Math.round(sd * 100) / 100, provisional: true
+        },
+        me: { result: result, rank: null, percentile: null, deviation: dev, provisional: true },
+        groups: [], allGroups: []
+      };
+    }
+
+    // ---- 読み込み ----
+    async function loadMockExams() {
+      if (!mockIsReady()) { renderMockExamScreen(); return; }
+      mockBusy = true;
+      mockExamsError = "";
+      try {
+        const { data, error } = await supabaseClient.from("mock_exams")
+          .select("*").order("start_at", { ascending: false }).limit(30);
+        if (error) throw error;
+        mockExamsCache = Array.isArray(data) ? data : [];
+        mockExamsLoaded = true;
+      } catch (e) {
+        console.warn("[mock] load exams", e);
+        mockExamsError = (e && (e.code === "42P01" || /does not exist/i.test(String(e.message || ""))))
+          ? "Supabase に模試スキーマがまだ適用されていません（supabase/schema.sql を実行してください）。"
+          : "模試の開催予定を取得できませんでした。通信状況を確認してください。";
+        mockExamsCache = [];
+      } finally {
+        mockBusy = false;
+      }
+      renderMockExamScreen();
+    }
+
+    async function selectMockExam(id) {
+      mockSelectedExamId = id;
+      mockReport = null;
+      mockReportError = "";
+      mockMyResult = null;
+      mockLocalReport = null;
+      mockSubmitNote = "";
+      mockEntryChoices = mockLoadDraft(id);
+      renderMockExamScreen();
+      if (!mockIsReady()) return;
+      try {
+        const uid = cloudState.user.id;
+        const [entryRes, resultRes] = await Promise.all([
+          supabaseClient.from("mock_exam_entries").select("*").eq("exam_id", id).eq("user_id", uid).maybeSingle(),
+          supabaseClient.from("mock_exam_results").select("*").eq("exam_id", id).eq("user_id", uid).maybeSingle()
+        ]);
+        if (entryRes.data && Array.isArray(entryRes.data.choices)) mockEntryChoices = entryRes.data.choices;
+        if (resultRes.data) mockMyResult = resultRes.data;
+      } catch (e) {
+        console.warn("[mock] select exam", e);
+      }
+      await refreshMockReport(id);
+      renderMockExamScreen();
+    }
+
+    async function refreshMockReport(id) {
+      if (!mockIsReady()) return;
+      try {
+        const { data, error } = await supabaseClient.rpc("get_mock_exam_report", { p_exam_id: id });
+        if (error) throw error;
+        const rep = typeof data === "string" ? JSON.parse(data) : data;
+        if (!rep || rep.ok === false) throw new Error((rep && rep.error) || "report_failed");
+        mockReport = rep;
+        mockReportError = "";
+        mockLocalReport = null;
+        if (rep.me && rep.me.result) mockMyResult = rep.me.result;
+        if (Array.isArray(rep.me && rep.me.choices) && rep.me.choices.length) {
+          mockEntryChoices = rep.me.choices;
+          mockSaveDraft();
+        }
+      } catch (e) {
+        console.warn("[mock] report", e);
+        mockReport = null;
+        mockReportError = "サーバー集計を取得できませんでした（schema.sql の RPC 適用を確認してください）。";
+        const exam = mockCurrentExam();
+        if (exam && mockMyResult) mockLocalReport = mockBuildLocalReport(exam, mockMyResult);
+      }
+    }
+
+    // ---- エントリー操作 ----
+    function renderMockFacultySelect() {
+      const univSel = document.getElementById("mock-univ-select");
+      const facSel = document.getElementById("mock-faculty-select");
+      if (!univSel || !facSel) return;
+      const list = (MOCK_FACULTIES || []).filter(f => f.univ === univSel.value);
+      facSel.innerHTML = list.map(f => {
+        const g = mockGroupDef(f.groupId) || {};
+        return `<option value="${escapeHtml(f.id)}">${escapeHtml(f.faculty)}（${escapeHtml(g.name || "")}）</option>`;
+      }).join("");
+    }
+
+    function addMockChoice() {
+      const univSel = document.getElementById("mock-univ-select");
+      const facSel = document.getElementById("mock-faculty-select");
+      if (!univSel || !facSel) return;
+      const faculty = (MOCK_FACULTIES || []).find(f => f.id === facSel.value);
+      if (!faculty) return;
+      if (mockEntryChoices.length >= 5) { showToast("志望校は5つまでです"); return; }
+      if (mockEntryChoices.some(c => c.facultyId === faculty.id)) { showToast("同じ学部がすでに登録されています"); return; }
+      mockEntryChoices.push(mockChoiceFromFaculty(faculty));
+      mockSaveDraft();
+      renderMockExamScreen();
+    }
+
+    function removeMockChoice(index) {
+      mockEntryChoices = mockEntryChoices.filter((_, i) => i !== index);
+      mockSaveDraft();
+      renderMockExamScreen();
+    }
+
+    async function saveMockEntry() {
+      const exam = mockCurrentExam();
+      if (!exam || !mockIsReady()) return;
+      if (mockEntryChoices.length === 0) {
+        showAlert({ title: "志望校を選んでください", message: "第1志望から1つ以上登録してください。", icon: "🏫" });
+        return;
+      }
+      mockBusy = true;
+      try {
+        const { error } = await supabaseClient.from("mock_exam_entries").upsert({
+          exam_id: exam.id,
+          user_id: cloudState.user.id,
+          choices: mockEntryChoices,
+          updated_at: new Date().toISOString()
+        }, { onConflict: "exam_id,user_id" });
+        if (error) throw error;
+        mockSaveDraft();
+        showToast("📝 志望校をエントリーしました");
+        await refreshMockReport(exam.id);
+      } catch (e) {
+        console.warn("[mock] save entry", e);
+        showAlert({
+          title: "エントリーできませんでした",
+          message: "通信状況を確認するか、supabase/schema.sql の模試テーブルが適用されているか確認してください。",
+          icon: "☁️"
+        });
+      } finally {
+        mockBusy = false;
+        renderMockExamScreen();
+      }
+    }
+
+    // ---- 受験 ----
+    function mockPoolForExam(exam) {
+      const source = (exam && exam.subject === "kobun") ? KOBUN_SOURCE : LEAP_SOURCE;
+      const map = new Map(source.map(w => [Number(w.id), w]));
+      return ((exam && exam.question_ids) || []).map(id => map.get(Number(id))).filter(Boolean);
+    }
+
+    async function startMockExam() {
+      const exam = mockCurrentExam();
+      if (!exam) return;
+      if (mockPhase(exam) !== "open") {
+        showAlert({ title: "受験時間外です", message: "受験できるのは開始時刻から終了時刻までです。", icon: "⏰" });
+        return;
+      }
+      if (!mockIsReady()) {
+        showAlert({ title: "ログインが必要です", message: "全国一斉模試の受験にはログインが必要です。", icon: "☁️" });
+        return;
+      }
+      if (mockMyResult) {
+        showAlert({ title: "この回は受験済みです", message: "1人1回までの受験です。成績表を確認してください。", icon: "✅" });
+        return;
+      }
+      if (mockEntryChoices.length === 0) {
+        showAlert({ title: "志望校が未登録です", message: "先に第1志望を登録してエントリーしてください。", icon: "🏫" });
+        return;
+      }
+      // 未保存のまま受験しても志望校別集計に入るよう、開始前にエントリーを確定する
+      try {
+        await supabaseClient.from("mock_exam_entries").upsert({
+          exam_id: exam.id,
+          user_id: cloudState.user.id,
+          choices: mockEntryChoices,
+          updated_at: new Date().toISOString()
+        }, { onConflict: "exam_id,user_id" });
+      } catch (e) {
+        console.warn("[mock] pre-start entry save", e);
+      }
+      const pool = mockPoolForExam(exam);
+      if (!pool.length) {
+        showAlert({ title: "問題が見つかりません", message: "この回の問題IDに対応する単語データがありません。", icon: "🔍" });
+        return;
+      }
+      const minutes = Math.round((Number(exam.duration_sec) || 1500) / 60);
+      const ok = await showConfirm({
+        title: "模試を開始しますか？",
+        message: `${exam.title}\n${pool.length}問 ・ 制限時間 ${minutes}分。\n開始するとタイマーは止まりません。終了時刻を過ぎた提出は参考記録になります。`,
+        okText: "開始する",
+        cancelText: "やめる",
+        icon: "🏫",
+        danger: false
+      });
+      if (!ok) return;
+      if (exam.subject && exam.subject !== currentSubject) applySubject(exam.subject, { silent: true });
+      mockExamCurrent = exam;
+      mockExamStartedAt = Date.now();
+      mockLastMistakes = [];
+      mockLocalReport = null;
+      mockSubmitNote = "";
+      startQuizWithPool(pool, {
+        mockExam: true,
+        forceNormalStyle: true,
+        durationSec: Number(exam.duration_sec) || 1500,
+        mockQuestionCount: pool.length
+      });
+    }
+
+    async function submitMockExamResult(exam, score, total, elapsedSec, answers, isLate) {
+      if (!mockIsReady() || !exam) return;
+      mockSubmitNote = "";
+      try {
+        const { error } = await supabaseClient.from("mock_exam_results").insert({
+          exam_id: exam.id,
+          user_id: cloudState.user.id,
+          score: Math.max(0, Math.round(Number(score) || 0)),
+          total: Math.max(1, Math.round(Number(total) || 1)),
+          elapsed_sec: Math.max(0, Math.round(Number(elapsedSec) || 0)),
+          answers: Array.isArray(answers) ? answers : [],
+          is_late: !!isLate
+        });
+        if (error) {
+          if (error.code === "23505") {
+            mockSubmitNote = "この回はすでに受験済みのため、今回の記録は保存されていません（参考記録）。";
+          } else {
+            throw error;
+          }
+        } else {
+          mockSubmitNote = isLate ? "終了時刻を過ぎた提出のため、参考記録（is_late）として保存しました。" : "";
+          showToast("📮 模試の成績を提出しました");
+        }
+      } catch (e) {
+        console.warn("[mock] submit", e);
+        mockSubmitNote = "成績を提出できませんでした（通信エラー）。今回の結果は画面にのみ表示しています。";
+        mockLocalReport = mockBuildLocalReport(exam, {
+          score: score, total: total, elapsed_sec: elapsedSec, is_late: isLate, answers: answers
+        });
+      }
+      await refreshMockReport(exam.id);
+      renderMockExamScreen();
+    }
+
+    function reviewMockMistakes() {
+      const pool = (mockLastMistakes || []).filter(w => w && w.word);
+      if (!pool.length) { showToast("復習する誤答はありません"); return; }
+      startQuizWithPool(pool, { forceNormalMode: true, forceNormalStyle: true, questionCount: pool.length });
+    }
+
+    // ---- 表示 ----
+    function mockRenderExamList() {
+      const wrap = document.getElementById("mock-exam-list");
+      if (!wrap) return;
+      if (mockExamsError) {
+        wrap.innerHTML = `<p class="text-[11px] text-rose-600 leading-relaxed">${escapeHtml(mockExamsError)}</p>`;
+        return;
+      }
+      if (!mockExamsCache.length) {
+        wrap.innerHTML = `<p class="text-[11px] text-slate-400">${mockBusy ? "読み込み中..." : "開催予定の模試はありません。"}</p>`;
+        return;
+      }
+      const now = Date.now();
+      const upcoming = mockExamsCache.filter(e => Date.parse(e.end_at) >= now)
+        .sort((a, b) => Date.parse(a.start_at) - Date.parse(b.start_at));
+      const past = mockExamsCache.filter(e => Date.parse(e.end_at) < now)
+        .sort((a, b) => Date.parse(b.start_at) - Date.parse(a.start_at));
+      wrap.innerHTML = upcoming.concat(past).slice(0, 8).map(e => {
+        const phase = mockPhase(e);
+        const badge = phase === "open"
+          ? ["受験受付中", "text-rose-800 bg-rose-50 border-rose-300"]
+          : phase === "before"
+            ? ["開催前", "text-amber-800 bg-amber-50 border-amber-300"]
+            : ["終了", "text-slate-600 bg-slate-100 border-slate-300"];
+        const on = e.id === mockSelectedExamId;
+        return `<button type="button" onclick="selectMockExam('${e.id}')" class="w-full text-left border rounded-xl px-3 py-2.5 transition cursor-pointer ${on ? "border-indigo-400 bg-indigo-50" : "border-slate-200 bg-slate-50 hover:bg-white"}">
+          <span class="flex items-center justify-between gap-2">
+            <span class="text-[12px] font-extrabold text-slate-800 truncate">${escapeHtml(e.title)}</span>
+            <span class="shrink-0 text-[9px] font-extrabold border rounded-full px-1.5 py-0.5 ${badge[1]}">${badge[0]}</span>
+          </span>
+          <span class="block text-[10px] text-slate-500 mt-0.5 truncate">${escapeHtml(e.range_label || "")} ・ ${(e.question_ids || []).length}問</span>
+          <span class="block text-[10px] text-slate-400 mt-0.5">${mockFormatDateTime(e.start_at)} 〜 ${mockFormatDateTime(e.end_at)}</span>
+        </button>`;
+      }).join("");
+    }
+
+    function mockRenderStatus(exam) {
+      const status = document.getElementById("mock-exam-status");
+      if (!status) return;
+      const phase = mockPhase(exam);
+      const badge = phase === "open"
+        ? ["受験受付中", "text-rose-800 bg-rose-50 border-rose-300"]
+        : phase === "before"
+          ? ["開催前", "text-amber-800 bg-amber-50 border-amber-300"]
+          : ["終了", "text-slate-600 bg-slate-100 border-slate-300"];
+      const minutes = Math.round((Number(exam.duration_sec) || 1500) / 60);
+      status.innerHTML = `<div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-2">
+        <div class="flex items-start justify-between gap-2">
+          <div class="min-w-0">
+            <p class="text-sm font-extrabold text-slate-900">${escapeHtml(exam.title)}</p>
+            <p class="text-[11px] text-slate-500 mt-0.5">${escapeHtml(exam.range_label || "")} ・ ${(exam.question_ids || []).length}問 ・ ${minutes}分</p>
+          </div>
+          <span class="shrink-0 text-[10px] font-extrabold border rounded-full px-2 py-0.5 ${badge[1]}">${badge[0]}</span>
+        </div>
+        <p class="text-[11px] text-slate-500">${mockFormatDateTime(exam.start_at)} 〜 ${mockFormatDateTime(exam.end_at)}</p>
+        <p id="mock-countdown" class="text-xs font-extrabold text-slate-800 tabular-nums">-</p>
+        <p class="text-[10px] text-slate-400 leading-relaxed">開始前はカウントダウンと志望校登録。期間内は${minutes}分の制限時間で受験できます。終了時刻を過ぎた提出は参考記録（is_late）になります。</p>
+      </div>`;
+    }
+
+    function mockRenderEntrySection(exam) {
+      const wrap = document.getElementById("mock-entry-section");
+      if (!wrap) return;
+      const facs = Array.isArray(MOCK_FACULTIES) ? MOCK_FACULTIES : [];
+      if (!facs.length) {
+        wrap.innerHTML = `<p class="text-[11px] text-rose-600">志望校マスタが読み込まれていません（mock_schools_data.js）。</p>`;
+        return;
+      }
+      const locked = mockPhase(exam) === "closed";
+      const univs = [];
+      facs.forEach(f => { if (!univs.includes(f.univ)) univs.push(f.univ); });
+      const lastUniv = mockEntryChoices.length ? mockEntryChoices[mockEntryChoices.length - 1].univ : univs[0];
+      const defaultUniv = univs.includes(lastUniv) ? lastUniv : univs[0];
+      const univOpts = univs.map(u => `<option value="${escapeHtml(u)}"${u === defaultUniv ? " selected" : ""}>${escapeHtml(u)}</option>`).join("");
+      const facOpts = facs.filter(f => f.univ === defaultUniv).map(f => {
+        const g = mockGroupDef(f.groupId) || {};
+        return `<option value="${escapeHtml(f.id)}">${escapeHtml(f.faculty)}（${escapeHtml(g.name || "")}）</option>`;
+      }).join("");
+      const rows = mockEntryChoices.map((c, i) => `<div class="flex items-center gap-2 text-[11px] bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5">
+        <span class="w-5 h-5 rounded-full bg-slate-900 text-white text-[10px] font-extrabold flex items-center justify-center shrink-0">${i + 1}</span>
+        <span class="min-w-0 flex-1 truncate"><span class="font-bold text-slate-800">${escapeHtml(c.univ)}</span> ${escapeHtml(c.faculty)}</span>
+        <span class="text-[9px] text-slate-400 shrink-0">${escapeHtml(c.groupName || "")}</span>
+        ${locked ? "" : `<button type="button" onclick="removeMockChoice(${i})" class="text-slate-400 hover:text-rose-600 shrink-0 cursor-pointer">✕</button>`}
+      </div>`).join("");
+      wrap.innerHTML = `<div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-3">
+        <div class="flex items-center justify-between gap-2">
+          <p class="text-xs font-bold text-slate-700">志望校エントリー（第1〜第5志望）</p>
+          <span class="text-[10px] font-bold text-slate-500">${mockEntryChoices.length}/5</span>
+        </div>
+        ${locked ? "" : `<div class="space-y-2">
+          <select id="mock-univ-select" onchange="renderMockFacultySelect()" class="w-full p-2.5 border border-slate-300 rounded-xl text-xs font-bold bg-white cursor-pointer">${univOpts}</select>
+          <select id="mock-faculty-select" class="w-full p-2.5 border border-slate-300 rounded-xl text-xs font-bold bg-white cursor-pointer">${facOpts}</select>
+          <button type="button" onclick="addMockChoice()" class="w-full py-2 bg-slate-900 hover:bg-slate-700 text-white text-[11px] font-bold rounded-xl transition cursor-pointer">＋ 志望校に追加</button>
+        </div>`}
+        <div class="space-y-1.5">${rows || `<p class="text-[11px] text-slate-400">まだ登録がありません。第1志望から追加してください。</p>`}</div>
+        ${locked ? `<p class="text-[10px] text-slate-400">エントリーの受付は終了しました。</p>` : `<button type="button" onclick="saveMockEntry()" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-bold rounded-xl transition cursor-pointer">この内容でエントリーする</button>`}
+        <p class="text-[10px] text-slate-400 leading-relaxed">集計・判定は「大学×文理（groupId）」単位。第1〜第5志望まで登録できます。</p>
+      </div>`;
+    }
+
+    function mockRenderActionSection(exam) {
+      const wrap = document.getElementById("mock-action-section");
+      if (!wrap) return;
+      const phase = mockPhase(exam);
+      const result = mockMyResult || (mockReport && mockReport.me && mockReport.me.result) || null;
+      const minutes = Math.round((Number(exam.duration_sec) || 1500) / 60);
+      let html = "";
+      if (result) {
+        html = `<div class="bg-emerald-50 border border-emerald-200 rounded-xl p-4 space-y-1">
+          <p class="text-xs font-extrabold text-emerald-900">✅ この回は受験済みです</p>
+          <p class="text-[11px] text-emerald-700">${result.is_late ? "参考記録（終了時刻超過）" : "正規受験"} ・ 得点 ${Number(result.score) || 0}/${Number(result.total) || 0}</p>
+          <p class="text-[10px] text-emerald-600">成績表は下に表示しています。</p>
+        </div>`;
+      } else if (phase === "before") {
+        html = `<div class="bg-white border border-slate-200 rounded-xl p-4 space-y-2">
+          <p class="text-xs font-bold text-slate-700">開始前です</p>
+          <p class="text-[11px] text-slate-500 leading-relaxed">志望校（第1〜第5）を登録して待ちましょう。開始時刻になると受験ボタンが有効になります。</p>
+        </div>`;
+      } else if (phase === "open") {
+        const disabled = mockBusy || mockEntryChoices.length === 0;
+        html = `<div class="bg-white border border-slate-200 rounded-xl p-4 space-y-2">
+          <p class="text-xs font-bold text-slate-700">受験受付中</p>
+          <p class="text-[11px] text-slate-500 leading-relaxed">${(exam.question_ids || []).length}問 ／ 制限時間 ${minutes}分。途中退出しても制限時間は進みます。</p>
+          ${mockEntryChoices.length === 0 ? `<p class="text-[11px] font-bold text-rose-600">先に志望校を1つ以上登録してください。</p>` : ""}
+          <button type="button" onclick="startMockExam()" ${disabled ? "disabled" : ""} class="w-full py-3.5 ${disabled ? "bg-slate-300 text-white cursor-not-allowed" : "bg-rose-600 hover:bg-rose-700 text-white cursor-pointer"} font-bold rounded-xl transition">🏫 模試を開始する</button>
+        </div>`;
+      } else {
+        html = `<div class="bg-slate-50 border border-slate-200 rounded-xl p-4"><p class="text-xs font-bold text-slate-600">この回の受験期間は終了しました</p><p class="text-[11px] text-slate-400 mt-1">結果の集計は終了後に確定します。</p></div>`;
+      }
+      wrap.innerHTML = html;
+    }
+
+    function mockJudgeFor(group, rep) {
+      const stats = (rep && rep.stats) || {};
+      const dev = rep && rep.me ? Number(rep.me.deviation) : NaN;
+      const provisional = !!stats.provisional || !!(group && group.provisional) || !!(rep && rep.local);
+      if (!Number.isFinite(dev)) {
+        return { label: "判定保留", cls: "text-slate-700 bg-slate-50 border-slate-300", note: "偏差値を算出できませんでした" };
+      }
+      if (provisional) {
+        return {
+          label: "判定保留（暫定）",
+          cls: "text-amber-800 bg-amber-50 border-amber-300",
+          note: `受験者数 N=${Number(stats.n) || 0}（5未満）のため参考値。データが増えると判定が安定します。`
+        };
+      }
+      const tier = Number(group && group.tier) || 3;
+      const th = MOCK_JUDGE_THRESHOLDS[tier] || MOCK_JUDGE_THRESHOLDS[3];
+      let idx = dev >= th[0] ? 0 : dev >= th[1] ? 1 : dev >= th[2] ? 2 : 3;
+      const within = Number(group && group.percentileWithin);
+      if (Number.isFinite(within) && group.percentileWithin !== null) {
+        if (within <= 25 && idx > 0) idx -= 1;
+        else if (within >= 80 && idx < 3) idx += 1;
+      }
+      const labels = ["A（合格圏）", "B（挑戦圏）", "C（要強化）", "D（基礎固め）"];
+      const classes = [
+        "text-emerald-800 bg-emerald-50 border-emerald-300",
+        "text-sky-800 bg-sky-50 border-sky-300",
+        "text-amber-800 bg-amber-50 border-amber-300",
+        "text-rose-800 bg-rose-50 border-rose-300"
+      ];
+      return {
+        label: labels[idx], cls: classes[idx],
+        note: `tier ${tier}${mockTierLabel(tier) ? `（${mockTierLabel(tier)}）` : ""}基準 ／ 偏差値 ${dev}`
+      };
+    }
+
+    function mockRenderReportSection(exam) {
+      const wrap = document.getElementById("mock-report-section");
+      if (!wrap) return;
+      const rep = mockReport || mockLocalReport;
+      const result = mockMyResult || (rep && rep.me && rep.me.result) || null;
+      const parts = [];
+
+      if (result) {
+        const stats = (rep && rep.stats) || {};
+        const my = (rep && rep.me) || {};
+        const provisional = !!stats.provisional || !!(rep && rep.local);
+        const dev = (my.deviation === null || my.deviation === undefined) ? "-" : my.deviation;
+        const total = Math.max(1, Number(result.total) || 1);
+        const score = Number(result.score) || 0;
+        const pct = (my.percentile === null || my.percentile === undefined) ? "-" : my.percentile;
+        const rank = (my.rank === null || my.rank === undefined) ? "-" : my.rank;
+        const n = Number(stats.n) || 0;
+        const pctileText = pct === "-" ? "-" : Math.max(0, Math.round(100 - Number(pct)));
+        parts.push(`<div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-3">
+          <div class="flex items-center justify-between gap-2">
+            <p class="text-xs font-bold text-slate-700">📊 成績表</p>
+            <span class="text-[10px] font-extrabold px-2 py-0.5 rounded-full border ${provisional ? "text-amber-800 bg-amber-50 border-amber-300" : "text-emerald-800 bg-emerald-50 border-emerald-300"}">${provisional ? "暫定（データ不足・参考値）" : "確定集計"}</span>
+          </div>
+          <div class="grid grid-cols-3 gap-2 text-center">
+            <div class="bg-slate-50 rounded-xl p-2"><p class="text-[10px] font-bold text-slate-400">偏差値</p><p class="text-2xl font-extrabold text-indigo-700 tabular-nums">${dev}</p></div>
+            <div class="bg-slate-50 rounded-xl p-2"><p class="text-[10px] font-bold text-slate-400">順位</p><p class="text-2xl font-extrabold text-slate-900 tabular-nums">${rank}<span class="text-xs font-bold text-slate-400">位</span></p><p class="text-[10px] text-slate-400">/ ${n}人</p></div>
+            <div class="bg-slate-50 rounded-xl p-2"><p class="text-[10px] font-bold text-slate-400">上位</p><p class="text-2xl font-extrabold text-emerald-700 tabular-nums">${pctileText}<span class="text-xs font-bold text-slate-400">%</span></p></div>
+          </div>
+          <div class="flex items-center justify-between text-[11px] font-bold text-slate-600 bg-slate-50 rounded-lg px-3 py-2">
+            <span>得点 ${score} / ${total}（${Math.round(score / total * 100)}%）</span>
+            <span>${result.is_late ? "参考記録（is_late）" : "正規受験"}</span>
+          </div>
+          <div class="grid grid-cols-2 gap-x-2 gap-y-1 text-[10px] text-slate-500 leading-relaxed">
+            <p>受験者数 N=<span class="font-bold text-slate-700">${n}</span>${Number(stats.n_late) ? `（参考記録 ${stats.n_late}件を除く）` : ""}</p>
+            <p>集計単位: 全体</p>
+            <p>平均 ${stats.mean} ／ トリム平均 ${stats.trimmed_mean}</p>
+            <p>理論平均 ${stats.theory_mean} ／ 実効SD ${stats.sd_effective}</p>
+          </div>
+          ${mockSubmitNote ? `<p class="text-[11px] font-bold text-amber-800 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2">${escapeHtml(mockSubmitNote)}</p>` : ""}
+          ${rep && rep.local ? `<p class="text-[10px] text-rose-600">サーバー集計に接続できないため、理論平均だけを使った参考値を表示しています。</p>` : ""}
+          <div class="grid grid-cols-2 gap-2">
+            <button type="button" onclick="downloadMockResultImage()" class="py-2.5 bg-slate-100 hover:bg-slate-200 border border-slate-300 text-slate-800 text-[11px] font-bold rounded-xl transition cursor-pointer">📸 結果カードを保存</button>
+            <button type="button" onclick="reviewMockMistakes()" class="py-2.5 bg-rose-600 hover:bg-rose-700 text-white text-[11px] font-bold rounded-xl transition cursor-pointer">🔥 間違いを復習</button>
+          </div>
+          <button type="button" onclick="openMockFeedback()" class="w-full py-2 bg-white hover:bg-slate-50 border border-slate-200 text-slate-600 text-[10px] font-bold rounded-xl transition cursor-pointer">📮 この模試の感想を送る</button>
+        </div>`);
+      } else {
+        parts.push(`<div class="bg-white p-4 rounded-xl border border-dashed border-slate-300 text-center"><p class="text-2xl">🗓️</p><p class="text-xs font-bold text-slate-600 mt-1">まだ受験結果がありません</p><p class="text-[11px] text-slate-400 mt-0.5">受験期間内に挑戦すると、偏差値・順位・志望校判定が表示されます。</p></div>`);
+      }
+
+      if (mockReportError && !result) {
+        parts.push(`<p class="text-[11px] text-rose-600">${escapeHtml(mockReportError)}</p>`);
+      }
+
+      const groups = (rep && rep.groups) || [];
+      if (groups.length) {
+        parts.push(`<div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-2">
+          <p class="text-xs font-bold text-slate-700">🎯 志望校判定</p>
+          ${groups.map(g => {
+            const j = mockJudgeFor(g, rep);
+            return `<div class="border rounded-xl p-3 space-y-1 ${j.cls}">
+              <div class="flex items-center justify-between gap-2">
+                <p class="text-[11px] font-extrabold truncate">${escapeHtml(g.groupName || g.groupId)}</p>
+                <span class="shrink-0 text-[11px] font-extrabold border rounded-md px-1.5 py-0.5 bg-white/70">${j.label}</span>
+              </div>
+              <p class="text-[10px] font-bold">集計単位: ${escapeHtml(g.unitLabel || "全体")} ／ 受験者数 N=${Number(g.applicants) || 0}</p>
+              <p class="text-[10px]">志望者平均 ${g.avgScore === null || g.avgScore === undefined ? "-" : g.avgScore} ／ 志望者内 ${g.myRank === null || g.myRank === undefined ? "-" : g.myRank}位${g.percentileWithin === null || g.percentileWithin === undefined ? "" : `（上位${Math.max(0, Math.round(100 - Number(g.percentileWithin)))}%）`}</p>
+              <p class="text-[10px] opacity-80">${j.note}</p>
+            </div>`;
+          }).join("")}
+          <p class="text-[10px] text-slate-400 leading-relaxed">判定は偏差値・志望者内順位・大学tierの組み合わせ。N&lt;5 は「判定保留（暫定）」です。</p>
+        </div>`);
+      }
+
+      const all = (rep && rep.allGroups) || [];
+      if (all.length) {
+        parts.push(`<div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-2">
+          <p class="text-xs font-bold text-slate-700">🏫 全大学×文理群の目安一覧</p>
+          <div class="space-y-1.5 max-h-72 overflow-y-auto">
+            ${all.map(g => `<div class="flex items-center justify-between gap-2 text-[10px] bg-slate-50 border border-slate-100 rounded-lg px-2.5 py-1.5">
+              <span class="min-w-0 truncate font-bold text-slate-700">${escapeHtml(g.groupName || g.groupId)}</span>
+              <span class="shrink-0 text-slate-500 tabular-nums">志望 ${Number(g.applicants) || 0}人 ／ 平均 ${g.avgScore === null || g.avgScore === undefined ? "-" : g.avgScore}${g.provisional ? "（参考）" : ""}</span>
+            </div>`).join("")}
+          </div>
+        </div>`);
+      }
+
+      wrap.innerHTML = parts.join("");
+    }
+
+    function startMockCountdown(exam) {
+      stopMockCountdown();
+      const tick = () => {
+        const el = document.getElementById("mock-countdown");
+        if (!el) return;
+        const phase = mockPhase(exam);
+        if (phase === "before") el.textContent = `⏳ 開始まで ${mockFormatCountdown(Date.parse(exam.start_at) - Date.now())}`;
+        else if (phase === "open") el.textContent = `🔴 終了まで ${mockFormatCountdown(Date.parse(exam.end_at) - Date.now())}`;
+        else el.textContent = "受付終了";
+        if (mockCountdownPhase && phase !== mockCountdownPhase) {
+          mockCountdownPhase = phase;
+          renderMockExamScreen();
+        } else {
+          mockCountdownPhase = phase;
+        }
+      };
+      tick();
+      mockCountdownTimer = setInterval(tick, 1000);
+    }
+
+    function stopMockCountdown() {
+      if (mockCountdownTimer) { clearInterval(mockCountdownTimer); mockCountdownTimer = null; }
+    }
+
+    function renderMockExamScreen() {
+      const notice = document.getElementById("mock-auth-notice");
+      const main = document.getElementById("mock-main");
+      if (!notice || !main) return;
+      const ready = CLOUD_ENABLED && !!(cloudState && cloudState.user);
+      if (!ready) {
+        main.classList.add("hidden");
+        notice.classList.remove("hidden");
+        notice.innerHTML = !CLOUD_ENABLED
+          ? `<p class="text-sm font-bold text-amber-900">☁️ 全国一斉模試はオンライン集計です</p>
+             <p class="text-[11px] text-amber-800 leading-relaxed">この端末では Supabase が未設定のため、模試の開催情報・エントリー・偏差値集計は利用できません。通常のクイズ・到達度テストはこれまで通りローカルで動作します。</p>`
+          : `<p class="text-sm font-bold text-amber-900">ログインすると模試に参加できます</p>
+             <p class="text-[11px] text-amber-800 leading-relaxed">全国一斉模試は、日時の揃った受験と全国集計のためログイン（クラウド同期）が必要です。未ログインでも他の機能はそのまま使えます。</p>
+             <button type="button" onclick="navigate('screen-social')" class="px-3 py-2 bg-slate-900 hover:bg-slate-700 text-white text-[11px] font-bold rounded-xl transition cursor-pointer">ログイン画面へ</button>`;
+        return;
+      }
+      notice.classList.add("hidden");
+      main.classList.remove("hidden");
+      if (!mockExamsLoaded && !mockBusy) loadMockExams();
+      mockRenderExamList();
+      const exam = mockCurrentExam();
+      const detail = document.getElementById("mock-exam-detail");
+      if (!exam) {
+        if (detail) detail.classList.add("hidden");
+        return;
+      }
+      if (detail) detail.classList.remove("hidden");
+      mockRenderStatus(exam);
+      mockRenderEntrySection(exam);
+      mockRenderActionSection(exam);
+      mockRenderReportSection(exam);
+      startMockCountdown(exam);
+    }
+
+    // 結果カード（html2canvas）に模試成績を流し込んで保存する
+    async function downloadMockResultImage() {
+      const exam = mockCurrentExam();
+      const rep = mockReport || mockLocalReport;
+      if (!exam || !rep || !rep.me || !rep.me.result) { showToast("成績表がまだありません"); return; }
+      const card = document.getElementById("result-share-card");
+      if (!card || typeof html2canvas !== "function") { showToast("この端末では画像生成に対応していません"); return; }
+      const result = rep.me.result;
+      const total = Math.max(1, Number(result.total) || 1);
+      const score = Number(result.score) || 0;
+      const accuracy = Math.round(score / total * 100);
+      const setText = (id, text) => { const el = document.getElementById(id); if (el) el.textContent = text; };
+      setText("shc-kicker", "MOCK EXAM RESULT");
+      setText("shc-title", getFullTitle());
+      setText("shc-title-note", exam.title || "全国一斉模試");
+      setText("shc-level", `Lv.${userData.level}`);
+      setText("shc-player-title", getFullTitle());
+      setText("shc-exp", `偏差値 ${rep.me.deviation === null || rep.me.deviation === undefined ? "-" : rep.me.deviation}`);
+      setText("shc-rate", String(accuracy));
+      setText("shc-rate-small", String(accuracy));
+      setText("shc-score", String(score));
+      setText("shc-score-total", `/${total}`);
+      setText("shc-combo", "-");
+      setText("shc-coins", result.is_late ? "参考記録" : "正規受験");
+      setText("shc-range", `${exam.range_label || exam.title || ""}${rep.stats ? `・N=${rep.stats.n || 0}` : ""}`);
+      setText("shc-date", getTodayString().replace(/-/g, "."));
+      const avatar = document.getElementById("shc-avatar");
+      if (avatar) applyFrameStyle(avatar, userData.equippedFrame, "shc-avatar-tile");
+      const delta = document.getElementById("shc-delta");
+      if (delta) delta.className = "shc-delta shc-hidden";
+      const streak = document.getElementById("shc-streak");
+      if (streak) streak.classList.add("shc-hidden");
+      const list = document.getElementById("shc-mistakes");
+      if (list) list.innerHTML = "";
+      const mistakes = (mockLastMistakes || []).slice(0, 6);
+      const wrap = document.getElementById("shc-mistakes-wrap");
+      if (wrap) wrap.classList.toggle("shc-hidden", mistakes.length === 0);
+      setText("shc-mistakes-count", mistakes.length ? `${mockLastMistakes.length} 語` : "");
+      mistakes.forEach(w => {
+        if (!list) return;
+        const li = document.createElement("li");
+        li.className = "shc-mistake";
+        li.innerHTML = `<span class="shc-mistake-word">${escapeHtml(w.word)}<span class="shc-mistake-id">#${w.id}</span></span>`
+          + `<span class="shc-mistake-meaning">${escapeHtml(w.meaning || "")}</span>`;
+        list.appendChild(li);
+      });
+      showToast("スクリーンショットを生成中...");
+      try {
+        if (document.fonts && document.fonts.ready) await document.fonts.ready;
+        const canvas = await html2canvas(card, {
+          scale: 2, backgroundColor: null, logging: false, useCORS: true,
+          width: 440, height: card.offsetHeight, windowWidth: 440, windowHeight: card.offsetHeight
+        });
+        const blob = await new Promise(resolve => canvas.toBlob(resolve, "image/png"));
+        if (!blob) { showToast("結果カードを生成できませんでした"); return; }
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `LEAP_Mock_${Date.now()}.png`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        showToast("画像を保存しました！");
+      } catch (err) {
+        console.error(err);
+        showToast("画像の生成に失敗しました");
+      }
+    }
+
     function startQuizWithPool(pool, options) {
       const forceNormal = !!(options && options.forceNormalMode);
       const forceNormalStyle = !!(options && options.forceNormalStyle);
-      const examRun = !!(options && options.examMode);
+      const mockRun = !!(options && options.mockExam);
+      const examRun = !!(options && options.examMode) || mockRun;
+      const forcedCount = Number(options && options.questionCount) || 0;
+      mockExamRunning = mockRun;
       examRunning = examRun;
       examStartedAt = examRun ? Date.now() : 0;
+      examSessionTotalMs = mockRun
+        ? Math.max(60, Number(options && options.durationSec) || 1500) * 1000
+        : EXAM_TOTAL_MS;
       const style = (forceNormalStyle || examRun) ? "normal" : effectiveQuizStyle();
       const mode = examRun ? "exam" : (forceNormal ? "normal" : gameMode);
       quizGameMode = mode;
@@ -4169,9 +5077,13 @@
       if (mode === "sprint") {
         targetCount = Math.min(80, Math.max(30, candidates.length));
       } else if (mode === "exam") {
-        targetCount = Math.min(EXAM_QUESTION_COUNT, candidates.length);
+        const examCap = mockRun
+          ? (Number(options && options.mockQuestionCount) || EXAM_QUESTION_COUNT)
+          : EXAM_QUESTION_COUNT;
+        targetCount = Math.min(examCap, candidates.length);
       } else {
-        targetCount = questionLimit === 0 ? candidates.length : Math.min(questionLimit, candidates.length);
+        const normalCap = forcedCount > 0 ? forcedCount : questionLimit;
+        targetCount = normalCap === 0 ? candidates.length : Math.min(normalCap, candidates.length);
       }
 
       const selectedWords = [];
@@ -4241,8 +5153,9 @@
       quizState.isAborted = false;
       quizState.answeredCount = 0;
       quizState.endReason = "";
-      quizState.timeLeftMs = mode === "exam" ? EXAM_TOTAL_MS : SPRINT_TOTAL_MS;
+      quizState.timeLeftMs = mode === "exam" ? examSessionTotalMs : SPRINT_TOTAL_MS;
       quizState.questionTimeLeftMs = SUDDEN_MS;
+      quizState.answerLog = {}; // 模試の提出用（index → 正誤）
       quizState.startLevel = getLevelState(userData.exp).level;
 
       const rInfo = document.getElementById("quiz-range-info");
@@ -4252,7 +5165,10 @@
           : style === "listening" ? " ・ 🎧音声"
           : style === "spelling" ? " ・ 🔤スペル"
           : "";
-        rInfo.textContent = `${examRun ? examRangeLabel() : selectedRange.label}${styleTag}${modeTag}`;
+        const examLabel = examRun
+          ? (mockRun ? (mockExamCurrent && mockExamCurrent.title ? mockExamCurrent.title : "全国一斉模試") : examRangeLabel())
+          : selectedRange.label;
+        rInfo.textContent = `${examLabel}${styleTag}${modeTag}`;
       }
       const liveCoins = document.getElementById("quiz-live-coins");
       if (liveCoins) liveCoins.textContent = `🪙 +0`;
@@ -4293,7 +5209,7 @@
       }
       if (wrap) wrap.classList.remove("hidden");
       if (quizGameMode === "exam") {
-        quizState.timeLeftMs = EXAM_TOTAL_MS;
+        quizState.timeLeftMs = examSessionTotalMs;
         startExamClock();
         updateTimerUi();
         return;
@@ -4374,7 +5290,7 @@
         const m = Math.floor(left / 60000);
         const s = Math.floor((left % 60000) / 1000);
         if (label) label.textContent = `🎓 残り ${m}:${String(s).padStart(2, "0")}`;
-        if (bar) { bar.style.width = `${Math.min(100, (left / EXAM_TOTAL_MS) * 100)}%`; bar.className = left <= 300000 ? urgentClass : normalClass; }
+        if (bar) { bar.style.width = `${Math.min(100, (left / Math.max(1, examSessionTotalMs)) * 100)}%`; bar.className = left <= 300000 ? urgentClass : normalClass; }
         if (note) note.textContent = "時間切れで自動終了";
         return;
       }
@@ -4876,6 +5792,11 @@
       });
 
       const q = quizState.questions[quizState.currentIndex];
+      // 全国一斉模試: 提出用に問題ごとの正誤を記録する
+      if (mockExamRunning) {
+        quizState.answerLog = quizState.answerLog || {};
+        quizState.answerLog[quizState.currentIndex] = !!selectedOption.isCorrect;
+      }
       const container = document.getElementById("quiz-options-container");
       const buttons = container ? container.querySelectorAll("button") : [];
 
@@ -5128,6 +6049,31 @@
       const accuracy = totalQ > 0 ? Math.round((quizState.correctCount / totalQ) * 100) : 0;
       const finalScore = Math.round(quizState.score);
 
+      // 全国一斉模試: ローカル履歴ではなく全国集計へ提出し、成績表画面へ戻す
+      if (mockExamRunning) {
+        const mockExam = mockExamCurrent;
+        const mockScore = quizState.correctCount || 0;
+        const mockQuestions = quizState.questions || [];
+        const mockAnswers = mockQuestions.map((q, i) => ({
+          id: q.word ? q.word.id : null,
+          correct: !!(quizState.answerLog && quizState.answerLog[i])
+        }));
+        const mockElapsed = Math.max(0, Math.round((Date.now() - (mockExamStartedAt || Date.now())) / 1000));
+        const mockLate = mockExam ? (Date.now() > Date.parse(mockExam.end_at)) : false;
+        mockLastMistakes = (quizState.mistakes || []).slice();
+        mockExamRunning = false;
+        examRunning = false;
+        if (!isAborted && mockExam && mockQuestions.length > 0) {
+          submitMockExamResult(mockExam, mockScore, mockQuestions.length, mockElapsed, mockAnswers, mockLate);
+        } else if (isAborted) {
+          mockSubmitNote = "中断したため、模試の記録は提出していません。";
+        }
+        saveUserData();
+        checkAchievements();
+        navigate(MOCK_SCREEN_ID);
+        return;
+      }
+
       // 到達度テスト: 判定と履歴保存（中断時は記録しない）
       let examSummary = null;
       if (examRunning && !isAborted && totalQ > 0) {
@@ -5135,7 +6081,7 @@
         const rangeName = examRangeLabel();
         const history = Array.isArray(userData.examHistory) ? userData.examHistory : [];
         const prevSame = history.find(h => h && (h.subject || "leap") === currentSubject && h.range === rangeName) || null;
-        const seconds = Math.max(0, Math.min(Math.round((Date.now() - (examStartedAt || Date.now())) / 1000), Math.round(EXAM_TOTAL_MS / 1000)));
+        const seconds = Math.max(0, Math.min(Math.round((Date.now() - (examStartedAt || Date.now())) / 1000), Math.round(examSessionTotalMs / 1000)));
         userData.examHistory = [{
           id: `exam-${Date.now()}`,
           date: getTodayString(),
@@ -6153,6 +7099,404 @@ listContainer.appendChild(row);
         console.error("shareResult error:", err);
         showToast("共有処理でエラーが発生しました");
       }
+    }
+
+    // ============================================================
+    // 📢 お知らせ / 📮 意見箱（公開側）
+    //   - お知らせ: Supabase 未設定時は何も表示しない
+    //   - 意見箱: 未ログインでも投稿可（submit_feedback RPC 経由）
+    // ============================================================
+    const COMMUNITY_SEEN_KEY = "LEAP_ANNOUNCEMENTS_SEEN_V1";
+    const COMMUNITY_DRAFT_KEY = "LEAP_FEEDBACK_DRAFT_V1";
+    const COMMUNITY_TOKEN_KEY = "LEAP_FEEDBACK_CLIENT_TOKEN_V1";
+    const COMMUNITY_CATEGORIES = [
+      { id: "opinion", label: "💬 感想" },
+      { id: "request", label: "💡 要望" },
+      { id: "bug", label: "🐞 不具合" },
+      { id: "praise", label: "👏 称賛" },
+      { id: "other", label: "📝 その他" }
+    ];
+    const COMMUNITY_SCREEN_LABELS = {
+      "screen-home": "ホーム",
+      "screen-select": "出題設定",
+      "screen-quiz": "クイズ",
+      "screen-result": "結果",
+      "screen-shop": "ショップ",
+      "screen-social": "フレンド",
+      "screen-dictionary": "単語辞典",
+      "screen-reference": "参考資料",
+      "screen-affix": "語源",
+      "screen-affix-rush": "語源ラッシュ",
+      "screen-affix-memory": "語源メモリー",
+      "screen-reader": "リーダー",
+      "screen-exam": "到達度テスト",
+      "screen-stats": "学習記録",
+      "screen-mock-exam": "全国模試"
+    };
+    const COMMUNITY_LEVEL_STYLES = {
+      info: { label: "お知らせ", cls: "text-sky-800 bg-sky-50 border-sky-200" },
+      warning: { label: "重要", cls: "text-amber-800 bg-amber-50 border-amber-200" },
+      success: { label: "キャンペーン", cls: "text-emerald-800 bg-emerald-50 border-emerald-200" }
+    };
+
+    let communityAnnouncements = [];
+    let communitySeen = [];
+    let feedbackCategory = "opinion";
+    let feedbackRating = 0;
+    let feedbackPage = "";
+    let feedbackSubmitting = false;
+
+    function readCommunitySeen() {
+      try {
+        const raw = JSON.parse(localStorage.getItem(COMMUNITY_SEEN_KEY) || "[]");
+        return Array.isArray(raw) ? raw.filter((id) => typeof id === "string").slice(0, 100) : [];
+      } catch (e) { return []; }
+    }
+
+    function formatCommunityDate(value) {
+      const d = new Date(value);
+      if (isNaN(d.getTime())) return "";
+      return `${d.getFullYear()}/${d.getMonth() + 1}/${d.getDate()}`;
+    }
+
+    async function loadCommunityAnnouncements() {
+      if (!supabaseClient) return;
+      try {
+        const nowIso = new Date().toISOString();
+        const { data, error } = await supabaseClient
+          .from("announcements")
+          .select("id,title,body,level,pinned,published_at")
+          .lte("published_at", nowIso)
+          .or(`expires_at.is.null,expires_at.gt.${nowIso}`)
+          .order("pinned", { ascending: false })
+          .order("published_at", { ascending: false })
+          .limit(20);
+        if (error) throw error;
+        communityAnnouncements = Array.isArray(data) ? data : [];
+      } catch (err) {
+        console.warn("[community] announcements", err);
+        communityAnnouncements = [];
+      }
+      renderCommunityAnnouncements();
+    }
+
+    function renderCommunityAnnouncements() {
+      const wrap = document.getElementById("home-announcements");
+      const list = document.getElementById("home-announcements-list");
+      const badge = document.getElementById("home-announcements-unread");
+      if (!wrap || !list) return;
+      if (!communityAnnouncements.length) {
+        wrap.classList.add("hidden");
+        list.innerHTML = "";
+        return;
+      }
+      wrap.classList.remove("hidden");
+      const unread = communityAnnouncements.filter((a) => !communitySeen.includes(a.id)).length;
+      if (badge) {
+        badge.textContent = `NEW ${unread}`;
+        badge.classList.toggle("hidden", unread === 0);
+      }
+      list.innerHTML = communityAnnouncements.slice(0, 2).map((a) => `
+        <button type="button" onclick="openAnnouncementsModal()" class="w-full text-left flex items-start gap-1.5 hover:bg-amber-100/60 rounded-lg px-1 py-0.5 transition cursor-pointer">
+          <span class="text-amber-500 text-[10px] mt-0.5">•</span>
+          <span class="min-w-0 flex-1">
+            <span class="block text-[11px] font-bold text-amber-900 truncate">${escapeHtml(a.title)}</span>
+            <span class="block text-[9px] text-amber-700/70">${formatCommunityDate(a.published_at)}</span>
+          </span>
+        </button>`).join("");
+    }
+
+    function markCommunityAnnouncementsSeen() {
+      const ids = communityAnnouncements.map((a) => a.id);
+      communitySeen = Array.from(new Set(ids.concat(communitySeen))).slice(0, 100);
+      try { localStorage.setItem(COMMUNITY_SEEN_KEY, JSON.stringify(communitySeen)); } catch (e) {}
+      const badge = document.getElementById("home-announcements-unread");
+      if (badge) badge.classList.add("hidden");
+    }
+
+    function renderAnnouncementsList() {
+      const list = document.getElementById("announcements-list");
+      if (!list) return;
+      if (!communityAnnouncements.length) {
+        list.innerHTML = `<p class="text-center text-xs text-slate-400 py-6">お知らせはありません。</p>`;
+        return;
+      }
+      list.innerHTML = communityAnnouncements.map((a) => {
+        const meta = COMMUNITY_LEVEL_STYLES[a.level] || COMMUNITY_LEVEL_STYLES.info;
+        return `<article class="border border-slate-200 rounded-2xl p-3.5 space-y-1.5">
+          <div class="flex items-center gap-1.5 flex-wrap">
+            <span class="text-[9px] font-extrabold border rounded-full px-1.5 py-0.5 ${meta.cls}">${meta.label}</span>
+            ${a.pinned ? `<span class="text-[9px] font-extrabold text-amber-800 bg-amber-100 border border-amber-200 rounded-full px-1.5 py-0.5">📌</span>` : ""}
+            <span class="text-[10px] text-slate-400">${formatCommunityDate(a.published_at)}</span>
+          </div>
+          <h4 class="text-sm font-extrabold text-slate-900 break-words">${escapeHtml(a.title)}</h4>
+          <p class="text-[12px] text-slate-600 leading-relaxed break-words" style="white-space:pre-wrap">${escapeHtml(a.body)}</p>
+        </article>`;
+      }).join("");
+    }
+
+    function openAnnouncementsModal() {
+      renderAnnouncementsList();
+      markCommunityAnnouncementsSeen();
+      const modal = document.getElementById("announcements-modal");
+      if (!modal) return;
+      modal.classList.remove("hidden");
+      modal.classList.add("flex");
+    }
+
+    function closeAnnouncementsModal() {
+      const modal = document.getElementById("announcements-modal");
+      if (!modal) return;
+      modal.classList.add("hidden");
+      modal.classList.remove("flex");
+    }
+
+    // ----- 意見箱 -----
+    function fallbackFeedbackUuid() {
+      const hex = () => Math.floor(Math.random() * 16).toString(16);
+      let out = "";
+      for (let i = 0; i < 36; i++) out += (i === 8 || i === 13 || i === 18 || i === 23) ? "-" : hex();
+      return out;
+    }
+
+    function feedbackClientToken() {
+      const pattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+      try {
+        let token = localStorage.getItem(COMMUNITY_TOKEN_KEY);
+        if (!token || !pattern.test(token)) {
+          token = (window.crypto && typeof crypto.randomUUID === "function") ? crypto.randomUUID() : fallbackFeedbackUuid();
+          localStorage.setItem(COMMUNITY_TOKEN_KEY, token);
+        }
+        return token;
+      } catch (e) { return fallbackFeedbackUuid(); }
+    }
+
+    function readFeedbackDraft() {
+      try {
+        const draft = JSON.parse(localStorage.getItem(COMMUNITY_DRAFT_KEY) || "null");
+        return draft && typeof draft === "object" ? draft : null;
+      } catch (e) { return null; }
+    }
+
+    function saveFeedbackDraft() {
+      const bodyEl = document.getElementById("feedback-body");
+      const contactEl = document.getElementById("feedback-contact");
+      const draft = {
+        category: feedbackCategory,
+        body: bodyEl ? String(bodyEl.value || "").slice(0, 2000) : "",
+        rating: feedbackRating,
+        contact: contactEl ? String(contactEl.value || "").slice(0, 200) : ""
+      };
+      try {
+        if (!draft.body && !draft.contact) localStorage.removeItem(COMMUNITY_DRAFT_KEY);
+        else localStorage.setItem(COMMUNITY_DRAFT_KEY, JSON.stringify(draft));
+      } catch (e) {}
+    }
+
+    function clearFeedbackDraft() {
+      try { localStorage.removeItem(COMMUNITY_DRAFT_KEY); } catch (e) {}
+    }
+
+    function renderFeedbackCategories() {
+      const wrap = document.getElementById("feedback-categories");
+      if (!wrap) return;
+      wrap.innerHTML = COMMUNITY_CATEGORIES.map((c) => {
+        const on = c.id === feedbackCategory;
+        return `<button type="button" onclick="setFeedbackCategory('${c.id}')" class="py-2 px-1 text-[10px] font-bold rounded-lg border transition cursor-pointer ${on ? "bg-slate-900 text-white border-slate-900" : "bg-white text-slate-600 border-slate-200 hover:bg-slate-50"}">${c.label}</button>`;
+      }).join("");
+    }
+
+    function renderFeedbackRating() {
+      const wrap = document.getElementById("feedback-rating");
+      if (!wrap) return;
+      wrap.innerHTML = [1, 2, 3, 4, 5].map((n) => `
+        <button type="button" onclick="setFeedbackRating(${n})" aria-label="${n}点" class="text-2xl leading-none px-0.5 cursor-pointer ${n <= feedbackRating ? "text-amber-400" : "text-slate-300 hover:text-amber-300"}">★</button>`).join("") +
+        `<button type="button" onclick="setFeedbackRating(0)" class="ml-2 text-[10px] font-bold text-slate-400 hover:text-slate-700 cursor-pointer">なし</button>`;
+    }
+
+    function updateFeedbackCount() {
+      const bodyEl = document.getElementById("feedback-body");
+      const count = document.getElementById("feedback-count");
+      if (!bodyEl || !count) return;
+      count.textContent = `${bodyEl.value.length} / 2000`;
+    }
+
+    function setFeedbackCategory(id) {
+      if (!COMMUNITY_CATEGORIES.some((c) => c.id === id)) return;
+      feedbackCategory = id;
+      renderFeedbackCategories();
+      saveFeedbackDraft();
+    }
+
+    function setFeedbackRating(n) {
+      feedbackRating = Math.max(0, Math.min(5, Number(n) || 0));
+      renderFeedbackRating();
+      saveFeedbackDraft();
+    }
+
+    function onFeedbackInput() {
+      const errorEl = document.getElementById("feedback-body-error");
+      if (errorEl) errorEl.classList.add("hidden");
+      updateFeedbackCount();
+      saveFeedbackDraft();
+    }
+
+    function setFeedbackStatus(text, type) {
+      const el = document.getElementById("feedback-status");
+      if (!el) return;
+      el.textContent = text || "";
+      el.classList.toggle("hidden", !text);
+      el.classList.remove("bg-rose-50", "text-rose-700", "bg-emerald-50", "text-emerald-700");
+      if (type === "error") el.classList.add("bg-rose-50", "text-rose-700");
+      else if (type === "ok") el.classList.add("bg-emerald-50", "text-emerald-700");
+    }
+
+    function openFeedbackModal(opts) {
+      opts = opts || {};
+      feedbackPage = opts.page || COMMUNITY_SCREEN_LABELS[currentScreenId()] || "";
+      feedbackCategory = "opinion";
+      feedbackRating = 0;
+      const draft = readFeedbackDraft();
+      const bodyEl = document.getElementById("feedback-body");
+      const contactEl = document.getElementById("feedback-contact");
+      if (bodyEl) bodyEl.value = "";
+      if (contactEl) contactEl.value = "";
+      if (draft) {
+        if (draft.category && COMMUNITY_CATEGORIES.some((c) => c.id === draft.category)) feedbackCategory = draft.category;
+        if (bodyEl && draft.body) bodyEl.value = String(draft.body).slice(0, 2000);
+        if (contactEl && draft.contact) contactEl.value = String(draft.contact).slice(0, 200);
+        if (Number.isFinite(draft.rating)) feedbackRating = Math.max(0, Math.min(5, draft.rating));
+      }
+      renderFeedbackCategories();
+      renderFeedbackRating();
+      updateFeedbackCount();
+      setFeedbackStatus("");
+      const errorEl = document.getElementById("feedback-body-error");
+      if (errorEl) errorEl.classList.add("hidden");
+      const offline = document.getElementById("feedback-offline");
+      if (offline) offline.classList.toggle("hidden", !!supabaseClient);
+      const loginNote = document.getElementById("feedback-login-note");
+      if (loginNote) loginNote.classList.toggle("hidden", !(cloudState && cloudState.user));
+      const hp = document.getElementById("feedback-honeypot");
+      if (hp) hp.value = "";
+      const modal = document.getElementById("feedback-modal");
+      if (!modal) return;
+      modal.classList.remove("hidden");
+      modal.classList.add("flex");
+    }
+
+    function closeFeedbackModal() {
+      saveFeedbackDraft();
+      const modal = document.getElementById("feedback-modal");
+      if (!modal) return;
+      modal.classList.add("hidden");
+      modal.classList.remove("flex");
+    }
+
+    async function submitFeedback() {
+      const bodyEl = document.getElementById("feedback-body");
+      const contactEl = document.getElementById("feedback-contact");
+      const hpEl = document.getElementById("feedback-honeypot");
+      const errorEl = document.getElementById("feedback-body-error");
+      const body = String(bodyEl ? bodyEl.value : "").trim();
+      if (errorEl) errorEl.classList.add("hidden");
+      if (!body) {
+        if (errorEl) { errorEl.textContent = "本文を入力してください。"; errorEl.classList.remove("hidden"); }
+        if (bodyEl) bodyEl.focus();
+        return;
+      }
+      if (body.length > 2000) {
+        if (errorEl) { errorEl.textContent = "本文は2000文字までです。"; errorEl.classList.remove("hidden"); }
+        return;
+      }
+      if (!supabaseClient) {
+        setFeedbackStatus("接続できないため送信できません。「文面をコピー」をご利用ください。", "error");
+        return;
+      }
+      if (feedbackSubmitting) return;
+
+      feedbackSubmitting = true;
+      const btn = document.getElementById("feedback-submit");
+      if (btn) { btn.disabled = true; btn.textContent = "送信中…"; }
+      try {
+        const { data, error } = await supabaseClient.rpc("submit_feedback", {
+          p_category: feedbackCategory,
+          p_body: body,
+          p_rating: feedbackRating || null,
+          p_page: feedbackPage || "",
+          p_subject: typeof currentSubject === "string" ? currentSubject : "",
+          p_contact: contactEl ? String(contactEl.value || "").trim() : "",
+          p_client_token: feedbackClientToken(),
+          p_honeypot: hpEl ? String(hpEl.value || "") : ""
+        });
+        if (error) throw error;
+        if (!data || data.ok !== true) {
+          const code = data && data.error;
+          if (code === "rate_limited") throw new Error("送信が集中しています。1時間ほどあけてからもう一度お試しください。");
+          if (code === "too_long") throw new Error("本文は2000文字までです。");
+          if (code === "empty") throw new Error("本文を入力してください。");
+          throw new Error("送信できませんでした。時間をおいてもう一度お試しください。");
+        }
+        clearFeedbackDraft();
+        if (bodyEl) bodyEl.value = "";
+        if (contactEl) contactEl.value = "";
+        feedbackRating = 0;
+        renderFeedbackRating();
+        updateFeedbackCount();
+        setFeedbackStatus("ありがとうございました！いただいた意見は運営で確認します。", "ok");
+        showToast("ご意見を送信しました");
+      } catch (err) {
+        console.warn("[community] submit feedback", err);
+        const raw = String((err && err.message) || "");
+        const friendly = /Failed to fetch|NetworkError|Load failed/i.test(raw)
+          ? "通信できませんでした。電波の良い場所でもう一度お試しください。"
+          : (raw || "送信できませんでした。");
+        setFeedbackStatus(friendly, "error");
+        saveFeedbackDraft();
+      } finally {
+        feedbackSubmitting = false;
+        if (btn) { btn.disabled = false; btn.textContent = "送信する"; }
+      }
+    }
+
+    function copyFeedbackText() {
+      const bodyEl = document.getElementById("feedback-body");
+      const contactEl = document.getElementById("feedback-contact");
+      const body = String(bodyEl ? bodyEl.value : "").trim();
+      if (!body) {
+        setFeedbackStatus("本文を入力するとコピーできます。", "error");
+        return;
+      }
+      const cat = (COMMUNITY_CATEGORIES.find((c) => c.id === feedbackCategory) || {}).label || "ご意見";
+      const contact = contactEl ? String(contactEl.value || "").trim() : "";
+      const lines = [
+        `【LEAP ${cat}】`,
+        body,
+        "",
+        `ページ: ${feedbackPage || "未選択"}`,
+        `環境: ${navigator.userAgent}`
+      ];
+      if (contact) lines.push(`連絡先: ${contact}`);
+      const text = lines.join("\n");
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(() => showToast("文面をコピーしました")).catch(() => fallbackCopy(text));
+      } else {
+        fallbackCopy(text);
+      }
+    }
+
+    function openMockFeedback() {
+      const exam = (mockReport && mockReport.exam) || (mockLocalReport && mockLocalReport.exam) || null;
+      const title = (exam && exam.title) ? exam.title : "全国一斉模試";
+      openFeedbackModal({ page: `模試: ${title}` });
+    }
+
+    function initCommunityUi() {
+      communitySeen = readCommunitySeen();
+      renderFeedbackCategories();
+      renderFeedbackRating();
+      updateFeedbackCount();
+      loadCommunityAnnouncements();
     }
 
     // ===== 設定・その他シート =====
@@ -7749,10 +9093,8 @@ listContainer.appendChild(row);
     // ☁️ Supabase: 認証・クラウド同期・フレンド
     // ============================================================
     // ▼▼ 設定: Supabase ダッシュボード → Project Settings → API の値をここへ ▼▼
-    const SUPABASE_CONFIG = {
-      url: "https://eqyksnvfkjgyjutcixqs.supabase.co",       // 例: "https://abcdefghijkl.supabase.co"
-      anonKey: "sb_publishable_ubwPgv7b6RejCSSqRYwamQ_QPSqZ_hp"    // 例: "sb_publishable_..." または anon key
-    };
+    // 設定は supabase_config.js に集約（admin.html と共有）
+    const SUPABASE_CONFIG = window.LEAP_SUPABASE_CONFIG || { url: "", anonKey: "" };
     // ▲▲ 未設定でもエラーにならず、従来のローカルモードで動作する ▲▲
 
     // プロバイダを増やすときはこの配列に追加するだけでログインボタンが増える。
@@ -8458,7 +9800,7 @@ listContainer.appendChild(row);
       const note = document.getElementById("cloud-unavailable-note");
       if (note) {
         note.classList.toggle("hidden", CLOUD_ENABLED);
-        note.textContent = "クラウド機能は未設定です。index.html 冒頭の SUPABASE_CONFIG に URL と anon key を設定すると有効になります。今の学習データは端末内に保存され、これまで通り遊べます。";
+        note.textContent = "クラウド機能は未設定です。supabase_config.js に URL と anon key を設定すると有効になります。今の学習データは端末内に保存され、これまで通り遊べます。";
       }
 
       const wrap = document.getElementById("cloud-login-buttons");
@@ -8993,6 +10335,7 @@ listContainer.appendChild(row);
       checkIncomingChallenge();
       initAchievements();
       initCloud();
+      initCommunityUi();
       checkFriendInviteParam();
       checkAuthErrorParam();
       syncAffixTypeUi();

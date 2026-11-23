@@ -607,7 +607,7 @@
     }
 
     // 画面遷移
-    const SCREENS = ["screen-home", "screen-select", "screen-quiz", "screen-shop", "screen-social", "screen-dictionary", "screen-reference", "screen-affix", "screen-affix-rush", "screen-affix-memory", "screen-reader", "screen-exam", "screen-stats", "screen-result"];
+    const SCREENS = ["screen-home", "screen-select", "screen-quiz", "screen-shop", "screen-social", "screen-dictionary", "screen-reference", "screen-affix", "screen-affix-rush", "screen-affix-memory", "screen-reader", "screen-exam", "screen-stats", "screen-mock-exam", "screen-result"];
     function currentScreenId() {
       const found = SCREENS.find(id => {
         const el = document.getElementById(id);
@@ -674,6 +674,8 @@
         if (affixMemory && !affixMemory.ended) affixMemory.ended = true;
         stopAffixMemoryTimer();
       }
+      // 全国一斉模試のカウントダウンは画面を離れたら止める
+      if (screenId !== "screen-mock-exam" && typeof stopMockCountdown === "function") stopMockCountdown();
       SCREENS.forEach(id => {
         const el = document.getElementById(id);
         if (el) {
@@ -702,6 +704,7 @@
         applyDictionaryFilters();
       }
       if (screenId === "screen-exam" && typeof renderExamScreen === "function") renderExamScreen();
+      if (screenId === "screen-mock-exam" && typeof renderMockExamScreen === "function") renderMockExamScreen();
       if (screenId === "screen-stats" && typeof renderStatsScreen === "function") renderStatsScreen();
       if (screenId === "screen-home") updateUserUI();
 

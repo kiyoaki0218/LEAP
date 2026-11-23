@@ -3,9 +3,9 @@
 LEAP 4択英単語クイズを、ログイン・端末間同期・相互フレンド対応にするための手順書です。
 所要時間の目安は 30〜45 分（Google は 10 分、LINE は 20 分ほど）。
 
-> このアプリは**ビルド不要の静的サイト**です。Supabase のキーは `index.html` 冒頭の
-> `SUPABASE_CONFIG` に直接書きます（anon key は公開前提のキーで、データは RLS で保護します）。
-> **service_role キーは絶対に貼り付けないでください。**
+> このアプリは**ビルド不要の静的サイト**です。Supabase のキーは **`supabase_config.js`** に
+> 書きます（`index.html` と管理画面 `admin.html` が共有）。anon key は公開前提のキーで、
+> データは RLS で保護します。**service_role キーは絶対に貼り付けないでください。**
 
 ---
 
@@ -66,10 +66,10 @@ where schemaname = 'public' order by tablename, policyname;
 2. 次の 2 つを控える。
    - **Project URL** … `https://xxxxxxxx.supabase.co`
    - **anon public**（新 UI では **publishable key**）… `sb_publishable_...` または `eyJ...`
-3. `index.html` 冒頭付近の設定を書き換える。
+3. `supabase_config.js` の設定を書き換える（`index.html` と `admin.html` の両方が読み込む）。
 
 ```js
-const SUPABASE_CONFIG = {
+window.LEAP_SUPABASE_CONFIG = {
   url: "https://xxxxxxxx.supabase.co",
   anonKey: "sb_publishable_xxxxxxxx"
 };
@@ -225,7 +225,7 @@ select id, requester_id, addressee_id, status from public.friendships;
 ## 7. Vercel へのデプロイ
 
 1. リポジトリを Vercel に接続（Framework Preset: **Other**、Build Command なし、Output Directory はルート）。
-2. `index.html` の `SUPABASE_CONFIG` に本番用 URL / anon key が入っていることを確認。
+2. `supabase_config.js` に本番用 URL / anon key が入っていることを確認。
 3. デプロイ後、Vercel の本番ドメインを Supabase の **Site URL / Redirect URLs** と
    Google の **Authorized JavaScript origins** に追加。
 4. 本番ドメインでログイン → クイズ → リロードして同期を確認。

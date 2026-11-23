@@ -18,11 +18,11 @@
 
 - **何か**: 大学受験英単語帳「LEAP」の 4択クイズ × ゲーム要素の学習 PWA。加えて「裏世界」ゾーンで古文単語クイズも遊べる。
 - **構成**: ビルド不要の**静的サイト**。`index.html` に HTML（マークアップ）とアプリ本体のインライン JS を持ち、基盤 JS は `js/core.js`、アプリ固有 CSS は `assets/css/app.css`（いずれも外部ファイル）、データは `*_data.js` の JS 定数。
-- **バックエンドは任意**: 基本は **localStorage** のみでオフライン動作。`SUPABASE_CONFIG` を設定すると **Supabase**（Auth / Postgres / RLS）によるクラウド同期と相互フレンドが有効になる。未設定なら従来どおりローカルのみで正常動作する。
+- **バックエンドは任意**: 基本は **localStorage** のみでオフライン動作。`supabase_config.js` に URL / anon key を設定すると **Supabase**（Auth / Postgres / RLS）によるクラウド同期・相互フレンド・お知らせ・意見箱が有効になる。未設定なら従来どおりローカルのみで正常動作する（お知らせは非表示、意見箱は文面コピーのみ）。
 - **収録**: 英単語 2,300 語（Part 1〜5）／例文・単語詳細 2,300 語分・例文クイズ 2,000 語分／参考資料 5 章／接辞 32 グループ・132 語根／古文単語 150 語（2 章）。
-- **主な遊び**: 通常4択・例文穴埋め・リスニング4択・スペル入力・60秒スプリント・サドンデス、到達度テスト（50問・25分・S〜D判定）、デイリーチャレンジ、忘却曲線の苦手復習、学習カレンダー/Part別マスター率の振り返り、コイン/EXP/レベル、称号・フレーム・アバター、実績 93 種、共有URL（挑戦状）、任意ログインによるクラウド同期・相互フレンドの詳細ステータス閲覧。
+- **主な遊び**: 通常4択・例文穴埋め・リスニング4択・スペル入力・60秒スプリント・サドンデス、到達度テスト（50問・25分・S〜D判定）、**全国一斉模試（日時指定の時間割制・ハイブリッド偏差値・志望校判定）**、デイリーチャレンジ、忘却曲線の苦手復習、学習カレンダー/Part別マスター率の振り返り、コイン/EXP/レベル、称号・フレーム・アバター、実績 93 種、共有URL（挑戦状）、任意ログインによるクラウド同期・相互フレンドの詳細ステータス閲覧。運営向けに **お知らせ**（ホーム表示）と **意見箱**（匿名可）、管理者用の `admin.html`（お知らせ CRUD・意見トリアージ）を持つ。
 - **ホスティング**: 静的ホスティング（Vercel 想定。`vercel.json` なし、`.vercel/` は gitignore）。
-- **主要ファイル**: `index.html`（アプリ本体）、`js/core.js`（称号・ゾーン・画面遷移の基盤）、`assets/css/app.css`（アプリ固有 CSS）、`words_data.js`、`examples_data.js`、`reference_data.js`、`affix_data.js`、`kobun/kobun_words_data.js`、`sw.js`、`manifest.json`、`supabase/schema.sql`（DB/RLS）、`LEAP単語データ/`（元データ）、`patches/`（データ生成・一括改修スクリプト）。
+- **主要ファイル**: `index.html`（アプリ本体）、`js/core.js`（称号・ゾーン・画面遷移の基盤）、`assets/css/app.css`（アプリ固有 CSS）、`admin.html` ＋ `js/admin.js`（管理者ダッシュボード）、`supabase_config.js`（Supabase 公開設定の共有）、`words_data.js`、`examples_data.js`、`reference_data.js`、`affix_data.js`、`mock_schools_data.js`（模試の志望校マスタ）、`kobun/kobun_words_data.js`、`sw.js`、`manifest.json`、`supabase/schema.sql`（DB/RLS・模試集計RPC・意見箱RPC）、`LEAP単語データ/`（元データ）、`patches/`（データ生成・一括改修スクリプト）。
 
 ---
 
@@ -70,14 +70,15 @@
 | 画像生成 | html2canvas 1.4.1（CDN） | 結果カードのスクリーンショット保存（`#result-share-card` を撮影） |
 | 音声 | Web Speech API（`speechSynthesis`） | 英単語は `en-US`、古文は `ja-JP` |
 | 永続化 | localStorage（＋任意で Supabase） | キー一覧は §11 |
-| クラウド（任意） | Supabase JS v2（CDN） / Postgres / Auth / RLS | `SUPABASE_CONFIG` 未設定時は初期化しない |
-| オフライン | `sw.js`（Cache API） | キャッシュ名 `leap-v28`、Network-First。Supabase と認証コールバックは Network-Only |
+| クラウド（任意） | Supabase JS v2（CDN） / Postgres / Auth / RLS | `supabase_config.js` が未設定なら初期化しない。anon / publishable key のみ使用（service_role は使わない） |
+| 管理画面 | `admin.html` ＋ `js/admin.js`（別ページ・`noindex`） | Supabase Auth ＋ `admin_users` 許可リスト。SW のキャッシュ対象外（Network-Only） |
+| オフライン | `sw.js`（Cache API） | キャッシュ名 `leap-v33`、Network-First。Supabase・認証コールバック・`admin.html` は Network-Only |
 | PWA | `manifest.json`、アイコン各種 | standalone 表示、theme `#059669` |
 | ビルド | なし | `.js` データは `<script>` で直接読む |
 
 ### キャッシュ更新の仕組み
 
-- `index.html` 冒頭の `APP_VER`（現在 `leap-v7-split2`）が `localStorage.LEAP_APP_CACHE_VER` と違えば、全 Cache を削除。
+- `index.html` 冒頭の `APP_VER`（現在 `leap-v12-community`）が `localStorage.LEAP_APP_CACHE_VER` と違えば、全 Cache を削除。
 - `sw.js` は `install` で `skipWaiting()`、`activate` で旧キャッシュ削除＋`clients.claim()`。
 - 取得は Network-First（HTML は常に最新、オフライン時のみキャッシュ）。
 - **フロントを更新したら `sw.js` の `CACHE` 名と `index.html` の `APP_VER` を上げる**のが運用ルール。
@@ -102,8 +103,11 @@
 | `screen-reader` | レベル別リーダー | 例文から長文を自動生成して読む（**現在 UI 入口なし＝休眠機能**） |
 | `screen-exam` | 🎓 到達度テスト | 範囲（全範囲／Part単位）を選んで 50問・25分のテスト。S〜D判定と過去の記録を表示 |
 | `screen-stats` | 📊 学習記録 | 直近12週の日別ヒートマップ（学習カレンダー）、連続学習・累計解答・マスター/苦手語数、Part別マスター率 |
+| `screen-mock-exam` | 🏫 全国一斉模試 | 開催スケジュール一覧、カウントダウン、志望校（第1〜第5）エントリー、制限時間つき受験、偏差値・順位・志望校判定・全大学×文理群の目安一覧。ログイン＋Supabase が必要（未設定／未ログインは案内表示） |
 
-モーダル／ダイアログ: **設定・その他シート（`settings-modal`）**、実績、苦手単語一覧、単語詳細シート、フレンド詳細ステータスシート、結果のフレンド共有シート、初回ログイン時の競合解決ダイアログ、リーダー単語ポップ、確認ダイアログ（`showConfirm`/`showAlert`）、トースト。
+モーダル／ダイアログ: **設定・その他シート（`settings-modal`）**、**お知らせ一覧（`announcements-modal`）**、**意見箱（`feedback-modal`）**、実績、苦手単語一覧、単語詳細シート、フレンド詳細ステータスシート、結果のフレンド共有シート、初回ログイン時の競合解決ダイアログ、リーダー単語ポップ、確認ダイアログ（`showConfirm`/`showAlert`）、トースト。
+
+画面外のページ: `admin.html`（管理者ダッシュボード。`SCREENS` には含めない独立ページ）。
 
 ホームの副次的な入口（実績・ショップ・アカウント／同期・自分の詳細・音声ON/OFF・追加JSON読込）は「⚙️ 設定・その他」シートに集約している（`openSettingsModal` / `closeSettingsModal`）。各ボタンは既存IDを保つため、バッジやラベルの自動更新はそのまま動作する。
 
@@ -228,6 +232,28 @@ const KOBUN_PARTS = [
 
 ---
 
+### 3.7 全国一斉模試の志望校マスタ `mock_schools_data.js`
+
+```js
+const MOCK_UNIV_GROUPS = {
+  doshisha_bun: { name: "同志社大学（文系）", univ: "同志社大学", tier: 2, category: "関関同立" },
+  ...
+};
+const MOCK_FACULTIES = [
+  { id: "doshisha_bun_law", univ: "同志社大学", faculty: "法学部", groupId: "doshisha_bun" },
+  ...
+];
+const MOCK_TIER_LABELS = { 1: "最難関", 2: "難関", 3: "中堅", 4: "チャレンジ" };
+```
+
+- **画面では大学＋学部を選ぶ**が、**集計・判定は `groupId`（大学×文理）単位**。
+- `tier`（1=最難関 / 2=難関 / 3=中堅 / 4=チャレンジ）と `category`（国公立 / 関関同立 / 産近甲龍 / 早慶 / MARCH など）をグループに持たせ、母数不足時のフォールバック集計に使う。
+- 収録: 関西の国公立（京都・大阪・神戸・大阪公立・京都府立ほか）、関関同立、産近甲龍、関西中堅私立、関東の難関（東京・一橋・東京科学・早慶・上智・MARCH・東京理科 ほか）。
+- 学部を追加するときは `MOCK_FACULTIES` に1行追加（既存 `groupId` を使えば同じ集計単位に入る）。新しい大学×文理を作る場合は `MOCK_UNIV_GROUPS` も追加する。
+- `sw.js` の `ASSETS` に含める（キャッシュ更新時は `CACHE` と `APP_VER` も上げる）。
+
+---
+
 ## 4. 出題（クイズ）ロジック
 
 ### 4.1 範囲の決め方
@@ -332,6 +358,24 @@ expRequiredForLevel(level) = 100 + (level - 1) * 50
 - **記録**: `userData.examHistory`（最大20件）に `{ id, date, subject, range, correct, total, accuracy, grade, seconds }` を保存。中断時は保存しない（コイン・EXPの獲得分は残る）。
 - 結果画面の `result-exam-banner` に判定・範囲・前回比を表示。再挑戦は `retryCurrentQuiz()` が到達度テストを再開する。
 - クイズのゲームモード定義（`GAME_MODES`）には `exam` を含むが、出題範囲画面のモードボタンには出さない（専用画面から開始する）。
+
+---
+
+### 4.10 全国一斉模試（`screen-mock-exam`）
+
+日時を揃えた「時間割制」の模試。**Supabase 有効＋ログイン時のみ**受験・集計でき、未設定／未ログインでは案内を表示する（他の機能はローカルのまま動作）。
+
+- **スケジュール**: `mock_exams` を新しい順に取得し、開催中／開催前を先、終了済みを後に並べる。`start_at` / `end_at` で次の3状態を判定（`mockPhase`）。
+  - 開催前（`now < start_at`）: 開始までのカウントダウンと志望校登録。
+  - 受験時間枠内（`start_at <= now <= end_at`）: 「模試を開始する」。制限時間は開催回の `duration_sec`（既定 1500 秒 = 25 分）。
+  - 終了後（`now > end_at`）: 成績表（確定 or 暫定）と志望校判定を表示。
+- **出題**: `mock_exams.question_ids` の単語をそのまま出題（`subject` = `leap` / `kobun`）。通常4択固定。
+- **開始時刻の保持**: 開始時に `mockExamStartedAt` を記録し、`elapsed_sec` を提出。終了時刻を過ぎた提出は `is_late = true`（参考記録）として保存し、正規受験の集計から除外する。
+- **エントリー**: 第1〜第5志望を `mock_exam_entries.choices`（jsonb 配列）に保存。各要素は `{ facultyId, univ, faculty, groupId, groupName, tier, category }` の自己記述形式で、これだけで大学×文理／tier／category の集計ができる。ローカル下書きは `LEAP_MOCK_CHOICES_V1`。
+- **成績表**: `get_mock_exam_report` の返却値を表示。偏差値・順位・上位パーセンタイル・受験者数 N・平均・トリム平均・理論平均・実効SD・志望校判定（A/B/C/D または判定保留）・全大学×文理群の目安一覧。
+- **判定**（`mockJudgeFor`）: 偏差値と `tier` 別しきい値（tier1: 63/57/50、tier2: 60/54/47、tier3: 56/50/44、tier4: 52/46/40）で A〜D を決め、志望者内パーセンタイルが上位25%なら1段上げ、下位20%なら1段下げる。**N < 5 または暫定フラグ時は「判定保留（暫定）」**。
+- **復習導線**: 結果画面と同じく間違えた単語を `startQuizWithPool` で復習できる（`reviewMockMistakes`）。`html2canvas` の `#result-share-card` に偏差値・得点・要復習を流し込んで画像保存できる（`downloadMockResultImage`）。
+- **中断**: 模試中に中断した場合は提出せず、成績表画面へ戻る（コイン・EXP の獲得分は残る）。
 
 ---
 
@@ -475,6 +519,10 @@ expRequiredForLevel(level) = 100 + (level - 1) * 50
 | `LEAP_CLOUD_DISPLAY_NAME_V1` | フレンド一覧に表示する表示名（ローカル控え） |
 | `LEAP_SHARED_RESULTS_SEEN_V1` | 既読にしたフレンド共有結果の ID 配列（「📥 共有」の未読バッジ用） |
 | `LEAP_EXAM_RANGE_V1` | 到達度テストの範囲（Part ID。空文字 = 全範囲） |
+| `LEAP_MOCK_CHOICES_V1` | 全国一斉模試の志望校下書き（`{ examId, choices: [...] }`）。サーバー保存前の控え |
+| `LEAP_ANNOUNCEMENTS_SEEN_V1` | 既読にしたお知らせ ID の配列（最大100件。ホームの NEW バッジ用） |
+| `LEAP_FEEDBACK_DRAFT_V1` | 意見箱の下書き（`{ category, body, rating, contact }`） |
+| `LEAP_FEEDBACK_CLIENT_TOKEN_V1` | 意見箱のレート制限用クライアント UUID（端末ごとに生成） |
 
 ### 11.2 `userData` の主なフィールド
 
@@ -502,12 +550,13 @@ expRequiredForLevel(level) = 100 + (level - 1) * 50
 
 ## 12. クラウド同期・フレンド（Supabase・任意）
 
-`index.html` 冒頭の `SUPABASE_CONFIG`（`url` / `anonKey`）を設定したときだけ有効になる。未設定・CDN 失敗時は `supabaseClient = null` のまま、すべてのクラウド UI が「ローカルのみ」表示になり従来動作を維持する（画面は落ちない）。
+`supabase_config.js` の `window.LEAP_SUPABASE_CONFIG`（`url` / `anonKey`）を設定したときだけ有効になる（`index.html` と `admin.html` で共有）。未設定・CDN 失敗時は `supabaseClient = null` のまま、すべてのクラウド UI が「ローカルのみ」表示になり従来動作を維持する（画面は落ちない）。
 
 ### 12.1 設定と初期化
 
 ```js
-const SUPABASE_CONFIG = { url: "https://xxxx.supabase.co", anonKey: "sb_publishable_..." };
+// supabase_config.js
+window.LEAP_SUPABASE_CONFIG = { url: "https://xxxx.supabase.co", anonKey: "sb_publishable_..." };
 ```
 
 - Supabase JS は `<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">` で読み込む（ビルド工程なし）。
@@ -564,6 +613,32 @@ const SUPABASE_CONFIG = { url: "https://xxxx.supabase.co", anonKey: "sb_publisha
 | `profiles` | `id`(auth.users FK), `friend_code` unique, `display_name`, `equipped_avatar/frame`, `prefix/suffix`, `quick_stats` jsonb, `updated_at` | 認証済みは SELECT 可。INSERT/UPDATE/DELETE は本人のみ |
 | `friendships` | `id`, `requester_id`, `addressee_id`, `status` (pending/accepted), 日時 | 当事者のみ SELECT/DELETE。INSERT は requester 本人。UPDATE（承認）は addressee のみ |
 | `user_progress` | `user_id` PK, `user_data` jsonb, `achievements` jsonb, `share_detailed_logs`, `client_updated_at`, `updated_at` | 書き込みは本人のみ。SELECT は本人または `accepted` フレンド |
+| `mock_exams` | `id`, `title`, `subject` (leap/kobun), `range_label`, `question_ids` int[], `expected_rates` float8[], `start_at`, `end_at`, `duration_sec` (既定1500), `created_at` | 認証済みは SELECT 可（開催回マスタ） |
+| `mock_exam_entries` | `id`, `exam_id`, `user_id`, `choices` jsonb（第1〜第5志望）, `updated_at`。`(exam_id,user_id)` unique | 本人のみ SELECT / INSERT / UPDATE / DELETE |
+| `mock_exam_results` | `id`, `exam_id`, `user_id`, `score`, `total`, `elapsed_sec`, `answers` jsonb, `is_late`, `submitted_at`。`(exam_id,user_id)` unique | 本人のみ INSERT / SELECT（UPDATE/DELETE 不可） |
+| `admin_users` | `user_id`（auth.users FK・PK）, `note`, `created_at` | RLS 有効・ポリシーなし。`security definer` の `is_admin()` からのみ参照でき、anon / authenticated は直接読めない |
+| `announcements` | `id`, `title`(120), `body`(4000), `level`(info/warning/success), `pinned`, `published_at`, `expires_at`, `created_by`, 日時 | anon / authenticated は**公開期間内のみ** SELECT。管理者は全件の SELECT/INSERT/UPDATE/DELETE |
+| `feedback` | `id`, `category`(opinion/request/bug/praise/other), `body`(2000), `rating`(1〜5), `page`, `subject`, `user_id`, `contact`, `client_token`, `status`(new/reading/done/archived), `admin_note`, 日時 | 管理者のみ SELECT/UPDATE/DELETE。**直接 INSERT は不可**で、投稿は `submit_feedback()` RPC 経由 |
+
+#### 模試の集計 RPC `get_mock_exam_report(p_exam_id uuid)`
+
+`security definer`（他ユーザーの生データは返さない）。`is_late = false` の提出だけを正規受験として集計する。
+
+- `stats`: `n`（正規受験者数）, `n_all`, `n_late`, `mean`, `trimmed_mean`, `theory_mean`, `hybrid_mean`, `sd_sample`, `sd_effective`, `provisional`。
+- `me`: 自分の `result` / `rank` / `percentile` / `deviation`。
+- `groups`: 自分の各志望 `groupId` ごとの `applicants`, `avgScore`, `myRank`, `percentileWithin`, `unit`, `unitLabel`, `provisional`。母数 < 5 なら「同tier」→「同category」→「全体」へフォールバックし、`unitLabel` に集計単位を明示。
+- `allGroups`: エントリー済みの全大学×文理群の志望者数・平均・最高点（終了後の目安一覧）。
+
+**ハイブリッド偏差値の計算**（少人数のブレ対策）:
+
+1. 理論平均 = Σ `expected_rates`（SQL では未設定・不正値を 0.55 で補完。RPC が使えないときのフロント参考値では `wordStats` の正答率を使い、なければ 0.55）。
+2. 標本平均は N ≥ 8 のとき上下10%を除いたトリム平均。
+3. ハイブリッド平均 μ = w·標本平均 + (1−w)·理論平均（w = N / (N + 8)）。
+4. 標準偏差は 標本SD と 理論SD = √(n·p̄·(1−p̄)) を同じ重みで混合し、下限 `max(total×0.06, 2.0)`・上限 `max(total×0.35, 下限)` でクリップ。
+5. 偏差値 = clamp(50 + 10·(得点−μ)/SD_eff, 25, 75)。
+6. N < 5 は `provisional = true`（暫定・参考値）。
+
+`supabase/schema.sql` には動作確認用にサンプル開催回（`00000000-0000-4000-8000-000000000001`、ID 1〜50・50問・25分）を `on conflict do nothing` で入れてある。日時はインストール時からの相対（開始 +1日 / 終了 +14日）なので、本番では適宜差し替える。
 
 - `(least(requester_id, addressee_id), greatest(...))` のユニークインデックスで双方向の重複を防止。
 - `auth.users` の INSERT トリガー `leap_handle_new_user()` がプロフィールとフレンドコードを自動作成。
@@ -571,12 +646,93 @@ const SUPABASE_CONFIG = { url: "https://xxxx.supabase.co", anonKey: "sb_publisha
 - クライアント側でもプロフィールが無い場合に作成するフォールバックあり。
 - 詳細ログの非公開はアプリ側の表示制御（RLS はフレンドに `user_progress` 全体を許可するため、機密度が高い拡張をする場合はビュー／RPC 化を検討）。
 
-### 12.6 セットアップ手順（要約）
+### 12.6 意見箱・お知らせ・管理ダッシュボード（Phase 1）
+
+#### 公開側（`index.html`）
+
+- **お知らせ**: ホーム上部に公開期間内の最新2件を表示（`pinned` → `published_at` の順）。「すべて見る」で `announcements-modal` に全件表示。未読は `LEAP_ANNOUNCEMENTS_SEEN_V1` で管理し、NEW バッジを出す。**Supabase 未設定時・取得失敗時は何も表示しない**（静的フォールバックなし）。
+- **意見箱**: ホーム下部・設定シート・模試成績表の3か所から `feedback-modal` を開く。種別（感想/要望/不具合/称賛/その他）、本文（最大2,000字）、★1〜5（任意）、連絡先（任意）、自動添付（表示中の画面名・教科・UA）。下書きは `LEAP_FEEDBACK_DRAFT_V1` に保存。
+- **未ログインでも投稿可**。未設定・オフライン時は送信ボタンを案内に切り替え、「文面をコピー」で定型文をクリップボードへ。
+- 投稿は `rpc("submit_feedback", ...)` を呼ぶだけ。テーブルへの直接 INSERT 権限は anon に与えない。
+
+#### 投稿 RPC `submit_feedback(p_category, p_body, p_rating, p_page, p_subject, p_contact, p_client_token, p_honeypot)`
+
+`security definer`。戻り値は `{ ok: true }` または `{ ok: false, error }`。
+
+| 検証 | 内容 |
+|---|---|
+| 本文 | 1〜2,000文字（trim 後）。空は `empty`、超過は `too_long` |
+| 種別 | 5種以外は `other` に丸める |
+| 評価 | `null` または 1〜5（範囲外は `bad_rating`） |
+| ハニーポット | `p_honeypot` に値があれば**保存せず** `{ ok: true }` を返す（ボットに検知させない） |
+| レート制限 | 同一 `client_token` で 5件/時、ログイン済みは `user_id` で 10件/時。超過は `rate_limited` |
+| 列の上限 | `page` 120字 / `subject` 20字 / `contact` 200字に切り詰め |
+
+#### 管理画面（`admin.html` ＋ `js/admin.js`）
+
+- `noindex, nofollow`。`sw.js` は `admin.html` を Network-Only にし、キャッシュしない。
+- Supabase Auth（メール＋パスワード）でログイン → `rpc("is_admin")` が `true` のときだけ画面を表示。権限がなければ即サインアウトする。フロント側のパスワード判定は行わない。
+- **お知らせ**: 作成・編集・削除、種別、ピン留め、公開日時（未来＝公開予約）、掲載終了日時。公開中／公開予定／掲載終了を一覧に表示。
+- **意見箱**: 全件（最大300件）を新しい順に表示。種別・状態・キーワードで絞り込み、状態（新規/確認中/対応済み/アーカイブ）と管理メモを保存。管理メモはユーザーには公開されない。
+- 破壊的操作（削除）は画面内の確認ダイアログを挟む。
+
+#### 管理者アカウントの作成
+
+`admin.html` は**メール＋パスワード**のログインのみ対応する。Google / LINE だけで作ったアカウントはパスワードを持たないため、管理者用には**専用のメール＋パスワードアカウント**を1つ作るのが簡単。
+
+1. Supabase Dashboard 左メニューの **Authentication** を開く。
+2. 上部タブの **Users** を開く。
+3. 右上の **Add user**（または **Create user**）→ **Create new user** を選ぶ。
+4. 次を入力して作成する。
+   - **Email** … 管理者のメールアドレス（例: `admin@example.com`）
+   - **Password** … 管理者パスワード（6文字以上。ここで決めた値を `admin.html` のログインで使う）
+   - **Auto Confirm User**（または **Auto Confirm User?**）… **ON**
+     - OFF のままだと「Email not confirmed」でログインできない。ON を忘れた場合は Users 一覧のユーザー詳細から確認（Confirm）する。
+5. 作成後、**Users 一覧に表示されるそのユーザーの UID（UUID）をコピー**する。
+   - 一覧のユーザーをクリックすると詳細に `User UID` が表示される。
+6. SQL Editor で、その UID を許可リスト `admin_users` に追加する。
+
+   ```sql
+   -- メールアドレスから追加（UID を調べる手間なし。おすすめ）
+   insert into public.admin_users (user_id)
+   select id from auth.users where email = 'admin@example.com'
+   on conflict (user_id) do nothing;
+
+   -- または、コピーした UID を直接指定
+   -- insert into public.admin_users (user_id) values ('ここにUID');
+   ```
+
+7. 登録できたか確認する。
+
+   ```sql
+   select u.email, a.user_id, a.created_at
+     from public.admin_users a
+     join auth.users u on u.id = a.user_id;
+   ```
+
+8. `admin.html` を開き、手順4のメールアドレスとパスワードでログインする。
+
+**つまずきやすい点**
+
+- `insert` したのに 0 行 → メールアドレスの綴り・大文字小文字が違う。`select id, email from auth.users;` で実際の値を確認する。
+- `violates foreign key constraint` → `admin_users` は `auth.users` にしか追加できない。先に手順3でユーザーを作る（`profiles` ではない）。
+- 「メールアドレスまたはパスワードが違います」→ パスワード誤り、またはメール未確認。Users で確認状態を見る。
+- 「このアカウントには管理者権限がありません」→ 手順6の `insert` が未実行、または UID が別ユーザーのもの。手順7で確認する。
+- 既存の Google / LINE アカウントを管理者にしたい場合は、その UID を `admin_users` に入れれば権限は付くが、`admin.html` にはパスワードでしかログインできない。専用のメール＋パスワードアカウントを作るほうが確実。
+
+> パスワードはリポジトリ・`supabase_config.js`・チャットに書かない。`admin_users` から行を消せば即座に権限を失う。
+
+> **デッドロック（40P01）が出たとき**: 稼働中のアプリが `profiles` などを読み、`schema.sql` 全体の `alter table` / ポリシー再作成とロックを奪い合うと発生する。デッドロックしたトランザクションは全ロールバックされるので、アプリのタブを閉じて書き込みを止め、`migration_community.sql`（Phase 1 追加分のみ）を実行し直せばよい。
+
+> **`column "pinned" does not exist` が出たとき**: 以前の実行が途中で止まって `announcements` / `feedback` が古い定義のまま残っている。移行SQLは `create table if not exists` の後に `add column if not exists` で不足列を補修してから索引・ポリシーを作るため、テーブルを削除せずにそのまま再実行してよい。
+
+### 12.7 セットアップ手順（要約）
 
 詳細・画面ごとの操作・トラブルシューティングは **`docs/SUPABASE_SETUP.md`** に集約している。
 
 1. Supabase でプロジェクト作成 → **SQL Editor** で `supabase/schema.sql` を実行。
-2. **Project Settings → API** の Project URL と anon / publishable key を `index.html` の `SUPABASE_CONFIG` に貼り付け（`service_role` は使わない）。
+   **既存プロジェクトに Phase 1 だけを追加する場合は、`schema.sql` 全体ではなく `supabase/migration_community.sql` を実行する**（既存テーブルのロックを取らず、デッドロックを避けられる）。
+2. **Project Settings → API** の Project URL と anon / publishable key を **`supabase_config.js`** に設定（`index.html` と `admin.html` が共有。`service_role` は使わない）。
 3. **Authentication → URL Configuration** に Site URL（本番）と Redirect URLs（`https://本番/**`, `https://*.vercel.app/**`, `http://localhost:8000/**`）を登録。
 4. **Authentication → Sign In / Providers → Google** を有効化。Google Cloud の OAuth クライアント（Web）で Authorized redirect URI に `https://<project-ref>.supabase.co/auth/v1/callback` を登録し、Client ID / Secret を貼る。
 5. **LINE ログイン**: LINE Developers で「LINE ログイン」チャネル（ウェブアプリ）を作成し、コールバック URL に Supabase の Callback URL を登録。Supabase の **Custom OAuth Providers → New Provider → Manual** で以下を作成する。
@@ -591,7 +747,8 @@ const SUPABASE_CONFIG = { url: "https://xxxx.supabase.co", anonKey: "sb_publisha
    | Allow users without email | ON |
 
    ※ LINE の Web ログインは ID Token が HS256 のため OIDC 自動 discovery では検証に失敗する。必ず Manual 構成にする。
-6. `APP_VER` / `sw.js` の `CACHE` を更新してデプロイ。
+6. 管理者を使う場合は §12.6 の手順で `admin_users` に UID を追加する（`schema.sql` 実行後に `admin.html` へログイン）。
+7. `APP_VER` / `sw.js` の `CACHE` を更新してデプロイ。
 
 ---
 
@@ -600,16 +757,20 @@ const SUPABASE_CONFIG = { url: "https://xxxx.supabase.co", anonKey: "sb_publisha
 ```
 /
 ├── index.html                 アプリ本体（HTML + マークアップ + アプリ本体のインライン JS）
+├── admin.html                 管理者ダッシュボード（noindex・ログイン／お知らせ／御意見）
+├── supabase_config.js        Supabase の公開設定（index.html と admin.html で共有）
 ├── js/
-│   └── core.js               アプリ基盤（称号・アイテムのマスタ、ゾーン、画面遷移、確認ダイアログ）
+│   ├── core.js               アプリ基盤（称号・アイテムのマスタ、ゾーン、画面遷移、確認ダイアログ）
+│   └── admin.js              管理画面のロジック（Auth・announcements・feedback）
 ├── assets/
 │   └── css/app.css            アプリ固有 CSS（旧 index.html 内の <style> ほか）
 ├── manifest.json              PWA マニフェスト
-├── sw.js                      Service Worker（キャッシュ leap-v28 / Network-First）
+├── sw.js                      Service Worker（キャッシュ leap-v33 / Network-First）
 ├── words_data.js              LEAP_WORDS_DATA（2,300語）
 ├── examples_data.js           LEAP_WORD_DETAILS（2,300語）+ LEAP_EXAMPLE_DATA（2,000語）
 ├── reference_data.js          LEAP_REFERENCE_DATA（5章）
 ├── affix_data.js              AFFIX_DATA（接頭辞16 + 接尾辞16、132語根）
+├── mock_schools_data.js       MOCK_UNIV_GROUPS / MOCK_FACULTIES（全国一斉模試の志望校マスタ）
 ├── kobun/
 │   ├── kobun_words_data.js    KOBUN_WORDS_DATA（150語）+ KOBUN_PARTS
 │   ├── kobun_config.js        未使用の設定足場（enabled=false）
@@ -623,7 +784,8 @@ const SUPABASE_CONFIG = { url: "https://xxxx.supabase.co", anonKey: "sb_publisha
 │   ├── code_artifact.txt             参考資料の元テキスト
 │   └── words.json                    英単語 JSON
 ├── supabase/
-│   └── schema.sql             Supabase のテーブル・RLS・トリガー（SQL Editor で実行）
+│   ├── schema.sql             Supabase のテーブル・RLS・トリガー（新規プロジェクトはこれを実行）
+│   └── migration_community.sql  既存プロジェクト向け Phase 1 追加分のみの移行SQL
 ├── patches/                   データ生成・一括改修スクリプト（開発用、実行は任意）
 ├── favicon.png / icon.svg / icon-192.png / icon-512.png / apple-touch-icon.png
 └── SERVICE.md                 このファイル（サービス全体仕様・更新履歴）
@@ -675,7 +837,7 @@ node patches/build_leap_data.js
 
 ## 15. 既知の制約・注意点
 
-- **クラウドは任意**。`SUPABASE_CONFIG` 未設定なら端末間同期・フレンドは使えない（localStorage のみ）。設定してもログインしなければ従来どおり。
+- **クラウドは任意**。`supabase_config.js` 未設定なら端末間同期・フレンド・お知らせ・意見箱の送信は使えない（localStorage のみ）。設定してもログインしなければ従来どおり。
 - **localStorage を消すと未同期の進捗は消える**（手動エクスポート機能はなし）。ログイン済みならクラウドから復元できる。
 - **Supabase の通信は Service Worker でキャッシュしない**（Network-Only）。オフライン中の同期は失敗し、次回オンライン時の操作で再送される。
 - **LINE ログインは追加設定が必要**。Supabase に `custom:line` の Custom OAuth Provider を作らないとボタンからログインできない（未設定時はエラーダイアログで案内）。
@@ -688,6 +850,14 @@ node patches/build_leap_data.js
 - 参考資料の第5部クイズは採点・保存なし（学習補助の読み物）。
 - 外部 CDN（Tailwind / html2canvas / Google Fonts）に依存。オフライン時はキャッシュ済みの範囲で動作するが、初回はオンラインが必要。
 - 共有 URL は Base64 化した結果情報のみ（個人情報・進捗は含まない）。
+- **全国一斉模試は Supabase ＋ ログインが必要**。未設定／未ログインでは案内のみ表示し、他の機能は従来どおりローカルで動作する。
+- 模試の偏差値・志望校判定は受験者数が少ないうちは暫定（N < 5 で「判定保留」）。`mock_exam_results` は 1 人 1 回（`(exam_id, user_id)` unique）で、再受験分は保存されない（画面では参考表示）。
+- 模試の開催回は `mock_exams` に手動で追加する（`question_ids` と `expected_rates` を同じ並びで指定）。`schema.sql` のサンプルはインストール時の相対日時。
+- 模試の志望校マスタを変更したら `mock_schools_data.js` と `sw.js` の `ASSETS`／`CACHE`、`APP_VER` を更新する。
+- **お知らせは Supabase 未設定時に表示されない**（静的フォールバックを置かない方針）。`announcements` を取得できない場合もホームは静かに非表示になる。
+- **意見箱は匿名投稿できる**ため、スパム対策は `submit_feedback()` のハニーポットとレート制限（同一端末 5件/時・ログイン済み 10件/時）のみ。IP 制限は行っていない。
+- **管理画面は別ページ（`admin.html`）で、SW キャッシュ対象外**。`admin_users` に UID がないアカウントはログイン直後にサインアウトされる。
+- `supabase_config.js` の anon / publishable key は公開前提。**service_role キーを書かない**（全 RLS を迂回できてしまう）。
 - 古文の `meaning` は「、」区切りの現代語訳で、複数語義の整形はデータ側の表記に依存。
 
 ---
@@ -698,6 +868,8 @@ node patches/build_leap_data.js
 
 | 日付 | 変更内容 |
 |---|---|
+| 2026-11-23 | 📮 意見箱・📢 お知らせ・管理ダッシュボード（Phase 1）を追加。ホームに公開期間内のお知らせ（最大2件・NEW バッジ・一覧モーダル）と意見箱（種別／本文2,000字／★1〜5／連絡先／自動添付、匿名可、下書き保存、未設定時は文面コピー）を実装。新規 `admin.html` ＋ `js/admin.js`（Supabase Auth ＋ `admin_users` 許可リスト、お知らせ CRUD、意見の状態・管理メモ、noindex・SW 対象外）。新規 `supabase_config.js` に設定を集約（`index.html` と `admin.html` で共有）。`supabase/schema.sql` に `admin_users` / `announcements` / `feedback`（RLS）と `is_admin()`、匿名投稿用 RPC `submit_feedback()`（本文長・種別・評価の検証、ハニーポット、5件/時・10件/時のレート制限）を追加。模試の成績表に感想導線を追加。`APP_VER=leap-v12-community` / `CACHE=leap-v33`。既存プロジェクト向けに Phase 1 追加分だけの `supabase/migration_community.sql` を分離（全体再適用によるデッドロック回避）。同SQLは古い定義の `announcements` / `feedback` が残っていても不足列を `add column if not exists` で補修してから索引を作る。 |
+| 2026-11-23 | 🏫 全国一斉模試（全国模試モード）を追加: `screen-mock-exam`（開催スケジュール／開始前カウントダウン／第1〜第5志望のエントリー／制限時間つき受験／成績表）。新規 `mock_schools_data.js`（大学×文理の `MOCK_UNIV_GROUPS` と学部 `MOCK_FACULTIES`、関西＋有名国公立＋早慶MARCH）。`supabase/schema.sql` に `mock_exams` / `mock_exam_entries` / `mock_exam_results`（RLS・unique 制約）と集計 RPC `get_mock_exam_report` を追加。少人数向けにトリム平均・理論平均（`expected_rates`）・SD クリップを組み合わせたハイブリッド偏差値、N<5 の暫定表示、同tier／同category へのフォールバック付き志望校判定を実装。クイズ基盤は `exam` モードを開催回の `duration_sec` に対応させ、終了時刻超過は `is_late`。`APP_VER=leap-v11-mock-exam` / `CACHE=leap-v32`。 |
 | 2026-11-23 | 到達度テストの結果を画像・共有・挑戦状に反映（共有カードは `EXAM RESULT`／判定表示、共有URLに `ex`/`ep`、フレンド共有に `exam: {grade, partId}`、受信側は同じ範囲の到達度テストに挑戦）。📊 学習記録画面（`screen-stats`）を追加: 直近12週の日別ヒートマップ（`userData.dailyLog`）、連続学習・累計解答・マスター/苦手語数、Part別マスター率。🔤 スペル入力モード（`LEAP_QUIZ_STYLE_V1=spelling`）を追加し、採点は `handleAnswer` に委譲。`APP_VER=leap-v10-stats-spell` / `CACHE=leap-v31`。 |
 | 2026-11-23 | 🎓 到達度テストを追加: `screen-exam`（範囲＝全範囲またはPart単体、50問・25分・S〜D判定、最高判定と直近5件の履歴表示）。クイズ基盤にゲームモード `exam` を追加し、25分の全体カウントダウン・専用結果バナー（判定・範囲・前回比）・`userData.examHistory`（最大20件、クラウド統合対応）を実装。`APP_VER=leap-v9-exam` / `CACHE=leap-v30`。 |
 | 2026-11-23 | 出題スタイルに「🎧 リスニング4択」を追加（`LEAP_QUIZ_STYLE_V1` = `listening`）。見出し語を隠して音声だけで出題し、解答後に単語・IPAを開示。音声は読み上げ設定に関係なく出題時に再生し、🔊で再再生できる。古文ゾーンでは通常4択に固定。`APP_VER=leap-v8-listening` / `CACHE=leap-v29`。 |
