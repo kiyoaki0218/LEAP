@@ -381,27 +381,49 @@
     if (expiresAt && isNaN(expiresAt.getTime())) { if (msg) msg.textContent = "掲載終了日時の形式が正しくありません。"; return; }
     if (expiresAt && expiresAt.getTime() <= publishedAt.getTime()) { if (msg) msg.textContent = "掲載終了は公開日時より後にしてください。"; return; }
     if (msg) msg.textContent = "";
+    const publishedIso = publishedAt.toISOString();
+    const expiresIso = expiresAt ? expiresAt.toISOString() : null;
     const payload = {
       title: title.slice(0, 120),
       body: body.slice(0, 4000),
       level: ["info", "warning", "success"].includes(level) ? level : "info",
       pinned: !!($("ann-pinned") || {}).checked,
-      published_at: publishedAt.toISOString(),
-      expires_at: expiresAt ? expiresAt.toISOString() : null
+      published_at: publishedIso,
+      expires_at: expiresIso
     };
     if (!state.editingAnnouncementId) payload.created_by = state.session.user.id;
+
+    // 旧サービスとの共用テーブル（publish_start / content の NOT NULL 制約）対策
+    const compatPayload = Object.assign({}, payload, {
+      content: body.slice(0, 4000),
+      publish_start: publishedIso,
+      publish_end: expiresIso
+    });
+
     const btn = $("ann-save");
     if (btn) { btn.disabled = true; btn.textContent = "保存中…"; }
-    try {
+
+    const executeSave = async (p) => {
       if (state.editingAnnouncementId) {
-        const { error } = await client.from("announcements").update(payload).eq("id", state.editingAnnouncementId);
-        if (error) throw error;
-        toast("お知らせを更新しました");
+        return await client.from("announcements").update(p).eq("id", state.editingAnnouncementId);
       } else {
-        const { error } = await client.from("announcements").insert(payload);
-        if (error) throw error;
-        toast("お知らせを作成しました");
+        return await client.from("announcements").insert(p);
       }
+    };
+
+    try {
+      // まず互換カラム付き（publish_start / content）で試行
+      let res = await executeSave(compatPayload);
+      if (res.error) {
+        const errMsg = String(res.error.message || "");
+        // もしテーブルに publish_start カラムが存在しない新規環境なら基本 payload で再試行
+        if (/does not exist|Could not find the.*column/i.test(errMsg)) {
+          res = await executeSave(payload);
+        }
+      }
+      if (res.error) throw res.error;
+
+      toast(state.editingAnnouncementId ? "お知らせを更新しました" : "お知らせを作成しました");
       resetAnnouncementForm();
       await loadAnnouncements();
     } catch (e) {

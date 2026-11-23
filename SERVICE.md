@@ -72,13 +72,13 @@
 | 永続化 | localStorage（＋任意で Supabase） | キー一覧は §11 |
 | クラウド（任意） | Supabase JS v2（CDN） / Postgres / Auth / RLS | `supabase_config.js` が未設定なら初期化しない。anon / publishable key のみ使用（service_role は使わない） |
 | 管理画面 | `admin.html` ＋ `js/admin.js`（別ページ・`noindex`） | Supabase Auth ＋ `admin_users` 許可リスト。SW のキャッシュ対象外（Network-Only） |
-| オフライン | `sw.js`（Cache API） | キャッシュ名 `leap-v35`、Network-First。Supabase・認証コールバック・`admin.html` は Network-Only |
+| オフライン | `sw.js`（Cache API） | キャッシュ名 `leap-v36`、Network-First。Supabase・認証コールバック・`admin.html` は Network-Only |
 | PWA | `manifest.json`、アイコン各種 | standalone 表示、theme `#059669` |
 | ビルド | なし | `.js` データは `<script>` で直接読む |
 
 ### キャッシュ更新の仕組み
 
-- `index.html` 冒頭の `APP_VER`（現在 `leap-v14-mock-dashboard`）が `localStorage.LEAP_APP_CACHE_VER` と違えば、全 Cache を削除。
+- `index.html` 冒頭の `APP_VER`（現在 `leap-v15-announcement-fix`）が `localStorage.LEAP_APP_CACHE_VER` と違えば、全 Cache を削除。
 - `sw.js` は `install` で `skipWaiting()`、`activate` で旧キャッシュ削除＋`clients.claim()`。
 - 取得は Network-First（HTML は常に最新、オフライン時のみキャッシュ）。
 - **フロントを更新したら `sw.js` の `CACHE` 名と `index.html` の `APP_VER` を上げる**のが運用ルール。
@@ -873,6 +873,7 @@ node patches/build_leap_data.js
 
 | 日付 | 変更内容 |
 |---|---|
+| 2026-11-23 | お知らせ投稿時の `null value in column "publish_start" violates not-null constraint` エラーを修正。旧サービスと共用している `announcements` テーブルの旧列（`publish_start`, `publish_end`, `content`）に対応した互換ペイロードと自動フォールバックを `js/admin.js` に実装。`supabase/schema.sql` および `supabase/migration_community.sql` に旧テーブル存在時の NOT NULL 制約緩和 DDL を追加。`APP_VER=leap-v15-announcement-fix` / `CACHE=leap-v36`。 |
 | 2026-11-23 | 🏫 LEAP 管理ダッシュボード（`admin.html`）に「模試管理」タブを追加。新規模試の作成（タイトル・科目・出題範囲プリセット・単語自動抽出・開催期間・制限時間設定）、模試一覧、過去の模試結果集約（エントリー数・受験者数・平均点/正答率・最高点/最低点・平均所要時間）、受験者一覧テーブル（得点・正答率・所要時間・提出日時・遅延判定）の閲覧・編集・削除を実装。`supabase/schema.sql` および `supabase/migration_community.sql` に管理者の `mock_exams` (ALL)、`mock_exam_results` (SELECT)、`mock_exam_entries` (SELECT) RLS ポリシーを追加。公開側（`screen-mock-exam` および設定シート）に管理ダッシュボードへの導線を追加。`APP_VER=leap-v14-mock-dashboard` / `CACHE=leap-v35`。 |
 | 2026-11-23 | 旧サービスと共用している `announcements` テーブルの混在対策。旧サービスは `content` 列を使い `body` が空のため、公開側（`loadCommunityAnnouncements`）と管理画面（`loadAnnouncements`）の取得を `body is not null` で絞り込み、旧サービスのお知らせが LEAP に表示されないようにした。`APP_VER=leap-v13-community` / `CACHE=leap-v34`。 |
 | 2026-11-23 | 📮 意見箱・📢 お知らせ・管理ダッシュボード（Phase 1）を追加。ホームに公開期間内のお知らせ（最大2件・NEW バッジ・一覧モーダル）と意見箱（種別／本文2,000字／★1〜5／連絡先／自動添付、匿名可、下書き保存、未設定時は文面コピー）を実装。新規 `admin.html` ＋ `js/admin.js`（Supabase Auth ＋ `admin_users` 許可リスト、お知らせ CRUD、意見の状態・管理メモ、noindex・SW 対象外）。新規 `supabase_config.js` に設定を集約（`index.html` と `admin.html` で共有）。`supabase/schema.sql` に `admin_users` / `announcements` / `feedback`（RLS）と `is_admin()`、匿名投稿用 RPC `submit_feedback()`（本文長・種別・評価の検証、ハニーポット、5件/時・10件/時のレート制限）を追加。模試の成績表に感想導線を追加。`APP_VER=leap-v12-community` / `CACHE=leap-v33`。既存プロジェクト向けに Phase 1 追加分だけの `supabase/migration_community.sql` を分離（全体再適用によるデッドロック回避）。同SQLは古い定義の `announcements` / `feedback` が残っていても不足列を `add column if not exists` で補修してから索引を作る。 |

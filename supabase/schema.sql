@@ -719,6 +719,24 @@ alter table public.announcements add column if not exists created_by uuid;
 alter table public.announcements add column if not exists created_at timestamptz not null default now();
 alter table public.announcements add column if not exists updated_at timestamptz not null default now();
 
+-- 旧サービスと共用している場合の publish_start / content の NOT NULL 制約緩和
+do $$
+begin
+  if exists (
+    select 1 from information_schema.columns 
+    where table_schema = 'public' and table_name = 'announcements' and column_name = 'publish_start'
+  ) then
+    alter table public.announcements alter column publish_start drop not null;
+    alter table public.announcements alter column publish_start set default now();
+  end if;
+  if exists (
+    select 1 from information_schema.columns 
+    where table_schema = 'public' and table_name = 'announcements' and column_name = 'content'
+  ) then
+    alter table public.announcements alter column content drop not null;
+  end if;
+end $$;
+
 create index if not exists announcements_public_idx
   on public.announcements (pinned desc, published_at desc);
 
