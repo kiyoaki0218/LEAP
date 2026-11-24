@@ -1,4 +1,4 @@
-const CACHE = "leap-v38";
+const CACHE = "leap-v39";
 const ASSETS = [
   "./",
   "./index.html",
@@ -53,9 +53,11 @@ self.addEventListener("fetch", (e) => {
     return;
   }
 
-  // 管理画面は常に最新を読み込む（キャッシュ・オフライン代替をしない）
-  if (url.pathname.endsWith("/admin.html")) {
-    e.respondWith(fetch(e.request));
+  // 管理画面（HTML と専用スクリプト）は常に最新を読み込む。
+  // 古い js/admin.js が新しい admin.html と組み合わさると、新しく増えたタブの
+  // クリックリスナーが無く「タブが押せない」状態になるため、Network-First にする。
+  if (url.pathname.endsWith("/admin.html") || url.pathname.endsWith("/js/admin.js")) {
+    e.respondWith(fetch(e.request).catch(() => caches.match(e.request)));
     return;
   }
 

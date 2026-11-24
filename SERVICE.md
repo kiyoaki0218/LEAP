@@ -71,14 +71,14 @@
 | 音声 | Web Speech API（`speechSynthesis`） | 英単語は `en-US`、古文は `ja-JP` |
 | 永続化 | localStorage（＋任意で Supabase） | キー一覧は §11 |
 | クラウド（任意） | Supabase JS v2（CDN） / Postgres / Auth / RLS | `supabase_config.js` が未設定なら初期化しない。anon / publishable key のみ使用（service_role は使わない） |
-| 管理画面 | `admin.html` ＋ `js/admin.js`（別ページ・`noindex`） | Supabase Auth ＋ `admin_users` 許可リスト。SW のキャッシュ対象外（Network-Only） |
-| オフライン | `sw.js`（Cache API） | キャッシュ名 `leap-v36`、Network-First。Supabase・認証コールバック・`admin.html` は Network-Only |
+| 管理画面 | `admin.html` ＋ `js/admin.js`（別ページ・`noindex`） | Supabase Auth ＋ `admin_users` 許可リスト。`admin.html` と `js/admin.js` は SW のキャッシュ対象外（Network-First）。`js/admin.js` は `?v=` 付きで読み込む |
+| オフライン | `sw.js`（Cache API） | キャッシュ名 `leap-v39`、Network-First。Supabase・認証コールバック・`admin.html`・`js/admin.js` は Network-Only |
 | PWA | `manifest.json`、アイコン各種 | standalone 表示、theme `#059669` |
 | ビルド | なし | `.js` データは `<script>` で直接読む |
 
 ### キャッシュ更新の仕組み
 
-- `index.html` 冒頭の `APP_VER`（現在 `leap-v16-mock-schools`）が `localStorage.LEAP_APP_CACHE_VER` と違えば、全 Cache を削除。
+- `index.html` 冒頭の `APP_VER`（現在 `leap-v18-admin-tab-fix`）が `localStorage.LEAP_APP_CACHE_VER` と違えば、全 Cache を削除。
 - `sw.js` は `install` で `skipWaiting()`、`activate` で旧キャッシュ削除＋`clients.claim()`。
 - 取得は Network-First（HTML は常に最新、オフライン時のみキャッシュ）。
 - **フロントを更新したら `sw.js` の `CACHE` 名と `index.html` の `APP_VER` を上げる**のが運用ルール。
@@ -686,7 +686,7 @@ window.LEAP_SUPABASE_CONFIG = { url: "https://xxxx.supabase.co", anonKey: "sb_pu
 
 #### 管理画面（`admin.html` ＋ `js/admin.js`）
 
-- `noindex, nofollow`。`sw.js` は `admin.html` を Network-Only にし、キャッシュしない。
+- `noindex, nofollow`。`sw.js` は `admin.html` と `js/admin.js` を Network-First（オンライン時は常に最新、オフライン時のみキャッシュ）にし、古い JS が新しい HTML と組み合わさってタブが無反応になるのを防ぐ。`admin.html` 側でも `js/admin.js?v=<APP_VER>` としてブラウザキャッシュを回避する。
 - Supabase Auth（**メール＋パスワード**または**LINE**）でログイン → `rpc("is_admin")` が `true` のときだけ画面を表示。権限がない場合はサインアウトせず、「初回セットアップ: このアカウントを最初の管理者にする」（`admin_claim_first`）を表示する。フロント側のパスワード判定は行わない。
 - **👤 管理者タブ**: `admin_list_members` でユーザーを検索（UID・メール・表示名）し、その場で付与／解除できる。LINE ユーザーは「LINE」バッジと「メールなし」表示になり、UID をコピーして共有できる。UID を直接入力して付与する欄もある（Supabase Dashboard で確認した UUID 用）。
 - **模試管理**:
@@ -793,7 +793,7 @@ window.LEAP_SUPABASE_CONFIG = { url: "https://xxxx.supabase.co", anonKey: "sb_pu
 ├── assets/
 │   └── css/app.css            アプリ固有 CSS（旧 index.html 内の <style> ほか）
 ├── manifest.json              PWA マニフェスト
-├── sw.js                      Service Worker（キャッシュ leap-v34 / Network-First）
+├── sw.js                      Service Worker（キャッシュ leap-v39 / Network-First）
 ├── words_data.js              LEAP_WORDS_DATA（2,300語）
 ├── examples_data.js           LEAP_WORD_DETAILS（2,300語）+ LEAP_EXAMPLE_DATA（2,000語）
 ├── reference_data.js          LEAP_REFERENCE_DATA（5章）
@@ -897,6 +897,7 @@ node patches/build_leap_data.js
 
 | 日付 | 変更内容 |
 |---|---|
+| 2026-11-24 | 🐞 管理ダッシュボードの「👤 管理者」タブが押せない不具合を修正。`sw.js` が `admin.html` だけを Network-Only にし、`js/admin.js` は Cache-First で配信していたため、新しい HTML（4タブ）と古い JS（3タブ分のリスナーしかない）が組み合わさり、追加したタブにクリックリスナーが無かった。`sw.js` の Network-First 対象に `js/admin.js` を追加し、`admin.html` の読み込みを `js/admin.js?v=leap-v18-admin-tab-fix` に変更。`APP_VER=leap-v18-admin-tab-fix` / `CACHE=leap-v39`。|
 | 2026-11-24 | 👤 管理者権限の運用を UID ベースに変更し、LINE ログインユーザーにも付与できるようにした。新規 `supabase/admin_roles.sql`（`admin_list_members` / `admin_grant` / `admin_revoke` / `admin_claim_first`）と、`admin.html` の「👤 管理者」タブ（UID・メール・表示名で検索、付与・解除、UID コピー、UID 直接入力）を追加。`admin.html` は LINE ログインにも対応し、権限が無い場合もサインアウトせず「最初の管理者として登録」できるようにした。管理画面の認証保存キーを `leap-admin-auth-v1` に分離し、公開サイトと管理画面で別アカウントを同時にログイン可能にした。🎨 ホームを再構成（主導線を上部へ、学習ツールを2列・ツールを3列に集約、新規ユーザー向け3ステップの「はじめてガイド」と「10問でためす」）。お知らせに「模試」を含む場合の模試ページ直リンク、模試の共有リンク `?mock=<examId>` と共有ボタンを追加。ダークモードの半透明面・淡い枠線・濃色チップ文字のコントラストを補修。`APP_VER=leap-v17-admin-ui` / `CACHE=leap-v38`。|
 | 2026-11-23 | 🐞 管理ダッシュボード（`admin.html`）の「📮 意見箱」タブが空になる不具合を修正。`js/admin.js` 側にだけ存在した描画先（`#panel-feedback` / `#fb-list` / `#fb-count` / `#fb-category` / `#fb-status` / `#fb-q` / `#fb-refresh`）の HTML が `admin.html` に無く、タブを切り替えても何も表示されなかった。他タブと同じカード構成で、種別・状態・キーワードの絞り込み、件数表示、更新ボタン、一覧カードを追加。`admin.html` は Service Worker の `ASSETS` 対象外なので `APP_VER` / `CACHE` は据え置き。 |
 | 2026-11-23 | 🏫 全国一斉模試の志望校マスタを拡充し、選択 UI に絞り込みを追加。`mock_schools_data.js` に京都工芸繊維大学（工芸科学部5課程）をはじめ、京都教育・大阪教育・奈良教育・滋賀県立・兵庫県立・神戸市外国語・千葉・横浜国立・金沢・熊本・大阪工業・関西医科・大阪医科薬科・武庫川女子・神戸学院・立命館アジア太平洋・芝浦工業の大学×文理グループと学部を追加。エントリー画面に大学名/学部名の検索、カテゴリ・難易度（tier）の絞り込み、該当件数表示、条件クリアを追加（`mockSchoolFilter` / `renderMockSchoolSelectors`）。成績表の全大学×文理群の目安一覧はカテゴリ見出し付きに変更。`APP_VER=leap-v16-mock-schools` / `CACHE=leap-v37`。 |
