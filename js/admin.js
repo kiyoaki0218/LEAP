@@ -11,7 +11,15 @@
   if (ready) {
     try {
       client = window.supabase.createClient(cfg.url, cfg.anonKey, {
-        auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: false }
+        // 公開サイト（index.html）とは別のキーに保存し、ログイン状態を分離する。
+        // 同じブラウザで「一般ユーザーとしてログイン」と「管理者としてログイン」を併用できる。
+        auth: {
+          storageKey: "leap-admin-auth-v1",
+          persistSession: true,
+          autoRefreshToken: true,
+          detectSessionInUrl: true,
+          flowType: "pkce"
+        }
       });
     } catch (e) {
       console.warn("[admin] init failed", e);
@@ -123,6 +131,15 @@
     if (code === "42P01" || code === "PGRST205" || /does not exist|Could not find the table/i.test(msg)) {
       return "Supabase に管理用スキーマが未適用です。supabase/schema.sql の追記分を SQL Editor で実行してください。";
     }
+    if (code === "PGRST202" || /Could not find the function|function .* does not exist/i.test(msg)) {
+      return "管理者用の関数が未作成です。supabase/admin_roles.sql を SQL Editor で実行してください。";
+    }
+    if (code === "23503" || /user not found/i.test(msg)) {
+      return "その UID のユーザーが見つかりません。UID を確認してください（auth.users に存在する必要があります）。";
+    }
+    if (code === "23514" || /last admin cannot be removed/i.test(msg)) {
+      return "最後の管理者は解除できません。先に別の人を管理者にしてください。";
+    }
     if (code === "42501" || /permission denied|row-level security/i.test(msg)) {
       return "権限がありません。admin_users に自分の UID が登録されているか確認してください。";
     }
@@ -174,7 +191,11 @@
     if (app) app.classList.remove("hidden");
     const user = $("admin-user");
     if (user) {
-      user.textContent = session.user.email || session.user.id.slice(0, 8);
+      const provider = session.user.app_metadata && session.user.app_metadata.provider;
+      const label = provider === "custom:line" ? "LINE 管理者"
+        : provider === "google" ? "Google 管理者"
+        : (session.user.email || session.user.id.slice(0, 8));
+      user.textContent = label;
       user.classList.remove("hidden");
     }
     const logout = $("admin-logout");
@@ -195,18 +216,97 @@
     if (logout) logout.classList.add("hidden");
   }
 
+  function showClaimButton(show) {
+    const btn = $("admin-claim-first");
+    if (!btn) return;
+    btn.classList.toggle("hidden", !show);
+    btn.disabled = false;
+    btn.textContent = "初回セットアップ: このアカウントを最初の管理者にする";
+  }
+
+  function providerLabel(user) {
+    const provider = user && user.app_metadata && user.app_metadata.provider;
+    if (provider === "custom:line") return "LINE ユーザー";
+    if (provider === "google") return "Google ユーザー";
+    if (provider === "email") return "メールユーザー";
+    return "ログイン中のアカウント";
+  }
+
+  // 同じセッションで二重に読み込まないためのガード
+  let lastSessionAttempt = { key: "", at: 0 };
+
+  async function handleSession(session) {
+    if (!client || !session || !session.user) return;
+    const key = session.user.id;
+    const now = Date.now();
+    if (lastSessionAttempt.key === key && now - lastSessionAttempt.at < 3000) return;
+    lastSessionAttempt = { key, at: now };
+
+    showClaimButton(false);
+    const ok = await checkAdmin();
+    if (ok) { await showApp(session); return; }
+
+    // 権限が無くてもサインアウトしない（最初の管理者のセルフ登録に使う）
+    state.session = session;
+    showLogin();
+    setLoginMessage("このアカウントには管理者権限がありません。付与済みなら再読み込みしてください。", true);
+    showClaimButton(true);
+    const user = $("admin-user");
+    if (user) {
+      user.textContent = `${session.user.email || providerLabel(session.user)}（権限なし）`;
+      user.classList.remove("hidden");
+    }
+  }
+
+  async function claimFirstAdmin() {
+    if (!client) { setLoginMessage("Supabase が設定されていません（supabase_config.js）。", true); return; }
+    const btn = $("admin-claim-first");
+    if (btn) { btn.disabled = true; btn.textContent = "登録中…"; }
+    try {
+      const { data: sessionData } = await client.auth.getSession();
+      const session = sessionData && sessionData.session;
+      if (!session) {
+        setLoginMessage("先にメールまたは LINE でログインしてください。", true);
+        return;
+      }
+      const { data, error } = await client.rpc("admin_claim_first");
+      if (error) throw error;
+      if (data === true) {
+        toast("最初の管理者として登録しました");
+        lastSessionAttempt = { key: "", at: 0 };
+        await handleSession(session);
+      } else {
+        setLoginMessage("すでに管理者が登録されています。既存の管理者に「👤 管理者」タブから UID を追加してもらってください。", true);
+      }
+    } catch (e) {
+      console.warn("[admin] claim", e);
+      setLoginMessage(schemaHint(e), true);
+    } finally {
+      if (btn) { btn.disabled = false; btn.textContent = "初回セットアップ: このアカウントを最初の管理者にする"; }
+    }
+  }
+
+  async function signInWithLine() {
+    if (!client) { setLoginMessage("Supabase が設定されていません（supabase_config.js）。", true); return; }
+    setLoginMessage("");
+    try {
+      const { error } = await client.auth.signInWithOAuth({
+        provider: "custom:line",
+        options: { redirectTo: window.location.origin + window.location.pathname }
+      });
+      if (error) throw error;
+    } catch (e) {
+      console.warn("[admin] line login", e);
+      setLoginMessage("LINE ログインを開始できませんでした。Supabase の custom:line 設定とリダイレクトURL（admin.html を含む）を確認してください。", true);
+    }
+  }
+
   async function tryRestoreSession() {
     if (!client) return;
     const { data } = await client.auth.getSession();
     const session = data && data.session;
     if (!session) { showLogin(); return; }
-    const ok = await checkAdmin();
-    if (ok) await showApp(session);
-    else {
-      await client.auth.signOut();
-      showLogin();
-      setLoginMessage("このアカウントには管理者権限がありません。", true);
-    }
+    await handleSession(session);
   }
 
   function bindAuthUi() {
@@ -224,13 +324,11 @@
         try {
           const { data, error } = await client.auth.signInWithPassword({ email, password });
           if (error) throw error;
-          const ok = await checkAdmin();
-          if (!ok) {
-            await client.auth.signOut();
-            throw new Error("このアカウントには管理者権限がありません。admin_users を確認してください。");
+          if (data && data.session) {
+            lastSessionAttempt = { key: "", at: 0 };
+            await handleSession(data.session);
+            if (state.session && $("admin-app") && !$("admin-app").classList.contains("hidden")) toast("ログインしました");
           }
-          await showApp(data.session);
-          toast("ログインしました");
         } catch (err) {
           console.warn("[admin] login", err);
           const msg = /Invalid login credentials/i.test(String(err.message || ""))
@@ -247,15 +345,21 @@
       logout.addEventListener("click", async () => {
         if (!client) return;
         await client.auth.signOut();
+        lastSessionAttempt = { key: "", at: 0 };
+        showClaimButton(false);
         showLogin();
         toast("ログアウトしました");
       });
     }
+    const lineBtn = $("admin-line-login");
+    if (lineBtn) lineBtn.addEventListener("click", signInWithLine);
+    const claimBtn = $("admin-claim-first");
+    if (claimBtn) claimBtn.addEventListener("click", claimFirstAdmin);
   }
 
   // ===== タブ =====
   function switchTab(tab) {
-    state.tab = ["announcements", "feedback", "mock"].includes(tab) ? tab : "announcements";
+    state.tab = ["announcements", "feedback", "mock", "members"].includes(tab) ? tab : "announcements";
     document.querySelectorAll("[data-admin-tab]").forEach((btn) => {
       const on = btn.dataset.adminTab === state.tab;
       btn.classList.toggle("is-active", on);
@@ -264,11 +368,16 @@
     const ann = $("panel-announcements");
     const fb = $("panel-feedback");
     const mock = $("panel-mock");
+    const members = $("panel-members");
     if (ann) ann.classList.toggle("hidden", state.tab !== "announcements");
     if (fb) fb.classList.toggle("hidden", state.tab !== "feedback");
     if (mock) mock.classList.toggle("hidden", state.tab !== "mock");
+    if (members) members.classList.toggle("hidden", state.tab !== "members");
     if (state.tab === "mock" && (!state.mockExams || state.mockExams.length === 0)) {
       loadMockExams();
+    }
+    if (state.tab === "members") {
+      loadAdminMembers(currentMemberSearch());
     }
   }
 
@@ -1044,12 +1153,158 @@
     }
   }
 
+  // ===== 管理者の付与・解除 =====
+  let adminMembers = [];
+
+  function setMembersMessage(text, isError) {
+    const el = $("admin-members-message");
+    if (!el) return;
+    el.textContent = text || "";
+    el.classList.toggle("hidden", !text);
+    el.classList.toggle("text-rose-600", !!isError);
+    el.classList.toggle("text-emerald-600", !isError && !!text);
+  }
+
+  function currentMemberSearch() {
+    return String(($("admin-user-search") || {}).value || "").trim();
+  }
+
+  function memberLabel(u) {
+    return u.display_name || u.email || `UID ${String(u.user_id).slice(0, 8)}…`;
+  }
+
+  function providerBadges(providers) {
+    const labels = { "custom:line": "LINE", google: "Google", email: "メール" };
+    const arr = Array.isArray(providers) ? providers : [];
+    if (!arr.length) return "";
+    return arr.map((p) => `<span class="text-[9px] font-extrabold border border-slate-200 bg-slate-100 text-slate-600 rounded-full px-1.5 py-0.5">${escapeHtml(labels[p] || p)}</span>`).join("");
+  }
+
+  async function loadAdminMembers(search) {
+    if (!client) return;
+    const list = $("admin-members-list");
+    if (list) list.innerHTML = `<p class="text-[11px] text-slate-400">読み込み中…</p>`;
+    setMembersMessage("");
+    try {
+      const { data, error } = await client.rpc("admin_list_members", { p_search: search || null });
+      if (error) throw error;
+      adminMembers = Array.isArray(data) ? data : [];
+      renderAdminMembers();
+    } catch (e) {
+      console.warn("[admin] members", e);
+      if (list) list.innerHTML = `<p class="text-[11px] font-bold text-rose-600">${escapeHtml(schemaHint(e))}</p>`;
+    }
+  }
+
+  function renderAdminMembers() {
+    const list = $("admin-members-list");
+    if (!list) return;
+    if (!adminMembers.length) {
+      list.innerHTML = `<p class="text-[11px] text-slate-400">該当するユーザーがいません。UID を直接入力して付与できます。</p>`;
+      return;
+    }
+    list.innerHTML = adminMembers.map((u) => {
+      const me = state.session && state.session.user && state.session.user.id === u.user_id;
+      return `<div class="border border-slate-200 rounded-xl p-3 space-y-1.5 bg-slate-50">
+        <div class="flex items-start justify-between gap-2">
+          <div class="min-w-0">
+            <p class="text-[12px] font-extrabold text-slate-900 break-words">${escapeHtml(memberLabel(u))}${me ? `<span class="ml-1 text-[9px] font-bold text-emerald-700">（自分）</span>` : ""}</p>
+            <p class="text-[10px] text-slate-400 break-all">${escapeHtml(u.email || "メールなし")} ・ ${escapeHtml(String(u.user_id))}</p>
+          </div>
+          <div class="flex items-center gap-1 shrink-0 flex-wrap justify-end">
+            ${providerBadges(u.providers)}
+            <span class="text-[9px] font-extrabold border rounded-full px-1.5 py-0.5 ${u.is_admin ? "text-emerald-800 bg-emerald-50 border-emerald-200" : "text-slate-500 bg-white border-slate-200"}">${u.is_admin ? "管理者" : "一般"}</span>
+          </div>
+        </div>
+        <div class="flex gap-2">
+          ${u.is_admin
+            ? `<button type="button" data-member-revoke="${u.user_id}" class="px-2.5 py-1.5 bg-white hover:bg-rose-50 border border-slate-200 text-rose-600 text-[10px] font-bold rounded-lg cursor-pointer">権限を解除</button>`
+            : `<button type="button" data-member-grant="${u.user_id}" class="px-2.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-[10px] font-bold rounded-lg cursor-pointer">管理者にする</button>`}
+          <button type="button" data-member-copy="${u.user_id}" class="px-2.5 py-1.5 bg-white hover:bg-slate-100 border border-slate-200 text-slate-600 text-[10px] font-bold rounded-lg cursor-pointer">UID コピー</button>
+        </div>
+      </div>`;
+    }).join("");
+  }
+
+  async function grantAdmin(userId) {
+    if (!client || !userId) return;
+    setMembersMessage("");
+    try {
+      const { error } = await client.rpc("admin_grant", { p_user_id: userId });
+      if (error) throw error;
+      toast("管理者権限を付与しました");
+      await loadAdminMembers(currentMemberSearch());
+    } catch (e) {
+      console.warn("[admin] grant", e);
+      setMembersMessage(schemaHint(e), true);
+    }
+  }
+
+  async function revokeAdmin(userId) {
+    if (!client || !userId) return;
+    const ok = await confirmDialog("このユーザーの管理者権限を解除しますか？", "解除する");
+    if (!ok) return;
+    setMembersMessage("");
+    try {
+      const { error } = await client.rpc("admin_revoke", { p_user_id: userId });
+      if (error) throw error;
+      toast("管理者権限を解除しました");
+      await loadAdminMembers(currentMemberSearch());
+    } catch (e) {
+      console.warn("[admin] revoke", e);
+      setMembersMessage(schemaHint(e), true);
+    }
+  }
+
+  function bindMembersUi() {
+    const searchBtn = $("admin-user-search-btn");
+    if (searchBtn) searchBtn.addEventListener("click", () => loadAdminMembers(currentMemberSearch()));
+    const searchInput = $("admin-user-search");
+    if (searchInput) {
+      searchInput.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") { e.preventDefault(); loadAdminMembers(currentMemberSearch()); }
+      });
+    }
+    const refresh = $("admin-members-refresh");
+    if (refresh) refresh.addEventListener("click", () => loadAdminMembers(currentMemberSearch()));
+    const grantBtn = $("admin-grant-btn");
+    if (grantBtn) {
+      grantBtn.addEventListener("click", () => {
+        const raw = String(($("admin-grant-uid") || {}).value || "").trim();
+        const uuidRe = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+        if (!uuidRe.test(raw)) { setMembersMessage("UID の形式が正しくありません（xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx）。", true); return; }
+        const input = $("admin-grant-uid");
+        if (input) input.value = "";
+        grantAdmin(raw);
+      });
+    }
+    const list = $("admin-members-list");
+    if (list) {
+      list.addEventListener("click", (e) => {
+        const grant = e.target.closest("[data-member-grant]");
+        if (grant) { grantAdmin(grant.dataset.memberGrant); return; }
+        const revoke = e.target.closest("[data-member-revoke]");
+        if (revoke) { revokeAdmin(revoke.dataset.memberRevoke); return; }
+        const copy = e.target.closest("[data-member-copy]");
+        if (copy) {
+          const uid = copy.dataset.memberCopy;
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(uid).then(() => toast("UID をコピーしました")).catch(() => toast(uid));
+          } else {
+            toast(uid);
+          }
+        }
+      });
+    }
+  }
+
   // ===== 初期化 =====
   function init() {
     bindAuthUi();
     bindAnnouncementUi();
     bindFeedbackUi();
     bindMockUi();
+    bindMembersUi();
     document.querySelectorAll("[data-admin-tab]").forEach((btn) => {
       btn.addEventListener("click", () => switchTab(btn.dataset.adminTab));
     });
@@ -1062,8 +1317,17 @@
       if (btn) btn.disabled = true;
       return;
     }
-    client.auth.onAuthStateChange((event) => {
-      if (event === "SIGNED_OUT") showLogin();
+    client.auth.onAuthStateChange((event, session) => {
+      if (event === "SIGNED_OUT") {
+        lastSessionAttempt = { key: "", at: 0 };
+        showClaimButton(false);
+        showLogin();
+        return;
+      }
+      // LINE / Google のOAuthコールバックは SIGNED_IN で戻ってくる
+      if (event === "SIGNED_IN" && session) {
+        setTimeout(() => { handleSession(session).catch((e) => console.warn("[admin] session", e)); }, 0);
+      }
     });
     tryRestoreSession().catch((e) => {
       console.warn("[admin] restore", e);

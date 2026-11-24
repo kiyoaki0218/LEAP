@@ -22,7 +22,7 @@
 - **収録**: 英単語 2,300 語（Part 1〜5）／例文・単語詳細 2,300 語分・例文クイズ 2,000 語分／参考資料 5 章／接辞 32 グループ・132 語根／古文単語 150 語（2 章）。
 - **主な遊び**: 通常4択・例文穴埋め・リスニング4択・スペル入力・60秒スプリント・サドンデス、到達度テスト（50問・25分・S〜D判定）、**全国一斉模試（日時指定の時間割制・ハイブリッド偏差値・志望校判定）**、デイリーチャレンジ、忘却曲線の苦手復習、学習カレンダー/Part別マスター率の振り返り、コイン/EXP/レベル、称号・フレーム・アバター、実績 93 種、共有URL（挑戦状）、任意ログインによるクラウド同期・相互フレンドの詳細ステータス閲覧。運営向けに **お知らせ**（ホーム表示）と **意見箱**（匿名可）、管理者用の `admin.html`（模試管理・新規模試作成・過去成績集約・お知らせ CRUD・意見トリアージ）を持つ。
 - **ホスティング**: 静的ホスティング（Vercel 想定。`vercel.json` なし、`.vercel/` は gitignore）。
-- **主要ファイル**: `index.html`（アプリ本体）、`js/core.js`（称号・ゾーン・画面遷移の基盤）、`assets/css/app.css`（アプリ固有 CSS）、`admin.html` ＋ `js/admin.js`（管理者ダッシュボード）、`supabase_config.js`（Supabase 公開設定の共有）、`words_data.js`、`examples_data.js`、`reference_data.js`、`affix_data.js`、`mock_schools_data.js`（模試の志望校マスタ）、`kobun/kobun_words_data.js`、`sw.js`、`manifest.json`、`supabase/schema.sql`（DB/RLS・模試集計RPC・意見箱RPC）、`LEAP単語データ/`（元データ）、`patches/`（データ生成・一括改修スクリプト）。
+- **主要ファイル**: `index.html`（アプリ本体）、`js/core.js`（称号・ゾーン・画面遷移の基盤）、`assets/css/app.css`（アプリ固有 CSS）、`admin.html` ＋ `js/admin.js`（管理者ダッシュボード）、`supabase_config.js`（Supabase 公開設定の共有）、`words_data.js`、`examples_data.js`、`reference_data.js`、`affix_data.js`、`mock_schools_data.js`（模試の志望校マスタ）、`kobun/kobun_words_data.js`、`sw.js`、`manifest.json`、`supabase/schema.sql`（DB/RLS・模試集計RPC・意見箱RPC）、`supabase/admin_roles.sql`（管理者の一覧・付与・解除RPC）、`LEAP単語データ/`（元データ）、`patches/`（データ生成・一括改修スクリプト）。
 
 ---
 
@@ -89,7 +89,7 @@
 
 | id | 画面 | 役割 |
 |---|---|---|
-| `screen-home` | ホーム | ゾーン切替、プレイヤーカード、連続学習、苦手バナー、主要導線（クイズ・デイリー・辞典・語源）＋「⚙️ 設定・その他」シート |
+| `screen-home` | ホーム | ゾーン切替、お知らせ（模試のお知らせは模試ページへの直リンク付き）、はじめてガイド（学習履歴ゼロの人だけ）、クイズ／デイリーの主導線、プレイヤーカード、連続学習、苦手バナー、2列の学習ツール（到達度テスト・模試・学習記録・語源）、3列のツール（辞典・ご意見・設定） |
 | `screen-select` | 出題範囲＆設定 | スタイル／ゲームモード／Part・カスタム範囲／出題数／学習状況フィルタ |
 | `screen-quiz` | クイズ | 問題カード、4択、タイマー、コンボ、次へ |
 | `screen-result` | 結果 | スコア、正答率、間違い一覧、共有・画像保存・再挑戦 |
@@ -103,13 +103,17 @@
 | `screen-reader` | レベル別リーダー | 例文から長文を自動生成して読む（**現在 UI 入口なし＝休眠機能**） |
 | `screen-exam` | 🎓 到達度テスト | 範囲（全範囲／Part単位）を選んで 50問・25分のテスト。S〜D判定と過去の記録を表示 |
 | `screen-stats` | 📊 学習記録 | 直近12週の日別ヒートマップ（学習カレンダー）、連続学習・累計解答・マスター/苦手語数、Part別マスター率 |
-| `screen-mock-exam` | 🏫 全国一斉模試 | 開催スケジュール一覧、カウントダウン、志望校（第1〜第5）エントリー、制限時間つき受験、偏差値・順位・志望校判定・全大学×文理群の目安一覧。ログイン＋Supabase が必要（未設定／未ログインは案内表示） |
+| `screen-mock-exam` | 🏫 全国一斉模試 | 開催スケジュール一覧、カウントダウン、志望校（第1〜第5）エントリー、制限時間つき受験、偏差値・順位・志望校判定・全大学×文理群の目安一覧、模試ごとの共有リンク（`?mock=<examId>`）。ログイン＋Supabase が必要（未設定／未ログインは案内表示） |
 
 モーダル／ダイアログ: **設定・その他シート（`settings-modal`）**、**お知らせ一覧（`announcements-modal`）**、**意見箱（`feedback-modal`）**、実績、苦手単語一覧、単語詳細シート、フレンド詳細ステータスシート、結果のフレンド共有シート、初回ログイン時の競合解決ダイアログ、リーダー単語ポップ、確認ダイアログ（`showConfirm`/`showAlert`）、トースト。
 
 画面外のページ: `admin.html`（管理者ダッシュボード。`SCREENS` には含めない独立ページ）。
 
-ホームの副次的な入口（実績・ショップ・アカウント／同期・自分の詳細・音声ON/OFF・追加JSON読込）は「⚙️ 設定・その他」シートに集約している（`openSettingsModal` / `closeSettingsModal`）。各ボタンは既存IDを保つため、バッジやラベルの自動更新はそのまま動作する。
+ホームの副次的な入口（実績・ショップ・アカウント／同期・自分の詳細・音声ON/OFF・追加JSON読込）は「⚙️ 設定」シートに集約している（`openSettingsModal` / `closeSettingsModal`）。各ボタンは既存IDを保つため、バッジやラベルの自動更新はそのまま動作する。
+
+ホームの導線は「主導線を上・副次機能を下」の順に並べる。`home-onboarding` は `totalQuizzes === 0` かつ `scoreHistory` と `wordStats` が空のときだけ表示し、閉じると `LEAP_ONBOARDING_DISMISSED_V1` に記録して以後は出さない。ガイドの「10問でためす」は先頭100語から10問を学習状況フィルタなしで開始する（`startBeginnerQuiz`）。
+
+模試の共有リンク `?mock=<examId>` で開くと、ログイン状態が整うまで待ってから該当模試を開く（`checkMockExamLink` → `scheduleLinkedMockExam` → `openLinkedMockExam`。最大約10秒待ち、未ログインなら模試画面の案内へ）。お知らせの本文かタイトルに「模試」を含む場合、ホームのお知らせ行と一覧モーダルに「模試ページを開く」ボタンが出る（`announcementAction`）。
 
 ---
 
@@ -563,6 +567,7 @@ window.LEAP_SUPABASE_CONFIG = { url: "https://xxxx.supabase.co", anonKey: "sb_pu
 
 - Supabase JS は `<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">` で読み込む（ビルド工程なし）。
 - クライアントは `auth: { persistSession, autoRefreshToken, detectSessionInUrl, flowType: "pkce" }` で生成。
+- **認証状態は公開サイトと管理画面で分離**している。`index.html` は Supabase 既定の保存キー（`sb-<ref>-auth-token`）、`admin.html` は `storageKey: "leap-admin-auth-v1"` を使う。同じブラウザで「一般ユーザー」と「管理者」を別アカウントで同時にログインできる。
 - OAuth プロバイダは `OAUTH_PROVIDERS` 配列。追加するとログインボタンが自動で増える（現在は Google と LINE）。
 - **LINE は Supabase の組み込みプロバイダではない**ため、`custom:line` という Custom OAuth Provider として登録する（Manual 構成）。手順は `docs/SUPABASE_SETUP.md` §5。
 - OAuth 失敗時はコールバック URL の `error_description` をサイト内ダイアログで表示する（`checkAuthErrorParam`）。
@@ -619,6 +624,15 @@ window.LEAP_SUPABASE_CONFIG = { url: "https://xxxx.supabase.co", anonKey: "sb_pu
 | `mock_exam_entries` | `id`, `exam_id`, `user_id`, `choices` jsonb（第1〜第5志望）, `updated_at`。`(exam_id,user_id)` unique | 本人のみ SELECT / INSERT / UPDATE / DELETE |
 | `mock_exam_results` | `id`, `exam_id`, `user_id`, `score`, `total`, `elapsed_sec`, `answers` jsonb, `is_late`, `submitted_at`。`(exam_id,user_id)` unique | 本人のみ INSERT / SELECT（UPDATE/DELETE 不可） |
 | `admin_users` | `user_id`（auth.users FK・PK）, `note`, `created_at` | RLS 有効・ポリシーなし。`security definer` の `is_admin()` からのみ参照でき、anon / authenticated は直接読めない |
+
+管理者の運用は `supabase/admin_roles.sql` の RPC で行う（`schema.sql` 適用後に実行）。
+
+| RPC | 権限 | 内容 |
+|---|---|---|
+| `admin_list_members(p_search)` | 管理者のみ | `auth.users` を UID・メール・表示名で検索し、`providers`（`custom:line` / `google` / `email`）と `is_admin` を返す。メールが NULL の LINE ユーザーも扱える |
+| `admin_grant(p_user_id, p_note)` | 管理者のみ | UID を指定して `admin_users` に追加。存在しない UID は `23503` |
+| `admin_revoke(p_user_id)` | 管理者のみ | 解除。最後の1人は `23514` で拒否 |
+| `admin_claim_first()` | ログイン済み本人 | `admin_users` が空のときだけ自分を最初の管理者にする（メールの insert が使えない LINE ユーザー向けのブートストラップ）。既に管理者がいれば `false` |
 | `announcements` | `id`, `title`(120), `body`(4000), `level`(info/warning/success), `pinned`, `published_at`, `expires_at`, `created_by`, 日時 | anon / authenticated は**公開期間内のみ** SELECT。管理者は全件の SELECT/INSERT/UPDATE/DELETE |
 | `feedback` | `id`, `category`(opinion/request/bug/praise/other), `body`(2000), `rating`(1〜5), `page`, `subject`, `user_id`, `contact`, `client_token`, `status`(new/reading/done/archived), `admin_note`, 日時 | 管理者のみ SELECT/UPDATE/DELETE。**直接 INSERT は不可**で、投稿は `submit_feedback()` RPC 経由 |
 
@@ -673,7 +687,8 @@ window.LEAP_SUPABASE_CONFIG = { url: "https://xxxx.supabase.co", anonKey: "sb_pu
 #### 管理画面（`admin.html` ＋ `js/admin.js`）
 
 - `noindex, nofollow`。`sw.js` は `admin.html` を Network-Only にし、キャッシュしない。
-- Supabase Auth（メール＋パスワード）でログイン → `rpc("is_admin")` が `true` のときだけ画面を表示。権限がなければ即サインアウトする。フロント側のパスワード判定は行わない。
+- Supabase Auth（**メール＋パスワード**または**LINE**）でログイン → `rpc("is_admin")` が `true` のときだけ画面を表示。権限がない場合はサインアウトせず、「初回セットアップ: このアカウントを最初の管理者にする」（`admin_claim_first`）を表示する。フロント側のパスワード判定は行わない。
+- **👤 管理者タブ**: `admin_list_members` でユーザーを検索（UID・メール・表示名）し、その場で付与／解除できる。LINE ユーザーは「LINE」バッジと「メールなし」表示になり、UID をコピーして共有できる。UID を直接入力して付与する欄もある（Supabase Dashboard で確認した UUID 用）。
 - **模試管理**:
   - **新規模試作成**: タイトル、科目（LEAP/古文）、出題範囲プリセット（全範囲/Part 1〜2/Part 3〜4/Part別）、問題数（25/50/100問）、単語の自動抽出（シャッフル＋ソート、理論正答率 `expected_rates` 自動生成）、開催開始・終了日時、制限時間（15〜40分）を設定して公開。既存模試の編集・削除も可能。
   - **模試一覧＆過去成績アーカイブ**: 開催前・開催中・終了済みの模試一覧。エントリー数、受験者数（提出総数・正規受験・遅延受験）、平均点（正答率）、最高点/最低点、平均所要時間を集約表示。
@@ -684,7 +699,10 @@ window.LEAP_SUPABASE_CONFIG = { url: "https://xxxx.supabase.co", anonKey: "sb_pu
 
 #### 管理者アカウントの作成
 
-`admin.html` は**メール＋パスワード**のログインのみ対応する。Google / LINE だけで作ったアカウントはパスワードを持たないため、管理者用には**専用のメール＋パスワードアカウント**を1つ作るのが簡単。
+`admin.html` は**メール＋パスワード**と**LINE**の両方でログインできる。管理者にする人は、事前にアプリ（または管理画面）へ一度ログインして `auth.users` に行がある状態にしておく。
+
+- 最初の1人: `supabase/admin_roles.sql` を実行したうえで `admin.html` にログインし、「初回セットアップ: このアカウントを最初の管理者にする」を押す（`admin_users` が空のときだけ成功する）。
+- 2人目以降: 既存の管理者が「👤 管理者」タブで UID・メール・表示名を検索して付与する。LINE ユーザーはメールアドレスを持たないため、**UID か表示名で付与する**（メールでの `insert ... where email = ...` は 0 行になる）。
 
 1. Supabase Dashboard 左メニューの **Authentication** を開く。
 2. 上部タブの **Users** を開く。
@@ -699,14 +717,17 @@ window.LEAP_SUPABASE_CONFIG = { url: "https://xxxx.supabase.co", anonKey: "sb_pu
 6. SQL Editor で、その UID を許可リスト `admin_users` に追加する。
 
    ```sql
-   -- メールアドレスから追加（UID を調べる手間なし。おすすめ）
+   -- UID を直接指定（LINE ユーザーなどメールが無い場合もこれを使う）
    insert into public.admin_users (user_id)
-   select id from auth.users where email = 'admin@example.com'
+   values ('ここにUID')
    on conflict (user_id) do nothing;
 
-   -- または、コピーした UID を直接指定
-   -- insert into public.admin_users (user_id) values ('ここにUID');
+   -- メールアドレスから追加（メールを持つアカウントのみ）
+   -- insert into public.admin_users (user_id)
+   -- select id from auth.users where email = 'admin@example.com';
    ```
+
+   `supabase/admin_roles.sql` を実行済みなら、SQL を書かずに管理画面の「👤 管理者」タブから付与するのが簡単。
 
 7. 登録できたか確認する。
 
@@ -724,7 +745,8 @@ window.LEAP_SUPABASE_CONFIG = { url: "https://xxxx.supabase.co", anonKey: "sb_pu
 - `violates foreign key constraint` → `admin_users` は `auth.users` にしか追加できない。先に手順3でユーザーを作る（`profiles` ではない）。
 - 「メールアドレスまたはパスワードが違います」→ パスワード誤り、またはメール未確認。Users で確認状態を見る。
 - 「このアカウントには管理者権限がありません」→ 手順6の `insert` が未実行、または UID が別ユーザーのもの。手順7で確認する。
-- 既存の Google / LINE アカウントを管理者にしたい場合は、その UID を `admin_users` に入れれば権限は付くが、`admin.html` にはパスワードでしかログインできない。専用のメール＋パスワードアカウントを作るほうが確実。
+- 既存の Google / LINE アカウントを管理者にしたい場合は、その UID を `admin_users` に入れれば権限は付く。`admin.html` にも LINE ログインボタンがあるため、同じ LINE アカウントで管理画面に入れる（初回は Supabase の Redirect URLs に `admin.html` の URL を含めること）。
+- LINE ユーザーをメールで追加しようとして 0 行になる → LINE は `auth.users.email` が NULL。UID 指定か「👤 管理者」タブを使う。
 
 > パスワードはリポジトリ・`supabase_config.js`・チャットに書かない。`admin_users` から行を消せば即座に権限を失う。
 
@@ -753,7 +775,7 @@ window.LEAP_SUPABASE_CONFIG = { url: "https://xxxx.supabase.co", anonKey: "sb_pu
    | Allow users without email | ON |
 
    ※ LINE の Web ログインは ID Token が HS256 のため OIDC 自動 discovery では検証に失敗する。必ず Manual 構成にする。
-6. 管理者を使う場合は §12.6 の手順で `admin_users` に UID を追加する（`schema.sql` 実行後に `admin.html` へログイン）。
+6. 管理者を使う場合は `supabase/admin_roles.sql` を実行し、§12.6 の手順で `admin_users` に UID を追加する（LINE ユーザーはメールではなく UID で追加）。
 7. `APP_VER` / `sw.js` の `CACHE` を更新してデプロイ。
 
 ---
@@ -875,6 +897,7 @@ node patches/build_leap_data.js
 
 | 日付 | 変更内容 |
 |---|---|
+| 2026-11-24 | 👤 管理者権限の運用を UID ベースに変更し、LINE ログインユーザーにも付与できるようにした。新規 `supabase/admin_roles.sql`（`admin_list_members` / `admin_grant` / `admin_revoke` / `admin_claim_first`）と、`admin.html` の「👤 管理者」タブ（UID・メール・表示名で検索、付与・解除、UID コピー、UID 直接入力）を追加。`admin.html` は LINE ログインにも対応し、権限が無い場合もサインアウトせず「最初の管理者として登録」できるようにした。管理画面の認証保存キーを `leap-admin-auth-v1` に分離し、公開サイトと管理画面で別アカウントを同時にログイン可能にした。🎨 ホームを再構成（主導線を上部へ、学習ツールを2列・ツールを3列に集約、新規ユーザー向け3ステップの「はじめてガイド」と「10問でためす」）。お知らせに「模試」を含む場合の模試ページ直リンク、模試の共有リンク `?mock=<examId>` と共有ボタンを追加。ダークモードの半透明面・淡い枠線・濃色チップ文字のコントラストを補修。`APP_VER=leap-v17-admin-ui` / `CACHE=leap-v38`。|
 | 2026-11-23 | 🐞 管理ダッシュボード（`admin.html`）の「📮 意見箱」タブが空になる不具合を修正。`js/admin.js` 側にだけ存在した描画先（`#panel-feedback` / `#fb-list` / `#fb-count` / `#fb-category` / `#fb-status` / `#fb-q` / `#fb-refresh`）の HTML が `admin.html` に無く、タブを切り替えても何も表示されなかった。他タブと同じカード構成で、種別・状態・キーワードの絞り込み、件数表示、更新ボタン、一覧カードを追加。`admin.html` は Service Worker の `ASSETS` 対象外なので `APP_VER` / `CACHE` は据え置き。 |
 | 2026-11-23 | 🏫 全国一斉模試の志望校マスタを拡充し、選択 UI に絞り込みを追加。`mock_schools_data.js` に京都工芸繊維大学（工芸科学部5課程）をはじめ、京都教育・大阪教育・奈良教育・滋賀県立・兵庫県立・神戸市外国語・千葉・横浜国立・金沢・熊本・大阪工業・関西医科・大阪医科薬科・武庫川女子・神戸学院・立命館アジア太平洋・芝浦工業の大学×文理グループと学部を追加。エントリー画面に大学名/学部名の検索、カテゴリ・難易度（tier）の絞り込み、該当件数表示、条件クリアを追加（`mockSchoolFilter` / `renderMockSchoolSelectors`）。成績表の全大学×文理群の目安一覧はカテゴリ見出し付きに変更。`APP_VER=leap-v16-mock-schools` / `CACHE=leap-v37`。 |
 | 2026-11-23 | お知らせ投稿時の `null value in column "publish_start" violates not-null constraint` エラーを修正。旧サービスと共用している `announcements` テーブルの旧列（`publish_start`, `publish_end`, `content`）に対応した互換ペイロードと自動フォールバックを `js/admin.js` に実装。`supabase/schema.sql` および `supabase/migration_community.sql` に旧テーブル存在時の NOT NULL 制約緩和 DDL を追加。`APP_VER=leap-v15-announcement-fix` / `CACHE=leap-v36`。 |

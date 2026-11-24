@@ -11,7 +11,7 @@
     <script>
     // キャッシュ強制更新ロジック: 新バージョン検知時に古いServiceWorkerキャッシュを破棄
     (function() {
-      const APP_VER = "leap-v16-mock-schools";
+      const APP_VER = "leap-v17-admin-ui";
       try {
         const storedVer = localStorage.getItem("LEAP_APP_CACHE_VER");
         if (storedVer !== APP_VER) {
@@ -137,6 +137,46 @@
         <p id="home-hero-sub" class="text-slate-500 text-sm">英語から日本語の語義を素早く答えるトレーニング</p>
       </div>
 
+      <!-- はじめてガイド（学習履歴がまだ無い人だけに表示） -->
+      <div id="home-onboarding" class="hidden bg-white border border-emerald-200 rounded-2xl shadow-sm p-4 space-y-3">
+        <div class="flex items-start justify-between gap-2">
+          <div class="min-w-0">
+            <p class="text-sm font-extrabold text-slate-900">👋 はじめての方へ</p>
+            <p class="text-[11px] text-slate-500 mt-0.5">この3つだけ覚えれば大丈夫です。</p>
+          </div>
+          <button type="button" onclick="dismissOnboarding()" class="text-[10px] font-bold text-slate-400 hover:text-slate-700 shrink-0 cursor-pointer">閉じる</button>
+        </div>
+        <ol class="space-y-2.5">
+          <li class="flex gap-2.5">
+            <span class="w-5 h-5 rounded-full bg-emerald-600 text-white text-[10px] font-extrabold flex items-center justify-center shrink-0">1</span>
+            <span class="text-[11px] text-slate-600 leading-relaxed"><b class="text-slate-800">まず10問解いてみる</b><br>「クイズを始める」から範囲を選ぶだけ。1セット約1分です。</span>
+          </li>
+          <li class="flex gap-2.5">
+            <span class="w-5 h-5 rounded-full bg-emerald-600 text-white text-[10px] font-extrabold flex items-center justify-center shrink-0">2</span>
+            <span class="text-[11px] text-slate-600 leading-relaxed"><b class="text-slate-800">間違えた単語は自動で復習へ</b><br>トップの「苦手・復習」から、忘れかけた頃にやり直せます。</span>
+          </li>
+          <li class="flex gap-2.5">
+            <span class="w-5 h-5 rounded-full bg-emerald-600 text-white text-[10px] font-extrabold flex items-center justify-center shrink-0">3</span>
+            <span class="text-[11px] text-slate-600 leading-relaxed"><b class="text-slate-800">ログインすると模試・フレンド機能</b><br>全国一斉模試の偏差値判定や、機種変更時の引き継ぎが使えます。</span>
+          </li>
+        </ol>
+        <button type="button" onclick="startBeginnerQuiz()" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl transition cursor-pointer">10問でためす</button>
+      </div>
+
+      <!-- メイン導線（最初に目に入る位置に置く） -->
+      <div class="space-y-3 pt-1">
+        <button type="button" onclick="navigate('screen-select')" class="w-full py-4 bg-slate-900 hover:bg-slate-800 active:scale-[0.99] text-white font-bold rounded-xl shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer">
+          <span>クイズを始める</span>
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg>
+        </button>
+        <p class="text-center text-[10px] text-slate-400 -mt-1">10問・約1分から。範囲と問題数は次の画面で選べます。</p>
+
+        <button type="button" id="btn-daily-challenge" onclick="startDailyChallenge()" class="w-full py-3.5 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 active:scale-[0.99] text-white font-bold rounded-xl shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer">
+          <span>🌟 デイリーチャレンジ</span>
+          <span id="daily-badge" class="text-[11px] font-extrabold bg-white/25 px-2 py-0.5 rounded-full">1日1回 コイン2倍！</span>
+        </button>
+      </div>
+
       <!-- プレイヤーカード（レベル・EXP・アバター） -->
       <div id="home-player-card" class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
         <div class="flex items-center gap-3">
@@ -207,80 +247,38 @@
         </div>
       </div>
 
-      <!-- 操作ボタン -->
-      <div class="space-y-3 pt-1">
-        <button type="button" onclick="navigate('screen-select')" class="w-full py-4 bg-slate-900 hover:bg-slate-800 active:scale-[0.99] text-white font-bold rounded-xl shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer">
-          <span>クイズを始める</span>
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg>
-        </button>
+      <!-- 学びを深めるツール（2列に集約して縦の長さを抑える） -->
+      <div class="space-y-2">
+        <p class="text-[11px] font-extrabold text-slate-400 tracking-widest px-1">もっと学ぶ</p>
+        <div class="grid grid-cols-2 gap-2.5">
+          <button type="button" onclick="navigate('screen-exam')" class="text-left p-3 bg-white hover:bg-slate-50 active:scale-[0.99] border border-slate-200 rounded-xl shadow-sm transition-all cursor-pointer">
+            <span class="text-lg">🎓</span>
+            <span class="block text-xs font-bold text-slate-800 mt-1">到達度テスト</span>
+            <span class="block text-[10px] text-slate-400 mt-0.5">50問・S〜D判定</span>
+          </button>
+          <button type="button" onclick="navigate('screen-mock-exam')" class="text-left p-3 bg-white hover:bg-slate-50 active:scale-[0.99] border border-slate-200 rounded-xl shadow-sm transition-all cursor-pointer">
+            <span class="text-lg">🏫</span>
+            <span class="block text-xs font-bold text-slate-800 mt-1">全国一斉模試</span>
+            <span class="block text-[10px] text-slate-400 mt-0.5">偏差値・志望校判定</span>
+          </button>
+          <button type="button" onclick="navigate('screen-stats')" class="text-left p-3 bg-white hover:bg-slate-50 active:scale-[0.99] border border-slate-200 rounded-xl shadow-sm transition-all cursor-pointer">
+            <span class="text-lg">📊</span>
+            <span class="block text-xs font-bold text-slate-800 mt-1">学習記録</span>
+            <span class="block text-[10px] text-slate-400 mt-0.5">カレンダー・Part別</span>
+          </button>
+          <button type="button" onclick="openAffixHub()" class="text-left p-3 bg-white hover:bg-slate-50 active:scale-[0.99] border border-slate-200 rounded-xl shadow-sm transition-all cursor-pointer">
+            <span class="text-lg">🧩</span>
+            <span class="block text-xs font-bold text-slate-800 mt-1">語源ラッシュ</span>
+            <span class="block text-[10px] text-slate-400 mt-0.5">接辞ラッシュ・神経衰弱</span>
+          </button>
+        </div>
+      </div>
 
-        <!-- 到達度テスト -->
-        <button type="button" onclick="navigate('screen-exam')" class="w-full text-left px-4 py-3 bg-white hover:bg-slate-50 active:bg-slate-100 border border-slate-200 rounded-xl shadow-sm transition-all flex items-center gap-3 cursor-pointer">
-          <span class="w-9 h-9 rounded-xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-lg shrink-0">🎓</span>
-          <span class="min-w-0 flex-1">
-            <span class="block text-sm font-bold text-slate-800">到達度テスト（50問・25分）</span>
-            <span class="block text-[11px] text-slate-400 mt-0.5 truncate">S〜Dの5段階判定で実力をチェック</span>
-          </span>
-          <span class="text-slate-300 text-sm shrink-0">›</span>
-        </button>
-
-        <!-- 全国一斉模試 -->
-        <button type="button" onclick="navigate('screen-mock-exam')" class="w-full text-left px-4 py-3 bg-white hover:bg-slate-50 active:bg-slate-100 border border-slate-200 rounded-xl shadow-sm transition-all flex items-center gap-3 cursor-pointer">
-          <span class="w-9 h-9 rounded-xl bg-rose-50 border border-rose-100 flex items-center justify-center text-lg shrink-0">🏫</span>
-          <span class="min-w-0 flex-1">
-            <span class="block text-sm font-bold text-slate-800">全国一斉模試（時間割制）</span>
-            <span class="block text-[11px] text-slate-400 mt-0.5 truncate">日時指定の本番形式で偏差値・志望校判定</span>
-          </span>
-          <span class="text-slate-300 text-sm shrink-0">›</span>
-        </button>
-
-        <!-- 学習記録 -->
-        <button type="button" onclick="navigate('screen-stats')" class="w-full text-left px-4 py-3 bg-white hover:bg-slate-50 active:bg-slate-100 border border-slate-200 rounded-xl shadow-sm transition-all flex items-center gap-3 cursor-pointer">
-          <span class="w-9 h-9 rounded-xl bg-sky-50 border border-sky-100 flex items-center justify-center text-lg shrink-0">📊</span>
-          <span class="min-w-0 flex-1">
-            <span class="block text-sm font-bold text-slate-800">学習記録（カレンダー）</span>
-            <span class="block text-[11px] text-slate-400 mt-0.5 truncate">每日の積み上げと Part別のマスター率</span>
-          </span>
-          <span class="text-slate-300 text-sm shrink-0">›</span>
-        </button>
-
-        <!-- 語源ラッシュ -->
-        <button type="button" onclick="openAffixHub()" class="w-full text-left px-4 py-3 bg-white hover:bg-slate-50 active:bg-slate-100 border border-slate-200 rounded-xl shadow-sm transition-all flex items-center gap-3 cursor-pointer">
-          <span class="w-9 h-9 rounded-xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-lg shrink-0">🧩</span>
-          <span class="min-w-0 flex-1">
-            <span class="block text-sm font-bold text-slate-800">語源ラッシュ（接頭辞・接尾辞）</span>
-            <span class="block text-[11px] text-slate-400 mt-0.5 truncate">60秒4択ラッシュ ＆ 神経衰弱で語源の感覚を養う</span>
-          </span>
-          <span class="text-slate-300 text-sm shrink-0">›</span>
-        </button>
-
-        <!-- デイリーチャレンジボタン -->
-        <button type="button" id="btn-daily-challenge" onclick="startDailyChallenge()" class="w-full py-3.5 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 active:scale-[0.99] text-white font-bold rounded-xl shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer">
-          <span>🌟 デイリーチャレンジ</span>
-          <span id="daily-badge" class="text-[11px] font-extrabold bg-white/25 px-2 py-0.5 rounded-full">1日1回 コイン2倍！</span>
-        </button>
-
-        <button type="button" onclick="openDictionary()" class="w-full py-3.5 bg-white hover:bg-slate-100 active:scale-[0.99] border border-slate-200 text-slate-700 font-semibold rounded-xl shadow-sm transition-all flex items-center justify-center gap-2 cursor-pointer">
-          <span>📖 単語辞典（番号順）</span>
-        </button>
-
-        <!-- 意見箱 -->
-        <button type="button" onclick="openFeedbackModal()" class="w-full px-4 py-3 bg-white hover:bg-slate-50 active:bg-slate-100 border border-slate-200 rounded-xl shadow-sm transition-all flex items-center justify-between cursor-pointer">
-          <span class="flex items-center gap-2 min-w-0">
-            <span class="text-lg">📮</span>
-            <span class="text-sm font-bold text-slate-800">ご意見・ご感想</span>
-          </span>
-          <span class="text-[10px] font-bold text-slate-400 shrink-0">運営に届きます</span>
-        </button>
-
-        <!-- 設定・その他（実績 / ショップ / 同期 / 自分の詳細 / 音声など） -->
-        <button type="button" onclick="openSettingsModal()" class="w-full px-4 py-3 bg-white hover:bg-slate-50 active:bg-slate-100 border border-slate-200 rounded-xl shadow-sm transition-all flex items-center justify-between cursor-pointer">
-          <span class="flex items-center gap-2 min-w-0">
-            <span class="text-lg">⚙️</span>
-            <span class="text-sm font-bold text-slate-800">設定・その他</span>
-          </span>
-          <span class="text-[10px] font-bold text-slate-400 shrink-0">実績・ショップ・同期など</span>
-        </button>
+      <!-- ツール -->
+      <div class="grid grid-cols-3 gap-2">
+        <button type="button" onclick="openDictionary()" class="py-2.5 bg-white hover:bg-slate-50 border border-slate-200 rounded-xl shadow-sm text-[11px] font-bold text-slate-700 transition cursor-pointer">📖 単語辞典</button>
+        <button type="button" onclick="openFeedbackModal()" class="py-2.5 bg-white hover:bg-slate-50 border border-slate-200 rounded-xl shadow-sm text-[11px] font-bold text-slate-700 transition cursor-pointer">📮 ご意見</button>
+        <button type="button" onclick="openSettingsModal()" class="py-2.5 bg-white hover:bg-slate-50 border border-slate-200 rounded-xl shadow-sm text-[11px] font-bold text-slate-700 transition cursor-pointer">⚙️ 設定</button>
       </div>
 
       <!-- 学習履歴（最近5回） -->
@@ -2321,6 +2319,42 @@
       updateUserUI();
     }
 
+    // ===== はじめてガイド =====
+    const ONBOARDING_DISMISS_KEY = "LEAP_ONBOARDING_DISMISSED_V1";
+
+    function isNewLearner() {
+      return (Number(userData.totalQuizzes) || 0) === 0
+        && _history(userData).length === 0
+        && Object.keys(userData.wordStats || {}).length === 0;
+    }
+
+    function renderHomeOnboarding() {
+      const card = document.getElementById("home-onboarding");
+      if (!card) return;
+      let dismissed = false;
+      try { dismissed = localStorage.getItem(ONBOARDING_DISMISS_KEY) === "1"; } catch (e) {}
+      card.classList.toggle("hidden", !isNewLearner() || dismissed);
+    }
+
+    function dismissOnboarding() {
+      try { localStorage.setItem(ONBOARDING_DISMISS_KEY, "1"); } catch (e) {}
+      renderHomeOnboarding();
+    }
+
+    // ガイドの「10問でためす」: 先頭100語から10問（学習状況フィルターは使わない）
+    function startBeginnerQuiz() {
+      const range = getDataIdRange();
+      isDailyMode = false;
+      isWeakMode = false;
+      selectedRange = {
+        start: range.start,
+        end: Math.min(range.start + 99, range.end),
+        label: "はじめての10問"
+      };
+      questionLimit = 10;
+      startQuizWithPool(ALL_WORDS.filter(w => w.id >= selectedRange.start && w.id <= selectedRange.end));
+    }
+
     function updateUserUI() {
       const full = getFullTitle();
       const hCoins = document.getElementById("header-coins");
@@ -2413,6 +2447,7 @@
 
       // スコア履歴セクション更新
       updateScoreHistoryUI();
+      renderHomeOnboarding();
     }
 
     function handleCustomDataUpload(e) {
@@ -4450,6 +4485,84 @@
       renderMockExamScreen();
     }
 
+    // ---- 共有リンク（?mock=<examId>） ----
+    let pendingMockExamId = "";
+
+    function buildMockExamUrl(examId) {
+      return `${window.location.origin}${window.location.pathname}?mock=${encodeURIComponent(examId)}`;
+    }
+
+    async function shareMockExamLink(examId) {
+      const id = examId || (mockCurrentExam() && mockCurrentExam().id);
+      if (!id) return;
+      const exam = mockExamsCache.find(e => e.id === id);
+      const url = buildMockExamUrl(id);
+      const title = exam ? `LEAP 全国一斉模試「${exam.title}」` : "LEAP 全国一斉模試";
+      if (navigator.share) {
+        try {
+          await navigator.share({ title: "LEAP 全国一斉模試", text: `${title}に挑戦しよう！`, url });
+          return;
+        } catch (e) {
+          if (e && e.name === "AbortError") return;
+        }
+      }
+      try {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          await navigator.clipboard.writeText(url);
+        } else {
+          window.prompt("このリンクを共有してください", url);
+          return;
+        }
+        showToast("模試リンクをコピーしました");
+      } catch (e) {
+        window.prompt("このリンクを共有してください", url);
+      }
+    }
+
+    // 共有リンクで開かれたときは、ログイン状態が整うまで少し待ってから模試を開く
+    function checkMockExamLink() {
+      let params;
+      try { params = new URLSearchParams(window.location.search); } catch (e) { return; }
+      const id = params.get("mock");
+      if (!id) return;
+      pendingMockExamId = id;
+      // 再読み込みで再実行されないよう URL からは取り除く
+      try {
+        params.delete("mock");
+        const q = params.toString();
+        history.replaceState(history.state, "", window.location.pathname + (q ? `?${q}` : "") + window.location.hash);
+      } catch (e) {}
+    }
+
+    function scheduleLinkedMockExam(attempt) {
+      const n = attempt || 0;
+      if (!pendingMockExamId) return;
+      if (typeof mockIsReady === "function" && mockIsReady()) {
+        openLinkedMockExam();
+        return;
+      }
+      if (n < 8) {
+        setTimeout(() => scheduleLinkedMockExam(n + 1), 700);
+      } else {
+        // ログインすれば開けるよう、ID は保持したまま模試画面の案内を見せる
+        showToast("模試を開くにはログインが必要です");
+        navigate("screen-mock-exam");
+      }
+    }
+
+    async function openLinkedMockExam() {
+      const id = pendingMockExamId;
+      if (!id) return;
+      pendingMockExamId = "";
+      navigate("screen-mock-exam");
+      try { await loadMockExams(); } catch (e) {}
+      if (!mockExamsCache.some(e => e.id === id)) {
+        showToast("この模試は終了したか、公開されていません");
+        return;
+      }
+      await selectMockExam(id);
+    }
+
     async function selectMockExam(id) {
       mockSelectedExamId = id;
       mockReport = null;
@@ -4803,6 +4916,7 @@
         <p class="text-[11px] text-slate-500">${mockFormatDateTime(exam.start_at)} 〜 ${mockFormatDateTime(exam.end_at)}</p>
         <p id="mock-countdown" class="text-xs font-extrabold text-slate-800 tabular-nums">-</p>
         <p class="text-[10px] text-slate-400 leading-relaxed">開始前はカウントダウンと志望校登録。期間内は${minutes}分の制限時間で受験できます。終了時刻を過ぎた提出は参考記録（is_late）になります。</p>
+        <button type="button" onclick="shareMockExamLink('${exam.id}')" class="inline-flex items-center gap-1 px-3 py-1.5 bg-white hover:bg-slate-50 border border-slate-300 text-slate-700 text-[11px] font-bold rounded-lg transition cursor-pointer">🔗 この模試のリンクを共有</button>
       </div>`;
     }
 
@@ -7291,6 +7405,17 @@ listContainer.appendChild(row);
       renderCommunityAnnouncements();
     }
 
+    // 本文に「模試」を含むお知らせは、そのまま模試ページへ飛べるようにする
+    function announcementAction(a) {
+      const text = `${(a && a.title) || ""} ${(a && a.body) || ""}`;
+      return /模試|mock/i.test(text) ? "mock" : "";
+    }
+
+    function openMockFromAnnouncement() {
+      closeAnnouncementsModal();
+      navigate("screen-mock-exam");
+    }
+
     function renderCommunityAnnouncements() {
       const wrap = document.getElementById("home-announcements");
       const list = document.getElementById("home-announcements-list");
@@ -7308,13 +7433,14 @@ listContainer.appendChild(row);
         badge.classList.toggle("hidden", unread === 0);
       }
       list.innerHTML = communityAnnouncements.slice(0, 2).map((a) => `
-        <button type="button" onclick="openAnnouncementsModal()" class="w-full text-left flex items-start gap-1.5 hover:bg-amber-100/60 rounded-lg px-1 py-0.5 transition cursor-pointer">
+        <div class="flex items-start gap-1.5 rounded-lg px-1 py-0.5 hover:bg-amber-100/60 transition">
           <span class="text-amber-500 text-[10px] mt-0.5">•</span>
-          <span class="min-w-0 flex-1">
+          <button type="button" onclick="openAnnouncementsModal()" class="min-w-0 flex-1 text-left cursor-pointer">
             <span class="block text-[11px] font-bold text-amber-900 truncate">${escapeHtml(a.title)}</span>
             <span class="block text-[9px] text-amber-700/70">${formatCommunityDate(a.published_at)}</span>
-          </span>
-        </button>`).join("");
+          </button>
+          ${announcementAction(a) === "mock" ? `<button type="button" onclick="openMockFromAnnouncement()" class="shrink-0 text-[9px] font-extrabold text-rose-700 bg-white/70 border border-rose-200 rounded-full px-1.5 py-0.5 hover:bg-white cursor-pointer">模試へ ›</button>` : ""}
+        </div>`).join("");
     }
 
     function markCommunityAnnouncementsSeen() {
@@ -7342,6 +7468,7 @@ listContainer.appendChild(row);
           </div>
           <h4 class="text-sm font-extrabold text-slate-900 break-words">${escapeHtml(a.title)}</h4>
           <p class="text-[12px] text-slate-600 leading-relaxed break-words" style="white-space:pre-wrap">${escapeHtml(a.body)}</p>
+          ${announcementAction(a) === "mock" ? `<button type="button" onclick="openMockFromAnnouncement()" class="mt-1 inline-flex items-center gap-1 text-[11px] font-bold text-rose-700 bg-rose-50 border border-rose-200 rounded-lg px-2.5 py-1.5 hover:bg-rose-100 transition cursor-pointer">🏫 模試ページを開く</button>` : ""}
         </article>`;
       }).join("");
     }
@@ -10408,13 +10535,18 @@ listContainer.appendChild(row);
         if (session && session.user) {
           cloudState.user = session.user;
           setTimeout(bootstrapCloudUser, 0);
+          setTimeout(() => scheduleLinkedMockExam(0), 1200);
         }
       }).catch(() => {});
       supabaseClient.auth.onAuthStateChange((event, session) => {
         const previous = cloudState.user ? cloudState.user.id : null;
         if (session && session.user) {
           cloudState.user = session.user;
-          if (previous !== session.user.id) setTimeout(bootstrapCloudUser, 0);
+          if (previous !== session.user.id) {
+            setTimeout(bootstrapCloudUser, 0);
+            // 共有リンクで開いていた模試があれば、ログイン後に自動で開く
+            setTimeout(() => scheduleLinkedMockExam(0), 1500);
+          }
         } else {
           cloudState.user = null;
           cloudState.profile = null;
@@ -10444,6 +10576,8 @@ listContainer.appendChild(row);
       loadDictFilterOpenState();
       checkAndFetchData();
       checkIncomingChallenge();
+      checkMockExamLink();
+      scheduleLinkedMockExam(0);
       initAchievements();
       initCloud();
       initCommunityUi();
