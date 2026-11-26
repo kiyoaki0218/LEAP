@@ -31,6 +31,8 @@
     let mockScheduleNote = "";
 
     const MOCK_LOCAL_RESULTS_KEY = "LEAP_MOCK_LOCAL_RESULTS_V1";
+    const MOCK_HISTORY_KEY = "LEAP_MOCK_HISTORY_V1";
+    const MOCK_HISTORY_MAX = 20;
     const MOCK_OFFLINE_EXAM_ID = "local-practice";
 
     // 全国集計に提出できる状態か（ログイン済み＋Supabase 設定済み）
@@ -69,6 +71,80 @@
         delete all[examId];
         localStorage.setItem(MOCK_LOCAL_RESULTS_KEY, JSON.stringify(all));
       } catch (e) {}
+    }
+
+    // ---- 成績履歴（模試ごとの得点・偏差値を端末に残して推移を見る） ----
+    function mockLoadHistory() {
+      try {
+        const raw = JSON.parse(localStorage.getItem(MOCK_HISTORY_KEY) || "[]");
+        return Array.isArray(raw) ? raw.filter(h => h && h.examId) : [];
+      } catch (e) { return []; }
+    }
+    function mockWriteHistory(list) {
+      try { localStorage.setItem(MOCK_HISTORY_KEY, JSON.stringify((list || []).slice(0, MOCK_HISTORY_MAX))); } catch (e) {}
+    }
+
+    // 同じ模試の記録は最新1件に置き換える（練習模試の再挑戦も推移として残る）
+    function mockRecordHistory(exam, result) {
+      if (!exam || !result) return null;
+      const total = Math.max(1, Number(result.total) || 1);
+      const score = Math.max(0, Number(result.score) || 0);
+      const rep = mockReport || mockLocalReport;
+      const devRaw = rep && rep.me ? Number(rep.me.deviation) : NaN;
+      const entry = {
+        examId: exam.id,
+        title: exam.title || "模試",
+        subject: exam.subject || currentSubject,
+        date: result.submitted_at || new Date().toISOString(),
+        score: score,
+        total: total,
+        accuracy: Math.round(score / total * 100),
+        deviation: Number.isFinite(devRaw) ? devRaw : null,
+        elapsed_sec: Math.max(0, Math.round(Number(result.elapsed_sec) || 0)),
+        is_late: !!result.is_late,
+        offline: !!exam.offline
+      };
+      const list = mockLoadHistory().filter(h => h.examId !== exam.id);
+      list.unshift(entry);
+      mockWriteHistory(list);
+      return entry;
+    }
+
+    function mockBackfillHistory(exam, result) {
+      if (!exam || !result) return;
+      if (mockLoadHistory().some(h => h.examId === exam.id)) return;
+      mockRecordHistory(exam, result);
+    }
+
+    function mockRenderHistoryCard(exam) {
+      const list = mockLoadHistory();
+      if (!list.length) return "";
+      const currentId = exam ? exam.id : "";
+      const best = list.reduce((a, b) => (b.accuracy > a.accuracy ? b : a), list[0]);
+      const chrono = list.slice(0, 8).reverse();
+      const bars = chrono.map(h => {
+        const color = h.accuracy >= 80 ? "bg-emerald-500" : h.accuracy >= 60 ? "bg-amber-400" : "bg-rose-500";
+        return `<div class="flex-1 flex flex-col items-center gap-0.5" title="${escapeHtml(h.title)} ${h.accuracy}%">
+          <div class="w-full h-14 bg-slate-100 rounded-md flex items-end overflow-hidden">
+            <span class="w-full ${color} rounded-md" style="height:${Math.max(6, Math.min(100, h.accuracy))}%"></span>
+          </div>
+          <span class="text-[9px] tabular-nums ${h.examId === currentId ? "font-extrabold text-slate-800" : "text-slate-400"}">${h.accuracy}</span>
+        </div>`;
+      }).join("");
+      const rows = list.slice(0, 6).map(h => `<div class="flex items-center justify-between gap-2 text-[10px] bg-slate-50 border rounded-lg px-2.5 py-1.5 ${h.examId === currentId ? "border-indigo-200 ring-1 ring-indigo-100" : "border-slate-200"}">
+        <span class="min-w-0 truncate"><span class="font-bold text-slate-700">${escapeHtml(h.title)}</span><span class="text-slate-400 ml-1">${escapeHtml(mockFormatDateTime(h.date))}</span></span>
+        <span class="shrink-0 tabular-nums text-slate-600">${h.score}/${h.total} ・ ${h.accuracy}%${h.deviation === null || h.deviation === undefined ? "" : ` ・ 偏差値 ${h.deviation}`}</span>
+      </div>`).join("");
+      return `<div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-3">
+        <div class="flex items-center justify-between gap-2">
+          <p class="text-xs font-bold text-slate-700">📈 模試の成績履歴</p>
+          <span class="text-[10px] font-extrabold px-2 py-0.5 rounded-full border text-slate-700 bg-slate-50 border-slate-300">自己ベスト ${best.accuracy}%</span>
+        </div>
+        <div class="flex items-end gap-1.5">${bars}</div>
+        <p class="text-[10px] text-slate-400 leading-relaxed">左が古い記録、右が最新です。バーの数字は正答率（%）。同じ模試を受け直すと最新の記録に更新されます。</p>
+        <div class="space-y-1.5">${rows}</div>
+        <p class="text-[9px] text-slate-400">直近 ${Math.min(list.length, MOCK_HISTORY_MAX)} 件をこの端末に保存しています。</p>
+      </div>`;
     }
 
     // ---- リマインド（開始24時間前から1日1回お知らせ） ----
@@ -568,6 +644,8 @@
         console.warn("[mock] select exam", e);
       }
       await refreshMockReport(id);
+      const latest = mockMyResult || (mockReport && mockReport.me && mockReport.me.result) || null;
+      if (latest && exam) mockBackfillHistory(exam, latest);
       renderMockExamScreen();
     }
 
@@ -915,6 +993,7 @@
         mockSubmitNote = exam.offline
           ? "練習模試の結果をこの端末に保存しました。"
           : "結果をこの端末に保存しました。ログインすると全国集計に提出できます。";
+        mockRecordHistory(exam, payload);
         renderMockExamScreen();
         return;
       }
@@ -949,6 +1028,7 @@
         mockSubmitNote = "成績を提出できませんでした（通信エラー）。結果をこの端末に保存しました。";
       }
       await refreshMockReport(exam.id);
+      mockRecordHistory(exam, mockMyResult || payload);
       renderMockExamScreen();
     }
 
@@ -1252,6 +1332,7 @@
           ${mockRenderWeaknessCard(exam, r)}
           ${mockRenderTimeCard(exam, r)}
           ${mockRenderNoteCard(exam)}
+          ${mockRenderHistoryCard(exam)}
           ${r.is_late ? `<p class="text-[10px] font-bold text-amber-800 bg-amber-50 border border-amber-200 rounded-lg px-2 py-1">終了時刻を過ぎた提出のため参考記録です。</p>` : ""}
           <p class="text-[10px] text-slate-400 leading-relaxed">${exam && exam.offline ? "練習模試のため、全国順位・偏差値・志望校判定はありません。" : "ログインすると全国集計に提出でき、偏差値・順位・志望校判定が表示されます。"}</p>
           ${mockSubmitNote ? `<p class="text-[11px] font-bold text-indigo-800 bg-indigo-50 border border-indigo-200 rounded-lg px-3 py-2">${escapeHtml(mockSubmitNote)}</p>` : ""}
@@ -1312,6 +1393,7 @@
       if (result) parts.push(mockRenderWeaknessCard(exam, result));
       if (result) parts.push(mockRenderTimeCard(exam, result));
       if (result) parts.push(mockRenderNoteCard(exam));
+      if (result) parts.push(mockRenderHistoryCard(exam));
 
       if (mockReportError && !result) {
         parts.push(`<p class="text-[11px] text-rose-600">${escapeHtml(mockReportError)}</p>`);
