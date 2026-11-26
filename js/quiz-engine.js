@@ -502,6 +502,10 @@
       4: { days: 14, label: "ステージ 4 (+14日後)" }
     };
 
+    // 苦手単語を記録した場所（どのモードで間違えたか）
+    const WEAK_SOURCE_LABELS = { quiz: "クイズ", mock: "模試", exam: "到達度テスト", review: "苦手復習", daily: "デイリー" };
+    function weakSourceLabel(source) { return WEAK_SOURCE_LABELS[source] || WEAK_SOURCE_LABELS.quiz; }
+
     function getSubjectWeakWords() {
       const ids = new Set(ALL_WORDS.map(w => w.id));
       return Object.values(userData.weakWords || {}).filter(w => ids.has(w.id));
@@ -1811,6 +1815,12 @@
       if (!userData.weakWords) userData.weakWords = {};
       const today = getTodayString();
       const nextDate = addDaysToDate(today, 1);
+      // どのモードで間違えたかを残す（直近の誤答元）
+      const weakSource = mockExamRunning ? "mock"
+        : examRunning ? "exam"
+          : isWeakMode ? "review"
+            : isDailyMode ? "daily"
+              : "quiz";
       const existing = userData.weakWords[q.word.id];
       if (!existing) {
         userData.weakWords[q.word.id] = {
@@ -1820,13 +1830,15 @@
           count: 1,
           stage: 1,
           nextReview: nextDate,
-          lastReviewed: today
+          lastReviewed: today,
+          source: weakSource
         };
       } else {
         existing.count = (existing.count || 1) + 1;
         existing.stage = 1;
         existing.nextReview = nextDate;
         existing.lastReviewed = today;
+        existing.source = weakSource;
       }
       saveUserData();
     }

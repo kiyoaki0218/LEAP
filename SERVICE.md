@@ -340,7 +340,7 @@ expRequiredForLevel(level) = 100 + (level - 1) * 50
 
 ### 4.7 苦手・忘却曲線復習
 
-- 不正解時（`registerWrongAnswer`）: `weakWords[id]` に登録 or リセット。`stage=1`、`nextReview=翌日`。
+- 不正解時（`registerWrongAnswer`）: `weakWords[id]` に登録 or リセット。`stage=1`、`nextReview=翌日`。あわせて `source` に直近の誤答元（`quiz` / `mock` / `exam` / `review` / `daily`）を記録し、苦手単語データ帳に「クイズ」「模試」「到達度テスト」などのバッジで表示する（`weakSourceLabel`）。
 - 正解して復習を進めると（`stage` アップ）次回間隔: **1日 → 3日 → 7日 → 14日**（`FORGETTING_STAGES`、最大ステージ4）。
 - 「本日復習」対象 = `nextReview <= 今日` の苦手単語。
 - ホームの苦手バナーから「特訓する」（`startWeakWordsQuiz`）または「一覧」（モーダルで個別削除・ゾーン単位リセット）。
@@ -546,7 +546,7 @@ expRequiredForLevel(level) = 100 + (level - 1) * 50
   prefix, suffix, purchasedPrefixes[], purchasedSuffixes[],
   ownedFrames[], equippedFrame, ownedAvatars[], equippedAvatar,
   wordStats: { [wordId]: { correct, total } },      // 単語別の正解/出題回数
-  weakWords: { [wordId]: { id, word, meaning, count, stage, nextReview, lastReviewed } },
+  weakWords: { [wordId]: { id, word, meaning, count, stage, nextReview, lastReviewed, source } }, // source: quiz / mock / exam / review / daily
   scoreHistory: [ { score, correct, total, accuracy, combo, coins, range, date, isDaily } ], // 最大5件
   sharedResults: [ { id, at, to[], subject, range{start,end,label}, correct, total, accuracy, combo, score, title } ], // フレンド共有 最大20件
   examHistory: [ { id, date, subject, range, correct, total, accuracy, grade, seconds } ], // 到達度テスト 最大20件
@@ -599,7 +599,7 @@ window.LEAP_SUPABASE_CONFIG = { url: "https://xxxx.supabase.co", anonKey: "sb_pu
 |---|---|
 | `coins` / `exp` / 各種回数・`streak` | 大きい方 |
 | `wordStats` | 単語ごとに「出題回数が多い方」、同数なら正解数が多い方 |
-| `weakWords` | 和集合。同じ単語はミス回数が多い方、`nextReview` は早い方 |
+| `weakWords` | 和集合。同じ単語はミス回数が多い方、`nextReview` は早い方。`source` はミス回数が多い方の値（未設定は `quiz`） |
 | `scoreHistory` | 結合して重複除去し、先頭 5 件 |
 | `examHistory` | 結合して（subject・範囲・日付・正解数・出題数）で重複除去し、先頭 20 件 |
 | `dailyLog` | 日付ごとに大きい方（max）を採用 |
@@ -920,6 +920,7 @@ node patches/build_leap_data.js
 
 | 日付 | 変更内容 |
 |---|---|
+| 2026-11-26 | 🏷 Phase 2（模試の振り返り）④: 苦手単語 `weakWords` に **`source` タグ**（`quiz` / `mock` / `exam` / `review` / `daily`）を追加。`registerWrongAnswer` が直近の誤答元を記録し、苦手単語データ帳に「クイズ」「模試」「到達度テスト」「苦手復習」「デイリー」のバッジを表示する（`weakSourceLabel`）。既存データは読み込み時に `quiz` で補完。クラウド同期のマージはミス回数が多い方の `source` を採用する。`APP_VER=leap-v27-weak-source` / `CACHE=leap-v48`。|
 | 2026-11-26 | ⏱ Phase 2（模試の振り返り）③: 模試に **時間配分ログ** を追加。`renderQuestion` で問題表示時刻を `quizState.questionShownAt` に記録し、`handleAnswer` で解答までの秒数を `quizState.answerTimes[index]` に保存、提出時に `answers[i].sec` として送る（`mock_exam_results.answers` は jsonb のためスキーマ変更不要）。成績表に解答合計・1問平均・最速/最遅・序盤/中盤/終盤の正答率・時間がかかった問題 TOP3 を表示（`mockBuildTimeAnalysis` / `mockRenderTimeCard`）。`sec` を持たない旧記録ではカードを出さない。`APP_VER=leap-v26-mock-timing` / `CACHE=leap-v47`。|
 | 2026-11-26 | ⏰ Phase 2（模試の振り返り）②: 模試の **リマインド** と **振り返りメモ** を追加。開催回ごとに「⏰ リマインド設定／解除」を切り替え（`toggleMockReminder`、`LEAP_MOCK_REMINDERS_V1`）、開始24時間前〜終了までの間は起動時に1日1回トーストで知らせる（`mockCheckReminders`／同日重複防止は `LEAP_MOCK_REMINDER_SEEN_V1`、終了1日後は自動削除）。成績表の下に500字までの振り返りメモ欄（`saveMockNote` / `deleteMockNote`、`LEAP_MOCK_NOTES_V1`、更新日時表示）を追加。`APP_VER=leap-v25-mock-reminder` / `CACHE=leap-v46`。|
 | 2026-11-26 | 🔍 Phase 2（模試の振り返り）①: 模試の成績表に **弱点分析レポート** を追加。`mock_exam_results.answers`（`[{ id, correct }]`）を単語データへ引き直して Part（古文は章）別の正答率バー、最も弱い分野のコメント、間違えた単語の一覧（最大12件・語義つき）を表示する（`mockBuildWeaknessAnalysis` / `mockRenderWeaknessCard`）。全国集計・端末内採点のどちらでも動作。`APP_VER=leap-v24-mock-analysis` / `CACHE=leap-v45`。|

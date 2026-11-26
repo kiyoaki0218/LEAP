@@ -11,7 +11,7 @@
     <script>
     // キャッシュ強制更新ロジック: 新バージョン検知時に古いServiceWorkerキャッシュを破棄
     (function() {
-      const APP_VER = "leap-v26-mock-timing";
+      const APP_VER = "leap-v27-weak-source";
       try {
         const storedVer = localStorage.getItem("LEAP_APP_CACHE_VER");
         if (storedVer !== APP_VER) {
@@ -1825,6 +1825,7 @@
         Object.values(userData.weakWords).forEach(item => {
           if (!item.stage) item.stage = 1;
           if (!item.nextReview) item.nextReview = todayStr;
+          if (!item.source) item.source = "quiz";
         });
       }
       userData.level = getLevelState(userData.exp).level;
@@ -2438,6 +2439,7 @@
                 <span>${item.word}</span>
                 <span class="text-[10px] bg-rose-100 text-rose-700 font-extrabold px-1.5 py-0.2 rounded-full">ミス ${item.count || 1}回</span>
                 <span class="text-[10px] bg-amber-100 text-amber-800 font-bold px-1.5 py-0.2 rounded">ステージ ${item.stage || 1}</span>
+                <span class="text-[10px] bg-slate-100 text-slate-600 font-bold px-1.5 py-0.2 rounded">${weakSourceLabel(item.source)}</span>
                 ${isDue ? '<span class="text-[10px] bg-rose-600 text-white font-bold px-1.5 py-0.2 rounded">本日復習</span>' : `<span class="text-[10px] text-slate-400">次回: ${item.nextReview}</span>`}
               </div>
               <div class="text-slate-500 mt-0.5 truncate">${item.meaning}</div>

@@ -282,7 +282,8 @@
         if (!y) { weakWords[id] = x; return; }
         const pick = cloudNum(y.count) > cloudNum(x.count) ? y : x;
         weakWords[id] = Object.assign({}, pick, {
-          nextReview: String(x.nextReview || "") < String(y.nextReview || "") ? x.nextReview : y.nextReview
+          nextReview: String(x.nextReview || "") < String(y.nextReview || "") ? x.nextReview : y.nextReview,
+          source: (pick && pick.source) || "quiz"
         });
       });
       merged.weakWords = weakWords;
