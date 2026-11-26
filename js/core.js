@@ -3,6 +3,11 @@
    注: クラシックスクリプト。トップレベルの宣言は index.html のインライン JS と共有される。
        index.html のインライン <script> より先に読み込む。 */
 
+    // HTML エスケープ（インライン JS・上部の各モジュールから共通で使うユーティリティ）
+    function escapeHtml(str) {
+      return String(str == null ? "" : str).replace(/[&<>"']/g, (ch) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;", "'": "&#39;" }[ch]));
+    }
+
     // 称号マスターデータ（前称号 35種 ＆ 後称号 35種 ＝ 1,225通り）
     const PREFIX_TITLES = [
       { id: "pre_init", name: "始まりの", price: 0 },
