@@ -381,6 +381,7 @@ expRequiredForLevel(level) = 100 + (level - 1) * 50
 - **成績表**: `get_mock_exam_report` の返却値を表示。偏差値・順位・上位パーセンタイル・受験者数 N・平均・トリム平均・理論平均・実効SD・志望校判定（A/B/C/D または判定保留）・全大学×文理群の目安一覧（カテゴリ見出し付き・スクロール）。
 - **判定**（`mockJudgeFor`）: 偏差値と `tier` 別しきい値（tier1: 63/57/50、tier2: 60/54/47、tier3: 56/50/44、tier4: 52/46/40）で A〜D を決め、志望者内パーセンタイルが上位25%なら1段上げ、下位20%なら1段下げる。**N < 5 または暫定フラグ時は「判定保留（暫定）」**。
 - **ログイン不要の受験**: 開催スケジュールは未ログインでも読める公開 RPC `get_mock_exam_schedule()` で取得する（`question_ids` は受験時間枠内だけ返る。RPC 未適用ならログイン時のみ `mock_exams` を直接 SELECT）。志望校エントリーはローカル下書き（`LEAP_MOCK_CHOICES_V1`）に保存し、ログイン時のみ `mock_exam_entries` へ upsert。受験結果は未ログイン／通信エラー時 `LEAP_MOCK_LOCAL_RESULTS_V1`（`{ [examId]: { score, total, elapsed_sec, answers, is_late, submitted_at } }`）に保存し、結果画面は「端末内の採点結果」カード（得点・正答率・所要時間）を表示する。ログイン後に同じ回を開くと「☁️ 全国集計に提出する」（`resubmitLocalMockResult`）から `mock_exam_results` へ提出でき、成功したら端末側の記録は削除する。
+- **弱点分析レポート**（`mockRenderWeaknessCard`）: 提出済みの `answers`（`[{ id, correct, sec }]`）を単語データへ引き直し、Part（古文は章）別の正答率バー・最も弱い分野のひとことコメント・間違えた単語の一覧（最大12件、語義つき）を成績表の下に表示する。全国集計・端末内採点の両方で動く（`mockBuildWeaknessAnalysis`）。
 - **復習導線**: 結果画面と同じく間違えた単語を `startQuizWithPool` で復習できる（`reviewMockMistakes`）。`html2canvas` の `#result-share-card` に偏差値・得点・要復習を流し込んで画像保存できる（`downloadMockResultImage`）。
 - **中断**: 模試中に中断した場合は提出せず、成績表画面へ戻る（コイン・EXP の獲得分は残る）。
 
@@ -913,6 +914,7 @@ node patches/build_leap_data.js
 
 | 日付 | 変更内容 |
 |---|---|
+| 2026-11-26 | 🔍 Phase 2（模試の振り返り）①: 模試の成績表に **弱点分析レポート** を追加。`mock_exam_results.answers`（`[{ id, correct }]`）を単語データへ引き直して Part（古文は章）別の正答率バー、最も弱い分野のコメント、間違えた単語の一覧（最大12件・語義つき）を表示する（`mockBuildWeaknessAnalysis` / `mockRenderWeaknessCard`）。全国集計・端末内採点のどちらでも動作。`APP_VER=leap-v24-mock-analysis` / `CACHE=leap-v45`。|
 | 2026-11-26 | 🧩 Phase 1 完了（ファイル分割）: 実績（約 500 行）・単語辞典／単語詳細／参考資料（約 750 行）・ショップ（約 280 行）の 3 ブロックを `js/ui-stats-dict.js` へ無改変で分離し、`sw.js` の `ASSETS` に追加。`index.html` は 10,859 行（Phase 1 開始時）→ 4,664 行、JS は `js/` の 5 ファイル（`core.js` / `mock-exam.js` / `cloud-sync.js` / `quiz-engine.js` / `ui-stats-dict.js`）に分かれた。読み込み順のスモークテスト（Node + DOM スタブ）とトップレベル宣言の重複なしを機械チェック済み。`APP_VER=leap-v23-split-ui` / `CACHE=leap-v44`。|
 | 2026-11-26 | 🧩 Phase 1 続き: `index.html` のインライン JS から出題エンジンのブロック（`// 範囲選択 ＆ 出題数` 〜 `startDailyChallenge` 末尾、2,423 行）を `js/quiz-engine.js` へ無改変で分離し、`sw.js` の `ASSETS` に追加。範囲・Part 選択、クイズ本体（`startQuizWithPool` / `renderQuestion` / `handleAnswer` / `finishQuiz`）、到達度テストとタイマー、忘却曲線・学習状況フィルター・品詞推定・例文データ・ダミー選択肢、デイリーチャレンジを含む。`index.html` は 8,614 → 6,190 行。`APP_VER=leap-v22-split-quiz` / `CACHE=leap-v43`。|
 | 2026-11-26 | 🧩 Phase 1 続き: `index.html` のインライン JS から Supabase のブロック（`const SUPABASE_CONFIG` 〜 `initCloud`、1,232 行）を `js/cloud-sync.js` へ無改変で分離し、`sw.js` の `ASSETS` に追加。あわせて 2 か所に重複していた `escapeHtml` を `js/core.js` に集約（文字列は `js/core.js` の 1 定義のみ）。`index.html` は 9,707 → 8,614 行。トップレベル宣言の重複なしを機械チェック済み。`APP_VER=leap-v21-split-cloud` / `CACHE=leap-v42`。|

@@ -549,6 +549,90 @@
       return ((exam && exam.question_ids) || []).map(id => map.get(Number(id))).filter(Boolean);
     }
 
+    // ---- 弱点分析（解答ログから Part 別正答率・誤答を組み立てる） ----
+    function mockPartLabel(exam, part) {
+      const n = Number(part);
+      if (!Number.isFinite(n)) return "その他";
+      if ((exam && exam.subject === "kobun") || n >= 100) return `${n - 100}章`;
+      return `Part ${n}`;
+    }
+
+    // answers（[{ id, correct, sec }]）を単語データへ引き直す。全国集計・端末保存のどちらでも使える
+    function mockAnswerWords(exam, result) {
+      const source = (exam && exam.subject === "kobun") ? (KOBUN_SOURCE || []) : (LEAP_SOURCE || []);
+      const map = new Map(source.map(w => [Number(w.id), w]));
+      return ((result && Array.isArray(result.answers)) ? result.answers : [])
+        .map(a => {
+          const w = map.get(Number(a && a.id));
+          if (!w) return null;
+          return { word: w, correct: !!(a && a.correct), sec: Math.max(0, Number(a && a.sec) || 0) };
+        })
+        .filter(Boolean);
+    }
+
+    function mockBuildWeaknessAnalysis(exam, result) {
+      const rows = mockAnswerWords(exam, result);
+      if (!rows.length) return null;
+      const partMap = new Map();
+      rows.forEach(r => {
+        const key = String(r.word.part == null ? "?" : r.word.part);
+        if (!partMap.has(key)) partMap.set(key, { part: r.word.part, total: 0, correct: 0 });
+        const p = partMap.get(key);
+        p.total++;
+        if (r.correct) p.correct++;
+      });
+      const partRows = Array.from(partMap.values())
+        .map(p => Object.assign({}, p, { rate: Math.round(p.correct / p.total * 100) }))
+        .sort((a, b) => a.rate - b.rate || b.total - a.total);
+      const missed = rows.filter(r => !r.correct);
+      return {
+        rows: rows,
+        partRows: partRows,
+        missed: missed,
+        accuracy: Math.round((rows.length - missed.length) / rows.length * 100)
+      };
+    }
+
+    function mockRenderWeaknessCard(exam, result) {
+      const an = mockBuildWeaknessAnalysis(exam, result);
+      if (!an) return "";
+      const barColor = (rate) => rate >= 80 ? "bg-emerald-500" : rate >= 60 ? "bg-amber-400" : "bg-rose-500";
+      const partHtml = an.partRows.map(p => `<div class="space-y-0.5">
+        <div class="flex items-center justify-between text-[10px] font-bold text-slate-600">
+          <span>${escapeHtml(mockPartLabel(exam, p.part))}</span>
+          <span class="tabular-nums">${p.correct}/${p.total} ・ ${p.rate}%</span>
+        </div>
+        <div class="w-full bg-slate-100 rounded-full h-1.5 overflow-hidden">
+          <span class="block h-1.5 rounded-full ${barColor(p.rate)}" style="width:${Math.max(4, Math.min(100, p.rate))}%"></span>
+        </div>
+      </div>`).join("");
+      const missHtml = an.missed.slice(0, 12).map(r => `<div class="flex items-start justify-between gap-2 bg-rose-50/60 border border-rose-100 rounded-lg px-2.5 py-1.5">
+        <div class="min-w-0">
+          <p class="text-[11px] font-extrabold text-slate-800 truncate">${escapeHtml(r.word.word)}<span class="text-[9px] text-slate-400 ml-1">#${r.word.id}</span></p>
+          <p class="text-[10px] text-slate-500 truncate">${escapeHtml(r.word.meaning || "")}</p>
+        </div>
+        <span class="shrink-0 text-[9px] font-bold text-rose-700">${escapeHtml(mockPartLabel(exam, r.word.part))}</span>
+      </div>`).join("");
+      const weakest = an.partRows[0];
+      const advice = weakest
+        ? `${mockPartLabel(exam, weakest.part)} が最も弱い領域です（${weakest.correct}/${weakest.total}問正解）。この範囲を重点的に復習しましょう。`
+        : "";
+      return `<div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-3">
+        <div class="flex items-center justify-between gap-2">
+          <p class="text-xs font-bold text-slate-700">🔍 弱点分析レポート</p>
+          <span class="text-[10px] font-extrabold px-2 py-0.5 rounded-full border text-slate-700 bg-slate-50 border-slate-300">解答 ${an.rows.length}問</span>
+        </div>
+        <p class="text-[11px] text-slate-600 font-bold">${an.missed.length ? `誤答 ${an.missed.length}問 ・ 分野別の正答率は下記のとおりです。` : "全問正解です。弱点は見つかりませんでした。"}</p>
+        ${an.partRows.length > 1 ? `<div class="space-y-2">${partHtml}</div>` : `<div class="space-y-2">${partHtml}</div>`}
+        ${advice ? `<p class="text-[11px] text-slate-700 font-bold bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-2 leading-relaxed">💡 ${escapeHtml(advice)}</p>` : ""}
+        ${an.missed.length ? `<div class="space-y-1.5">
+          <p class="text-[10px] font-bold text-slate-500">間違えた単語（${an.missed.length}問${an.missed.length > 12 ? "・先頭12件" : ""}）</p>
+          ${missHtml}
+          ${an.missed.length > 12 ? `<p class="text-[10px] text-slate-400">ほか ${an.missed.length - 12} 語は「🔥 間違いを復習」から確認できます。</p>` : ""}
+        </div>` : ""}
+      </div>`;
+    }
+
     async function startMockExam() {
       let exam = mockCurrentExam();
       if (!exam) return;
@@ -919,6 +1003,7 @@
             <div class="bg-slate-50 rounded-xl p-2"><p class="text-[10px] font-bold text-slate-400">正答率</p><p class="text-xl font-extrabold text-emerald-700 tabular-nums">${offAcc}<span class="text-[11px] text-slate-400">%</span></p></div>
             <div class="bg-slate-50 rounded-xl p-2"><p class="text-[10px] font-bold text-slate-400">所要時間</p><p class="text-xl font-extrabold text-indigo-700 tabular-nums">${offMin}<span class="text-[11px] text-slate-400">分${offRest}秒</span></p></div>
           </div>
+          ${mockRenderWeaknessCard(exam, r)}
           ${r.is_late ? `<p class="text-[10px] font-bold text-amber-800 bg-amber-50 border border-amber-200 rounded-lg px-2 py-1">終了時刻を過ぎた提出のため参考記録です。</p>` : ""}
           <p class="text-[10px] text-slate-400 leading-relaxed">${exam && exam.offline ? "練習模試のため、全国順位・偏差値・志望校判定はありません。" : "ログインすると全国集計に提出でき、偏差値・順位・志望校判定が表示されます。"}</p>
           ${mockSubmitNote ? `<p class="text-[11px] font-bold text-indigo-800 bg-indigo-50 border border-indigo-200 rounded-lg px-3 py-2">${escapeHtml(mockSubmitNote)}</p>` : ""}
@@ -973,6 +1058,8 @@
       } else {
         parts.push(`<div class="bg-white p-4 rounded-xl border border-dashed border-slate-300 text-center"><p class="text-2xl">🗓️</p><p class="text-xs font-bold text-slate-600 mt-1">まだ受験結果がありません</p><p class="text-[11px] text-slate-400 mt-0.5">受験期間内に挑戦すると、偏差値・順位・志望校判定が表示されます。</p></div>`);
       }
+
+      if (result) parts.push(mockRenderWeaknessCard(exam, result));
 
       if (mockReportError && !result) {
         parts.push(`<p class="text-[11px] text-rose-600">${escapeHtml(mockReportError)}</p>`);
