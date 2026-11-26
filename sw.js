@@ -1,4 +1,4 @@
-const CACHE = "leap-v42";
+const CACHE = "leap-v43";
 const ASSETS = [
   "./",
   "./index.html",
@@ -6,6 +6,7 @@ const ASSETS = [
   "./js/core.js",
   "./js/mock-exam.js",
   "./js/cloud-sync.js",
+  "./js/quiz-engine.js",
   "./supabase_config.js",
   "./words_data.js",
   "./examples_data.js",
