@@ -71,6 +71,137 @@
       } catch (e) {}
     }
 
+    // ---- リマインド（開始24時間前から1日1回お知らせ） ----
+    const MOCK_REMINDERS_KEY = "LEAP_MOCK_REMINDERS_V1";
+    const MOCK_REMINDER_SEEN_KEY = "LEAP_MOCK_REMINDER_SEEN_V1";
+    const MOCK_NOTES_KEY = "LEAP_MOCK_NOTES_V1";
+
+    function mockLoadJsonObject(key) {
+      try {
+        const raw = JSON.parse(localStorage.getItem(key) || "{}");
+        return raw && typeof raw === "object" ? raw : {};
+      } catch (e) { return {}; }
+    }
+    function mockWriteJsonObject(key, value) {
+      try { localStorage.setItem(key, JSON.stringify(value)); } catch (e) {}
+    }
+
+    function mockLoadReminders() { return mockLoadJsonObject(MOCK_REMINDERS_KEY); }
+    function mockReminderFor(examId) {
+      const r = mockLoadReminders()[examId];
+      return r && typeof r === "object" ? r : null;
+    }
+
+    function toggleMockReminder(examId) {
+      const exam = mockExamsCache.find(e => e.id === (examId || mockSelectedExamId));
+      if (!exam) return;
+      if (exam.offline) { showToast("練習模試はいつでも受けられるため、リマインドは不要です"); return; }
+      const all = mockLoadReminders();
+      if (all[exam.id]) {
+        delete all[exam.id];
+        mockWriteJsonObject(MOCK_REMINDERS_KEY, all);
+        showToast("⏰ リマインドを解除しました");
+      } else {
+        all[exam.id] = {
+          examId: exam.id, title: exam.title,
+          start_at: exam.start_at, end_at: exam.end_at,
+          created: new Date().toISOString()
+        };
+        mockWriteJsonObject(MOCK_REMINDERS_KEY, all);
+        showToast("⏰ 開始24時間前からお知らせします");
+      }
+      renderMockExamScreen();
+    }
+
+    function mockTodayKey() {
+      const d = new Date();
+      return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+    }
+
+    // 起動時に呼ぶ。開始24時間前〜終了までで、その日まだ知らせていない回をトーストで通知する
+    function mockCheckReminders() {
+      const all = mockLoadReminders();
+      const ids = Object.keys(all);
+      if (!ids.length) return;
+      const seen = mockLoadJsonObject(MOCK_REMINDER_SEEN_KEY);
+      const today = mockTodayKey();
+      const due = [];
+      let changed = false;
+      ids.forEach(id => {
+        const r = all[id];
+        if (!r) { delete all[id]; changed = true; return; }
+        const start = Date.parse(r.start_at);
+        const end = Date.parse(r.end_at);
+        // 終了して1日以上たった回は自動で片付ける
+        if (Number.isFinite(end) && Date.now() > end + 86400000) { delete all[id]; changed = true; return; }
+        if (!Number.isFinite(start)) return;
+        const msToStart = start - Date.now();
+        const open = Date.now() >= start && (!Number.isFinite(end) || Date.now() <= end);
+        if (((msToStart > 0 && msToStart <= 86400000) || open) && seen[id] !== today) due.push(r);
+      });
+      if (changed) mockWriteJsonObject(MOCK_REMINDERS_KEY, all);
+      if (!due.length) return;
+      due.forEach(r => { seen[r.examId] = today; });
+      mockWriteJsonObject(MOCK_REMINDER_SEEN_KEY, seen);
+      const first = due[0];
+      const start = Date.parse(first.start_at);
+      const label = Date.now() >= start ? "受験受付中です" : `開始まで ${mockFormatCountdown(start - Date.now())}`;
+      const extra = due.length > 1 ? `（ほか ${due.length - 1}件）` : "";
+      showToast(`⏰ リマインド: 「${first.title}」${label}${extra}`);
+    }
+
+    // ---- 振り返りメモ（模試ごとに端末保存） ----
+    function mockNoteFor(examId) {
+      const n = mockLoadJsonObject(MOCK_NOTES_KEY)[examId];
+      return n && typeof n.text === "string" && n.text ? n : null;
+    }
+
+    function saveMockNote(examId) {
+      const exam = mockExamsCache.find(e => e.id === (examId || mockSelectedExamId));
+      if (!exam) return;
+      const el = document.getElementById("mock-note-input");
+      const text = String(el ? el.value : "").slice(0, 500).trim();
+      const all = mockLoadJsonObject(MOCK_NOTES_KEY);
+      if (!text) {
+        delete all[exam.id];
+        mockWriteJsonObject(MOCK_NOTES_KEY, all);
+        showToast("振り返りメモを削除しました");
+      } else {
+        all[exam.id] = { text: text, updated: new Date().toISOString() };
+        mockWriteJsonObject(MOCK_NOTES_KEY, all);
+        showToast("📝 振り返りメモを保存しました");
+      }
+      renderMockExamScreen();
+    }
+
+    function deleteMockNote(examId) {
+      const id = examId || mockSelectedExamId;
+      if (!id) return;
+      const all = mockLoadJsonObject(MOCK_NOTES_KEY);
+      if (!all[id]) return;
+      delete all[id];
+      mockWriteJsonObject(MOCK_NOTES_KEY, all);
+      showToast("振り返りメモを削除しました");
+      renderMockExamScreen();
+    }
+
+    function mockRenderNoteCard(exam) {
+      if (!exam) return "";
+      const note = mockNoteFor(exam.id);
+      return `<div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-2">
+        <div class="flex items-center justify-between gap-2">
+          <p class="text-xs font-bold text-slate-700">📝 振り返りメモ</p>
+          <span class="text-[10px] text-slate-400">${note ? `更新 ${mockFormatDateTime(note.updated)}` : "未記入"}</span>
+        </div>
+        <p class="text-[10px] text-slate-400 leading-relaxed">次回に向けた反省や作戦を残せます（500字まで・この端末に保存）。</p>
+        <textarea id="mock-note-input" maxlength="500" rows="3" placeholder="例: 時間配分は良かったが Part 3 の語彙が弱い。次は例文で覚え直す。" class="w-full p-2.5 border border-slate-300 rounded-xl text-[11px] leading-relaxed bg-white">${escapeHtml(note ? note.text : "")}</textarea>
+        <div class="flex gap-2">
+          <button type="button" onclick="saveMockNote('${escapeHtml(exam.id)}')" class="flex-1 py-2 bg-slate-900 hover:bg-slate-700 text-white text-[11px] font-bold rounded-xl transition cursor-pointer">メモを保存</button>
+          ${note ? `<button type="button" onclick="deleteMockNote('${escapeHtml(exam.id)}')" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 text-[11px] font-bold rounded-xl transition cursor-pointer">削除</button>` : ""}
+        </div>
+      </div>`;
+    }
+
     // Supabase 未設定・通信不可でも模試を体験できるよう、端末内の単語から練習模試を作る
     function mockBuildOfflineExam() {
       const source = (currentSubject === "kobun") ? (KOBUN_SOURCE || []) : (LEAP_SOURCE || []);
@@ -815,7 +946,7 @@
             <span class="shrink-0 text-[9px] font-extrabold border rounded-full px-1.5 py-0.5 ${badge[1]}">${badge[0]}</span>
           </span>
           <span class="block text-[10px] text-slate-500 mt-0.5 truncate">${escapeHtml(e.range_label || "")} ・ ${mockQuestionCount(e)}問</span>
-          <span class="block text-[10px] text-slate-400 mt-0.5">${mockFormatDateTime(e.start_at)} 〜 ${mockFormatDateTime(e.end_at)}</span>
+          <span class="block text-[10px] text-slate-400 mt-0.5">${mockFormatDateTime(e.start_at)} 〜 ${mockFormatDateTime(e.end_at)}${mockReminderFor(e.id) ? ` ・ <span class="text-amber-700 font-bold">⏰ リマインド設定済み</span>` : ""}</span>
         </button>`;
       }).join("");
     }
@@ -842,7 +973,10 @@
         <p id="mock-countdown" class="text-xs font-extrabold text-slate-800 tabular-nums">-</p>
         <p class="text-[10px] text-slate-400 leading-relaxed">開始前はカウントダウンと志望校登録。期間内は${minutes}分の制限時間で受験できます。終了時刻を過ぎた提出は参考記録（is_late）になります。</p>
         ${mockIsReady() ? "" : `<p class="text-[10px] text-indigo-800 bg-indigo-50 border border-indigo-200 rounded-lg px-2 py-1.5 leading-relaxed">ログインなしでも受験できます。${exam.offline ? "この練習模試の結果は端末に保存されます。" : "結果は端末に保存され、ログインすると全国集計に提出できます。"}</p>`}
-        ${exam.offline ? "" : `<button type="button" onclick="shareMockExamLink('${exam.id}')" class="inline-flex items-center gap-1 px-3 py-1.5 bg-white hover:bg-slate-50 border border-slate-300 text-slate-700 text-[11px] font-bold rounded-lg transition cursor-pointer">🔗 この模試のリンクを共有</button>`}
+        ${exam.offline ? "" : `<div class="flex flex-wrap gap-1.5">
+          <button type="button" onclick="shareMockExamLink('${exam.id}')" class="inline-flex items-center gap-1 px-3 py-1.5 bg-white hover:bg-slate-50 border border-slate-300 text-slate-700 text-[11px] font-bold rounded-lg transition cursor-pointer">🔗 この模試のリンクを共有</button>
+          <button type="button" onclick="toggleMockReminder('${exam.id}')" class="inline-flex items-center gap-1 px-3 py-1.5 ${mockReminderFor(exam.id) ? "bg-amber-50 hover:bg-amber-100 border-amber-300 text-amber-800" : "bg-white hover:bg-slate-50 border-slate-300 text-slate-700"} border text-[11px] font-bold rounded-lg transition cursor-pointer">${mockReminderFor(exam.id) ? "⏰ リマインド解除" : "⏰ リマインド設定"}</button>
+        </div>`}
       </div>`;
     }
 
@@ -1004,6 +1138,7 @@
             <div class="bg-slate-50 rounded-xl p-2"><p class="text-[10px] font-bold text-slate-400">所要時間</p><p class="text-xl font-extrabold text-indigo-700 tabular-nums">${offMin}<span class="text-[11px] text-slate-400">分${offRest}秒</span></p></div>
           </div>
           ${mockRenderWeaknessCard(exam, r)}
+          ${mockRenderNoteCard(exam)}
           ${r.is_late ? `<p class="text-[10px] font-bold text-amber-800 bg-amber-50 border border-amber-200 rounded-lg px-2 py-1">終了時刻を過ぎた提出のため参考記録です。</p>` : ""}
           <p class="text-[10px] text-slate-400 leading-relaxed">${exam && exam.offline ? "練習模試のため、全国順位・偏差値・志望校判定はありません。" : "ログインすると全国集計に提出でき、偏差値・順位・志望校判定が表示されます。"}</p>
           ${mockSubmitNote ? `<p class="text-[11px] font-bold text-indigo-800 bg-indigo-50 border border-indigo-200 rounded-lg px-3 py-2">${escapeHtml(mockSubmitNote)}</p>` : ""}
@@ -1060,6 +1195,7 @@
       }
 
       if (result) parts.push(mockRenderWeaknessCard(exam, result));
+      if (result) parts.push(mockRenderNoteCard(exam));
 
       if (mockReportError && !result) {
         parts.push(`<p class="text-[11px] text-rose-600">${escapeHtml(mockReportError)}</p>`);
