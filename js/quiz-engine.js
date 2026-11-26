@@ -1212,6 +1212,8 @@
       quizState.timeLeftMs = mode === "exam" ? examSessionTotalMs : SPRINT_TOTAL_MS;
       quizState.questionTimeLeftMs = SUDDEN_MS;
       quizState.answerLog = {}; // 模試の提出用（index → 正誤）
+      quizState.answerTimes = {}; // 模試の時間配分ログ（index → 解答までの秒数）
+      quizState.questionShownAt = 0;
       quizState.startLevel = getLevelState(userData.exp).level;
 
       const rInfo = document.getElementById("quiz-range-info");
@@ -1647,6 +1649,8 @@
 
         const q = quizState.questions[quizState.currentIndex];
         quizState.isAnswered = false;
+        // 時間配分ログ用: この問題を表示した時刻（模試のみ提出データに載せる）
+        quizState.questionShownAt = Date.now();
         clearBrainTimer();
         if (quizGameMode === "sudden") stopQuizClock();
 
@@ -1846,6 +1850,8 @@
       if (mockExamRunning) {
         quizState.answerLog = quizState.answerLog || {};
         quizState.answerLog[quizState.currentIndex] = !!selectedOption.isCorrect;
+        quizState.answerTimes = quizState.answerTimes || {};
+        quizState.answerTimes[quizState.currentIndex] = Math.max(0, Math.round((Date.now() - (quizState.questionShownAt || Date.now())) / 1000));
       }
       const container = document.getElementById("quiz-options-container");
       const buttons = container ? container.querySelectorAll("button") : [];
@@ -2106,7 +2112,8 @@
         const mockQuestions = quizState.questions || [];
         const mockAnswers = mockQuestions.map((q, i) => ({
           id: q.word ? q.word.id : null,
-          correct: !!(quizState.answerLog && quizState.answerLog[i])
+          correct: !!(quizState.answerLog && quizState.answerLog[i]),
+          sec: Math.max(0, Number(quizState.answerTimes && quizState.answerTimes[i]) || 0)
         }));
         const mockElapsed = Math.max(0, Math.round((Date.now() - (mockExamStartedAt || Date.now())) / 1000));
         const mockLate = mockExam ? (Date.now() > Date.parse(mockExam.end_at)) : false;

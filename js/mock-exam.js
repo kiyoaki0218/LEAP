@@ -202,6 +202,75 @@
       </div>`;
     }
 
+    // ---- 時間配分ログ（answers の sec から組み立てる） ----
+    function mockFormatDuration(sec) {
+      const s = Math.max(0, Math.round(Number(sec) || 0));
+      if (s < 60) return `${s}秒`;
+      return `${Math.floor(s / 60)}分${String(s % 60).padStart(2, "0")}秒`;
+    }
+
+    function mockBuildTimeAnalysis(exam, result) {
+      const rows = mockAnswerWords(exam, result).filter(r => r.sec > 0);
+      if (!rows.length) return null;
+      const totalSec = rows.reduce((s, r) => s + r.sec, 0);
+      const avg = totalSec / rows.length;
+      const bySpeed = rows.slice().sort((a, b) => b.sec - a.sec);
+      const third = Math.max(1, Math.ceil(rows.length / 3));
+      const phases = [
+        { label: "序盤", rows: rows.slice(0, third) },
+        { label: "中盤", rows: rows.slice(third, third * 2) },
+        { label: "終盤", rows: rows.slice(third * 2) }
+      ].filter(p => p.rows.length).map(p => {
+        const correct = p.rows.filter(r => r.correct).length;
+        return {
+          label: p.label,
+          total: p.rows.length,
+          correct: correct,
+          rate: Math.round(correct / p.rows.length * 100),
+          avg: Math.round(p.rows.reduce((s, r) => s + r.sec, 0) / p.rows.length)
+        };
+      });
+      return {
+        count: rows.length,
+        totalSec: totalSec,
+        avg: avg,
+        slowest: bySpeed[0],
+        fastest: bySpeed[bySpeed.length - 1],
+        phases: phases,
+        slowestRows: bySpeed.slice(0, 3)
+      };
+    }
+
+    function mockRenderTimeCard(exam, result) {
+      const t = mockBuildTimeAnalysis(exam, result);
+      if (!t) return "";
+      const phaseHtml = t.phases.map(p => `<div class="bg-slate-50 rounded-xl p-2 text-center">
+        <p class="text-[10px] font-bold text-slate-400">${p.label}</p>
+        <p class="text-base font-extrabold ${p.rate >= 80 ? "text-emerald-700" : p.rate >= 60 ? "text-amber-700" : "text-rose-700"} tabular-nums">${p.rate}<span class="text-[10px] text-slate-400">%</span></p>
+        <p class="text-[9px] text-slate-400 tabular-nums">平均 ${mockFormatDuration(p.avg)}</p>
+      </div>`).join("");
+      const slowHtml = t.slowestRows.map(r => `<div class="flex items-center justify-between gap-2 text-[10px] bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5">
+        <span class="min-w-0 truncate"><span class="font-bold text-slate-700">${escapeHtml(r.word.word)}</span> <span class="text-slate-400">${escapeHtml(mockPartLabel(exam, r.word.part))}</span></span>
+        <span class="shrink-0 tabular-nums ${r.correct ? "text-emerald-700" : "text-rose-700"} font-bold">${mockFormatDuration(r.sec)} ${r.correct ? "正解" : "誤答"}</span>
+      </div>`).join("");
+      return `<div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-3">
+        <div class="flex items-center justify-between gap-2">
+          <p class="text-xs font-bold text-slate-700">⏱ 時間配分ログ</p>
+          <span class="text-[10px] font-extrabold px-2 py-0.5 rounded-full border text-slate-700 bg-slate-50 border-slate-300">解答合計 ${mockFormatDuration(t.totalSec)}</span>
+        </div>
+        <div class="grid grid-cols-2 gap-2 text-[10px] text-slate-600 tabular-nums">
+          <p class="bg-slate-50 rounded-lg px-2.5 py-1.5">1問あたり平均 <span class="font-extrabold text-slate-800">${mockFormatDuration(t.avg)}</span></p>
+          <p class="bg-slate-50 rounded-lg px-2.5 py-1.5">最速 ${mockFormatDuration(t.fastest.sec)} ／ 最遅 ${mockFormatDuration(t.slowest.sec)}</p>
+        </div>
+        <div class="grid grid-cols-3 gap-2">${phaseHtml}</div>
+        <div class="space-y-1.5">
+          <p class="text-[10px] font-bold text-slate-500">時間がかかった問題</p>
+          ${slowHtml}
+        </div>
+        <p class="text-[10px] text-slate-400 leading-relaxed">前半で時間を使いすぎると終盤の正答率が下がる傾向があります。制限時間 ${Math.round((Number(exam && exam.duration_sec) || 1500) / 60)} 分に対する余裕も意識しましょう。</p>
+      </div>`;
+    }
+
     // Supabase 未設定・通信不可でも模試を体験できるよう、端末内の単語から練習模試を作る
     function mockBuildOfflineExam() {
       const source = (currentSubject === "kobun") ? (KOBUN_SOURCE || []) : (LEAP_SOURCE || []);
@@ -1138,6 +1207,7 @@
             <div class="bg-slate-50 rounded-xl p-2"><p class="text-[10px] font-bold text-slate-400">所要時間</p><p class="text-xl font-extrabold text-indigo-700 tabular-nums">${offMin}<span class="text-[11px] text-slate-400">分${offRest}秒</span></p></div>
           </div>
           ${mockRenderWeaknessCard(exam, r)}
+          ${mockRenderTimeCard(exam, r)}
           ${mockRenderNoteCard(exam)}
           ${r.is_late ? `<p class="text-[10px] font-bold text-amber-800 bg-amber-50 border border-amber-200 rounded-lg px-2 py-1">終了時刻を過ぎた提出のため参考記録です。</p>` : ""}
           <p class="text-[10px] text-slate-400 leading-relaxed">${exam && exam.offline ? "練習模試のため、全国順位・偏差値・志望校判定はありません。" : "ログインすると全国集計に提出でき、偏差値・順位・志望校判定が表示されます。"}</p>
@@ -1195,6 +1265,7 @@
       }
 
       if (result) parts.push(mockRenderWeaknessCard(exam, result));
+      if (result) parts.push(mockRenderTimeCard(exam, result));
       if (result) parts.push(mockRenderNoteCard(exam));
 
       if (mockReportError && !result) {
