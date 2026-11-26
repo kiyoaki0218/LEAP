@@ -1270,7 +1270,8 @@
 
     function mockJudgeFor(group, rep) {
       const stats = (rep && rep.stats) || {};
-      const dev = rep && rep.me ? Number(rep.me.deviation) : NaN;
+      const devRaw = rep && rep.me ? rep.me.deviation : null;
+      const dev = (devRaw === null || devRaw === undefined || devRaw === "") ? NaN : Number(devRaw);
       const provisional = !!stats.provisional || !!(group && group.provisional) || !!(rep && rep.local);
       if (!Number.isFinite(dev)) {
         return { label: "判定保留", cls: "text-slate-700 bg-slate-50 border-slate-300", note: "偏差値を算出できませんでした" };
@@ -1301,6 +1302,20 @@
         label: labels[idx], cls: classes[idx],
         note: `tier ${tier}${mockTierLabel(tier) ? `（${mockTierLabel(tier)}）` : ""}基準 ／ 偏差値 ${dev}`
       };
+    }
+
+    // 合格圏（A）まであと何ポイントの偏差値が必要か
+    function mockJudgeGap(group, rep) {
+      const raw = rep && rep.me ? rep.me.deviation : null;
+      if (raw === null || raw === undefined || raw === "") return null;
+      const dev = Number(raw);
+      if (!Number.isFinite(dev)) return null;
+      const tier = Number(group && group.tier) || 3;
+      const th = MOCK_JUDGE_THRESHOLDS[tier] || MOCK_JUDGE_THRESHOLDS[3];
+      const need = Number(th[0]);
+      const gap = Math.round((need - dev) * 10) / 10;
+      if (gap > 0) return { gap: gap, need: need, label: `合格圏（A）まで あと偏差値 ${gap}` };
+      return { gap: 0, need: need, label: "合格圏（A）に到達しています" };
     }
 
     function mockRenderReportSection(exam) {
@@ -1405,6 +1420,7 @@
           <p class="text-xs font-bold text-slate-700">🎯 志望校判定</p>
           ${groups.map(g => {
             const j = mockJudgeFor(g, rep);
+            const gap = mockJudgeGap(g, rep);
             return `<div class="border rounded-xl p-3 space-y-1 ${j.cls}">
               <div class="flex items-center justify-between gap-2">
                 <p class="text-[11px] font-extrabold truncate">${escapeHtml(g.groupName || g.groupId)}</p>
@@ -1413,6 +1429,7 @@
               <p class="text-[10px] font-bold">集計単位: ${escapeHtml(g.unitLabel || "全体")} ／ 受験者数 N=${Number(g.applicants) || 0}</p>
               <p class="text-[10px]">志望者平均 ${g.avgScore === null || g.avgScore === undefined ? "-" : g.avgScore} ／ 志望者内 ${g.myRank === null || g.myRank === undefined ? "-" : g.myRank}位${g.percentileWithin === null || g.percentileWithin === undefined ? "" : `（上位${Math.max(0, Math.round(100 - Number(g.percentileWithin)))}%）`}</p>
               <p class="text-[10px] opacity-80">${j.note}</p>
+              ${gap ? `<p class="text-[10px] font-extrabold bg-white/70 rounded-md px-1.5 py-1">${gap.gap > 0 ? "🎯 " : "✅ "}${escapeHtml(gap.label)}<span class="font-normal opacity-70">（A基準 偏差値${gap.need}）</span></p>` : ""}
             </div>`;
           }).join("")}
           <p class="text-[10px] text-slate-400 leading-relaxed">判定は偏差値・志望者内順位・大学tierの組み合わせ。N&lt;5 は「判定保留（暫定）」です。</p>
