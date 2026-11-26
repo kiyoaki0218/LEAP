@@ -89,7 +89,7 @@
 
 | id | 画面 | 役割 |
 |---|---|---|
-| `screen-home` | ホーム | ゾーン切替、お知らせ（模試のお知らせは模試ページへの直リンク付き）、はじめてガイド（学習履歴ゼロの人だけ）、クイズ／デイリーの主導線、プレイヤーカード、連続学習、苦手バナー、2列の学習ツール（到達度テスト・模試・学習記録・語源）、3列のツール（辞典・ご意見・設定） |
+| `screen-home` | ホーム | ゾーン切替、お知らせ（模試のお知らせは模試ページへの直リンク付き）、次回模試バナー（開催中は残り時間）、はじめてガイド（学習履歴ゼロの人だけ）、クイズ／デイリーの主導線、プレイヤーカード、連続学習、苦手バナー、2列の学習ツール（到達度テスト・模試・学習記録・語源）、3列のツール（辞典・ご意見・設定） |
 | `screen-select` | 出題範囲＆設定 | スタイル／ゲームモード／Part・カスタム範囲／出題数／学習状況フィルタ |
 | `screen-quiz` | クイズ | 問題カード、4択、タイマー、コンボ、次へ |
 | `screen-result` | 結果 | スコア、正答率、間違い一覧、共有・画像保存・再挑戦 |
@@ -388,6 +388,7 @@ expRequiredForLevel(level) = 100 + (level - 1) * 50
 - **振り返りメモ**: 成績表の下に 500 字までのメモ欄を表示し、`LEAP_MOCK_NOTES_V1` に模試ごとに保存する（`saveMockNote` / `deleteMockNote`、更新日時は `mockFormatDateTime`）。
 - **成績履歴**（`mockRenderHistoryCard`）: 提出・端末保存のたびに `LEAP_MOCK_HISTORY_V1` へ1件記録する（`mockRecordHistory`、同じ模試は最新1件に置き換え、最大20件）。成績表に直近8件の正答率バー（古い→新しい）・自己ベスト・直近6件の一覧（得点・正答率・偏差値・日時）を表示する。ログイン前からあった記録も、成績表を開いたときに未登録なら遡って記録する（`mockBackfillHistory`）。
 - **復習導線**: 結果画面と同じく間違えた単語を `startQuizWithPool` で復習できる（`reviewMockMistakes`）。直近の受験直後はその場のミス一覧（`mockLastMistakes`）を使い、再読み込み後や別端末の記録では保存済み `answers` から誤答を復元する（`mockSavedMistakes` / `mockMistakePool`）。同じ誤答を「🧠 間違えた単語を苦手に登録」（`registerMockMistakesToWeak`）で `weakWords` へまとめて登録でき、`source="mock"`・`stage=1`・翌日復習として忘却曲線に乗る（既存の苦手はミス回数を加算）。`html2canvas` の `#result-share-card` に偏差値・得点・要復習を流し込んで画像保存できる（`downloadMockResultImage`、要復習の一覧も同じ復元ロジックを使う）。
+- **ホームの次回模試バナー**: 開催中または次に開催される模試があるとき、ホームのお知らせの下にバナーを出す（`mockRenderHomeBanner`、`#home-mock-banner`）。開催中は「受験受付中・終了まで ◯」、開催前は「次回の模試・開始まで ◯」と表示し、タップで `screen-mock-exam` へ遷移する。候補は「模試画面で取得済みのスケジュール → 起動時に公開 RPC で取得したもの（`mockRefreshHomeBanner`）→ リマインド設定 `LEAP_MOCK_REMINDERS_V1`」の順に探し、60秒ごとに残り時間を更新する。練習模試は対象外。
 - **中断**: 模試中に中断した場合は提出せず、成績表画面へ戻る（コイン・EXP の獲得分は残る）。
 
 ---
@@ -923,6 +924,7 @@ node patches/build_leap_data.js
 
 | 日付 | 変更内容 |
 |---|---|
+| 2026-11-26 | 🏫 Phase 3（模試の振り返り）⑧: ホームに **次回模試バナー** を追加（`#home-mock-banner` / `mockRenderHomeBanner`）。開催中は「受験受付中・終了まで」、開催前は「次回の模試・開始まで」を表示し、タップで模試画面へ遷移する。候補は取得済みスケジュール→起動時の公開 RPC（`mockRefreshHomeBanner`）→リマインド設定の順で探し、60秒ごとに残り時間を更新する（練習模試は対象外）。`APP_VER=leap-v31-mock-home` / `CACHE=leap-v52`。|
 | 2026-11-26 | 🎯 Phase 3（模試の振り返り）⑦: 志望校判定に **合格圏ギャップ** を追加。各志望校カードで tier 別の A 基準偏差値と現在の偏差値の差を「合格圏（A）まで あと偏差値 X」と表示する（`mockJudgeGap`、到達済みは「到達しています」）。`APP_VER=leap-v30-mock-gap` / `CACHE=leap-v51`。|
 | 2026-11-26 | 📈 Phase 3（模試の振り返り）⑥: 模試の **成績履歴と推移** を追加。提出・端末保存のたびに `LEAP_MOCK_HISTORY_V1` へ `{ examId, title, subject, date, score, total, accuracy, deviation, elapsed_sec, is_late, offline }` を記録し（`mockRecordHistory`、同じ模試は最新1件・最大20件）、成績表に直近8件の正答率バー・自己ベスト・直近6件の一覧を表示する（`mockRenderHistoryCard`）。既存の成績表を開いたときは履歴が無ければ遡って記録する（`mockBackfillHistory`）。`APP_VER=leap-v29-mock-history` / `CACHE=leap-v50`。|
 | 2026-11-26 | 🔁 Phase 3（模試の振り返り）⑤: 模試の **誤答復習を永続化**。再読み込み後やクラウドから復元した成績でも、保存済み `answers` から誤答単語を引き直して「🔥 間違いを復習」が動くようにした（`mockSavedMistakes` / `mockMistakePool`、結果カード画像の要復習一覧も同じ復元を使う）。あわせて「🧠 間違えた単語を苦手に登録」（`registerMockMistakesToWeak`）を追加し、模試の誤答を `weakWords` へ一括登録（`source="mock"`・翌日復習、既存はミス回数を加算）。`APP_VER=leap-v28-mock-review` / `CACHE=leap-v49`。|

@@ -29,6 +29,8 @@
     let mockBusy = false;
     let mockSchoolFilter = { category: "", tier: "", query: "" };
     let mockScheduleNote = "";
+    let mockHomeSchedule = [];
+    let mockHomeTimer = null;
 
     const MOCK_LOCAL_RESULTS_KEY = "LEAP_MOCK_LOCAL_RESULTS_V1";
     const MOCK_HISTORY_KEY = "LEAP_MOCK_HISTORY_V1";
@@ -70,6 +72,67 @@
         if (!all[examId]) return;
         delete all[examId];
         localStorage.setItem(MOCK_LOCAL_RESULTS_KEY, JSON.stringify(all));
+      } catch (e) {}
+    }
+
+    // ---- ホームの次回模試バナー ----
+    // キャッシュ（模試画面を開いたとき）→ ホーム用の取得結果 → リマインド設定の順に探す
+    function mockHomeCandidate() {
+      const now = Date.now();
+      const fromCache = (mockExamsCache || []).filter(e => e && !e.offline);
+      const rows = fromCache.length ? fromCache : (mockHomeSchedule || []);
+      const open = rows.find(e => mockPhase(e) === "open");
+      if (open) return { id: open.id, title: open.title, start_at: open.start_at, end_at: open.end_at, phase: "open" };
+      const before = rows.filter(e => mockPhase(e) === "before")
+        .sort((a, b) => Date.parse(a.start_at) - Date.parse(b.start_at))[0];
+      if (before) return { id: before.id, title: before.title, start_at: before.start_at, end_at: before.end_at, phase: "before" };
+      // 起動直後などスケジュールが未取得でも、リマインド設定からは表示できる
+      const reminders = Object.keys(mockLoadReminders()).map(k => mockLoadReminders()[k]).filter(Boolean);
+      const openReminder = reminders.find(r => now >= Date.parse(r.start_at) && now <= Date.parse(r.end_at));
+      if (openReminder) return { id: openReminder.examId, title: openReminder.title, start_at: openReminder.start_at, end_at: openReminder.end_at, phase: "open" };
+      const soon = reminders.filter(r => Date.parse(r.start_at) > now)
+        .sort((a, b) => Date.parse(a.start_at) - Date.parse(b.start_at))[0];
+      if (soon) return { id: soon.examId, title: soon.title, start_at: soon.start_at, end_at: soon.end_at, phase: "before" };
+      return null;
+    }
+
+    function mockRenderHomeBanner() {
+      const el = document.getElementById("home-mock-banner");
+      if (!el) return;
+      const c = mockHomeCandidate();
+      if (!c) { el.classList.add("hidden"); el.innerHTML = ""; return; }
+      const open = c.phase === "open";
+      const target = open ? Date.parse(c.end_at) : Date.parse(c.start_at);
+      const countdown = Number.isFinite(target)
+        ? (open ? `終了まで ${mockFormatCountdown(target - Date.now())}` : `開始まで ${mockFormatCountdown(target - Date.now())}`)
+        : (open ? "受験受付中" : "開催予定");
+      el.className = open
+        ? "bg-rose-50 border border-rose-200 rounded-2xl p-4 shadow-sm"
+        : "bg-indigo-50 border border-indigo-200 rounded-2xl p-4 shadow-sm";
+      el.innerHTML = `<button type="button" onclick="navigate('screen-mock-exam')" class="w-full text-left flex items-center justify-between gap-3 cursor-pointer">
+        <span class="min-w-0">
+          <span class="block text-[10px] font-extrabold ${open ? "text-rose-700" : "text-indigo-700"}">${open ? "🏫 模試 受験受付中" : "🏫 次回の模試"}</span>
+          <span class="block text-[12px] font-extrabold text-slate-800 truncate mt-0.5">${escapeHtml(c.title || "全国一斉模試")}</span>
+          <span class="block text-[10px] ${open ? "text-rose-600" : "text-indigo-600"} tabular-nums mt-0.5">${escapeHtml(countdown)}</span>
+        </span>
+        <span class="shrink-0 text-[10px] font-bold px-2.5 py-1.5 rounded-lg ${open ? "bg-rose-600 text-white" : "bg-white text-indigo-700 border border-indigo-200"}">開く ›</span>
+      </button>`;
+      el.classList.remove("hidden");
+    }
+
+    // ホーム表示用に公開スケジュールを軽く取得する（模試画面の一覧・状態は変えない）。60秒ごとにカウントダウンを更新
+    async function mockRefreshHomeBanner() {
+      mockRenderHomeBanner();
+      if (!mockHomeTimer && typeof setInterval === "function") {
+        mockHomeTimer = setInterval(() => { if (!document.hidden) mockRenderHomeBanner(); }, 60000);
+      }
+      if (!supabaseClient || mockExamsLoaded || (mockHomeSchedule || []).length) return;
+      try {
+        const rpc = await supabaseClient.rpc("get_mock_exam_schedule");
+        if (!rpc.error && Array.isArray(rpc.data)) {
+          mockHomeSchedule = rpc.data;
+          mockRenderHomeBanner();
+        }
       } catch (e) {}
     }
 
@@ -516,6 +579,7 @@
       }
       mockExamsLoaded = true;
       mockBusy = false;
+      mockRenderHomeBanner();
       renderMockExamScreen();
     }
 
