@@ -22,7 +22,7 @@
 - **収録**: 英単語 2,300 語（Part 1〜5）／例文・単語詳細 2,300 語分・例文クイズ 2,000 語分／参考資料 5 章／接辞 32 グループ・132 語根／古文単語 150 語（2 章）。
 - **主な遊び**: 通常4択・例文穴埋め・リスニング4択・スペル入力・60秒スプリント・サドンデス、到達度テスト（50問・25分・S〜D判定）、**全国一斉模試（日時指定の時間割制・ハイブリッド偏差値・志望校判定）**、デイリーチャレンジ、忘却曲線の苦手復習、学習カレンダー/Part別マスター率の振り返り、コイン/EXP/レベル、称号・フレーム・アバター、実績 93 種、共有URL（挑戦状）、任意ログインによるクラウド同期・相互フレンドの詳細ステータス閲覧。運営向けに **お知らせ**（ホーム表示）と **意見箱**（匿名可）、管理者用の `admin.html`（模試管理・新規模試作成・過去成績集約・お知らせ CRUD・意見トリアージ）を持つ。
 - **ホスティング**: 静的ホスティング（Vercel 想定。`vercel.json` なし、`.vercel/` は gitignore）。
-- **主要ファイル**: `index.html`（アプリ本体）、`js/core.js`（称号・ゾーン・画面遷移の基盤）、`assets/css/app.css`（アプリ固有 CSS）、`admin.html` ＋ `js/admin.js`（管理者ダッシュボード）、`supabase_config.js`（Supabase 公開設定の共有）、`words_data.js`、`examples_data.js`、`reference_data.js`、`affix_data.js`、`mock_schools_data.js`（模試の志望校マスタ）、`kobun/kobun_words_data.js`、`sw.js`、`manifest.json`、`supabase/schema.sql`（DB/RLS・模試集計RPC・意見箱RPC）、`supabase/admin_roles.sql`（管理者の一覧・付与・解除RPC）、`LEAP単語データ/`（元データ）、`patches/`（データ生成・一括改修スクリプト）。
+- **主要ファイル**: `index.html`（アプリ本体）、`js/core.js`（称号・ゾーン・画面遷移の基盤）、`assets/css/app.css`（アプリ固有 CSS）、`admin.html` ＋ `js/admin.js`（管理者ダッシュボード）、`supabase_config.js`（Supabase 公開設定の共有）、`words_data.js`、`examples_data.js`、`reference_data.js`、`affix_data.js`、`mock_schools_data.js`（模試の志望校マスタ）、`kobun/kobun_words_data.js`、`sw.js`、`manifest.json`、`supabase/schema.sql`（DB/RLS・模試集計RPC・意見箱RPC）、`supabase/admin_roles.sql`（管理者の一覧・付与・解除RPC）、`supabase/migration_mock_public.sql`（模試の公開スケジュールRPC）、`LEAP単語データ/`（元データ）、`patches/`（データ生成・一括改修スクリプト）。
 
 ---
 
@@ -103,7 +103,7 @@
 | `screen-reader` | レベル別リーダー | 例文から長文を自動生成して読む（**現在 UI 入口なし＝休眠機能**） |
 | `screen-exam` | 🎓 到達度テスト | 範囲（全範囲／Part単位）を選んで 50問・25分のテスト。S〜D判定と過去の記録を表示 |
 | `screen-stats` | 📊 学習記録 | 直近12週の日別ヒートマップ（学習カレンダー）、連続学習・累計解答・マスター/苦手語数、Part別マスター率 |
-| `screen-mock-exam` | 🏫 全国一斉模試 | 開催スケジュール一覧、カウントダウン、志望校（第1〜第5）エントリー、制限時間つき受験、偏差値・順位・志望校判定・全大学×文理群の目安一覧、模試ごとの共有リンク（`?mock=<examId>`）。ログイン＋Supabase が必要（未設定／未ログインは案内表示） |
+| `screen-mock-exam` | 🏫 全国一斉模試 | 開催スケジュール一覧、カウントダウン、志望校（第1〜第5）エントリー、制限時間つき受験、偏差値・順位・志望校判定・全大学×文理群の目安一覧、模試ごとの共有リンク（`?mock=<examId>`）。**受験はログイン不要**（結果は端末保存）、ログイン時に全国集計へ提出。Supabase 未設定でもオフライン練習模試（30問・20分）を表示 |
 
 モーダル／ダイアログ: **設定・その他シート（`settings-modal`）**、**お知らせ一覧（`announcements-modal`）**、**意見箱（`feedback-modal`）**、実績、苦手単語一覧、単語詳細シート、フレンド詳細ステータスシート、結果のフレンド共有シート、初回ログイン時の競合解決ダイアログ、リーダー単語ポップ、確認ダイアログ（`showConfirm`/`showAlert`）、トースト。
 
@@ -113,7 +113,7 @@
 
 ホームの導線は「主導線を上・副次機能を下」の順に並べる。`home-onboarding` は `totalQuizzes === 0` かつ `scoreHistory` と `wordStats` が空のときだけ表示し、閉じると `LEAP_ONBOARDING_DISMISSED_V1` に記録して以後は出さない。ガイドの「10問でためす」は先頭100語から10問を学習状況フィルタなしで開始する（`startBeginnerQuiz`）。
 
-模試の共有リンク `?mock=<examId>` で開くと、ログイン状態が整うまで待ってから該当模試を開く（`checkMockExamLink` → `scheduleLinkedMockExam` → `openLinkedMockExam`。最大約10秒待ち、未ログインなら模試画面の案内へ）。お知らせの本文かタイトルに「模試」を含む場合、ホームのお知らせ行と一覧モーダルに「模試ページを開く」ボタンが出る（`announcementAction`）。
+模試の共有リンク `?mock=<examId>` で開くと、Supabase クライアントの初期化だけを待ってから該当模試を開く（`checkMockExamLink` → `scheduleLinkedMockExam` → `openLinkedMockExam`）。**ログインは不要**。お知らせの本文かタイトルに「模試」を含む場合、ホームのお知らせ行と一覧モーダルに「模試ページを開く」ボタンが出る（`announcementAction`）。
 
 ---
 
@@ -368,7 +368,7 @@ expRequiredForLevel(level) = 100 + (level - 1) * 50
 
 ### 4.10 全国一斉模試（`screen-mock-exam`）
 
-日時を揃えた「時間割制」の模試。**Supabase 有効＋ログイン時のみ**受験・集計でき、未設定／未ログインでは案内を表示する（他の機能はローカルのまま動作）。
+日時を揃えた「時間割制」の模試。**受験はログイン不要**で、未ログインでも受験・採点・復習・端末保存ができる。全国集計（偏差値・順位・志望校判定）への提出と `get_mock_exam_report` は Supabase ＋ ログイン時のみ。Supabase 未設定／通信不可のときは、端末内の単語から作る「オフライン練習模試」（30問・20分・何度でも受験可）を一覧の先頭に表示する。
 
 - **スケジュール**: `mock_exams` を新しい順に取得し、開催中／開催前を先、終了済みを後に並べる。`start_at` / `end_at` で次の3状態を判定（`mockPhase`）。
   - 開催前（`now < start_at`）: 開始までのカウントダウンと志望校登録。
@@ -380,6 +380,7 @@ expRequiredForLevel(level) = 100 + (level - 1) * 50
   - 選択 UI は「大学名・学部名の検索」＋「カテゴリ」「難易度（tier）」の絞り込みを備え、該当する大学・学部だけをセレクトに出す（件数表示・条件クリア付き）。
 - **成績表**: `get_mock_exam_report` の返却値を表示。偏差値・順位・上位パーセンタイル・受験者数 N・平均・トリム平均・理論平均・実効SD・志望校判定（A/B/C/D または判定保留）・全大学×文理群の目安一覧（カテゴリ見出し付き・スクロール）。
 - **判定**（`mockJudgeFor`）: 偏差値と `tier` 別しきい値（tier1: 63/57/50、tier2: 60/54/47、tier3: 56/50/44、tier4: 52/46/40）で A〜D を決め、志望者内パーセンタイルが上位25%なら1段上げ、下位20%なら1段下げる。**N < 5 または暫定フラグ時は「判定保留（暫定）」**。
+- **ログイン不要の受験**: 開催スケジュールは未ログインでも読める公開 RPC `get_mock_exam_schedule()` で取得する（`question_ids` は受験時間枠内だけ返る。RPC 未適用ならログイン時のみ `mock_exams` を直接 SELECT）。志望校エントリーはローカル下書き（`LEAP_MOCK_CHOICES_V1`）に保存し、ログイン時のみ `mock_exam_entries` へ upsert。受験結果は未ログイン／通信エラー時 `LEAP_MOCK_LOCAL_RESULTS_V1`（`{ [examId]: { score, total, elapsed_sec, answers, is_late, submitted_at } }`）に保存し、結果画面は「端末内の採点結果」カード（得点・正答率・所要時間）を表示する。ログイン後に同じ回を開くと「☁️ 全国集計に提出する」（`resubmitLocalMockResult`）から `mock_exam_results` へ提出でき、成功したら端末側の記録は削除する。
 - **復習導線**: 結果画面と同じく間違えた単語を `startQuizWithPool` で復習できる（`reviewMockMistakes`）。`html2canvas` の `#result-share-card` に偏差値・得点・要復習を流し込んで画像保存できる（`downloadMockResultImage`）。
 - **中断**: 模試中に中断した場合は提出せず、成績表画面へ戻る（コイン・EXP の獲得分は残る）。
 
@@ -620,7 +621,7 @@ window.LEAP_SUPABASE_CONFIG = { url: "https://xxxx.supabase.co", anonKey: "sb_pu
 | `profiles` | `id`(auth.users FK), `friend_code` unique, `display_name`, `equipped_avatar/frame`, `prefix/suffix`, `quick_stats` jsonb, `updated_at` | 認証済みは SELECT 可。INSERT/UPDATE/DELETE は本人のみ |
 | `friendships` | `id`, `requester_id`, `addressee_id`, `status` (pending/accepted), 日時 | 当事者のみ SELECT/DELETE。INSERT は requester 本人。UPDATE（承認）は addressee のみ |
 | `user_progress` | `user_id` PK, `user_data` jsonb, `achievements` jsonb, `share_detailed_logs`, `client_updated_at`, `updated_at` | 書き込みは本人のみ。SELECT は本人または `accepted` フレンド |
-| `mock_exams` | `id`, `title`, `subject` (leap/kobun), `range_label`, `question_ids` int[], `expected_rates` float8[], `start_at`, `end_at`, `duration_sec` (既定1500), `created_at` | 認証済みは SELECT 可（開催回マスタ） |
+| `mock_exams` | `id`, `title`, `subject` (leap/kobun), `range_label`, `question_ids` int[], `expected_rates` float8[], `start_at`, `end_at`, `duration_sec` (既定1500), `created_at` | 認証済みは SELECT 可（開催回マスタ）。未ログインへは公開 RPC `get_mock_exam_schedule()` 経由で開催日時・問題数のみ公開 |
 | `mock_exam_entries` | `id`, `exam_id`, `user_id`, `choices` jsonb（第1〜第5志望）, `updated_at`。`(exam_id,user_id)` unique | 本人のみ SELECT / INSERT / UPDATE / DELETE |
 | `mock_exam_results` | `id`, `exam_id`, `user_id`, `score`, `total`, `elapsed_sec`, `answers` jsonb, `is_late`, `submitted_at`。`(exam_id,user_id)` unique | 本人のみ INSERT / SELECT（UPDATE/DELETE 不可） |
 | `admin_users` | `user_id`（auth.users FK・PK）, `note`, `created_at` | RLS 有効・ポリシーなし。`security definer` の `is_admin()` からのみ参照でき、anon / authenticated は直接読めない |
@@ -635,6 +636,14 @@ window.LEAP_SUPABASE_CONFIG = { url: "https://xxxx.supabase.co", anonKey: "sb_pu
 | `admin_claim_first()` | ログイン済み本人 | `admin_users` が空のときだけ自分を最初の管理者にする（メールの insert が使えない LINE ユーザー向けのブートストラップ）。既に管理者がいれば `false` |
 | `announcements` | `id`, `title`(120), `body`(4000), `level`(info/warning/success), `pinned`, `published_at`, `expires_at`, `created_by`, 日時 | anon / authenticated は**公開期間内のみ** SELECT。管理者は全件の SELECT/INSERT/UPDATE/DELETE |
 | `feedback` | `id`, `category`(opinion/request/bug/praise/other), `body`(2000), `rating`(1〜5), `page`, `subject`, `user_id`, `contact`, `client_token`, `status`(new/reading/done/archived), `admin_note`, 日時 | 管理者のみ SELECT/UPDATE/DELETE。**直接 INSERT は不可**で、投稿は `submit_feedback()` RPC 経由 |
+
+#### 模試の公開スケジュール RPC `get_mock_exam_schedule()`
+
+`security definer`（`mock_exams` の RLS を変えずに未ログインへスケジュールを公開）。`grant execute ... to anon, authenticated`。
+
+- 返す列: `id`, `title`, `subject`, `range_label`, `question_ids`, `expected_rates`, `question_count`, `start_at`, `end_at`, `duration_sec`（新しい順に最大 30 件）。
+- `question_ids` / `expected_rates` は **受験時間枠内（`start_at <= now() <= end_at`）だけ**返し、開始前のネタバレを防ぐ。問題数は常に `question_count` で返す。
+- 未適用のプロジェクトでは RPC が `PGRST202` を返し、フロントはログイン時の `mock_exams` 直接 SELECT → オフライン練習模試の順にフォールバックする。
 
 #### 模試の集計 RPC `get_mock_exam_report(p_exam_id uuid)`
 
@@ -813,7 +822,8 @@ window.LEAP_SUPABASE_CONFIG = { url: "https://xxxx.supabase.co", anonKey: "sb_pu
 │   └── words.json                    英単語 JSON
 ├── supabase/
 │   ├── schema.sql             Supabase のテーブル・RLS・トリガー（新規プロジェクトはこれを実行）
-│   └── migration_community.sql  既存プロジェクト向け Phase 1 追加分のみの移行SQL
+│   ├── migration_community.sql  既存プロジェクト向け Phase 1 追加分のみの移行SQL
+│   └── migration_mock_public.sql  模試の公開スケジュールRPC（未ログイン受験用）
 ├── patches/                   データ生成・一括改修スクリプト（開発用、実行は任意）
 ├── favicon.png / icon.svg / icon-192.png / icon-512.png / apple-touch-icon.png
 └── SERVICE.md                 このファイル（サービス全体仕様・更新履歴）
@@ -878,7 +888,7 @@ node patches/build_leap_data.js
 - 参考資料の第5部クイズは採点・保存なし（学習補助の読み物）。
 - 外部 CDN（Tailwind / html2canvas / Google Fonts）に依存。オフライン時はキャッシュ済みの範囲で動作するが、初回はオンラインが必要。
 - 共有 URL は Base64 化した結果情報のみ（個人情報・進捗は含まない）。
-- **全国一斉模試は Supabase ＋ ログインが必要**。未設定／未ログインでは案内のみ表示し、他の機能は従来どおりローカルで動作する。
+- **全国一斉模試の受験はログイン不要**。未ログインの結果は端末（`LEAP_MOCK_LOCAL_RESULTS_V1`）に保存し、ログイン後に全国集計へ提出できる。全国偏差値・順位・志望校判定の集計だけが Supabase ＋ ログインを必要とする。Supabase 未設定時はオフライン練習模試のみ表示する。
 - 模試の偏差値・志望校判定は受験者数が少ないうちは暫定（N < 5 で「判定保留」）。`mock_exam_results` は 1 人 1 回（`(exam_id, user_id)` unique）で、再受験分は保存されない（画面では参考表示）。
 - 模試の開催回は `mock_exams` に手動で追加する（`question_ids` と `expected_rates` を同じ並びで指定）。`schema.sql` のサンプルはインストール時の相対日時。
 - 模試の志望校マスタを変更したら `mock_schools_data.js` と `sw.js` の `ASSETS`／`CACHE`、`APP_VER` を更新する。
@@ -897,6 +907,7 @@ node patches/build_leap_data.js
 
 | 日付 | 変更内容 |
 |---|---|
+| 2026-11-26 | 🏫 全国一斉模試を**ログインなしで受験できる**ように変更。開催スケジュールは新規の公開 RPC `get_mock_exam_schedule()`（未ログイン可・`question_ids` は受験時間内のみ返す）で取得し、未適用ならログイン時のみ `mock_exams` を直接 SELECT するフォールバックを用意。未ログインでも志望校エントリー（端末下書き）・受験・採点・間違い復習ができ、結果は `LEAP_MOCK_LOCAL_RESULTS_V1` に保存して「端末内の採点結果」カード（得点・正答率・所要時間）を表示。ログイン後に「☁️ 全国集計に提出する」（`resubmitLocalMockResult`）から `mock_exam_results` へ提出できる。Supabase 未設定／通信不可／公開中の回がないときは、端末内の単語から作る「オフライン練習模試」（30問・20分・何度でも受験可）を一覧先頭に表示。共有リンク `?mock=` もログインを待たずに開く。新規 `supabase/migration_mock_public.sql`（`schema.sql` にも同 RPC を追記）。`APP_VER=leap-v19-mock-open` / `CACHE=leap-v40`。|
 | 2026-11-24 | 🐞 管理ダッシュボードの「👤 管理者」タブが押せない不具合を修正。`sw.js` が `admin.html` だけを Network-Only にし、`js/admin.js` は Cache-First で配信していたため、新しい HTML（4タブ）と古い JS（3タブ分のリスナーしかない）が組み合わさり、追加したタブにクリックリスナーが無かった。`sw.js` の Network-First 対象に `js/admin.js` を追加し、`admin.html` の読み込みを `js/admin.js?v=leap-v18-admin-tab-fix` に変更。`APP_VER=leap-v18-admin-tab-fix` / `CACHE=leap-v39`。|
 | 2026-11-24 | 👤 管理者権限の運用を UID ベースに変更し、LINE ログインユーザーにも付与できるようにした。新規 `supabase/admin_roles.sql`（`admin_list_members` / `admin_grant` / `admin_revoke` / `admin_claim_first`）と、`admin.html` の「👤 管理者」タブ（UID・メール・表示名で検索、付与・解除、UID コピー、UID 直接入力）を追加。`admin.html` は LINE ログインにも対応し、権限が無い場合もサインアウトせず「最初の管理者として登録」できるようにした。管理画面の認証保存キーを `leap-admin-auth-v1` に分離し、公開サイトと管理画面で別アカウントを同時にログイン可能にした。🎨 ホームを再構成（主導線を上部へ、学習ツールを2列・ツールを3列に集約、新規ユーザー向け3ステップの「はじめてガイド」と「10問でためす」）。お知らせに「模試」を含む場合の模試ページ直リンク、模試の共有リンク `?mock=<examId>` と共有ボタンを追加。ダークモードの半透明面・淡い枠線・濃色チップ文字のコントラストを補修。`APP_VER=leap-v17-admin-ui` / `CACHE=leap-v38`。|
 | 2026-11-23 | 🐞 管理ダッシュボード（`admin.html`）の「📮 意見箱」タブが空になる不具合を修正。`js/admin.js` 側にだけ存在した描画先（`#panel-feedback` / `#fb-list` / `#fb-count` / `#fb-category` / `#fb-status` / `#fb-q` / `#fb-refresh`）の HTML が `admin.html` に無く、タブを切り替えても何も表示されなかった。他タブと同じカード構成で、種別・状態・キーワードの絞り込み、件数表示、更新ボタン、一覧カードを追加。`admin.html` は Service Worker の `ASSETS` 対象外なので `APP_VER` / `CACHE` は据え置き。 |

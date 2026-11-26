@@ -276,6 +276,50 @@ create policy mock_exams_admin_all on public.mock_exams
   with check (public.is_admin());
 
 -- ------------------------------------------------------------
+-- 公開スケジュール RPC（ログイン不要）
+--   * 開催日時・問題数は誰でも参照できる
+--   * question_ids / expected_rates は受験時間枠内だけ返す（開始前のネタバレ防止）
+-- ------------------------------------------------------------
+create or replace function public.get_mock_exam_schedule()
+returns table (
+  id uuid,
+  title text,
+  subject text,
+  range_label text,
+  question_ids int[],
+  expected_rates float8[],
+  question_count int,
+  start_at timestamptz,
+  end_at timestamptz,
+  duration_sec int
+)
+language sql
+stable
+security definer
+set search_path = public
+as $$
+  select
+    m.id,
+    m.title,
+    m.subject,
+    m.range_label,
+    case when now() >= m.start_at and now() <= m.end_at then m.question_ids end,
+    case when now() >= m.start_at and now() <= m.end_at then m.expected_rates end,
+    coalesce(cardinality(m.question_ids), 0),
+    m.start_at,
+    m.end_at,
+    m.duration_sec
+  from public.mock_exams m
+  order by m.start_at desc
+  limit 30;
+$$;
+
+revoke all on function public.get_mock_exam_schedule() from public;
+grant execute on function public.get_mock_exam_schedule() to anon, authenticated;
+
+comment on function public.get_mock_exam_schedule() is '模試の公開スケジュール（未ログイン可。問題IDは受験時間内のみ返す）';
+
+-- ------------------------------------------------------------
 create table if not exists public.mock_exam_entries (
   id uuid primary key default gen_random_uuid(),
   exam_id uuid not null references public.mock_exams (id) on delete cascade,
