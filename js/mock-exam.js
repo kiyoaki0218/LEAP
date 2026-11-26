@@ -963,10 +963,53 @@
       await submitMockExamResult(exam, local.score, local.total, local.elapsed_sec, local.answers, local.is_late);
     }
 
+    // 保存済みの解答ログから誤答の単語を復元する（再読み込み後・別端末の記録でも復習できる）
+    function mockSavedMistakes() {
+      const exam = mockCurrentExam();
+      const rep = mockReport || mockLocalReport;
+      const result = mockMyResult || (rep && rep.me && rep.me.result) || null;
+      if (!exam || !result) return [];
+      return mockAnswerWords(exam, result).filter(r => !r.correct).map(r => r.word);
+    }
+
+    // 直近の受験で間違えた単語。無ければ保存済みの成績から組み立てる
+    function mockMistakePool() {
+      const live = (mockLastMistakes || []).filter(w => w && w.word);
+      return live.length ? live : mockSavedMistakes();
+    }
+
     function reviewMockMistakes() {
-      const pool = (mockLastMistakes || []).filter(w => w && w.word);
+      const pool = mockMistakePool();
       if (!pool.length) { showToast("復習する誤答はありません"); return; }
       startQuizWithPool(pool, { forceNormalMode: true, forceNormalStyle: true, questionCount: pool.length });
+    }
+
+    // 模試の誤答を苦手単語（忘却曲線の復習対象）へまとめて登録する
+    function registerMockMistakesToWeak() {
+      const words = mockMistakePool();
+      if (!words.length) { showToast("登録する誤答はありません"); return; }
+      if (!userData.weakWords) userData.weakWords = {};
+      const today = getTodayString();
+      const nextDate = addDaysToDate(today, 1);
+      let added = 0;
+      words.forEach(w => {
+        const cur = userData.weakWords[w.id];
+        if (!cur) added++;
+        userData.weakWords[w.id] = {
+          id: w.id,
+          word: w.word,
+          meaning: w.meaning,
+          count: (cur && Number(cur.count) || 0) + 1,
+          stage: 1,
+          nextReview: nextDate,
+          lastReviewed: today,
+          source: "mock"
+        };
+      });
+      saveUserData();
+      cloudPushSoon("quiz");
+      showToast(`🔥 ${words.length}語を苦手に登録しました${added ? `（新規 ${added}語）` : ""}`);
+      if (typeof updateUI === "function") updateUI();
     }
 
     // ---- 表示 ----
@@ -1216,6 +1259,7 @@
           <div class="grid grid-cols-2 gap-2">
             <button type="button" onclick="downloadMockResultImage()" class="py-2.5 bg-slate-100 hover:bg-slate-200 border border-slate-300 text-slate-800 text-[11px] font-bold rounded-xl transition cursor-pointer">📸 結果カードを保存</button>
             <button type="button" onclick="reviewMockMistakes()" class="py-2.5 bg-rose-600 hover:bg-rose-700 text-white text-[11px] font-bold rounded-xl transition cursor-pointer">🔥 間違いを復習</button>
+            <button type="button" onclick="registerMockMistakesToWeak()" class="col-span-2 py-2.5 bg-white hover:bg-rose-50 border border-rose-300 text-rose-700 text-[11px] font-bold rounded-xl transition cursor-pointer">🧠 間違えた単語を苦手に登録</button>
           </div>
         </div>`;
         return;
@@ -1257,6 +1301,7 @@
           <div class="grid grid-cols-2 gap-2">
             <button type="button" onclick="downloadMockResultImage()" class="py-2.5 bg-slate-100 hover:bg-slate-200 border border-slate-300 text-slate-800 text-[11px] font-bold rounded-xl transition cursor-pointer">📸 結果カードを保存</button>
             <button type="button" onclick="reviewMockMistakes()" class="py-2.5 bg-rose-600 hover:bg-rose-700 text-white text-[11px] font-bold rounded-xl transition cursor-pointer">🔥 間違いを復習</button>
+            <button type="button" onclick="registerMockMistakesToWeak()" class="col-span-2 py-2.5 bg-white hover:bg-rose-50 border border-rose-300 text-rose-700 text-[11px] font-bold rounded-xl transition cursor-pointer">🧠 間違えた単語を苦手に登録</button>
           </div>
           <button type="button" onclick="openMockFeedback()" class="w-full py-2 bg-white hover:bg-slate-50 border border-slate-200 text-slate-600 text-[10px] font-bold rounded-xl transition cursor-pointer">📮 この模試の感想を送る</button>
         </div>`);
@@ -1409,10 +1454,11 @@
       if (streak) streak.classList.add("shc-hidden");
       const list = document.getElementById("shc-mistakes");
       if (list) list.innerHTML = "";
-      const mistakes = (mockLastMistakes || []).slice(0, 6);
+      const mistakePool = mockMistakePool();
+      const mistakes = mistakePool.slice(0, 6);
       const wrap = document.getElementById("shc-mistakes-wrap");
       if (wrap) wrap.classList.toggle("shc-hidden", mistakes.length === 0);
-      setText("shc-mistakes-count", mistakes.length ? `${mockLastMistakes.length} 語` : "");
+      setText("shc-mistakes-count", mistakes.length ? `${mistakePool.length} 語` : "");
       mistakes.forEach(w => {
         if (!list) return;
         const li = document.createElement("li");

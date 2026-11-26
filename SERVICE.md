@@ -385,7 +385,7 @@ expRequiredForLevel(level) = 100 + (level - 1) * 50
 - **リマインド**: 開催回ごとに「⏰ リマインド設定」を切り替えられる（`toggleMockReminder`）。設定は `LEAP_MOCK_REMINDERS_V1` に保存し、開始24時間前〜終了までの間、起動時に1日1回トーストで知らせる（`mockCheckReminders`、同日重複は `LEAP_MOCK_REMINDER_SEEN_V1` で抑止）。終了から1日以上たった設定は自動で削除する。一覧にも「⏰ リマインド設定済み」を表示。
 - **時間配分ログ**（`mockRenderTimeCard`）: 問題表示から解答までの秒数を `quizState.answerTimes` に記録し、`answers[i].sec` として提出する（クイズ側は `renderQuestion` で `questionShownAt` を更新）。成績表に解答合計・1問平均・最速/最遅・序盤/中盤/終盤の正答率・時間がかかった問題 TOP3 を表示する（`mockBuildTimeAnalysis`）。`sec` が無い旧記録ではカード自体を出さない。
 - **振り返りメモ**: 成績表の下に 500 字までのメモ欄を表示し、`LEAP_MOCK_NOTES_V1` に模試ごとに保存する（`saveMockNote` / `deleteMockNote`、更新日時は `mockFormatDateTime`）。
-- **復習導線**: 結果画面と同じく間違えた単語を `startQuizWithPool` で復習できる（`reviewMockMistakes`）。`html2canvas` の `#result-share-card` に偏差値・得点・要復習を流し込んで画像保存できる（`downloadMockResultImage`）。
+- **復習導線**: 結果画面と同じく間違えた単語を `startQuizWithPool` で復習できる（`reviewMockMistakes`）。直近の受験直後はその場のミス一覧（`mockLastMistakes`）を使い、再読み込み後や別端末の記録では保存済み `answers` から誤答を復元する（`mockSavedMistakes` / `mockMistakePool`）。同じ誤答を「🧠 間違えた単語を苦手に登録」（`registerMockMistakesToWeak`）で `weakWords` へまとめて登録でき、`source="mock"`・`stage=1`・翌日復習として忘却曲線に乗る（既存の苦手はミス回数を加算）。`html2canvas` の `#result-share-card` に偏差値・得点・要復習を流し込んで画像保存できる（`downloadMockResultImage`、要復習の一覧も同じ復元ロジックを使う）。
 - **中断**: 模試中に中断した場合は提出せず、成績表画面へ戻る（コイン・EXP の獲得分は残る）。
 
 ---
@@ -920,6 +920,7 @@ node patches/build_leap_data.js
 
 | 日付 | 変更内容 |
 |---|---|
+| 2026-11-26 | 🔁 Phase 3（模試の振り返り）⑤: 模試の **誤答復習を永続化**。再読み込み後やクラウドから復元した成績でも、保存済み `answers` から誤答単語を引き直して「🔥 間違いを復習」が動くようにした（`mockSavedMistakes` / `mockMistakePool`、結果カード画像の要復習一覧も同じ復元を使う）。あわせて「🧠 間違えた単語を苦手に登録」（`registerMockMistakesToWeak`）を追加し、模試の誤答を `weakWords` へ一括登録（`source="mock"`・翌日復習、既存はミス回数を加算）。`APP_VER=leap-v28-mock-review` / `CACHE=leap-v49`。|
 | 2026-11-26 | 🏷 Phase 2（模試の振り返り）④: 苦手単語 `weakWords` に **`source` タグ**（`quiz` / `mock` / `exam` / `review` / `daily`）を追加。`registerWrongAnswer` が直近の誤答元を記録し、苦手単語データ帳に「クイズ」「模試」「到達度テスト」「苦手復習」「デイリー」のバッジを表示する（`weakSourceLabel`）。既存データは読み込み時に `quiz` で補完。クラウド同期のマージはミス回数が多い方の `source` を採用する。`APP_VER=leap-v27-weak-source` / `CACHE=leap-v48`。|
 | 2026-11-26 | ⏱ Phase 2（模試の振り返り）③: 模試に **時間配分ログ** を追加。`renderQuestion` で問題表示時刻を `quizState.questionShownAt` に記録し、`handleAnswer` で解答までの秒数を `quizState.answerTimes[index]` に保存、提出時に `answers[i].sec` として送る（`mock_exam_results.answers` は jsonb のためスキーマ変更不要）。成績表に解答合計・1問平均・最速/最遅・序盤/中盤/終盤の正答率・時間がかかった問題 TOP3 を表示（`mockBuildTimeAnalysis` / `mockRenderTimeCard`）。`sec` を持たない旧記録ではカードを出さない。`APP_VER=leap-v26-mock-timing` / `CACHE=leap-v47`。|
 | 2026-11-26 | ⏰ Phase 2（模試の振り返り）②: 模試の **リマインド** と **振り返りメモ** を追加。開催回ごとに「⏰ リマインド設定／解除」を切り替え（`toggleMockReminder`、`LEAP_MOCK_REMINDERS_V1`）、開始24時間前〜終了までの間は起動時に1日1回トーストで知らせる（`mockCheckReminders`／同日重複防止は `LEAP_MOCK_REMINDER_SEEN_V1`、終了1日後は自動削除）。成績表の下に500字までの振り返りメモ欄（`saveMockNote` / `deleteMockNote`、`LEAP_MOCK_NOTES_V1`、更新日時表示）を追加。`APP_VER=leap-v25-mock-reminder` / `CACHE=leap-v46`。|
