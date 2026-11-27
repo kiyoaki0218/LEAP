@@ -11,7 +11,7 @@
     <script>
     // キャッシュ強制更新ロジック: 新バージョン検知時に古いServiceWorkerキャッシュを破棄
     (function() {
-      const APP_VER = "leap-v33-mobile-header";
+      const APP_VER = "leap-v37-kobun-examples";
       try {
         const storedVer = localStorage.getItem("LEAP_APP_CACHE_VER");
         if (storedVer !== APP_VER) {
@@ -62,6 +62,8 @@
   <!-- 実データ(1〜1000)の読み込み -->
   <script src="./words_data.js"></script>
   <script src="./kobun/kobun_words_data.js"></script>
+  <!-- 古文単語の詳細（例文・解説・活用など。古文単語データ/ から生成） -->
+  <script src="./kobun/kobun_details_data.js"></script>
   <!-- Supabase の公開設定（index.html と admin.html で共有。anon key は公開前提） -->
   <script src="./supabase_config.js"></script>
   <!-- Supabase JS クライアント（CDN・ビルド不要。未設定時はローカルモードで動作） -->
@@ -340,7 +342,7 @@
       <!-- Part選択パネル（複数選択） -->
       <div id="panel-part" class="space-y-2.5">
         <div class="flex items-center justify-between">
-          <span class="text-xs font-bold text-slate-500">出題するPartを選択（複数OK）</span>
+          <span id="part-panel-title" class="text-xs font-bold text-slate-500">出題するPartを選択（複数OK）</span>
           <div class="flex gap-1.5">
             <button type="button" onclick="selectAllParts()" class="px-2.5 py-1 text-[11px] font-bold bg-slate-900 hover:bg-slate-800 text-white rounded-lg transition cursor-pointer">全選択</button>
             <button type="button" onclick="clearAllParts()" class="px-2.5 py-1 text-[11px] font-bold bg-white hover:bg-slate-100 border border-slate-300 text-slate-600 rounded-lg transition cursor-pointer">全解除</button>
@@ -348,6 +350,7 @@
         </div>
         <p id="part-selected-summary" class="text-xs text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-lg px-3 py-2">選択中: <span class="font-bold">Part 1</span></p>
         <div id="part-list" class="space-y-2.5"></div>
+        <p id="part-roadmap-note" class="hidden text-[11px] font-bold text-violet-700 bg-violet-50 border border-violet-200 rounded-lg px-3 py-2 leading-relaxed"></p>
       </div>
 
       <!-- カスタム範囲指定パネル -->
@@ -2202,7 +2205,8 @@
       if (!q || q.type !== "word") return;
       const text = quizState.isAnswered ? (q.sentenceEn || q.sentence) : q.sentence;
       const spoken = String(text || "").replace(/\[\s*_{2,}\s*\]/g, ", ");
-      speakEnglish(spoken);
+      // 古文は例文・現代語訳とも日本語なので ja-JP で読む
+      speakEnglish(spoken, currentSubject === "kobun" ? { lang: "ja-JP", rate: 1.0 } : undefined);
     }
 
     // リスニング出題の音声（音声そのものが問題文なので voiceEnabled に関係なく再生する）
@@ -2273,6 +2277,11 @@
       const d = currentDetailWord && currentDetailWord.detail;
       const ex = d && d.examples && d.examples[index];
       if (!ex) return;
+      const isKobun = currentDetailWord && (currentDetailWord.subject === "kobun" || typeof currentDetailWord.num === "number");
+      if (isKobun) {
+        speakEnglish(ex.plain || ex.sentence || "", { lang: "ja-JP", rate: 1.0 });
+        return;
+      }
       speakEnglish(ex.plain || ex.en || "");
     }
 
@@ -3285,7 +3294,10 @@ listContainer.appendChild(row);
           : "設定済み・未ログイン";
       const isKobun = currentSubject === "kobun";
       const wordCount = (isKobun ? KOBUN_SOURCE : LEAP_SOURCE || []).length;
-      const partLines = (PARTS || []).map(p => `${p.name}: ${Math.max(0, Number(p.end) - Number(p.start) + 1)}語`).join(" ／ ");
+      const partLines = (PARTS || []).map(p => {
+        const n = (ALL_WORDS || []).filter(w => typeof w.id === "number" && w.id >= p.start && w.id <= p.end).length;
+        return `${p.name}: ${n}語${n === 0 ? "（追加予定）" : ""}`;
+      }).join(" ／ ");
       const rows = [
         ["アプリ版", typeof APP_VER !== "undefined" ? APP_VER : "-"],
         ["localStorage", `${keyCount} キー（LEAP ${leapKeyCount} 件）・約 ${leapFormatBytes(bytes)}`],

@@ -303,26 +303,54 @@
       `;
     }
 
+    // Part の範囲表記（古文は冊内の単語番号、LEAP は ID）
+    function partRangeLabel(part) {
+      if (!part) return "";
+      if (currentSubject === "kobun") {
+        const s = typeof part.numStart === "number" ? part.numStart : Math.max(1, part.start - 10000);
+        const e = typeof part.numEnd === "number" ? part.numEnd : Math.max(1, part.end - 10000);
+        return `単語番号 ${s}〜${e}`;
+      }
+      return `ID: ${part.start} 〜 ${part.end}`;
+    }
+
     function renderPartSelectList() {
       const listEl = document.getElementById("part-list");
       if (!listEl) return;
       listEl.innerHTML = "";
+
+      const isKobun = currentSubject === "kobun";
+      const titleEl = document.getElementById("part-panel-title");
+      if (titleEl) titleEl.textContent = isKobun ? "出題する章を選択（複数OK）" : "出題するPartを選択（複数OK）";
+      const noteEl = document.getElementById("part-roadmap-note");
+      if (noteEl) {
+        if (isKobun) {
+          const planned = PARTS.filter(p => !isPartAvailable(p));
+          const loaded = PARTS.filter(p => isPartAvailable(p));
+          const totalWords = PARTS.reduce((sum, p) => sum + (p.end - p.start + 1), 0);
+          noteEl.textContent = planned.length
+            ? `古文単語は全${PARTS.length}章・${totalWords}語構想。現在は${loaded.map(p => p.name).join("・")}の${ALL_WORDS.length}語を収録し、${planned.map(p => p.name).join("・")}は今後追加予定です。`
+            : `古文単語は全${PARTS.length}章・${totalWords}語を収録済みです。`;
+          noteEl.classList.remove("hidden");
+        } else {
+          noteEl.classList.add("hidden");
+        }
+      }
 
       const lockAllParts = isRangeSelectionLocked();
       PARTS.forEach(part => {
         const available = !lockAllParts && isPartAvailable(part);
         if (!available) {
           listEl.insertAdjacentHTML("beforeend", `
-            <div class="relative w-full">
-              <div class="w-full text-left p-4 bg-slate-100/70 border border-slate-200/70 rounded-xl flex justify-between items-center opacity-50 select-none">
-                <div>
-                  <div class="font-bold text-slate-500">${part.name}</div>
-                  <div class="text-xs text-slate-400 mt-0.5">${part.desc} (ID: ${part.start} 〜 ${part.end})</div>
-                </div>
-                <span class="text-xs font-semibold px-2.5 py-1 bg-slate-200/50 rounded-md text-slate-400">${part.end - part.start + 1}語</span>
+            <div class="w-full text-left p-4 bg-slate-100/70 border border-slate-200/70 rounded-xl flex justify-between items-center gap-3 select-none">
+              <div class="min-w-0">
+                <div class="font-bold text-slate-500">${part.name}</div>
+                <div class="text-xs text-slate-400 mt-0.5 break-words">${part.desc}（${partRangeLabel(part)}）</div>
+                <div class="text-[10px] font-bold text-violet-500 mt-1">今後追加予定</div>
               </div>
-              <div class="absolute inset-0 flex items-center justify-end pr-4 pointer-events-none">
-                <span class="bg-slate-900/85 backdrop-blur-sm text-amber-300 text-[11px] font-extrabold px-3 py-1 rounded-full tracking-wider shadow flex items-center gap-1.5 border border-slate-700">
+              <div class="flex flex-col items-end gap-1.5 shrink-0">
+                <span class="text-xs font-semibold px-2.5 py-1 bg-slate-200/50 rounded-md text-slate-400">${part.end - part.start + 1}語</span>
+                <span class="bg-slate-900/85 text-amber-300 text-[10px] font-extrabold px-2.5 py-1 rounded-full tracking-wider shadow flex items-center gap-1 border border-slate-700 whitespace-nowrap">
                   <span>🔒</span> COMING SOON
                 </span>
               </div>
@@ -354,7 +382,7 @@
                   <span>${part.name}</span>
                   <span class="text-[10px] bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded-full">プレイ可能</span>
                 </div>
-                <div class="text-xs text-slate-500 mt-0.5">${part.desc} (ID: ${part.start} 〜 ${part.end})</div>
+                <div class="text-xs text-slate-500 mt-0.5">${part.desc}（${partRangeLabel(part)}）</div>
               </div>
             </div>
             <span class="text-xs font-bold px-2.5 py-1 rounded-md border shrink-0 ${
@@ -417,7 +445,9 @@
         start: Math.min(...parts.map(p => p.start)),
         end: Math.max(...parts.map(p => p.end)),
         partIds: parts.map(p => p.id),
-        label: parts.length === allAvailable ? "全Part" : parts.map(p => p.name).join("・")
+        label: parts.length === allAvailable
+          ? (currentSubject === "kobun" ? `全章（${parts.map(p => p.id - 100).join("・")}章）` : "全Part")
+          : parts.map(p => p.name).join("・")
       };
       startQuiz();
     }
@@ -622,8 +652,10 @@
 
       if (effectiveQuizStyle() === "context") {
         // 例文モードでも学習状況フィルターを効かせ、該当語数を例文あり語数と並べて出す
-        const withExample = base.filter(w => getContextData(w)).length;
-        const matchedWithExample = base.filter(w => getContextData(w) && wordMatchesStatuses(w.id, quizStatusFilters)).length;
+        const withExample = currentSubject === "kobun"
+          ? base.filter(w => hasKobunExample(w)).length
+          : base.filter(w => getContextData(w)).length;
+        const matchedWithExample = base.filter(w => (currentSubject === "kobun" ? hasKobunExample(w) : getContextData(w)) && wordMatchesStatuses(w.id, quizStatusFilters)).length;
         if (withExample === 0) {
           el.textContent = `例文データのある単語がありません（0 / ${base.length} 語）`;
           el.className = "text-[11px] font-bold text-rose-600";
@@ -893,7 +925,35 @@
       };
     }
 
+    // 古文で例文クイズに出題できる例文を持つか（関連語の例文しかない語は対象外）
+    function hasKobunExample(w) {
+      const list = w && w.detail && Array.isArray(w.detail.examples) ? w.detail.examples : [];
+      return list.some(ex => ex && ex.quizEligible && ex.answer && ex.prompt && ex.prompt.includes("[ ____ ]"));
+    }
+
     function getContextData(w, pickRandom) {
+      // 古文は古典の例文の空欄を出す。例文が無い語だけ語義→古語にフォールバック
+      if (currentSubject === "kobun") {
+        const list = (w && w.detail && Array.isArray(w.detail.examples)) ? w.detail.examples : [];
+        const pool = list.filter(ex => ex && ex.quizEligible && ex.answer && ex.prompt && ex.prompt.includes("[ ____ ]"));
+        if (pool.length) {
+          const ex = pickRandom ? pool[Math.floor(Math.random() * pool.length)] : pool[0];
+          return {
+            en: ex.plain,
+            ja: ex.ja || "",
+            prompt: ex.prompt,
+            form: ex.answer || "",
+            meaning: ex.ja || "",
+            jaMark: "",
+            source: ex.source || "",
+            marked: ex.sentence || "",
+            kobun: true
+          };
+        }
+        const meaning = formatKobunMeaning((w && w.meaning) || "");
+        if (!meaning) return null;
+        return { en: meaning, ja: "", prompt: meaning, form: "", reverse: true };
+      }
       // 詳細データの例文（括弧マーカー付き）を最優先で使う
       const d = w && w.detail;
       if (d && Array.isArray(d.examples) && d.examples.length) {
@@ -1189,6 +1249,8 @@
           sentenceEn: contextData ? contextData.en : "",
           sentenceJa: contextData ? contextData.ja : "",
           sentenceJaMark: contextData ? contextData.jaMark : "",
+          sentenceSource: contextData ? (contextData.source || "") : "",
+          sentenceMarked: contextData ? (contextData.marked || "") : "",
           pos: inferPos(targetWord),
           options
         };
@@ -1457,13 +1519,22 @@
       return `<span class="inline-block text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 rounded px-1 py-0.5 mr-1 align-[1px]">訳</span>${highlightJapanese(ja, w, forcedMark)}`;
     }
 
+    // 古文の例文訳（【】をハイライト）＋出典バッジ
+    function kobunJaHtml(q) {
+      const body = formatKobunMarked(q && q.sentenceJa ? q.sentenceJa : "");
+      const src = q && q.sentenceSource
+        ? `<span class="inline-block ml-1 text-[10px] font-bold text-slate-500 bg-white border border-slate-200 rounded px-1 py-0.5 align-[1px]">${escapeHtml(q.sentenceSource)}</span>`
+        : "";
+      return `<span class="inline-block text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 rounded px-1 py-0.5 mr-1 align-[1px]">訳</span>${body}${src}`;
+    }
+
     // 自力想起ステップ: 選択肢の代わりにマスクを表示
     function renderOptionMask() {
       const container = document.getElementById("quiz-options-container");
       if (!container) return;
       container.innerHTML = "";
       const hint = activeQuizStyle() === "context"
-        ? "空欄に入りそうな単語を想像してみよう…"
+        ? (currentSubject === "kobun" ? "空欄に入りそうな古語を思い出してみよう…" : "空欄に入りそうな単語を想像してみよう…")
         : activeQuizStyle() === "listening"
           ? "聞こえた単語の意味を思い出してみよう…"
           : "日本語の語義を思い出してみよう…";
@@ -1516,15 +1587,22 @@
       const wordEl = document.getElementById("quiz-word");
       if (wordEl) wordEl.textContent = q.word.word;
       const sentenceEl = document.getElementById("quiz-context-sentence");
-      if (sentenceEl) sentenceEl.textContent = q.sentenceEn || q.sentence;
+      if (sentenceEl) {
+        if (currentSubject === "kobun" && q.sentenceMarked) sentenceEl.innerHTML = formatKobunMarked(q.sentenceMarked);
+        else sentenceEl.textContent = q.sentenceEn || q.sentence;
+      }
       const jaEl = document.getElementById("quiz-context-ja");
       if (jaEl && q.sentenceJa) {
-        jaEl.innerHTML = contextJaHtml(q.word, q.sentenceJa, q.sentenceJaMark);
+        jaEl.innerHTML = currentSubject === "kobun" ? kobunJaHtml(q) : contextJaHtml(q.word, q.sentenceJa, q.sentenceJaMark);
         jaEl.classList.remove("hidden");
       }
       // 正解の単語が出たので、例文側の品詞バッジと指示チップは隠す（二重表示を防ぐ）
       const promptEl = document.getElementById("quiz-context-prompt");
-      if (promptEl) promptEl.textContent = "✅ 正解";
+      if (promptEl) {
+        promptEl.textContent = currentSubject === "kobun" && q.sentenceSource
+          ? `✅ 正解 ・ ${q.sentenceSource}`
+          : "✅ 正解";
+      }
       const ctxPos = document.getElementById("quiz-context-pos");
       if (ctxPos) ctxPos.classList.add("hidden");
       applyWordIpa(document.getElementById("quiz-word-ipa"), q.word);
@@ -1534,6 +1612,12 @@
     function showAnswerFeedback(q) {
       const el = document.getElementById("quiz-answer-feedback");
       if (!el || !q || !q.word) return;
+      if (currentSubject === "kobun") {
+        const reading = String(q.word.reading || q.word.yomi || "");
+        el.textContent = `正解: ${q.word.word}（${reading && reading !== q.word.word ? reading + " / " : ""}${formatKobunMeaning(q.word.meaning)}）`;
+        el.classList.remove("hidden");
+        return;
+      }
       const tag = getPosTag(q.word);
       const posLabel = (POS_TAGS[tag] && POS_TAGS[tag].label) || POS_LABELS[q.pos] || "語彙";
       el.textContent = `正解: ${q.word.word}（${posLabel} / ${q.word.meaning}）`;
@@ -1682,7 +1766,9 @@
         const wordIdEl = document.getElementById("quiz-word-id");
         const wordEl = document.getElementById("quiz-word");
         const wordStatsEl = document.getElementById("quiz-word-stats-badge");
-        if (wordIdEl) wordIdEl.textContent = `ID: #${q.word.id}`;
+        if (wordIdEl) wordIdEl.textContent = (currentSubject === "kobun" && typeof q.word.num === "number")
+          ? `単語番号: #${q.word.num}`
+          : `ID: #${q.word.id}`;
         if (wordEl) wordEl.textContent = q.word.word;
         applyWordIpa(document.getElementById("quiz-word-ipa"), q.word);
 
@@ -1719,7 +1805,7 @@
           const jaEl = document.getElementById("quiz-context-ja");
           if (jaEl) {
             if (q.sentenceJa) {
-              jaEl.innerHTML = contextJaHtml(q.word, q.sentenceJa, q.sentenceJaMark);
+              jaEl.innerHTML = currentSubject === "kobun" ? kobunJaHtml(q) : contextJaHtml(q.word, q.sentenceJa, q.sentenceJaMark);
               jaEl.classList.remove("hidden");
             } else {
               jaEl.textContent = "";
@@ -1728,7 +1814,9 @@
           }
           const promptEl = document.getElementById("quiz-context-prompt");
           if (promptEl) {
-            promptEl.textContent = "空欄に最もふさわしい語を選べ";
+            promptEl.textContent = currentSubject === "kobun"
+              ? (String(q.sentence || "").includes("[ ____ ]") ? "空欄に入る古語を選べ" : "この現代語訳にあてはまる古語を選べ")
+              : "空欄に最もふさわしい語を選べ";
             promptEl.classList.remove("hidden");
           }
         }
@@ -1985,12 +2073,18 @@
 
         if (q.type === "word") {
           // 例文クイズ（選択肢が英単語）：全選択肢にそれぞれの日本語訳を表示
-          const meaning = (opt.word && opt.word.meaning) || "";
-          btn.innerHTML = `${numBadge}<div class="min-w-0 flex-1 pointer-events-none text-left"><div class="text-sm font-bold leading-snug">${escapeHtml(opt.text)}</div>${meaning ? `<div class="text-xs text-slate-600 mt-1 font-medium bg-white/70 rounded px-1.5 py-0.5 inline-block border border-slate-200/60">${escapeHtml(meaning)}</div>` : ""}`;
+          // 古文の例文クイズでは選択肢の古語に語義を添える（学習の手がかり）
+          const isKobun = currentSubject === "kobun";
+          const subText = isKobun
+            ? formatKobunMeaning((opt.word && opt.word.meaning) || "")
+            : ((opt.word && opt.word.meaning) || "");
+          const showSub = !!subText;
+          btn.innerHTML = `${numBadge}<div class="min-w-0 flex-1 pointer-events-none text-left"><div class="text-sm font-bold leading-snug">${escapeHtml(opt.text)}</div>${showSub ? `<div class="text-xs text-slate-600 mt-1 font-medium bg-white/70 rounded px-1.5 py-0.5 inline-block border border-slate-200/60">${escapeHtml(subText)}</div>` : ""}`;
         } else {
           // 通常クイズ（選択肢が日本語訳）：全選択肢に対応する英単語を表示
           const enWord = (opt.word && opt.word.word) || "";
-          btn.innerHTML = `${numBadge}<div class="min-w-0 flex-1 pointer-events-none text-left"><div class="text-sm font-bold leading-snug">${escapeHtml(opt.text)}</div>${enWord ? `<div class="text-xs text-slate-500 mt-1 font-medium bg-white/70 rounded px-1.5 py-0.5 inline-block border border-slate-200/60">英: ${escapeHtml(enWord)}</div>` : ""}`;
+                      const wordLabel = currentSubject === "kobun" ? "古語" : "英";
+            btn.innerHTML = `${numBadge}<div class="min-w-0 flex-1 pointer-events-none text-left"><div class="text-sm font-bold leading-snug">${escapeHtml(opt.text)}</div>${enWord ? `<div class="text-xs text-slate-500 mt-1 font-medium bg-white/70 rounded px-1.5 py-0.5 inline-block border border-slate-200/60">${wordLabel}: ${escapeHtml(enWord)}</div>` : ""}`;
         }
         if (isCorrect) {
           btn.innerHTML += `<span class="text-xs font-bold text-emerald-700 bg-emerald-100/80 px-2 py-0.5 rounded-full shrink-0">✓ 正解</span>`;

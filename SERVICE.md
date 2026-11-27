@@ -19,10 +19,10 @@
 - **何か**: 大学受験英単語帳「LEAP」の 4択クイズ × ゲーム要素の学習 PWA。加えて「裏世界」ゾーンで古文単語クイズも遊べる。
 - **構成**: ビルド不要の**静的サイト**。`index.html` に HTML（マークアップ）とアプリ本体のインライン JS を持ち、基盤 JS は `js/core.js`、全国一斉模試は `js/mock-exam.js`、クラウド同期・フレンドは `js/cloud-sync.js`、出題エンジン（範囲選択・採点・タイマー・到達度テスト・デイリーチャレンジ）は `js/quiz-engine.js`、辞典・実績・ショップは `js/ui-stats-dict.js`、アプリ固有 CSS は `assets/css/app.css`（いずれも外部ファイル）、データは `*_data.js` の JS 定数。
 - **バックエンドは任意**: 基本は **localStorage** のみでオフライン動作。`supabase_config.js` に URL / anon key を設定すると **Supabase**（Auth / Postgres / RLS）によるクラウド同期・相互フレンド・お知らせ・意見箱が有効になる。未設定なら従来どおりローカルのみで正常動作する（お知らせは非表示、意見箱は文面コピーのみ）。
-- **収録**: 英単語 2,300 語（Part 1〜5）／例文・単語詳細 2,300 語分・例文クイズ 2,000 語分／参考資料 5 章／接辞 32 グループ・132 語根／古文単語 150 語（2 章）。
+- **収録**: 英単語 2,300 語（Part 1〜5）／例文・単語詳細 2,300 語分・例文クイズ 2,000 語分／参考資料 5 章／接辞 32 グループ・132 語根／古文単語 150 語（2 章）・古文詳細 150 語分（例文 354 件）。
 - **主な遊び**: 通常4択・例文穴埋め・リスニング4択・スペル入力・60秒スプリント・サドンデス、到達度テスト（50問・25分・S〜D判定）、**全国一斉模試（日時指定の時間割制・ハイブリッド偏差値・志望校判定）**、デイリーチャレンジ、忘却曲線の苦手復習、学習カレンダー/Part別マスター率の振り返り、コイン/EXP/レベル、称号・フレーム・アバター、実績 93 種、共有URL（挑戦状）、任意ログインによるクラウド同期・相互フレンドの詳細ステータス閲覧。運営向けに **お知らせ**（ホーム表示）と **意見箱**（匿名可）、管理者用の `admin.html`（模試管理・新規模試作成・過去成績集約・お知らせ CRUD・意見トリアージ）を持つ。
 - **ホスティング**: 静的ホスティング（Vercel 想定。`vercel.json` なし、`.vercel/` は gitignore）。
-- **主要ファイル**: `index.html`（アプリ本体）、`js/core.js`（称号・ゾーン・画面遷移の基盤）、`js/mock-exam.js`（全国一斉模試）、`js/cloud-sync.js`（Supabase 認証・クラウド同期・フレンド）、`js/quiz-engine.js`（出題エンジン・到達度テスト・タイマー）、`js/ui-stats-dict.js`（辞典・単語詳細・参考資料・実績・ショップ）、`assets/css/app.css`（アプリ固有 CSS）、`admin.html` ＋ `js/admin.js`（管理者ダッシュボード）、`supabase_config.js`（Supabase 公開設定の共有）、`words_data.js`、`examples_data.js`、`reference_data.js`、`affix_data.js`、`mock_schools_data.js`（模試の志望校マスタ）、`kobun/kobun_words_data.js`、`sw.js`、`manifest.json`、`supabase/schema.sql`（DB/RLS・模試集計RPC・意見箱RPC）、`supabase/admin_roles.sql`（管理者の一覧・付与・解除RPC）、`supabase/migration_mock_public.sql`（模試の公開スケジュールRPC）、`LEAP単語データ/`（元データ）、`patches/`（データ生成・一括改修スクリプト）。
+- **主要ファイル**: `index.html`（アプリ本体）、`js/core.js`（称号・ゾーン・画面遷移の基盤）、`js/mock-exam.js`（全国一斉模試）、`js/cloud-sync.js`（Supabase 認証・クラウド同期・フレンド）、`js/quiz-engine.js`（出題エンジン・到達度テスト・タイマー）、`js/ui-stats-dict.js`（辞典・単語詳細・参考資料・実績・ショップ）、`assets/css/app.css`（アプリ固有 CSS）、`admin.html` ＋ `js/admin.js`（管理者ダッシュボード）、`supabase_config.js`（Supabase 公開設定の共有）、`words_data.js`、`examples_data.js`、`reference_data.js`、`affix_data.js`、`mock_schools_data.js`（模試の志望校マスタ）、`kobun/kobun_words_data.js`、`kobun/kobun_details_data.js`、`sw.js`、`manifest.json`、`supabase/schema.sql`（DB/RLS・模試集計RPC・意見箱RPC）、`supabase/admin_roles.sql`（管理者の一覧・付与・解除RPC）、`supabase/migration_mock_public.sql`（模試の公開スケジュールRPC）、`LEAP単語データ/`・`古文単語データ/`（元データ）、`patches/`（データ生成・一括改修スクリプト）。
 
 ---
 
@@ -51,11 +51,11 @@
 | key | 表示名 | 内容 | Part 定義 |
 |---|---|---|---|
 | `leap` | LEAP 英単語（表の世界） | 英単語 2,300 語 | Part 1〜5（ID 1〜2300） |
-| `kobun` | 🌌 裏世界（古文単語） | 古文単語 150 語（1章・2章） | Part 101〜102（ID 10001〜10150） |
+| `kobun` | 🌌 裏世界（古文単語） | 古文単語 150 語（1章・2章） | Part 101〜105（ID 10001〜10330・うち103〜105は枠のみ） |
 
 - ゾーンはホーム画面上部のトグルで切替。選択は `LEAP_SUBJECT_V1` に保存。
 - **進捗データは共通の `userData` に入るが、単語 ID 空間を分けている**（英単語 1〜2300 / 古文 10001〜）ため、学習履歴・苦手・辞典・実績が混ざらない。
-- 古文ゾーンでは出題スタイルは常に「通常4択」、読み上げは日本語（`ja-JP`）。
+- 古文ゾーンで使える出題スタイルは「通常4択」と「📝 例文（古典の例文の空所補充）」の2つ。読み上げは日本語（`ja-JP`）。
 - 古文の追加構想・設計メモは `docs/古文単語330_追加構想.md`（5章330語構想。現状は2章150語を実装済み）。
 
 ---
@@ -72,7 +72,7 @@
 | 永続化 | localStorage（＋任意で Supabase） | キー一覧は §11 |
 | クラウド（任意） | Supabase JS v2（CDN） / Postgres / Auth / RLS | `supabase_config.js` が未設定なら初期化しない。anon / publishable key のみ使用（service_role は使わない） |
 | 管理画面 | `admin.html` ＋ `js/admin.js`（別ページ・`noindex`） | Supabase Auth ＋ `admin_users` 許可リスト。`admin.html` と `js/admin.js` は SW のキャッシュ対象外（Network-First）。`js/admin.js` は `?v=` 付きで読み込む |
-| オフライン | `sw.js`（Cache API） | キャッシュ名 `leap-v41`、Network-First。Supabase・認証コールバック・`admin.html`・`js/admin.js` は Network-Only |
+| オフライン | `sw.js`（Cache API） | キャッシュ名 `leap-v59`、Network-First。Supabase・認証コールバック・`admin.html`・`js/admin.js` は Network-Only |
 | PWA | `manifest.json`、アイコン各種 | standalone 表示、theme `#059669` |
 | ビルド | なし | `.js` データは `<script>` で直接読む |
 
@@ -214,14 +214,22 @@ const KOBUN_WORDS_DATA = [
   ...
 ];
 const KOBUN_PARTS = [
-  { id: 101, name: "1章 読解必修語", desc: "読解必修語（50語）", start: 10001, end: 10050 },
-  { id: 102, name: "2章 入試必修語", desc: "入試必修語（100語）", start: 10051, end: 10150 }
+  { id: 101, name: "1章 読解必修語", desc: "読解必修語", start: 10001, end: 10050, numStart: 1, numEnd: 50 },
+  { id: 102, name: "2章 入試必修語", desc: "入試必修語", start: 10051, end: 10150, numStart: 51, numEnd: 150 },
+  { id: 103, name: "3章 最重要敬語", desc: "最重要敬語", start: 10151, end: 10180, numStart: 151, numEnd: 180 },
+  { id: 104, name: "4章 入試重要語", desc: "入試重要語", start: 10181, end: 10280, numStart: 181, numEnd: 280 },
+  { id: 105, name: "5章 入試攻略語", desc: "入試攻略語", start: 10281, end: 10330, numStart: 281, numEnd: 330 }
 ];
 ```
 
 - 収録: **150 語**（ID 10001〜10150）。`num` は冊子の通し番号。
 - ID ルール: `id = 10000 + 冊内番号`。Part は章に対応（現状 101=50語、102=100語）。
-- 目標構成（未投入分を含む）は `docs/古文単語330_追加構想.md` の 5章330語（103=敬語30語、104=入試重要100語、105=入試攻略50語）。
+- **5章すべてを `KOBUN_PARTS` に定義済み**。データが未投入の 103〜105 章は、出題範囲画面で `isPartAvailable()` が ID 範囲から自動判定し、ロックされたカードに「COMING SOON／今後追加予定」を出す（章の枠だけ先に見せる）。
+- 範囲表記は `numStart` / `numEnd`（冊内番号）を使う。未定義でも `id - 10000` で補完する。
+- 目標構成は `docs/古文単語330_追加構想.md` の 5章330語（103=敬語30語、104=入試重要100語、105=入試攻略50語）。
+- **詳細データ**: `kobun/kobun_details_data.js` の `KOBUN_WORD_DETAILS`（`id` キー）。見出し漢字・活用/品詞・重要度（★1〜3）・コアイメージ・語義（`important` 付き）・解説/入試/関連（`notes[{label,text}]`）・例文（原文・現代語訳・出典・補足・`prompt`/`answer`）を持つ。`js/core.js` の読み込み時に各語の `detail` と `pos` へ紐づける。
+- 例文は 150 語すべてに計 354 件。うち見出し語の訳に対応し空所を作れる 326 件を例文クイズに使い、関連語の例文や `【…】` の無い例文は辞典表示のみ（かたち等の 149 語が出題対象）。原文の `【…】` が空所・強調の対象。
+- 元データは `古文単語データ/*.txt`（Drive の「古文単語データ」9ファイル）。`node patches/build_kobun_details.js` で再生成する（生成物は手編集しない）。
 - `kobun/kobun_config.js` と `kobun/kobun_loader.js` は**未使用の足場**（`KOBUN_CONFIG.enabled = false`、`index.html` から読み込んでいない）。実装済みの統合は `index.html` 内の `SUBJECTS` / `applySubject()` 側。
 
 ### 3.6 元データ `LEAP単語データ/`
@@ -283,15 +291,17 @@ const MOCK_TIER_LABELS = { 1: "最難関", 2: "難関", 3: "中堅", 4: "チャ�
 | スタイル | 内容 | 制約 |
 |---|---|---|
 | `normal`（通常4択） | 英単語を見て日本語の語義を4択で選ぶ | 選択肢表示前に「自力想起」の待ち時間（`brainFirstDelayMs()`: 通常1200ms / スプリント800ms） |
-| `context`（例文・文脈テスト） | 例文の空所に入る語を4択で選ぶ。和訳表示・例文読み上げあり | 英単語ゾーンのみ。古文は強制 `normal` |
-| `listening`（リスニング4択） | 見出し語を隠し、音声だけを聞いて日本語の語義を4択で選ぶ。解答後に見出し語・IPAを開示 | 英単語ゾーンのみ。古文は強制 `normal`。音声は `voiceEnabled` に関係なく出題時に自動再生（🔊で再再生） |
-| `spelling`（スペル入力） | 日本語の語義（＋品詞バッジ）を見て英単語を入力する。大文字・小文字は区別しない | 英単語ゾーンのみ。古文は強制 `normal`。選択肢は表示しない |
+| `context`（例文・文脈テスト） | 例文の空所に入る語を4択で選ぶ。和訳表示・例文読み上げあり | 英単語ゾーン。古文では同じ `context` を「📝 例文」として使い、古典の例文の空所に入る古語を4択で選ぶ |
+| `listening`（リスニング4択） | 見出し語を隠し、音声だけを聞いて日本語の語義を4択で選ぶ。解答後に見出し語・IPAを開示 | 英単語ゾーンのみ（古文は押すと案内を表示）。音声は `voiceEnabled` に関係なく出題時に自動再生（🔊で再再生） |
+| `spelling`（スペル入力） | 日本語の語義（＋品詞バッジ）を見て英単語を入力する。大文字・小文字は区別しない | 英単語ゾーンのみ（古文は押すと案内を表示）。選択肢は表示しない |
 
 - 出題スタイルは `LEAP_QUIZ_STYLE_V1` に保存（`normal` / `context` / `listening`。未知の値は `normal` にフォールバック）。
+- 古文ゾーンではスタイルボタンの文言を「📝 例文」に切り替える（ボタンの 4 列レイアウトは LEAP と共通）。
 - スペル入力では `quiz-spelling-box`（語義＋入力欄＋決定）を表示し、見出し語と選択肢を隠す。採点は `submitSpellingAnswer()` が入力値を突き合わせ、**コイン・EXP・苦手登録・実績・学習状況は4択と同じ `handleAnswer()` に委譲**する（学習記録の整合性を保つため）。解答後は見出し語・IPAを開示し、誤答時は「あなたの解答 / 正解」を表示する。
 - リスニングでは `quiz-listening-box` を表示し、`quiz-word-row`（見出し語・IPA）を隠す。出題直後に `speakListeningWord()` で再生し、選択肢の自力想起マスクは他スタイルと同じく `brainFirstDelayMs()` だけ待つ。解答後は `revealListeningAnswer()` が見出し語を開示する。
 - 例文クイズは `LEAP_WORD_DETAILS` の `examples[].prompt`（空所化済み）を優先。無ければ `LEAP_EXAMPLE_DATA` から `buildCloze()` で空所化。
 - 例文があるのは ID 1〜2000。範囲に例文付き単語が無い場合は UI が「例文あり 0 語」と警告。
+- **古文の例文クイズ**: `getContextData()` が古文ゾーンでは `w.detail.examples` から「見出し語の訳に対応し空所を作れる例文（`quizEligible` かつ `answer` あり）」をランダムに選び、`prompt`（`【…】` を `[ ____ ]` にした原文）を出題する。選択肢は古語（`optionMode = "word"`）で、各選択肢の下に語義を添える。訳（`【…】` ハイライト）は出題時から表示し、解答後に原文の該当語をハイライト＋出典を開示する。例文が無い語だけ従来の「現代語訳 → 古語」にフォールバックする。読み上げは `ja-JP`。
 - 例文モードで正解・不正解した単語も `userData.wordStats[id]` に加算され、辞典・出題絞り込みの学習状況（未学習/苦手/学習中/マスター）に反映される。
 
 ### 4.3 ダミー選択肢（`pickDistractorWords`）
@@ -299,7 +309,7 @@ const MOCK_TIER_LABELS = { 1: "最難関", 2: "難関", 3: "中堅", 4: "チャ�
 - 同じ品詞を優先。
 - 苦手単語・つづりが似た語（共通接頭辞長 `sharedPrefixLength`）を混ぜる。
 - クイズセット内の他の正解を `blocked` にして「メタ読み」を防止。
-- 古文は同じ subject（古文）からダミーを作り、英語が混ざらない。
+- 古文は同じ subject（古文）からダミーを作り、英語が混ざらない。古文の例文クイズでも同じ意味の語をダミーから除外する。
 
 ### 4.4 ゲームモード
 
@@ -397,7 +407,7 @@ expRequiredForLevel(level) = 100 + (level - 1) * 50
 ## 5. 単語辞典
 
 - ホーム「📖 単語辞典（番号順）」から。**現在のゾーンの単語だけ**を ID 順に表示。
-- 検索: **英単語・日本語語義・単語番号**に対応（`normalizeSearchText`）。
+- 検索: **英単語・日本語語義・単語番号**に対応（`normalizeSearchText`）。古文は読み（`reading`）でも検索できる。
 - フィルタ（複数選択可、AND 結合）:
   - Part（ゾーンの有効 Part から動的生成。古文は「1章/2章」）
   - ID 範囲（開始・終了）
@@ -405,7 +415,8 @@ expRequiredForLevel(level) = 100 + (level - 1) * 50
 - フィルタパネルは**sticky＋折りたたみ**。状態は `LEAP_DICTIONARY_FILTER_V1` / `LEAP_DICT_FILTER_OPEN_V1` に保存。
 - **100 件／ページ**（`DICT_PAGE_SIZE`）。前後＋先頭末尾＋省略記号のページャ。
 - 行タップで**単語詳細シート**: 見出し語・IPA・品詞バッジ・語義（タグ付き）・コラム/頻出・例文（和訳ハイライト・読み上げ）・学習状況バッジ。
-- 古文の行は `num`（冊内番号）を表示。
+- 古文の行は `num`（冊内番号）を表示し、読みが異なる場合は「読み：〜」を添える。
+- 古文の詳細シートは「古文情報」カードに **読み・見出し漢字・活用/品詞・重要度（★）・収録章・単語番号** を出し、語義（重要な語義は太字）・コアイメージ・解説/入試/関連・例文（原文＋訳＋出典＋補足、`【…】` をハイライト）を表示する。例文は 🔊 で `ja-JP` 読み上げ（LEAP の品詞・IPA・コラム欄は出さない）。
 
 ---
 
@@ -819,7 +830,7 @@ window.LEAP_SUPABASE_CONFIG = { url: "https://xxxx.supabase.co", anonKey: "sb_pu
 ├── assets/
 │   └── css/app.css            アプリ固有 CSS（旧 index.html 内の <style> ほか）
 ├── manifest.json              PWA マニフェスト
-├── sw.js                      Service Worker（キャッシュ leap-v44 / Network-First）
+├── sw.js                      Service Worker（キャッシュ leap-v59 / Network-First）
 ├── words_data.js              LEAP_WORDS_DATA（2,300語）
 ├── examples_data.js           LEAP_WORD_DETAILS（2,300語）+ LEAP_EXAMPLE_DATA（2,000語）
 ├── reference_data.js          LEAP_REFERENCE_DATA（5章）
@@ -827,6 +838,7 @@ window.LEAP_SUPABASE_CONFIG = { url: "https://xxxx.supabase.co", anonKey: "sb_pu
 ├── mock_schools_data.js       MOCK_UNIV_GROUPS / MOCK_FACULTIES（全国一斉模試の志望校マスタ）
 ├── kobun/
 │   ├── kobun_words_data.js    KOBUN_WORDS_DATA（150語）+ KOBUN_PARTS
+│   ├── kobun_details_data.js  KOBUN_WORD_DETAILS（150語・例文354件。build_kobun_details.js の生成物）
 │   ├── kobun_config.js        未使用の設定足場（enabled=false）
 │   └── kobun_loader.js        未使用の統合ヘルパー（window.KOBUN）
 ├── docs/
@@ -835,6 +847,8 @@ window.LEAP_SUPABASE_CONFIG = { url: "https://xxxx.supabase.co", anonKey: "sb_pu
 │   └── ファイル分割計画.md    index.html を段階分割する手順（模試・クラウドの分離まで完了）
 ├── LEAP単語データ/
 │   ├── 001_101.txt … 2001_2300.txt   元テキスト（語義・IPA・コラム）
+├── 古文単語データ/
+│   ├── 001_015.txt … 126_150.txt     元テキスト（見出し・訳語・解説・入試・関連・例文）
 │   ├── code_artifact.txt             参考資料の元テキスト
 │   └── words.json                    英単語 JSON
 ├── supabase/
@@ -883,7 +897,7 @@ node patches/build_leap_data.js
 ### データを追加するとき
 
 1. 英単語: `LEAP単語データ/` の元テキストを更新 → `node patches/build_leap_data.js` → `words_data.js` / `examples_data.js` を差し替え。Part 範囲を超える場合は `LEAP_PARTS` とカスタム範囲の `max` も更新。
-2. 古文: `kobun/kobun_words_data.js` に追記（`id = 10000 + 冊内番号`、`part` は章）。`KOBUN_PARTS` も更新。
+2. 古文: `古文単語データ/*.txt` を更新 → `node patches/build_kobun_details.js` → `kobun/kobun_details_data.js` を差し替え。語を増やす場合は `kobun/kobun_words_data.js` に追記（`id = 10000 + 冊内番号`、`part` は章）し、`KOBUN_PARTS` も更新。
 3. 接辞: `affix_data.js` にグループ追加（`affix`, `meaning`, `note`, `roots[]`）。
 4. 参考資料: `reference_data.js` に章追加（`title`, `subtitle`, `words`, `blocks`）。
 5. いずれも `sw.js` の `ASSETS` と `CACHE` 名、`index.html` の `APP_VER` を更新し、**この SERVICE.md を更新**する。
@@ -901,7 +915,8 @@ node patches/build_leap_data.js
 - 設定シート（`settings-modal`）の「データ」欄に **JSON エクスポート／インポート**を追加。`LEAP_` で始まる保存キーだけを `{ app: "LEAP_QUIZ_BACKUP", appVer, exportedAt, keys }` 形式で書き出し、復元は `showConfirm` の確認後に同じキーだけを上書きして再読み込みする（Supabase の認証トークンは対象外）。
 - 設定シートの「🔧 詳細・診断情報」（`details#system-diag`）は、アプリ版、localStorage のキー数と使用量、クラウド接続・同期状態、対象ゾーンの収録語数、Part 別語数、SW キャッシュ名を表示する（`renderSystemDiagnostics`、開いたときに再計算）。
 - **例文クイズは ID 1〜2000 のみ**（2001〜2300 は語義4択のみ）。
-- **古文は 150 語（2章）まで**。330 語構想の 3〜5 章は未投入。
+- **古文は 150 語（2章）まで**。330 語構想の 3〜5 章はデータ未投入で、出題範囲に「COMING SOON／今後追加予定」の枠のみ表示（選択不可）。
+- **古文の例文は元テキスト由来**で、OCR 崩れに由来する欠損・表記ゆれが一部残る（各ファイル冒頭の「OCR判読不能・要確認ログ」に一覧あり）。例文の空所は原文の `【…】` に依存するため、`【】` が無い例文は `answer` が空になりクイズ対象外になる（該当語は語義→古語の出題にフォールバック）。
 - `kobun/kobun_config.js` / `kobun_loader.js` は未使用。設定を変えても現行 `index.html` には影響しない。
 - **リーダー（`screen-reader`）は UI 入口なし**。コードは残存。
 - 参考資料の第5部クイズは採点・保存なし（学習補助の読み物）。
@@ -926,6 +941,8 @@ node patches/build_leap_data.js
 
 | 日付 | 変更内容 |
 |---|---|
+| 2026-11-27 | 📜 古文単語に例文・解説データを投入。Drive の「古文単語データ」9ファイルを `古文単語データ/` に追加し、`patches/build_kobun_details.js` で `kobun/kobun_details_data.js`（`KOBUN_WORD_DETAILS`、150語・例文354件）を生成。①辞典の詳細シートに古文情報（見出し漢字・活用/品詞・重要度）・コアイメージ・解説/入試/関連・例文（原文＋訳＋出典＋補足、`【…】` ハイライト、読み上げ）を表示。②古文の「📜 古語当て」を、実際の古典例文の空所補充クイズ「📝 例文」に置き換え（訳は出題時、原文の該当語と出典は解答後に表示。例文の無い語のみ語義→古語にフォールバック）。③古文の品詞をデータから付与し、4択のダミーを同品詞優先に。`APP_VER=leap-v37-kobun-examples` / `CACHE=leap-v59`。|
+| 2026-11-27 | 📜 古文単語の学習ツールを拡充。①出題範囲に5章分の枠を作り、未収録の3〜5章（最重要敬語・入試重要語・入試攻略語）を「🔒 COMING SOON／今後追加予定」として表示（`KOBUN_PARTS` に `numStart`/`numEnd` 付きで5章定義、範囲は「単語番号」表記、章パネルに330語構想の注記）。②古文版の文脈テスト「📜 古語当て」を追加（`context` スタイルを古文では現代語訳→古語の4択として使用。出題文・マスクトの文言を古文向けに切替、ダミーは同じ意味を除外）。③辞典の古文向け表示を強化（一覧と詳細に読み・収録章・単語番号、詳細は古文情報カード＋「例文・出典は準備中」表示、例文・出典は今後追加予定）。`APP_VER=leap-v36-kobun-tools` / `CACHE=leap-v58`。|
 | 2026-11-27 | 📱 スマホの最上部ヘッダーでコイン・実績・ダークモード切替が右にはみ出して見切れる問題を修正。ヘッダーを `flex-wrap` + 余白／ボタン内側のパディング縮小に変更し、狭い画面では称号チップ（`#header-title`）を `hidden sm:block` で省略。320〜390px で横スクロールなしに収まることを確認。`APP_VER=leap-v33-mobile-header` / `CACHE=leap-v54`。|
 | 2026-11-27 | 📱 スマホ表示の不具合修正: 画面上部の「戻る」「中断」ボタンに `shrink-0 whitespace-nowrap` を付与し、「模試管理」リンクも折り返さないようにした。狭い画面でヘッダーの右側に押しつぶされて「戻る」が縦2文字（縦書き風）になる問題を解消。🛒 ショップの所持数バッジ（前称号／後称号／フレーム／アバター）を `renderShop()` の冒頭で全て更新するようにし、タブをタップするまで「1/◯◯」の古い分子が残る不具合を修正。あわせて HTML 初期値の分母を実際の点数（86／84／27／15）に修正。`APP_VER=leap-v32-mobile-shop-fix` / `CACHE=leap-v53`。|
 | 2026-11-26 | 🏫 Phase 3（模試の振り返り）⑧: ホームに **次回模試バナー** を追加（`#home-mock-banner` / `mockRenderHomeBanner`）。開催中は「受験受付中・終了まで」、開催前は「次回の模試・開始まで」を表示し、タップで模試画面へ遷移する。候補は取得済みスケジュール→起動時の公開 RPC（`mockRefreshHomeBanner`）→リマインド設定の順で探し、60秒ごとに残り時間を更新する（練習模試は対象外）。`APP_VER=leap-v31-mock-home` / `CACHE=leap-v52`。|

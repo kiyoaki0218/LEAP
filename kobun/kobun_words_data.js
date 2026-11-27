@@ -156,6 +156,9 @@ const KOBUN_WORDS_DATA = [
 ];
 
 const KOBUN_PARTS = [
-  { id: 101, name: "1章 読解必修語", desc: "読解必修語（50語）", start: 10001, end: 10050 },
-  { id: 102, name: "2章 入試必修語", desc: "入試必修語（100語）", start: 10051, end: 10150 }
+  { id: 101, name: "1章 読解必修語", desc: "読解必修語", start: 10001, end: 10050, numStart: 1, numEnd: 50 },
+  { id: 102, name: "2章 入試必修語", desc: "入試必修語", start: 10051, end: 10150, numStart: 51, numEnd: 150 },
+  { id: 103, name: "3章 最重要敬語", desc: "最重要敬語", start: 10151, end: 10180, numStart: 151, numEnd: 180 },
+  { id: 104, name: "4章 入試重要語", desc: "入試重要語", start: 10181, end: 10280, numStart: 181, numEnd: 280 },
+  { id: 105, name: "5章 入試攻略語", desc: "入試攻略語", start: 10281, end: 10330, numStart: 281, numEnd: 330 }
 ];

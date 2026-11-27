@@ -297,7 +297,7 @@
       kobun: {
         key: "kobun", short: "裏世界", label: "古文単語（裏世界）",
         heading: "古文単語330",
-        sub: "古典の語義を4択で。表の世界とは別の記録として残ります",
+        sub: "古文単語330の1・2章（150語）を収録。3〜5章は順次追加します",
         badge: "ANOTHER WORLD",
         words: KOBUN_SOURCE, parts: KOBUN_PART_DEFS
       }
@@ -306,6 +306,16 @@
     let currentSubject = "leap";
     let PARTS = LEAP_PARTS;
     let ALL_WORDS = [...LEAP_SOURCE];
+
+    // 古文の詳細（例文・解説・活用など）を各語に紐づける
+    if (typeof KOBUN_WORD_DETAILS !== "undefined" && KOBUN_WORD_DETAILS) {
+      KOBUN_SOURCE.forEach(w => {
+        const d = KOBUN_WORD_DETAILS[w.id] || KOBUN_WORD_DETAILS[String(w.id)];
+        if (!d) return;
+        w.detail = d;
+        if (d.pos) w.pos = d.pos;
+      });
+    }
 
     // ===== 単語詳細データ（LEAP単語データ/*.txt から生成） =====
     // 発音記号・品詞・コラム・例文を単語オブジェクトに紐づける
@@ -339,9 +349,10 @@
     // 今回のクイズで実際に使うゲームモード（忘却曲線復習などは常に通常）
     let quizGameMode = "normal";
 
-    // 古文単語には例文データがないため、常に通常4択で出題する
+    // 古文は「例文クイズ」のみ使える（例文が無い語は語義→古語）。リスニング・スペルはLEAP専用
     function effectiveQuizStyle() {
-      return currentSubject === "kobun" ? "normal" : quizStyle;
+      if (currentSubject === "kobun") return quizStyle === "context" ? "context" : "normal";
+      return quizStyle;
     }
 
     // クイズ実施中に使う出題スタイル（忘却曲線復習などは設定を引き継がず通常4択に固定）
@@ -362,15 +373,13 @@
     const QUIZ_STYLES = ["normal", "context", "listening", "spelling"];
 
     function setQuizStyle(style) {
-      if (style !== "normal" && currentSubject === "kobun") {
+      if ((style === "listening" || style === "spelling") && currentSubject === "kobun") {
         showAlert({
           title: "このモードはLEAP専用です",
           message: style === "listening"
             ? "古文単語は読み上げの音声だけで出題する設計にしていないため、通常4択モードで出題します。"
-            : style === "spelling"
-              ? "古文単語はスペル入力の対象外のため、通常4択モードで出題します。"
-              : "古文単語には例文データがないため、通常4択モードで出題します。",
-          icon: style === "listening" ? "🎧" : (style === "spelling" ? "🔤" : "📝")
+            : "古文単語はスペル入力の対象外のため、通常4択モードで出題します。",
+          icon: style === "listening" ? "🎧" : "🔤"
         });
         return;
       }
@@ -398,21 +407,24 @@
       const listeningBtn = document.getElementById("style-btn-listening");
       const spellingBtn = document.getElementById("style-btn-spelling");
       const style = effectiveQuizStyle();
+      const isKobun = currentSubject === "kobun";
       if (normalBtn) normalBtn.className = style === "normal" ? activeCls : idleCls;
       if (contextBtn) {
+        // 古文も例文クイズ（古典の例文 → 古語）を使う
+        contextBtn.textContent = isKobun ? "📝 例文" : "📝 文脈";
         contextBtn.className = style === "context" ? activeCls : idleCls;
-        contextBtn.disabled = currentSubject === "kobun";
-        contextBtn.classList.toggle("opacity-40", currentSubject === "kobun");
+        contextBtn.disabled = false;
+        contextBtn.classList.remove("opacity-40");
       }
       if (listeningBtn) {
         listeningBtn.className = style === "listening" ? activeCls : idleCls;
-        listeningBtn.disabled = currentSubject === "kobun";
-        listeningBtn.classList.toggle("opacity-40", currentSubject === "kobun");
+        listeningBtn.disabled = isKobun;
+        listeningBtn.classList.toggle("opacity-40", isKobun);
       }
       if (spellingBtn) {
         spellingBtn.className = style === "spelling" ? activeCls : idleCls;
-        spellingBtn.disabled = currentSubject === "kobun";
-        spellingBtn.classList.toggle("opacity-40", currentSubject === "kobun");
+        spellingBtn.disabled = isKobun;
+        spellingBtn.classList.toggle("opacity-40", isKobun);
       }
       document.querySelectorAll("[data-game-mode]").forEach(btn => {
         const on = btn.dataset.gameMode === gameMode;
@@ -421,9 +433,12 @@
       });
       const badge = document.getElementById("context-coverage-badge");
       if (badge) {
-        if (currentSubject === "kobun") {
-          badge.textContent = "古文は通常モードのみ";
-          badge.className = "text-[10px] font-bold text-slate-400 bg-slate-100 px-1.5 py-0.5 rounded-md";
+        if (isKobun) {
+          const withEx = ALL_WORDS.filter(w => w.detail && Array.isArray(w.detail.examples) && w.detail.examples.some(ex => ex && ex.quizEligible && ex.answer && ex.prompt)).length;
+          badge.textContent = style === "context" ? `例文 ${withEx} / ${ALL_WORDS.length} 語` : "例文クイズ対応";
+          badge.className = style === "context"
+            ? "text-[10px] font-bold text-violet-700 bg-violet-50 border border-violet-200 px-1.5 py-0.5 rounded-md"
+            : "text-[10px] font-bold text-slate-400 bg-slate-100 px-1.5 py-0.5 rounded-md";
         } else if (style === "listening") {
           badge.textContent = `音声で出題 ${ALL_WORDS.length} 語`;
           badge.className = "text-[10px] font-bold text-sky-700 bg-sky-50 border border-sky-200 px-1.5 py-0.5 rounded-md";
@@ -441,7 +456,11 @@
       }
       const styleHint = document.getElementById("style-hint");
       if (styleHint) {
-        styleHint.textContent = style === "context"
+        styleHint.textContent = isKobun
+          ? (style === "context"
+            ? "古典の例文の空欄に入る古語を選ぶモード。現代語訳と出典は解答後に表示されます（例文のある単語のみ出題）。"
+            : "古語を見て現代語訳を選ぶ通常モード。選択肢が出る前に“自力想起”の時間があります。")
+          : style === "context"
           ? "例文の空欄に入る英単語を選ぶ「学校小テスト風」モード。日本語訳の強調部分をヒントに英文を完成させよう（例文ありの単語のみ出題）。"
           : style === "listening"
             ? "音声を聞いて日本語の語義を選ぶリスニングモード。解答後に見出し語と発音記号が出ます。音声は読み上げ設定に関係なく出題時に再生されます。"
@@ -538,6 +557,20 @@
       renderPartSelectList();
       updatePartSelectionSummary();
       navigate("screen-home", { replace: true });
+    }
+
+    // 古文の例文・訳の【】をハイライトに変換する（エスケープ後にタグを付ける）
+    function formatKobunMarked(text) {
+      return escapeHtml(text || "").replace(/【([^】]+)】/g, '<mark class="bg-emerald-100 text-emerald-900 font-bold px-0.5 rounded">$1</mark>');
+    }
+
+    // 古文の現代語訳は「。、」のような区切りが混ざるため、表示だけ整える
+    function formatKobunMeaning(text) {
+      return String(text || "")
+        .replace(/。、/g, "。 ")
+        .replace(/、{2,}/g, "、")
+        .replace(/\s+/g, " ")
+        .trim();
     }
 
     // 収録データが対応するID範囲（データ追加に応じて自動で拡張される）

@@ -1081,10 +1081,11 @@
         const ids = LEAP_SOURCE.filter(w => Number(w.id) >= part.start && Number(w.id) <= part.end).map(w => w.id);
         return progressBarRow(part.name + "（" + part.desc + "）", tallyWordIds(ids, data.wordStats || {}));
       }).join("");
-      const kobunRows = KOBUN_PARTS.map((part) => {
-        const ids = KOBUN_SOURCE.filter(w => Number(w.id) >= part.start && Number(w.id) <= part.end).map(w => w.id);
-        return progressBarRow(part.name, tallyWordIds(ids, data.wordStats || {}));
-      }).join("");
+      const kobunRows = KOBUN_PARTS
+        .map((part) => ({ part, ids: KOBUN_SOURCE.filter(w => Number(w.id) >= part.start && Number(w.id) <= part.end).map(w => w.id) }))
+        .filter((row) => row.ids.length > 0)
+        .map((row) => progressBarRow(row.part.name, tallyWordIds(row.ids, data.wordStats || {})))
+        .join("");
       const allTally = tallyWordIds(LEAP_SOURCE.concat(KOBUN_SOURCE).map(w => w.id), data.wordStats || {});
       parts.push(`<div class="space-y-2">
         <p class="text-xs font-extrabold text-slate-700 flex items-center gap-1.5"><span>📊</span>総合・ゾーン別・Part別の進捗</p>

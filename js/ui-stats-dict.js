@@ -686,7 +686,13 @@
 
         const meaningEl = document.createElement("div");
         meaningEl.className = "text-xs text-slate-500 mt-0.5 break-words";
-        meaningEl.textContent = w.meaning;
+        meaningEl.textContent = w.subject === "kobun" ? formatKobunMeaning(w.meaning) : w.meaning;
+        if (w.subject === "kobun" && w.reading && w.reading !== w.word) {
+          const readingEl = document.createElement("div");
+          readingEl.className = "text-[11px] font-bold text-violet-500 mt-0.5 break-words";
+          readingEl.textContent = `読み：${w.reading}`;
+          body.appendChild(readingEl);
+        }
         body.appendChild(wordEl);
         body.appendChild(ipaEl);
         body.appendChild(meaningEl);
@@ -730,7 +736,7 @@
         const tag = normalizePosDetail(s.tag);
         return `<div class="flex gap-1.5 items-start">`
           + `<span class="shrink-0 pt-0.5">${tag ? posBadgeHtml(tag) : ""}</span>`
-          + `<span class="text-xs leading-relaxed text-slate-700 break-words">${escapeHtml(s.text)}</span>`
+          + `<span class="text-xs leading-relaxed ${s.important ? "font-bold text-slate-900" : "text-slate-700"} break-words">${escapeHtml(s.text)}</span>`
           + `</div>`;
       }).join("");
     }
@@ -800,39 +806,102 @@
       if (!body) return;
       let html = "";
 
+      // 古文単語は品詞・IPA・例文の代わりに、読み・章・単語番号を見せる
+      const isKobunWord = (w.subject === "kobun") || (isKobunZone() && typeof w.num === "number");
+      if (isKobunWord) {
+        const chapter = PARTS.find(p => p.id === w.part);
+        const reading = w.reading || w.yomi || "";
+        const info = [
+          reading && reading !== w.word ? `読み：${reading}` : "",
+          (d && d.kanji) ? `漢字：${d.kanji}` : "",
+          (d && d.form) ? `${d.pos || "活用"}：${d.form}` : "",
+          (d && d.frequency) ? `重要度：${"★".repeat(d.frequency)}${"☆".repeat(Math.max(0, 3 - d.frequency))}` : "",
+          chapter ? `収録：${chapter.name}` : "",
+          (typeof w.num === "number") ? `単語番号：#${w.num}` : ""
+        ].filter(Boolean);
+        if (info.length) {
+          html += `<div class="bg-violet-50/70 border border-violet-200 rounded-xl p-3">`
+            + `<p class="text-[10px] font-bold uppercase tracking-wider text-violet-700 mb-1">古文情報</p>`
+            + `<p class="text-xs leading-relaxed text-violet-900 break-words">${info.map(escapeHtml).join(" ・ ")}</p>`
+            + `</div>`;
+        }
+      }
+
       html += `<div>`
         + `<p class="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">語義</p>`
-        + `<div class="space-y-1.5">${d && d.senses && d.senses.length ? sensesHtml(d.senses) : `<div class="text-xs leading-relaxed text-slate-700">${escapeHtml(w.meaning || "")}</div>`}</div>`
+        + `<div class="space-y-1.5">${d && d.senses && d.senses.length ? sensesHtml(d.senses) : `<div class="text-xs leading-relaxed text-slate-700">${escapeHtml(isKobunWord ? formatKobunMeaning(w.meaning) : (w.meaning || ""))}</div>`}</div>`
         + `</div>`;
 
+      if (isKobunWord && d && d.core) {
+        html += `<div class="bg-violet-50/70 border border-violet-200 rounded-xl p-3">`
+          + `<p class="text-[10px] font-bold uppercase tracking-wider text-violet-700">コアイメージ</p>`
+          + `<p class="text-xs leading-relaxed text-violet-900 break-words">${escapeHtml(d.core)}</p>`
+          + `</div>`;
+      }
+
       if (d && d.notes && d.notes.length) {
-        const noteHtml = d.notes.map(n => `<p class="text-xs leading-relaxed text-slate-600 whitespace-pre-line">${escapeHtml(n)}</p>`).join("");
+        const noteHtml = d.notes.map(n => typeof n === "string"
+          ? `<p class="text-xs leading-relaxed text-slate-600 whitespace-pre-line">${escapeHtml(n)}</p>`
+          : `<div class="space-y-0.5">`
+            + (n.label ? `<p class="text-[10px] font-bold text-amber-700">${escapeHtml(n.label)}</p>` : "")
+            + `<p class="text-xs leading-relaxed text-slate-600 whitespace-pre-line">${escapeHtml(n.text || "")}</p>`
+            + `</div>`
+        ).join("");
         html += `<div class="bg-amber-50/70 border border-amber-200 rounded-xl p-3 space-y-1.5">`
-          + `<p class="text-[10px] font-bold uppercase tracking-wider text-amber-700">コラム・頻出</p>`
+          + `<p class="text-[10px] font-bold uppercase tracking-wider text-amber-700">${isKobunWord ? "解説・入試・関連" : "コラム・頻出"}</p>`
           + noteHtml + `</div>`;
       }
 
       if (d && d.examples && d.examples.length) {
-        const exHtml = d.examples.map((ex, i) => {
-          const en = highlightWordInSentence(ex.plain || ex.en || "", ex.answer || w.word);
-          const ja = ex.ja ? highlightJapanese(ex.ja, w, ex.jaMark) : "";
-          return `<li class="rounded-xl border border-slate-200 bg-slate-50/70 px-3 py-2.5 space-y-1.5">`
-            + `<div class="flex gap-2 items-start">`
-            + `<span class="shrink-0 mt-0.5 w-5 h-5 rounded-md bg-white border border-slate-200 text-slate-500 text-[10px] font-bold flex items-center justify-center">${i + 1}</span>`
-            + `<p class="flex-1 text-[13px] font-semibold text-slate-800 leading-relaxed break-words">${en}</p>`
-            + `<button type="button" onclick="speakDetailExample(${i})" title="例文を読み上げ" class="shrink-0 mt-0.5 w-7 h-7 rounded-full bg-white border border-slate-200 text-slate-400 hover:text-emerald-600 hover:border-emerald-300 flex items-center justify-center text-[13px] transition cursor-pointer">🔊</button>`
+        if (isKobunWord) {
+          const exHtml = d.examples.map((ex, i) => {
+            const sentence = ex.sentence ? formatKobunMarked(ex.sentence) : escapeHtml(ex.plain || "");
+            const ja = ex.ja ? formatKobunMarked(ex.ja) : "";
+            const source = ex.source
+              ? `<span class="ml-1 inline-block text-[10px] font-bold text-slate-500 bg-white border border-slate-200 rounded px-1 py-0.5 align-[1px]">${escapeHtml(ex.source)}</span>`
+              : "";
+            return `<li class="rounded-xl border border-slate-200 bg-slate-50/70 px-3 py-2.5 space-y-1.5">`
+              + `<div class="flex gap-2 items-start">`
+              + `<span class="shrink-0 mt-0.5 w-5 h-5 rounded-md bg-white border border-slate-200 text-slate-500 text-[10px] font-bold flex items-center justify-center">${i + 1}</span>`
+              + `<p class="flex-1 text-[13px] font-semibold text-slate-800 leading-relaxed break-words">${sentence}</p>`
+              + `<button type="button" onclick="speakDetailExample(${i})" title="例文を読み上げ" class="shrink-0 mt-0.5 w-7 h-7 rounded-full bg-white border border-slate-200 text-slate-400 hover:text-emerald-600 hover:border-emerald-300 flex items-center justify-center text-[13px] transition cursor-pointer">🔊</button>`
+              + `</div>`
+              + (ja
+                ? `<p class="pl-7 text-xs text-slate-600 leading-relaxed break-words"><span class="inline-block text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 rounded px-1 py-0.5 mr-1 align-[1px]">訳</span>${ja}${source}</p>`
+                : (source ? `<p class="pl-7 text-[11px] text-slate-500">出典：${escapeHtml(ex.source)}</p>` : ""))
+              + (ex.note ? `<p class="pl-7 text-[11px] text-slate-500 leading-relaxed break-words">${escapeHtml(ex.note)}</p>` : "")
+              + `</li>`;
+          }).join("");
+          html += `<div>`
+            + `<div class="flex items-center justify-between mb-1.5">`
+            + `<p class="text-[10px] font-bold uppercase tracking-wider text-slate-400">例文・出典</p>`
+            + `<span class="text-[10px] font-bold text-slate-400 bg-slate-100 px-1.5 py-0.5 rounded-full">${d.examples.length}件</span>`
             + `</div>`
-            + (ja ? `<p class="pl-7 text-xs text-slate-600 leading-relaxed break-words"><span class="inline-block text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 rounded px-1 py-0.5 mr-1 align-[1px]">訳</span>${ja}</p>` : "")
-            + `</li>`;
-        }).join("");
-        html += `<div>`
-          + `<div class="flex items-center justify-between mb-1.5">`
-          + `<p class="text-[10px] font-bold uppercase tracking-wider text-slate-400">例文</p>`
-          + `<span class="text-[10px] font-bold text-slate-400 bg-slate-100 px-1.5 py-0.5 rounded-full">${d.examples.length}件</span>`
-          + `</div>`
-          + `<ul class="space-y-2">${exHtml}</ul></div>`;
+            + `<ul class="space-y-2">${exHtml}</ul></div>`;
+        } else {
+          const exHtml = d.examples.map((ex, i) => {
+            const en = highlightWordInSentence(ex.plain || ex.en || "", ex.answer || w.word);
+            const ja = ex.ja ? highlightJapanese(ex.ja, w, ex.jaMark) : "";
+            return `<li class="rounded-xl border border-slate-200 bg-slate-50/70 px-3 py-2.5 space-y-1.5">`
+              + `<div class="flex gap-2 items-start">`
+              + `<span class="shrink-0 mt-0.5 w-5 h-5 rounded-md bg-white border border-slate-200 text-slate-500 text-[10px] font-bold flex items-center justify-center">${i + 1}</span>`
+              + `<p class="flex-1 text-[13px] font-semibold text-slate-800 leading-relaxed break-words">${en}</p>`
+              + `<button type="button" onclick="speakDetailExample(${i})" title="例文を読み上げ" class="shrink-0 mt-0.5 w-7 h-7 rounded-full bg-white border border-slate-200 text-slate-400 hover:text-emerald-600 hover:border-emerald-300 flex items-center justify-center text-[13px] transition cursor-pointer">🔊</button>`
+              + `</div>`
+              + (ja ? `<p class="pl-7 text-xs text-slate-600 leading-relaxed break-words"><span class="inline-block text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 rounded px-1 py-0.5 mr-1 align-[1px]">訳</span>${ja}</p>` : "")
+              + `</li>`;
+          }).join("");
+          html += `<div>`
+            + `<div class="flex items-center justify-between mb-1.5">`
+            + `<p class="text-[10px] font-bold uppercase tracking-wider text-slate-400">例文</p>`
+            + `<span class="text-[10px] font-bold text-slate-400 bg-slate-100 px-1.5 py-0.5 rounded-full">${d.examples.length}件</span>`
+            + `</div>`
+            + `<ul class="space-y-2">${exHtml}</ul></div>`;
+        }
       } else if (!d) {
-        html += `<p class="text-xs text-slate-400">この単語の詳細データ（発音記号・コラム・例文）はまだ収録されていません。</p>`;
+        html += isKobunWord
+          ? `<p class="text-xs text-slate-400">この古語の詳細データはまだ収録されていません。</p>`
+          : `<p class="text-xs text-slate-400">この単語の詳細データ（発音記号・コラム・例文）はまだ収録されていません。</p>`;
       }
 
       body.innerHTML = html;
