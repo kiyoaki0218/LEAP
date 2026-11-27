@@ -10,7 +10,7 @@
 > 3. 数値（収録語数・実績数・ショップ点数など）や保存キーを変えた場合は、本文中の該当箇所も直す。
 > 4. このルールは `AGENTS.md` にも記載している。
 
-最終更新: 2026-11-23
+最終更新: 2026-11-27
 
 ---
 
@@ -78,7 +78,7 @@
 
 ### キャッシュ更新の仕組み
 
-- `index.html` 冒頭の `APP_VER`（現在 `leap-v18-admin-tab-fix`）が `localStorage.LEAP_APP_CACHE_VER` と違えば、全 Cache を削除。
+- `index.html` 冒頭の `APP_VER`（現在 `leap-v33-mobile-header`）が `localStorage.LEAP_APP_CACHE_VER` と違えば、全 Cache を削除。
 - `sw.js` は `install` で `skipWaiting()`、`activate` で旧キャッシュ削除＋`clients.claim()`。
 - 取得は Network-First（HTML は常に最新、オフライン時のみキャッシュ）。
 - **フロントを更新したら `sw.js` の `CACHE` 名と `index.html` の `APP_VER` を上げる**のが運用ルール。
@@ -331,6 +331,7 @@ expRequiredForLevel(level) = 100 + (level - 1) * 50
 
 - レベル上限 999。`getLevelState(totalExp)` が `{ level, intoLevel, required }` を返す。
 - ホーム／ヘッダーに Lv・EXP バー・称号を表示。
+- 画面上部の共通ヘッダーは、コイン・実績・ダークモード切替を常に表示する。狭い画面（`sm` 未満）では折り返しを許し、称号チップ（`#header-title`）は省略する（`sm` 以上で表示）。
 
 ### 4.6 デイリーチャレンジ
 
@@ -440,6 +441,7 @@ expRequiredForLevel(level) = 100 + (level - 1) * 50
 - フレーム・アバターは `ownedFrames` / `ownedAvatars` と `equippedFrame` / `equippedAvatar` で管理。
 - 称号は価格順ソート表示（`getPriceSortedPrefixList` など）。
 - 初期所持: `pre_init`（始まりの）、`suf_beginner`（ビギナー）、`frame_normal`、`avatar_auto`（🦉）。
+- 各タブの分母／分子バッジは `renderShop()` の冒頭で全タブ分をまとめて最新化する（タブを開くまで古い値が残らないように）。
 
 ### 7.2 実績（`ACHIEVEMENTS`）
 
@@ -924,6 +926,8 @@ node patches/build_leap_data.js
 
 | 日付 | 変更内容 |
 |---|---|
+| 2026-11-27 | 📱 スマホの最上部ヘッダーでコイン・実績・ダークモード切替が右にはみ出して見切れる問題を修正。ヘッダーを `flex-wrap` + 余白／ボタン内側のパディング縮小に変更し、狭い画面では称号チップ（`#header-title`）を `hidden sm:block` で省略。320〜390px で横スクロールなしに収まることを確認。`APP_VER=leap-v33-mobile-header` / `CACHE=leap-v54`。|
+| 2026-11-27 | 📱 スマホ表示の不具合修正: 画面上部の「戻る」「中断」ボタンに `shrink-0 whitespace-nowrap` を付与し、「模試管理」リンクも折り返さないようにした。狭い画面でヘッダーの右側に押しつぶされて「戻る」が縦2文字（縦書き風）になる問題を解消。🛒 ショップの所持数バッジ（前称号／後称号／フレーム／アバター）を `renderShop()` の冒頭で全て更新するようにし、タブをタップするまで「1/◯◯」の古い分子が残る不具合を修正。あわせて HTML 初期値の分母を実際の点数（86／84／27／15）に修正。`APP_VER=leap-v32-mobile-shop-fix` / `CACHE=leap-v53`。|
 | 2026-11-26 | 🏫 Phase 3（模試の振り返り）⑧: ホームに **次回模試バナー** を追加（`#home-mock-banner` / `mockRenderHomeBanner`）。開催中は「受験受付中・終了まで」、開催前は「次回の模試・開始まで」を表示し、タップで模試画面へ遷移する。候補は取得済みスケジュール→起動時の公開 RPC（`mockRefreshHomeBanner`）→リマインド設定の順で探し、60秒ごとに残り時間を更新する（練習模試は対象外）。`APP_VER=leap-v31-mock-home` / `CACHE=leap-v52`。|
 | 2026-11-26 | 🎯 Phase 3（模試の振り返り）⑦: 志望校判定に **合格圏ギャップ** を追加。各志望校カードで tier 別の A 基準偏差値と現在の偏差値の差を「合格圏（A）まで あと偏差値 X」と表示する（`mockJudgeGap`、到達済みは「到達しています」）。`APP_VER=leap-v30-mock-gap` / `CACHE=leap-v51`。|
 | 2026-11-26 | 📈 Phase 3（模試の振り返り）⑥: 模試の **成績履歴と推移** を追加。提出・端末保存のたびに `LEAP_MOCK_HISTORY_V1` へ `{ examId, title, subject, date, score, total, accuracy, deviation, elapsed_sec, is_late, offline }` を記録し（`mockRecordHistory`、同じ模試は最新1件・最大20件）、成績表に直近8件の正答率バー・自己ベスト・直近6件の一覧を表示する（`mockRenderHistoryCard`）。既存の成績表を開いたときは履歴が無ければ遡って記録する（`mockBackfillHistory`）。`APP_VER=leap-v29-mock-history` / `CACHE=leap-v50`。|

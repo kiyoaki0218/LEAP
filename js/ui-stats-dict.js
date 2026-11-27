@@ -1282,17 +1282,23 @@
       const newTitles = syncEarnedTitles();
       if (newTitles.length) saveUserData();
 
-      const preOwned = document.getElementById("prefix-owned-count");
-      const sufOwned = document.getElementById("suffix-owned-count");
-      if (preOwned) preOwned.textContent = `${userData.purchasedPrefixes.length}/${PREFIX_TITLES.length}`;
-      if (sufOwned) sufOwned.textContent = `${userData.purchasedSuffixes.length}/${SUFFIX_TITLES.length}`;
+      // タブを開いたときだけでなく、ショップを表示した時点で全タブの分数を最新化する
+      // （HTML の初期値のままタブをタップするまで古い分子が残る不具合の修正）
+      const newAvatars = syncOwnedAvatars();
+      if (newAvatars.length) saveUserData();
+      const ownedCounts = {
+        "prefix-owned-count": `${userData.purchasedPrefixes.length}/${PREFIX_TITLES.length}`,
+        "suffix-owned-count": `${userData.purchasedSuffixes.length}/${SUFFIX_TITLES.length}`,
+        "frame-owned-count": `${userData.ownedFrames.length}/${FRAME_ITEMS.length}`,
+        "avatar-owned-count": `${userData.ownedAvatars.length}/${AVATAR_ITEMS.length}`
+      };
+      Object.keys(ownedCounts).forEach((id) => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = ownedCounts[id];
+      });
 
       // アバターの絵柄一覧（レベル・実績で解放）
       if (currentShopTab === "avatar") {
-        syncOwnedAvatars();
-        const ownedCount = document.getElementById("avatar-owned-count");
-        if (ownedCount) ownedCount.textContent = `${userData.ownedAvatars.length}/${AVATAR_ITEMS.length}`;
-
         AVATAR_ITEMS.forEach(item => {
           const unlocked = isAvatarUnlocked(item);
           const isEquipped = userData.equippedAvatar === item.id;
@@ -1334,9 +1340,6 @@
 
       // アバターフレーム一覧（価格昇順で正しくソートして表示）
       if (currentShopTab === "frame") {
-        const frameOwned = document.getElementById("frame-owned-count");
-        if (frameOwned) frameOwned.textContent = `${userData.ownedFrames.length}/${FRAME_ITEMS.length}`;
-
         const sortedFrames = [...FRAME_ITEMS].sort((a, b) => a.price - b.price);
         sortedFrames.forEach(frame => {
           const isOwned = userData.ownedFrames.includes(frame.id);
