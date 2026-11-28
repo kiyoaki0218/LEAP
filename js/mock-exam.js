@@ -1149,6 +1149,7 @@
           lastReviewed: today,
           source: "mock"
         };
+        if (userData.graduatedWords) delete userData.graduatedWords[w.id];
       });
       saveUserData();
       cloudPushSoon("quiz");

@@ -11,7 +11,7 @@
     <script>
     // キャッシュ強制更新ロジック: 新バージョン検知時に古いServiceWorkerキャッシュを破棄
     (function() {
-      const APP_VER = "leap-v42-resume-guard";
+      const APP_VER = "leap-v43-cloud-weak-merge";
       try {
         const storedVer = localStorage.getItem("LEAP_APP_CACHE_VER");
         if (storedVer !== APP_VER) {
@@ -1823,6 +1823,7 @@
   <!-- アプリ基盤（称号・アイテムのマスタ、ゾーン、画面遷移）。インライン JS より先に読み込む -->
   <script src="./js/core.js"></script>
   <script src="./js/mock-exam.js"></script>
+  <script src="./js/cloud-merge.js"></script>
   <script src="./js/cloud-sync.js"></script>
   <script src="./js/quiz-resume.js"></script>
   <script src="./js/quiz-engine.js"></script>
@@ -1838,7 +1839,8 @@
       suffix: "ビギナー",
       purchasedPrefixes: ["pre_init"],
       purchasedSuffixes: ["suf_beginner"],
-      weakWords: {}, // { id: { id, word, meaning, count } }
+      weakWords: {}, // { id: { id, word, meaning, count, stage, nextReview, lastReviewed, source } }
+      graduatedWords: {}, // { [wordId]: "YYYY-MM-DD" } 難点克服（リスト卒業）した日。クラウド統合で復活させないため
       scoreHistory: [], // 最近5回のスコア履歴
       sharedResults: [], // フレンドに共有した結果（最大20件）
       examHistory: [], // 到達度テストの結果（最大20件）
@@ -1963,6 +1965,7 @@
       if (typeof userData.maxComboEver !== "number") userData.maxComboEver = 0;
       if (typeof userData.dictOpened !== "boolean") userData.dictOpened = false;
       if (!userData.wordStats || typeof userData.wordStats !== "object") userData.wordStats = {};
+      if (!userData.graduatedWords || typeof userData.graduatedWords !== "object") userData.graduatedWords = {};
       // weakWords の忘却曲線マイグレーション（stage, nextReview がなければ補完）
       if (userData.weakWords && typeof userData.weakWords === "object") {
         const todayStr = getTodayString();

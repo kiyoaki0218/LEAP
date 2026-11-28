@@ -22,7 +22,7 @@
 - **収録**: 英単語 2,300 語（Part 1〜5）／例文・単語詳細 2,300 語分・例文クイズ 2,000 語分／参考資料 5 章／接辞 32 グループ・132 語根／古文単語 150 語（2 章）・古文詳細 150 語分（例文 354 件）。
 - **主な遊び**: 通常4択・例文穴埋め・リスニング4択・スペル入力・60秒スプリント・サドンデス、到達度テスト（50問・25分・S〜D判定）、**全国一斉模試（日時指定の時間割制・ハイブリッド偏差値・志望校判定）**、デイリーチャレンジ、忘却曲線の苦手復習、学習カレンダー/Part別マスター率の振り返り、コイン/EXP/レベル、称号・フレーム・アバター、実績 115 種（進捗バー・「あと少しで解除」付き）、共有URL（挑戦状）、任意ログインによるクラウド同期・相互フレンドの詳細ステータス閲覧。運営向けに **お知らせ**（ホーム表示）と **意見箱**（匿名可）、管理者用の `admin.html`（模試管理・新規模試作成・過去成績集約・お知らせ CRUD・意見トリアージ）を持つ。
 - **ホスティング**: 静的ホスティング（Vercel 想定。`vercel.json` なし、`.vercel/` は gitignore）。
-- **主要ファイル**: `index.html`（アプリ本体）、`js/core.js`（称号・ゾーン・画面遷移の基盤）、`js/mock-exam.js`（全国一斉模試）、`js/cloud-sync.js`（Supabase 認証・クラウド同期・フレンド）、`js/quiz-engine.js`（出題エンジン・到達度テスト・タイマー）、`js/quiz-resume.js`（つづきからの保存データ）、`tests/resume.test.js`（その単体テスト）、`js/ui-stats-dict.js`（辞典・単語詳細・参考資料・実績・ショップ）、`assets/css/app.css`（アプリ固有 CSS）、`admin.html` ＋ `js/admin.js`（管理者ダッシュボード）、`supabase_config.js`（Supabase 公開設定の共有）、`words_data.js`、`examples_data.js`、`reference_data.js`、`affix_data.js`、`mock_schools_data.js`（模試の志望校マスタ）、`kobun/kobun_words_data.js`、`kobun/kobun_details_data.js`、`sw.js`、`manifest.json`、`supabase/schema.sql`（DB/RLS・模試集計RPC・意見箱RPC）、`supabase/admin_roles.sql`（管理者の一覧・付与・解除RPC）、`supabase/migration_mock_public.sql`（模試の公開スケジュールRPC）、`LEAP単語データ/`・`古文単語データ/`（元データ）、`patches/`（データ生成・一括改修スクリプト）。
+- **主要ファイル**: `index.html`（アプリ本体）、`js/core.js`（称号・ゾーン・画面遷移の基盤）、`js/mock-exam.js`（全国一斉模試）、`js/cloud-sync.js`（Supabase 認証・クラウド同期・フレンド）、`js/quiz-engine.js`（出題エンジン・到達度テスト・タイマー）、`js/quiz-resume.js`（つづきからの保存データ）、`js/cloud-merge.js`（苦手単語・克服記録のクラウド統合）、`tests/`（`resume` / `cloud-merge` の単体テスト）、`js/ui-stats-dict.js`（辞典・単語詳細・参考資料・実績・ショップ）、`assets/css/app.css`（アプリ固有 CSS）、`admin.html` ＋ `js/admin.js`（管理者ダッシュボード）、`supabase_config.js`（Supabase 公開設定の共有）、`words_data.js`、`examples_data.js`、`reference_data.js`、`affix_data.js`、`mock_schools_data.js`（模試の志望校マスタ）、`kobun/kobun_words_data.js`、`kobun/kobun_details_data.js`、`sw.js`、`manifest.json`、`supabase/schema.sql`（DB/RLS・模試集計RPC・意見箱RPC）、`supabase/admin_roles.sql`（管理者の一覧・付与・解除RPC）、`supabase/migration_mock_public.sql`（模試の公開スケジュールRPC）、`LEAP単語データ/`・`古文単語データ/`（元データ）、`patches/`（データ生成・一括改修スクリプト）。
 
 ---
 
@@ -359,6 +359,7 @@ expRequiredForLevel(level) = 100 + (level - 1) * 50
 - 不正解時（`registerWrongAnswer`）: `weakWords[id]` に登録 or リセット。`stage=1`、`nextReview=翌日`。あわせて `source` に直近の誤答元（`quiz` / `mock` / `exam` / `review` / `daily`）を記録し、苦手単語データ帳に「クイズ」「模試」「到達度テスト」などのバッジで表示する（`weakSourceLabel`）。
 - 正解して復習を進めると（`stage` アップ）次回間隔: **1日 → 3日 → 7日 → 14日**（`FORGETTING_STAGES`、最大ステージ4）。
 - 「本日復習」対象 = `nextReview <= 今日` の苦手単語。
+- **克服（ステージ4クリア）** すると `weakWords[id]` を削除し、`graduatedWords[id] = 今日` を記録する。この記録がないと、クラウド統合で他端末の古い `weakWords` から復活してしまう。間違え直すと `graduatedWords[id]` は削除される。
 - ホームの苦手バナーから「特訓する」（`startWeakWordsQuiz`）または「一覧」（モーダルで個別削除・ゾーン単位リセット）。
 - 復習は**通常モード・通常4択固定**。完了で `reviewClears` 加算。
 
@@ -640,13 +641,16 @@ window.LEAP_SUPABASE_CONFIG = { url: "https://xxxx.supabase.co", anonKey: "sb_pu
 
 自動同期のタイミング: クイズ完走（`cloudPushSoon("quiz")`）、ショップ購入（`"shop"`）、装備変更（`"equip"`）、表示名・公開範囲の変更、手動「今すぐ同期」。1問ごとの保存では同期しない。
 
+**書き込み前マージ**: `cloudPush()` は保存の直前にクラウドの `client_updated_at` を確認し、他端末が後から更新していれば**先に取り込んで統合**してから書き込む（`mergeNewerCloudIntoLocal`）。これがないと、別端末で進めた復習を古いローカルデータで上書きしてしまう。
+
 ### 12.3 統合（マージ）ルール
 
 | 項目 | 扱い |
 |---|---|
 | `coins` / `exp` / 各種回数・`streak` | 大きい方 |
 | `wordStats` | 単語ごとに「出題回数が多い方」、同数なら正解数が多い方 |
-| `weakWords` | 和集合。同じ単語はミス回数が多い方、`nextReview` は早い方。`source` はミス回数が多い方の値（未設定は `quiz`） |
+| `weakWords` | 和集合。同じ単語は **`lastReviewed` が新しい方**を正とし、同日なら `stage` が高い方 → `nextReview` が遅い方。ミス回数（`count`）は多い方を残す（`LeapCloudMerge.mergeWeakWord`）。※以前は `nextReview` が早い方を採用していたため、復習を進めた端末の結果が他端末の古いデータで巻き戻っていた |
+| `graduatedWords` | 単語ごとに克服日の**遅い方**（max）を採用。克服日 ≥ `lastReviewed` の単語は `weakWords` に復活させない（克服後に間違え直していれば苦手に戻す） |
 | `scoreHistory` | 結合して重複除去し、先頭 5 件 |
 | `examHistory` | 結合して（subject・範囲・日付・正解数・出題数）で重複除去し、先頭 20 件 |
 | `dailyLog` | 日付ごとに大きい方（max）を採用 |
@@ -853,6 +857,7 @@ window.LEAP_SUPABASE_CONFIG = { url: "https://xxxx.supabase.co", anonKey: "sb_pu
 ├── js/
 │   ├── core.js               アプリ基盤（称号・アイテムのマスタ、ゾーン、画面遷移、確認ダイアログ、escapeHtml）
 │   ├── mock-exam.js          全国一斉模試（スケジュール・エントリー・受験・成績表・共有リンク・端末内保存）
+│   ├── cloud-merge.js        苦手単語・克服記録のマージ規則（DOM 非依存）
 │   ├── cloud-sync.js         Supabase 認証・クラウド同期・フレンド・共有・お知らせ／意見箱（クライアント側）
 │   ├── quiz-resume.js        「つづきから」の保存データ（形式・検証・上書き可否）を扱う DOM 非依存モジュール
 │   ├── quiz-engine.js        出題エンジン（範囲・Part選択、クイズ本体、採点、タイマー、到達度テスト、デイリーチャレンジ、忘却曲線、学習記録の集計）
@@ -873,7 +878,8 @@ window.LEAP_SUPABASE_CONFIG = { url: "https://xxxx.supabase.co", anonKey: "sb_pu
 │   ├── kobun_config.js        未使用の設定足場（enabled=false）
 │   └── kobun_loader.js        未使用の統合ヘルパー（window.KOBUN）
 ├── tests/
-│   └── resume.test.js        「つづきから」の保存・検証・上書き可否の単体テスト（node tests/resume.test.js）
+│   ├── resume.test.js        「つづきから」の保存・検証・上書き可否の単体テスト
+│   └── cloud-merge.test.js   苦手単語・克服記録のクラウド統合の単体テスト
 ├── docs/
 │   ├── 古文単語330_追加構想.md  古文5章330語の設計・実装手順メモ
 │   ├── SUPABASE_SETUP.md      Supabase / Google / LINE ログインの詳細設定手順
@@ -922,8 +928,9 @@ python3 -m http.server 8000        # または任意の静的サーバー
 # データ再生成（元テキストを変えた場合）
 node patches/build_leap_data.js
 
-# 再開（つづきから）ロジックの単体テスト（依存パッケージなし）
-node tests/resume.test.js
+# ロジックの単体テスト（依存パッケージなし）
+node tests/resume.test.js       # つづきからの保存・上書き可否
+node tests/cloud-merge.test.js  # 苦手単語・克服記録のクラウド統合
 ```
 
 - 動作確認の観点: ホーム表示 → 範囲選択 → クイズ → 結果 → 辞典 → ショップ → 実績 → ダークモード → リロード後も進捗保持 → オフライン再訪。
@@ -977,6 +984,7 @@ node tests/resume.test.js
 
 | 日付 | 変更内容 |
 |---|---|
+| 2026-11-28 | ☁️ 忘却曲線（苦手単語）のクラウド同期を修正。①統合ルールが `nextReview` の**早い方**を採用していたため、スマホで復習を進めても PC 側の古いデータとのマージで期日が巻き戻り、「本日復習」が消えなかった。**`lastReviewed` が新しい方を正**とするルールに変更（同日なら stage → nextReview の遅い方、`count` は多い方）。②ステージ4クリアで苦手から削除すると他端末の古いデータから復活していたため、`graduatedWords`（克服日の記録）を追加。③`cloudPush()` が書き込み前にクラウドの更新を確認し、**他端末が新しければ先に取り込んで統合**するようにした（古いローカルで上書きしない）。マージ規則は `js/cloud-merge.js` に切り出し、`tests/cloud-merge.test.js`（10ケース）を追加。`APP_VER=leap-v43-cloud-weak-merge` / `CACHE=leap-v65`。|
 | 2026-11-28 | ⏯ 「つづきから」の保存の取り扱いを修正。①以前は**新しいクイズを開始した瞬間に保存を削除**しており、別の範囲を試しただけで前回の続きが黙って消えていた。これをやめ、**上書きは2問目以降に進んだときだけ**（`LeapQuizResume.canOverwrite`）にした。②完走／中断時も**そのクイズの保存だけ**を消すようにし（`clearResumeStateIfCurrent` / `matchesQuiz`）、1問だけの別クイズをやっても別の「つづき」が消えないようにした。③保存形式・検証を `js/quiz-resume.js` に切り出し、**依存なしで回せる単体テスト `tests/resume.test.js`（10ケース）**を追加。`APP_VER=leap-v42-resume-guard` / `CACHE=leap-v64`。|
 | 2026-11-28 | 🎧 発音記号（IPA）の抜き取り校閲。①元テキスト `604_702.txt` は 615=obey / 616=resist なのに `words.json` と `words_data.js` が逆順だったため、resist の下に **obey の発音記号 `[oubéi]`** が表示されていた。番号を書籍どおり 615=obey（`[oubéi]`）/ 616=resist（`[rizíst]`）に修正（`words_data.js` / `LEAP単語データ/words.json`、`examples_data.js` の詳細は変更なしで整合）。②例文データに混入していた数学記号 **`∫`（積分記号）を `ʃ` に**（31箇所）、ギリシャ文字の混入 3 件（`conservation` / `veterinarian` / `scenario` の `έ`・`ὰ`）を修正。長音記号のゆれ（半角 `:`）を本来の **`ː`** に統一（111箇所。元テキストは 118 箇所）。③全 2,300 語の発音記号を綴り・辞書発音（CMUdict）と機械照合し、子音骨格の食い違い・重複・欠損が上記以外に無いことを確認。`APP_VER=leap-v41-ipa-proofread` / `CACHE=leap-v63`。|
 | 2026-11-28 | 🧩 小粒な改善をまとめて導入。①スペル・リスニングに出題語の**文字数ヒント**（`quiz-spelling-length` / `quiz-listening-length`）。②**中断したクイズの再開**（`LEAP_QUIZ_RESUME_V1`、ホームのつづきからバナー、`resumeQuiz` / `discardResumeQuiz`）。③ホームに**今日の目標リング**（20問／日、`dailyLog` 連動、達成トースト）。④正誤の**効果音・バイブ**（`LEAP_FEEDBACK_V1`、設定でON/OFF）。⑤結果画面に**「🔥 間違えた単語だけ復習」**ボタン（`reviewResultMistakes`、誤答が無いときは非表示）。⑥**PWA更新バナー**（勝手にリロードせず「更新する」で再読み込み）。⑦ホームに**前回の到達度テストカード**（判定・正答率・もう一度）。⑧辞典に**頭文字ジャンプ**（A–Z／あ〜わ）。⑨`examples_data.js`（2MB超）を **defer 読み込み**にして初回描画をブロックしないようにし、参照側は `builtinExamples()` / `LEAP_EXAMPLES_READY` で追従。`APP_VER=leap-v40-polish-batch` / `CACHE=leap-v62`。|

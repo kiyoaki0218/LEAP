@@ -274,19 +274,11 @@
       });
       merged.wordStats = wordStats;
 
-      const aw = a.weakWords || {}, bw = b.weakWords || {};
-      const weakWords = {};
-      new Set([...Object.keys(aw), ...Object.keys(bw)]).forEach((id) => {
-        const x = aw[id], y = bw[id];
-        if (!x) { weakWords[id] = y; return; }
-        if (!y) { weakWords[id] = x; return; }
-        const pick = cloudNum(y.count) > cloudNum(x.count) ? y : x;
-        weakWords[id] = Object.assign({}, pick, {
-          nextReview: String(x.nextReview || "") < String(y.nextReview || "") ? x.nextReview : y.nextReview,
-          source: (pick && pick.source) || "quiz"
-        });
-      });
-      merged.weakWords = weakWords;
+      // 苦手単語（忘却曲線）は「後から復習した方」を正とする。以前は nextReview が早い方を
+      // 採用していたため、復習を進めた端末の結果が別端末の古いデータで巻き戻っていた。
+      const weakMerged = LeapCloudMerge.mergeWeak(a, b);
+      merged.weakWords = weakMerged.weakWords;
+      merged.graduatedWords = weakMerged.graduatedWords;
 
       const al = a.dailyLog || {}, bl = b.dailyLog || {};
       const dailyLog = {};
@@ -340,8 +332,7 @@
       return { userData: merged, achievements };
     }
 
-    function applyMergedProgress(row) {
-      const merged = mergeProgressData(userData, row.user_data, unlockedAchievements, row.achievements);
+    function applyMergedData(merged, options) {
       try {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(merged.userData));
         unlockedAchievements = merged.achievements;
@@ -350,10 +341,32 @@
         sanitizeAchievements();
         updateUserUI();
         updateAchievementCount();
-        cloudState.shareDetailedLogs = row.share_detailed_logs !== false;
-        persistShareFlag();
-        showToast("🔀 端末とクラウドの学習データを統合しました");
+        if (!(options && options.silent)) showToast("🔀 端末とクラウドの学習データを統合しました");
       } catch (e) { console.warn("[cloud] merge", e); }
+    }
+
+    function applyMergedProgress(row) {
+      const merged = mergeProgressData(userData, row.user_data, unlockedAchievements, row.achievements);
+      applyMergedData(merged);
+      cloudState.shareDetailedLogs = row.share_detailed_logs !== false;
+      persistShareFlag();
+    }
+
+    // 他端末の更新を消さないよう、書き込み前にクラウドが新しければ取り込んで統合する
+    async function mergeNewerCloudIntoLocal(uid) {
+      try {
+        const meta = readCloudMeta();
+        const row = await cloudFetchProgress(uid);
+        if (!row || !row.user_data) return false;
+        const pushedByThisDevice = !!(meta.userId === uid && meta.lastPushedAt && sameCloudInstant(meta.lastPushedAt, row.client_updated_at));
+        if (pushedByThisDevice) return false;
+        const merged = mergeProgressData(userData, row.user_data, unlockedAchievements, row.achievements);
+        applyMergedData(merged, { silent: true });
+        return true;
+      } catch (e) {
+        console.warn("[cloud] pre-push merge", e);
+        return false;
+      }
     }
 
     async function cloudPush(reason) {
@@ -365,6 +378,8 @@
       const uid = cloudState.user.id;
       const clientUpdatedAt = new Date().toISOString();
       try {
+        // 別端末で進めた復習を上書きしない（クラウドが新しければ先に統合する）
+        await mergeNewerCloudIntoLocal(uid);
         const quick = buildCloudQuickStats(userData, unlockedAchievements);
         const code = (cloudState.profile && cloudState.profile.friend_code) || generateFriendCode();
         // トリガー未実行などでプロフィール行が無い場合でも落ちないよう upsert する

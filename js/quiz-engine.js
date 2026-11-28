@@ -1964,6 +1964,8 @@
         existing.lastReviewed = today;
         existing.source = weakSource;
       }
+      // 一度克服（苦手リストから卒業）した単語を間違えたら、克服記録を取り消す
+      if (userData.graduatedWords) delete userData.graduatedWords[q.word.id];
       saveUserData();
     }
 
@@ -2065,7 +2067,10 @@
 
           if (currStage >= 4) {
             // ステージ4完了 = 完全に定着したため克服マスターとしてリストから卒業！
+            // 卒業した事実を残しておかないと、クラウド統合で他端末の古いデータから復活してしまう
             delete userData.weakWords[q.word.id];
+            if (!userData.graduatedWords) userData.graduatedWords = {};
+            userData.graduatedWords[q.word.id] = today;
           } else {
             // 次のステージへ進め、忘却曲線に応じた次回期日を設定
             item.stage = currStage + 1;
