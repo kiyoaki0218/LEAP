@@ -439,12 +439,13 @@ expRequiredForLevel(level) = 100 + (level - 1) * 50
 
 志望校を主軸に、試験日から逆算した学習計画を出す。ログイン不要・端末内で完結する。
 
-- **保存**: `userData.roadmap = { label, tier, targetDeviation, examDate, startDate, createdAt, updatedAt }`（クラウド同期対象）。志望校は `MOCK_FACULTIES` の候補から選ぶと tier が入る（自由入力も可。その場合は tier 3）。
-- **逆算**（`LeapRoadmapPlan.computePlan`、DOM 非依存・`tests/roadmap.test.js` で検証）: `remaining = 総語数 − 習得語数`、`wordsPerDay = ceil(remaining / 残り日数)`。習得は `wordStats[id].total > 0` で判定し、Part ごとの `done` を出す。
+- **保存**: `userData.roadmap = { label, tier, grade, examType, targetDeviation, examDate, startDate, createdAt, updatedAt }`（クラウド同期対象）。`grade` は `k1` / `k2` / `k3` / `ronin`、`examType` は `private`（私大一般 2/1）/ `national`（国公立2次 2/25）。志望校は `MOCK_FACULTIES` の候補から選ぶと tier が入る（自由入力も可。その場合は tier 3）。
+- **逆算**（`LeapRoadmapPlan.computePlan`、DOM 非依存・`tests/roadmap.test.js` で検証）: `remaining = 総語数 − マスター語数`、`wordsPerDay = ceil(remaining / 残り日数)`。**マスター＝3回以上正解かつ正答率90%以上**（`getWordStatus(id) === "mastered"` と同じ。`getWordStatus` が無い環境では同じ条件を直接計算）。一度解いただけの単語は残り語数に含める。Part ごとの `done` もマスター数。
+- **試験日の初期値**: 学年と入試区分から `LeapRoadmapPlan.defaultExamDate(grade, examType, today)` で求める（学年の基準は4月始まり。高3→翌年2月、高2→2年後、高1→3年後、既卒→直近の2月。3月以降の既卒は翌年）。日付入力は自由に上書きでき、上書きした値がそのまま保存される。
 - **Part ごとの期限**: Part 順に残り語数を累積し、残り日数を按分して「Part n は YYYY-MM-DD まで」を出す（完了済み Part は「完了」）。最終 Part の期限は試験日。
 - **予定線との差**: `expectedDone = 総語数 × 経過日数 / (経過日数 + 残り日数)` と比較し、`ahead` / `ontrack` / `behind` と遅れ日数を表示。試験日を過ぎていれば `overdue`。
-- **ホーム常設カード**（`#home-roadmap-card`）: 志望校・試験日・今日のノルマ（新規＋復習）・習得率バー・予定との差を表示。未設定なら「計画を作る」ボタン。今日の目標リングもこのノルマに連動する。
-- **専用画面**: 志望校（datalist 候補）・試験日・目標偏差値の入力、保存／解除、逆算プラン（残り日数・1日の新規語数・残り語数・Part 別マイルストーン）。模試成績表の「志望校判定（ロードマップ）」からも開ける。
+- **ホーム常設カード**（`#home-roadmap-card`）: 志望校・試験日・今日のノルマ（新規＋復習）・マスター率バー・予定との差を表示。未設定なら「計画を作る」ボタン。今日の目標リングもこのノルマに連動する。
+- **専用画面**: 学年・入試区分（選ぶと試験日を自動設定、個別編集可）・志望校・目標偏差値の入力、保存／解除、逆算プラン（残り日数・1日の新規語数・残り語数・Part 別マイルストーン）。志望校は入力に合わせて候補を絞り込む**タップ選択リスト**（`#roadmap-school-results`、最大40件・難易度ラベル付き、`filterRoadmapSchools()`）で選び、一覧に無い場合はそのまま入力して自由登録できる。模試成績表の「志望校判定（ロードマップ）」からも開ける。
 
 ### 4.15 アップデート情報（`updates-modal`）
 
@@ -1013,6 +1014,7 @@ node tests/cloud-merge.test.js  # 苦手単語・克服記録のクラウド統�
 
 | 日付 | 変更内容 |
 |---|---|
+| 2026-11-28 | 🎯 志望校ロードマップの設定を作り直し。①**志望校選択**: datalist をやめ、入力に合わせて絞り込むタップ選択リスト（最大40件・難易度ラベル付き）に変更。一覧に無い場合はそのまま入力で自由登録。②**試験日**: 学年（高1/高2/高3/既卒）と入試区分（私大一般 2/1・国公立2次 2/25）を選ぶと一般的な試験日を自動設定（`LeapRoadmapPlan.defaultExamDate`）。日付は個別に上書きでき、`grade` / `examType` も `userData.roadmap` に保存。③**逆算プラン**: 差し引く対象を「学習済み」から**マスター済み**（3回以上正解かつ正答率90%以上＝`getWordStatus`）に変更し、1日の新規語数・Part期限・進捗バー・ホームカードの表示もマスター基準に統一。④単体テストに試験日算出のケースを追加（`tests/roadmap.test.js` 11件）。`APP_VER=leap-v49-roadmap-ux` / `CACHE=leap-v72`。|
 | 2026-11-28 | 📐 ホームの準メニューを3列のコンパクトタイルに集約。前回追加したショップ・実績を含む6項目（到達度テスト・全国模試・学習記録・語源ラッシュ・ショップ・実績）を `grid-cols-3` の低いタイル（アイコン＋ラベル＋9pxの補足）に変更し、2列カード3段→3列2段にしてホームの縦の長さを削減した（補足の文言は維持しつつ、320px 幅で溢れる文言は短縮）。見出しも実態に合わせて「もっと学ぶ」→「メニュー」に変更。タイルの見た目は `assets/css/app.css` の `.menu-tile`（`--icon` / `--label` / `--sub` / `--shop` / `--row`、ダークモード対応）に集約し、HTML 側はクラス 1 つで書けるようにした。`APP_VER=leap-v48-home-compact` / `CACHE=leap-v71`。|
 | 2026-11-28 | 🏠 準メニュー（ショップ等）を上層に移動。①「📚 ほかのメニュー」の折りたたみを廃止し、`#home-more-menu` として常時表示に変更。到達度テスト・全国一斉模試・学習記録・語源ラッシュに加えて、**ショップ**と**実績**を2列カードで追加した。②ヘッダーのコイン表示をボタン化（`#header-coins-btn`）し、タップで `screen-shop` を開けるようにした（PC幅では「ショップ」ラベル付き）。③設定シート内のショップ導線は残す。`APP_VER=leap-v47-home-menu` / `CACHE=leap-v69`。|
 | 2026-11-28 | 📣 アップデート情報の閲覧と、管理者向けの未対応意見通知を追加。①`updates_data.js`（`LEAP_UPDATES`）に**利用者向け**の更新履歴を持たせ、ホーム下部・設定から開ける `updates-modal` で表示（タグ・version・日付・箇条書き。先頭に「最新」）。未読は `LEAP_UPDATES_SEEN_V1` と比較して NEW バッジを出す。②ホームに `#home-admin-feedback` を追加し、ログイン中の管理者に限り `feedback` の未対応（`new`/`reading`）件数を表示。`feedback` の SELECT は `is_admin()` の RLS しか通らないため、**非管理者は 0 件で非表示**（専用RPC・スキーマ変更なし）。ログイン/同期時とホーム表示時に更新し、「開く」で `admin.html#feedback` の意見箱タブを直接開く（`applyHashTab`）。`APP_VER=leap-v46-updates-admin-notice` / `CACHE=leap-v68`。|

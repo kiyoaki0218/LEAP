@@ -85,7 +85,7 @@ test("予定線より進んでいれば ahead", () => {
   assert.ok(plan.diff > 0);
 });
 
-test("全範囲習得済みなら 0 語/日・progress 1", () => {
+test("全範囲マスター済みなら 0 語/日・progress 1", () => {
   const plan = P.computePlan({
     today: "2026-12-01", examDate: "2026-12-31", startDate: "2026-12-01",
     parts: [{ part: 1, label: "Part 1", total: 100, done: 100 }]
@@ -102,6 +102,22 @@ test("試験日を過ぎていたら overdue", () => {
   });
   assert.strictEqual(plan.daysLeft, 0);
   assert.strictEqual(plan.overdue, true);
+});
+
+test("学年と入試区分から試験日の初期値を出す", () => {
+  // 2026-11-28 時点: 高3 は 2027年入試、高2 は 2028年、高1 は 2029年
+  assert.strictEqual(P.defaultExamDate("k3", "private", "2026-11-28"), "2027-02-01");
+  assert.strictEqual(P.defaultExamDate("k3", "national", "2026-11-28"), "2027-02-25");
+  assert.strictEqual(P.defaultExamDate("k2", "private", "2026-11-28"), "2028-02-01");
+  assert.strictEqual(P.defaultExamDate("k1", "national", "2026-11-28"), "2029-02-25");
+  assert.strictEqual(P.defaultExamDate("ronin", "private", "2026-11-28"), "2027-02-01");
+  // 2月を過ぎた既卒は翌年の入試を見る
+  assert.strictEqual(P.defaultExamDate("ronin", "national", "2027-03-01"), "2028-02-25");
+  // 4月以降は新しい学年として数える
+  assert.strictEqual(P.defaultExamDate("k3", "private", "2027-04-01"), "2028-02-01");
+  assert.strictEqual(P.academicYearStart("2026-03-31"), 2025);
+  assert.strictEqual(P.academicYearStart("2026-04-01"), 2026);
+  assert.strictEqual(P.defaultExamDate("", "private", "2026-11-28"), "");
 });
 
 test("Part が空でも落ちない", () => {
