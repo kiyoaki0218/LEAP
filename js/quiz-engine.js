@@ -1797,6 +1797,12 @@
           }
           const submitBtn = document.getElementById("quiz-spelling-submit");
           if (submitBtn) submitBtn.disabled = false;
+          // 入力欄に自動フォーカスして、毎問の「入力欄タップ」を省く
+          // （rAF はタブが非表示だと発火しないので使わない）
+          if (typeof focusSpellingInput === "function") {
+            focusSpellingInput();
+            setTimeout(focusSpellingInput, 60);
+          }
         }
         if (isContext) {
           const sentenceEl = document.getElementById("quiz-context-sentence");

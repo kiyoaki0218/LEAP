@@ -1,4 +1,4 @@
-const CACHE = "leap-v60";
+const CACHE = "leap-v61";
 const ASSETS = [
   "./",
   "./index.html",

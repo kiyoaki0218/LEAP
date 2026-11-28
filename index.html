@@ -11,7 +11,7 @@
     <script>
     // キャッシュ強制更新ロジック: 新バージョン検知時に古いServiceWorkerキャッシュを破棄
     (function() {
-      const APP_VER = "leap-v38-achievements-guide";
+      const APP_VER = "leap-v39-spelling-autofocus";
       try {
         const storedVer = localStorage.getItem("LEAP_APP_CACHE_VER");
         if (storedVer !== APP_VER) {
@@ -511,17 +511,17 @@
           <p class="text-[11px] text-slate-400 leading-relaxed">タップでもう一度再生（音が出ないときは端末の音量・マナーモードを確認）</p>
         </div>
         <!-- スペル入力表示（見出し語を隠し、語義から英単語を入力させる） -->
-        <div id="quiz-spelling-box" class="hidden w-full space-y-3 py-1">
+        <div id="quiz-spelling-box" class="hidden w-full space-y-3 py-1" onclick="if(event.target.closest('button')===null){focusSpellingInput();}">
           <span class="text-[11px] font-bold text-indigo-700 bg-indigo-50 border border-indigo-200 px-2 py-0.5 rounded-full inline-block">🔤 語義に合う英単語を入力せよ</span>
           <div class="flex items-center justify-center gap-1.5 flex-wrap">
             <span id="quiz-spelling-pos" class="hidden"></span>
             <p id="quiz-spelling-meaning" class="text-lg sm:text-xl font-bold leading-relaxed text-slate-900"></p>
           </div>
           <div class="flex gap-2">
-            <input id="quiz-spelling-input" type="text" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="英単語を入力" onkeydown="if(event.key==='Enter'){event.preventDefault();submitSpellingAnswer();}" class="flex-1 min-w-0 px-3 py-3 bg-slate-50 border border-slate-200 rounded-xl text-base font-bold text-slate-900 placeholder:text-slate-300 placeholder:font-normal focus:outline-none focus:ring-2 focus:ring-indigo-300">
+            <input id="quiz-spelling-input" type="text" lang="en" inputmode="text" enterkeyhint="go" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="英単語を入力" onkeydown="if(event.key==='Enter'){event.preventDefault();submitSpellingAnswer();}" class="flex-1 min-w-0 px-3 py-3 bg-slate-50 border border-slate-200 rounded-xl text-base font-bold text-slate-900 placeholder:text-slate-300 placeholder:font-normal focus:outline-none focus:ring-2 focus:ring-indigo-300">
             <button type="button" id="quiz-spelling-submit" onclick="submitSpellingAnswer()" class="px-4 py-3 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl transition shrink-0 cursor-pointer">決定</button>
           </div>
-          <p class="text-[11px] text-slate-400">大文字・小文字は区別しません ・ Enter でも決定</p>
+          <p id="quiz-spelling-hint" class="text-[11px] text-slate-400 leading-snug">大文字・小文字は区別しません ・ Enter でも決定<br>スマホはキーボードを英字（ABC）に切り替えて入力してください</p>
         </div>
         <p id="quiz-answer-feedback" class="hidden w-full text-[11px] font-semibold text-slate-600 bg-slate-50 border border-slate-200 rounded-xl px-3 py-1.5 text-center leading-relaxed"></p>
       </div>
@@ -2303,6 +2303,15 @@
     }
 
     // スペル入力モード: 入力語を採点する（採点・報酬・記録は handleAnswer に委譲して4択と共通にする）
+    // ===== スペル入力の入力補助 =====
+    // 出題時に自動フォーカスして、毎問の「入力欄タップ」を省く。
+    function focusSpellingInput() {
+      const input = document.getElementById("quiz-spelling-input");
+      if (!input || input.disabled) return;
+      try { input.focus({ preventScroll: true }); }
+      catch (e) { try { input.focus(); } catch (e2) {} }
+    }
+
     function submitSpellingAnswer() {
       if (quizState.isAnswered) return;
       const q = quizState.questions && quizState.questions[quizState.currentIndex];
