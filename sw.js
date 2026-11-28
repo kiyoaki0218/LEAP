@@ -1,4 +1,4 @@
-const CACHE = "leap-v72";
+const CACHE = "leap-v76";
 const ASSETS = [
   "./",
   "./index.html",
@@ -7,6 +7,8 @@ const ASSETS = [
   "./js/mock-score.js",
   "./js/mock-exam.js",
   "./js/roadmap.js",
+  "./js/dict-book.js",
+  "./js/notification.js",
   "./js/cloud-merge.js",
   "./js/cloud-sync.js",
   "./js/quiz-resume.js",
@@ -101,6 +103,24 @@ self.addEventListener("fetch", (e) => {
         return networkRes;
       }).catch(() => cached);
       return cached || fetchPromise;
+    })
+  );
+});
+
+// 通知クリック時の挙動: 通知を閉じてアプリを開く/フォーカスする
+self.addEventListener("notificationclick", (e) => {
+  e.notification.close();
+  const targetUrl = (e.notification.data && e.notification.data.url) || "./";
+  e.waitUntil(
+    clients.matchAll({ type: "window", includeUncontrolled: true }).then((windowClients) => {
+      for (const client of windowClients) {
+        if (client.url && "focus" in client) {
+          return client.focus();
+        }
+      }
+      if (clients.openWindow) {
+        return clients.openWindow(targetUrl);
+      }
     })
   );
 });

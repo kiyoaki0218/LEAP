@@ -96,7 +96,7 @@
 | `screen-result` | 結果 | スコア、正答率、間違い一覧、共有・画像保存・再挑戦 |
 | `screen-shop` | ショップ | 前称号／後称号／フレーム／アバターの購入・装着 |
 | `screen-social` | ☁️ アカウント・同期 | Google ログイン、フレンドコード、申請一覧、公開範囲設定、手動同期 |
-| `screen-dictionary` | 単語辞典 | 検索・Part/ID範囲/学習状況フィルタ・ページ送り・単語詳細 |
+| `screen-dictionary` | 単語辞典 | 検索・Part/ID範囲/学習状況フィルタ・ページ送り・単語詳細・本誌ビュー（見開き） |
 | `screen-reference` | 参考資料 | 語源・接頭辞・接尾辞・発音・英作文の解説と確認クイズ |
 | `screen-affix` | 語源ラッシュ ハブ | ラッシュ／神経衰弱への入口、ベスト記録 |
 | `screen-affix-rush` | 語源ラッシュ | 60秒・接辞の4択ラッシュ |
@@ -471,6 +471,15 @@ expRequiredForLevel(level) = 100 + (level - 1) * 50
 - 古文の行は `num`（冊内番号）を表示し、読みが異なる場合は「読み：〜」を添える。
 - 古文の詳細シートは「古文情報」カードに **読み・見出し漢字・活用/品詞・重要度（★）・収録章・単語番号** を出し、語義（重要な語義は太字）・コアイメージ・解説/入試/関連・例文（原文＋訳＋出典＋補足、`【…】` をハイライト）を表示する。例文は 🔊 で `ja-JP` 読み上げ（LEAP の品詞・IPA・コラム欄は出さない）。
 
+### 5.1 本誌ビュー（`js/dict-book.js`）
+
+LEAP 本誌の見開きを再現して読み進めるビュー。
+
+- **開き方**: 辞典ヘッダーの「📖 本誌」（`openDictBook()`）、または単語詳細シートの「📖 本誌ビュー」（`openDictBookFromDetail()`、`currentDetailWord` の単語から開く）。
+- **紙面**: 見開き1組＝8語（左4語/右4語）。1語＝本誌の1エントリを3カラムで再現（左＝淡い青のパネルに番号・見出し語・IPA・品詞、中＝品詞の赤い小枠＋語義①〜（赤）・▸付きの頻出/派生メモ、右＝①②の例文と訳、`【…】` を赤太字）。各ページ上部に赤いリボンのセクション見出し、右ページ上部に `Active Vocabulary（基幹語）` の running head、左右ページの外側下にノンブル、右端に Part の縦タブ。データは `LEAP_WORD_DETAILS` の `ipa` / `senses` / `notes` / `examples` を使う。
+- **ページめくり**: `dictBookStep(±1)` で前後の見開きへ。ボタン／左右スワイプ（45px以上）／←→キー、Esc で閉じる。`flip-next` / `flip-prev` の CSS アニメーションで紙をめくる。
+- **レイアウト**: 768px 以上は2ページ見開き、未満は縦積み。本誌らしさを優先し、ダークモードでも紙面は明るいまま。古文単語は英語編の本誌対象外として除外する。
+
 ---
 
 ## 6. 語源ラッシュ／接辞神経衰弱
@@ -572,6 +581,21 @@ expRequiredForLevel(level) = 100 + (level - 1) * 50
 - **iPad で音が出ない場合の環境要因**: iPadOS のコントロールセンターのミュート（ソフトミュート）が ON だと、Safari の音声合成だけが無音になる（他の音は鳴ることがある）。音量・ミュート解除を確認する。iOS 26 系では特定の声・文字列で音声合成が停止する既知不具合もある（Safari 再起動で復帰）。
 - **明示操作の再生**: 🔊 ボタン（`speakWord(true)`・詳細シート・例文）は `voiceEnabled` が OFF でも鳴る。自動読み上げだけが設定に従う。
 
+### 10.1 学習リマインダー通知（Web Notification）
+
+ブラウザ標準の Web Notification API および Service Worker（`sw.js`）の `showNotification` / `notificationclick` を利用したプッシュ・ローカル通知機能（`js/notification.js`）。
+
+- **機能**:
+  - 設定画面（`#settings-modal`）内の「🔔 学習リマインダー通知」から通知設定モーダル（`#notification-modal`）を開いて管理。
+  - **通知権限の管理**: ブラウザの通知権限（`granted` / `default` / `denied`）を判定・リクエスト。ブロック時はブラウザ設定での解除案内を表示。
+  - **毎日の学習リマインダー**: 指定時刻（デフォルト `20:00`）に学習を促す通知を発行。1分ごとのタイマー判定で、同日内重複は `LEAP_NOTIF_LAST_DATE` で防止。
+  - **コンテキスト連動通知**: 忘却曲線の復習待ち単語がある場合は「🧠 忘却曲線の復習が X 語待っています！」、ストリーク継続中は「🔥 連続学習 X 日目！今日も続けよう」と文面を動的最適化。
+  - **動作確認テスト**: 「📢 テスト通知を送信」ボタンでその場で即座に通知動作を確認可能。
+  - **タップ時の挙動**: Service Worker の `notificationclick` リスナーで通知を閉じ、既存の LEAP タブをフォーカスまたは新規オープン。
+- **対応環境**:
+  - PC（Chrome / Edge / Firefox / Safari）、Android Chrome。
+  - iOS / iPadOS（iOS 16.4 以降）：Safari の共有から「ホーム画面に追加」した PWA として起動することで Web Push / Notification が利用可能。
+
 ---
 
 ## 11. 保存データ（localStorage）
@@ -611,6 +635,11 @@ expRequiredForLevel(level) = 100 + (level - 1) * 50
 | `LEAP_ANNOUNCEMENTS_SEEN_V1` | 既読にしたお知らせ ID の配列（最大100件。ホームの NEW バッジ用） |
 | `LEAP_FEEDBACK_DRAFT_V1` | 意見箱の下書き（`{ category, body, rating, contact }`） |
 | `LEAP_FEEDBACK_CLIENT_TOKEN_V1` | 意見箱のレート制限用クライアント UUID（端末ごとに生成） |
+| `LEAP_NOTIF_ENABLED` | リマインダー通知の有効・無効（`"true"` / `"false"`） |
+| `LEAP_NOTIF_TIME` | リマインダー通知の時刻（`"HH:MM"`、デフォルト `"20:00"`） |
+| `LEAP_NOTIF_REVIEW` | 復習待ち単語の通知（`"true"` / `"false"`） |
+| `LEAP_NOTIF_STREAK` | 連続記録（ストリーク維持）の通知（`"true"` / `"false"`） |
+| `LEAP_NOTIF_LAST_DATE` | 最後にリマインダー通知を発行した日付（`"YYYY-MM-DD"`、同日重複防止） |
 
 ### 11.2 `userData` の主なフィールド
 
@@ -889,11 +918,13 @@ window.LEAP_SUPABASE_CONFIG = { url: "https://xxxx.supabase.co", anonKey: "sb_pu
 │   ├── quiz-resume.js        「つづきから」の保存データ（形式・検証・上書き可否）を扱う DOM 非依存モジュール
 │   ├── quiz-engine.js        出題エンジン（範囲・Part選択、クイズ本体、採点、タイマー、到達度テスト、デイリーチャレンジ、忘却曲線、学習記録の集計）
 │   ├── ui-stats-dict.js      単語辞典・単語詳細・参考資料・実績・ショップの描画と操作
+│   ├── dict-book.js          単語辞典の本誌ビュー（見開き・ページめくり）
+│   ├── notification.js       学習リマインダー通知（Web Notification・定期チェック・権限管理）
 │   └── admin.js              管理画面のロジック（Auth・announcements・feedback）
 ├── assets/
 │   └── css/app.css            アプリ固有 CSS（旧 index.html 内の <style> ほか）
 ├── manifest.json              PWA マニフェスト
-├── sw.js                      Service Worker（キャッシュ leap-v68 / Network-First）
+├── sw.js                      Service Worker（キャッシュ leap-v76 / Network-First）
 ├── words_data.js              LEAP_WORDS_DATA（2,300語）
 ├── examples_data.js           LEAP_WORD_DETAILS（2,300語）+ LEAP_EXAMPLE_DATA（2,000語）
 ├── reference_data.js          LEAP_REFERENCE_DATA（5章）
@@ -1014,6 +1045,9 @@ node tests/cloud-merge.test.js  # 苦手単語・克服記録のクラウド統�
 
 | 日付 | 変更内容 |
 |---|---|
+| 2026-11-28 | 🔔 **学習リマインダー通知**（ブラウザ経由の Web Notification API / Service Worker `showNotification`）を追加（`js/notification.js`）。①設定モーダル（`#settings-modal`）に「🔔 学習リマインダー通知」を追加し、専用設定モーダル（`#notification-modal`）で通知権限の許可リクエスト、毎日の通知時刻（`<input type="time">`、初期値 `20:00`）、忘却曲線の復習対象通知・連続記録（ストリーク維持）通知の ON/OFF、即時テスト通知を操作可能にした。②アプリ起動中およびバックグラウンド時に定期チェックを行い、設定時刻に未学習かつ同日未通知（`LEAP_NOTIF_LAST_DATE`）であれば通知を発行。③Service Worker（`sw.js`）に `notificationclick` を追加し、通知タップ時にアプリへフォーカスまたは起動。④単体テスト `tests/notification.test.js`（6件）を追加。`APP_VER=leap-v53-notification-reminder` / `CACHE=leap-v76`。|
+| 2026-11-28 | 📖 単語辞典の**本誌ビューを見開きレイアウトに刷新**（`js/dict-book.js` 再設計）。LEAP本誌の見開きを忠実に再現：見開き1組＝左4語/右4語、1語＝本誌1エントリを3カラム（左＝淡い青のパネルに番号・見出し語・IPA・品詞、中＝品詞の赤い小枠＋語義①〜（赤）・▸付きメモ、右＝①②の例文と訳、`【…】` を赤太字）で表示。赤いリボンのセクション見出し・右ページの running head（`Active Vocabulary（基幹語）`）・外側下のノンブル・右端の Part 縦タブを追加。前後の見開きへ「ページをめくる」（ボタン／スワイプ／←→キー、`flip-next`/`flip-prev`）。768px未満は縦積み、ダークモードでも紙面は明るいまま。古文単語は対象外。`APP_VER=leap-v52-dict-book-spread` / `CACHE=leap-v75`。|
+| 2026-11-28 | 📖 単語辞典に**本誌ビュー**を追加（`js/dict-book.js`）。LEAP本誌の見開き風に、左ページへ見出し語・発音記号・語義・頻出/派生メモ、右ページへ例文と訳を表示し、前後の単語へ「ページをめくる」ように移動できる（ボタン／スワイプ／←→キー、`flip-next`/`flip-prev` の CSS アニメーション）。辞典ヘッダーの「📖 本誌」と単語詳細の「📖 本誌ビュー」から開く。768px未満は縦積み、ダークモードでも紙面は明るいまま。`APP_VER=leap-v50-dict-book` / `CACHE=leap-v73`。|
 | 2026-11-28 | 🎯 志望校ロードマップの設定を作り直し。①**志望校選択**: datalist をやめ、入力に合わせて絞り込むタップ選択リスト（最大40件・難易度ラベル付き）に変更。一覧に無い場合はそのまま入力で自由登録。②**試験日**: 学年（高1/高2/高3/既卒）と入試区分（私大一般 2/1・国公立2次 2/25）を選ぶと一般的な試験日を自動設定（`LeapRoadmapPlan.defaultExamDate`）。日付は個別に上書きでき、`grade` / `examType` も `userData.roadmap` に保存。③**逆算プラン**: 差し引く対象を「学習済み」から**マスター済み**（3回以上正解かつ正答率90%以上＝`getWordStatus`）に変更し、1日の新規語数・Part期限・進捗バー・ホームカードの表示もマスター基準に統一。④単体テストに試験日算出のケースを追加（`tests/roadmap.test.js` 11件）。`APP_VER=leap-v49-roadmap-ux` / `CACHE=leap-v72`。|
 | 2026-11-28 | 📐 ホームの準メニューを3列のコンパクトタイルに集約。前回追加したショップ・実績を含む6項目（到達度テスト・全国模試・学習記録・語源ラッシュ・ショップ・実績）を `grid-cols-3` の低いタイル（アイコン＋ラベル＋9pxの補足）に変更し、2列カード3段→3列2段にしてホームの縦の長さを削減した（補足の文言は維持しつつ、320px 幅で溢れる文言は短縮）。見出しも実態に合わせて「もっと学ぶ」→「メニュー」に変更。タイルの見た目は `assets/css/app.css` の `.menu-tile`（`--icon` / `--label` / `--sub` / `--shop` / `--row`、ダークモード対応）に集約し、HTML 側はクラス 1 つで書けるようにした。`APP_VER=leap-v48-home-compact` / `CACHE=leap-v71`。|
 | 2026-11-28 | 🏠 準メニュー（ショップ等）を上層に移動。①「📚 ほかのメニュー」の折りたたみを廃止し、`#home-more-menu` として常時表示に変更。到達度テスト・全国一斉模試・学習記録・語源ラッシュに加えて、**ショップ**と**実績**を2列カードで追加した。②ヘッダーのコイン表示をボタン化（`#header-coins-btn`）し、タップで `screen-shop` を開けるようにした（PC幅では「ショップ」ラベル付き）。③設定シート内のショップ導線は残す。`APP_VER=leap-v47-home-menu` / `CACHE=leap-v69`。|
