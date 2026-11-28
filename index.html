@@ -11,7 +11,7 @@
     <script>
     // キャッシュ強制更新ロジック: 新バージョン検知時に古いServiceWorkerキャッシュを破棄
     (function() {
-      const APP_VER = "leap-v41-ipa-proofread";
+      const APP_VER = "leap-v42-resume-guard";
       try {
         const storedVer = localStorage.getItem("LEAP_APP_CACHE_VER");
         if (storedVer !== APP_VER) {
@@ -1824,6 +1824,7 @@
   <script src="./js/core.js"></script>
   <script src="./js/mock-exam.js"></script>
   <script src="./js/cloud-sync.js"></script>
+  <script src="./js/quiz-resume.js"></script>
   <script src="./js/quiz-engine.js"></script>
   <script src="./js/ui-stats-dict.js"></script>
   <script>

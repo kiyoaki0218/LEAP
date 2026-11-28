@@ -1171,8 +1171,8 @@
       const mockRun = !!(options && options.mockExam);
       const examRun = !!(options && options.examMode) || mockRun;
       const forcedCount = Number(options && options.questionCount) || 0;
-      // 新しいクイズを始めたら前回の「つづき」は捨てる（再開時は resume:true で保持）
-      if (!(options && options.resume)) clearResumeState();
+      // 新しいクイズの開始では前回の「つづき」を消さない。
+      // 上書きされるのは、新しいクイズで2問目以降に進んで saveResumeState() が走ったときだけ。
       mockExamRunning = mockRun;
       examRunning = examRun;
       examStartedAt = examRun ? Date.now() : 0;
@@ -2239,7 +2239,7 @@
 
     function finishQuiz(isAborted, endReason) {
       stopQuizTimers();
-      clearResumeState();
+      clearResumeStateIfCurrent();
       quizState.isAborted = !!isAborted;
       quizState.endReason = endReason || quizState.endReason || "";
       const reason = quizState.endReason;
@@ -2507,59 +2507,62 @@
     }
 
     // ===== 中断したクイズの再開（LEAP_QUIZ_RESUME_V1） =====
-    const RESUME_KEY = "LEAP_QUIZ_RESUME_V1";
+    // 保存形式・妥当性・上書き可否は js/quiz-resume.js（LeapQuizResume）に集約し、テスト可能にしている。
     let resumeRestoring = false;
 
     function canSaveResume() {
       return !mockExamRunning && !examRunning && quizGameMode === "normal" && quizState.questions.length > 0;
     }
 
+    function currentQuizWordIds() {
+      return quizState.questions
+        .map(q => (q.word && typeof q.word.id === "number") ? q.word.id : null)
+        .filter(id => id !== null);
+    }
+
     function saveResumeState() {
       if (resumeRestoring || !canSaveResume()) return;
-      try {
-        const ids = quizState.questions.map(q => (q.word && typeof q.word.id === "number") ? q.word.id : null).filter(id => id !== null);
-        if (ids.length < 2) { clearResumeState(); return; }
-        const payload = {
-          v: 1,
-          subject: currentSubject,
-          ids: ids,
-          index: quizState.currentIndex,
-          style: quizState.style,
-          label: selectedRange.label,
-          correctCount: quizState.correctCount,
-          combo: quizState.combo,
-          maxCombo: quizState.maxCombo,
-          earnedCoins: quizState.earnedCoins,
-          earnedExp: quizState.earnedExp,
-          score: quizState.score,
-          mistakeIds: (quizState.mistakes || []).map(w => w.id),
-          isDaily: !!isDailyMode,
-          isWeak: !!isWeakMode,
-          savedAt: new Date().toISOString()
-        };
-        localStorage.setItem(RESUME_KEY, JSON.stringify(payload));
-      } catch (e) {}
+      // 1問目の表示だけでは保存しない（別のクイズの「つづき」を黙って潰さないため）
+      if (!LeapQuizResume.canOverwrite(quizState.currentIndex)) return;
+      const ids = currentQuizWordIds();
+      if (ids.length < 2) return;
+      const payload = LeapQuizResume.buildPayload({
+        subject: currentSubject,
+        ids: ids,
+        index: quizState.currentIndex,
+        style: quizState.style,
+        label: selectedRange.label,
+        correctCount: quizState.correctCount,
+        combo: quizState.combo,
+        maxCombo: quizState.maxCombo,
+        earnedCoins: quizState.earnedCoins,
+        earnedExp: quizState.earnedExp,
+        score: quizState.score,
+        mistakeIds: (quizState.mistakes || []).map(w => w.id),
+        isDaily: !!isDailyMode,
+        isWeak: !!isWeakMode
+      });
+      LeapQuizResume.write(window.localStorage, payload);
     }
 
     // ホームのバナー用（現在のゾーンで有効なものだけ）
     function peekResumeState() { return loadResumeState(); }
 
     function loadResumeState() {
-      try {
-        const raw = localStorage.getItem(RESUME_KEY);
-        if (!raw) return null;
-        const st = JSON.parse(raw);
-        if (!st || st.v !== 1 || !Array.isArray(st.ids) || st.ids.length < 2) return null;
-        if ((st.subject || "leap") !== currentSubject) return null;
-        if (st.subject === "kobun") return null;
-        const idx = Number(st.index) || 0;
-        if (idx < 1 || idx >= st.ids.length) return null;
-        return st;
-      } catch (e) { return null; }
+      const st = LeapQuizResume.read(window.localStorage);
+      return LeapQuizResume.isResumable(st, currentSubject) ? st : null;
     }
 
     function clearResumeState() {
-      try { localStorage.removeItem(RESUME_KEY); } catch (e) {}
+      LeapQuizResume.clear(window.localStorage);
+    }
+
+    // いま終えた（中断した）クイズの保存だけを消す。別クイズの「つづき」は残す。
+    function clearResumeStateIfCurrent() {
+      const st = LeapQuizResume.read(window.localStorage);
+      if (!st) return;
+      if (!LeapQuizResume.matchesQuiz(st, currentSubject, currentQuizWordIds())) return;
+      clearResumeState();
     }
 
     function discardResumeQuiz() {
