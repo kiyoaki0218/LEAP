@@ -798,7 +798,7 @@
       return statuses.includes(getWordStatus(id));
     }
 
-    let dictionaryFilter = { parts: [], start: "", end: "", statuses: [] };
+    let dictionaryFilter = { parts: [], start: "", end: "", statuses: [], letter: "" };
 
     // 辞典のPart絞り込みは、いまのゾーンのPart定義から生成する
     function renderDictionaryPartFilters() {
@@ -819,6 +819,7 @@
       addChip("all", "全て");
       valid.forEach(p => addChip(String(p.id), p.name));
       syncDictionaryFilterUi();
+      renderDictLetterJump();
     }
 
     function openDictionary() {
@@ -904,6 +905,9 @@
           part: String(w.part || 1),
           status: getWordStatus(w.id),
           searchKana: normalizeSearchText([w.reading || "", w.yomi || "", kanaFromKanji(w.word)].filter(Boolean).join(" ")),
+          letter: w.subject === "kobun"
+            ? kanaRow(normalizeSearchText(w.reading || w.word || "").charAt(0))
+            : String(w.word || "").charAt(0).toUpperCase(),
           idText: String(w.id),
           numText: String(numVal),
           word: String(w.word || "").toLowerCase(),
@@ -1297,6 +1301,7 @@
           dictionaryFilter.statuses = statuses.filter(st => WORD_STATUSES.includes(st) && st !== "all");
           dictionaryFilter.start = saved.start === undefined || saved.start === null ? "" : String(saved.start);
           dictionaryFilter.end = saved.end === undefined || saved.end === null ? "" : String(saved.end);
+          dictionaryFilter.letter = typeof saved.letter === "string" ? saved.letter : "";
         }
       } catch (e) { console.warn("dictionary filter load failed", e); }
       syncDictionaryFilterUi();
@@ -1341,6 +1346,65 @@
         const active = st === "all" ? dictionaryFilter.statuses.length === 0 : dictionaryFilter.statuses.includes(st);
         btn.className = dictChip(active);
       });
+    }
+
+    // ===== 頭文字ジャンプ（A–Z / あ〜わ） =====
+    function kanaRow(ch) {
+      const c = String(ch || "");
+      if (!c) return "";
+      const groups = [
+        ["あ", "ぁあぃいうぅうぇえぉお"],
+        ["か", "かがきぎくぐけげこご"],
+        ["さ", "さざしじすずせぜそぞ"],
+        ["た", "ただちぢっつづてでとど"],
+        ["な", "なにぬねの"],
+        ["は", "はばぱひびぴふぶぷへべぺほぼぽ"],
+        ["ま", "まみむめも"],
+        ["や", "ゃやゅゆょよ"],
+        ["ら", "らりるれろ"],
+        ["わ", "わゐゑをん"]
+      ];
+      for (const [row, chars] of groups) { if (chars.includes(c)) return row; }
+      return "";
+    }
+
+    function dictLetterOptions() {
+      return isKobunZone()
+        ? ["あ", "か", "さ", "た", "な", "は", "ま", "や", "ら", "わ"]
+        : "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+    }
+
+    function renderDictLetterJump() {
+      const box = document.getElementById("dict-letter-jump");
+      if (!box) return;
+      box.innerHTML = "";
+      const add = (label, value) => {
+        const b = document.createElement("button");
+        b.type = "button";
+        b.dataset.dictLetter = value;
+        b.textContent = label;
+        b.onclick = () => setDictionaryLetter(value);
+        box.appendChild(b);
+      };
+      add("全", "");
+      dictLetterOptions().forEach(ch => add(ch, ch));
+      syncDictLetterJumpUi();
+    }
+
+    function syncDictLetterJumpUi() {
+      document.querySelectorAll("[data-dict-letter]").forEach(btn => {
+        const active = (btn.dataset.dictLetter || "") === (dictionaryFilter.letter || "");
+        btn.className = "shrink-0 min-w-[30px] px-2 py-1 text-[11px] font-bold rounded-md border transition cursor-pointer "
+          + (active ? "bg-emerald-600 text-white border-emerald-600" : "bg-white text-slate-600 border-slate-300 hover:bg-slate-100");
+      });
+    }
+
+    function setDictionaryLetter(letter) {
+      dictionaryFilter.letter = letter || "";
+      dictPage = 1;
+      saveDictionaryFilter();
+      syncDictLetterJumpUi();
+      applyDictionaryFilters();
     }
 
     function setDictionaryPartFilter(part) {
@@ -1393,11 +1457,12 @@
 
     function resetDictionaryFilters() {
       dictPage = 1;
-      dictionaryFilter = { parts: [], start: "", end: "", statuses: [] };
+      dictionaryFilter = { parts: [], start: "", end: "", statuses: [], letter: "" };
       const searchEl = document.getElementById("dictionary-search");
       if (searchEl) searchEl.value = "";
       saveDictionaryFilter();
       syncDictionaryFilterUi();
+      renderDictLetterJump();
       applyDictionaryFilters();
     }
 
@@ -1418,6 +1483,7 @@
         let hit = true;
         if (dictionaryFilter.parts.length > 0 && !dictionaryFilter.parts.includes(entry.part)) hit = false;
         if (hit && dictionaryFilter.statuses.length > 0 && !dictionaryFilter.statuses.includes(entry.status)) hit = false;
+        if (hit && dictionaryFilter.letter) hit = entry.letter === dictionaryFilter.letter;
         const targetNum = (isKobun && typeof entry.num === "number") ? entry.num : entry.id;
         if (hit && startNum !== null && !Number.isNaN(startNum) && targetNum < startNum) hit = false;
         if (hit && endNum !== null && !Number.isNaN(endNum) && targetNum > endNum) hit = false;
@@ -1455,7 +1521,7 @@
       dictionaryEntries.forEach(entry => entry.el.classList.add("hidden"));
       matches.slice(from, to).forEach(entry => entry.el.classList.remove("hidden"));
 
-      const filtering = query !== "" || dictionaryFilter.parts.length > 0 || hasRange || dictionaryFilter.statuses.length > 0;
+      const filtering = query !== "" || dictionaryFilter.parts.length > 0 || hasRange || dictionaryFilter.statuses.length > 0 || !!dictionaryFilter.letter;
       if (countEl) {
         if (total === 0) {
           countEl.textContent = "単語データが読み込まれていません";

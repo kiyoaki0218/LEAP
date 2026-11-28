@@ -80,6 +80,7 @@
 
 - `index.html` 冒頭の `APP_VER`（現在 `leap-v33-mobile-header`）が `localStorage.LEAP_APP_CACHE_VER` と違えば、全 Cache を削除。
 - `sw.js` は `install` で `skipWaiting()`、`activate` で旧キャッシュ削除＋`clients.claim()`。
+- 新しい Service Worker が `installed` になったときは**勝手にリロードせず**、画面下に「✨ 新しいバージョンがあります / 更新する」バナー（`#app-update-banner`、`showAppUpdateBanner` / `applyAppUpdate`）を出す。
 - 取得は Network-First（HTML は常に最新、オフライン時のみキャッシュ）。
 - **フロントを更新したら `sw.js` の `CACHE` 名と `index.html` の `APP_VER` を上げる**のが運用ルール。
 
@@ -89,7 +90,7 @@
 
 | id | 画面 | 役割 |
 |---|---|---|
-| `screen-home` | ホーム | ゾーン切替、お知らせ（模試のお知らせは模試ページへの直リンク付き）、次回模試バナー（開催中は残り時間）、はじめてガイド（学習履歴ゼロの人だけ）、クイズ／デイリーの主導線、プレイヤーカード、連続学習、苦手バナー、**「📚 ほかのメニュー」折りたたみ**（2列の学習ツール＝到達度テスト・模試・学習記録・語源、3列のツール＝辞典・ご意見・設定）、最近の学習履歴 |
+| `screen-home` | ホーム | ゾーン切替、お知らせ（模試のお知らせは模試ページへの直リンク付き）、次回模試バナー（開催中は残り時間）、はじめてガイド（学習履歴ゼロの人だけ）、クイズ／デイリーの主導線、プレイヤーカード、連続学習、苦手バナー、**「📚 ほかのメニュー」折りたたみ**（2列の学習ツール＝到達度テスト・模試・学習記録・語源、3列のツール＝辞典・ご意見・設定）、今日の目標リング（`DAILY_GOAL_COUNT`=20問／日、`dailyLog` で進捗、達成でトースト）、つづきからバナー（`LEAP_QUIZ_RESUME_V1`）、前回の到達度テストカード（`examHistory`）、最近の学習履歴 |
 | `screen-select` | 出題範囲＆設定 | スタイル／ゲームモード／Part・カスタム範囲／出題数／学習状況フィルタ |
 | `screen-quiz` | クイズ | 問題カード、4択、タイマー、コンボ、次へ |
 | `screen-result` | 結果 | スコア、正答率、間違い一覧、共有・画像保存・再挑戦 |
@@ -298,7 +299,7 @@ const MOCK_TIER_LABELS = { 1: "最難関", 2: "難関", 3: "中堅", 4: "チャ�
 - 出題スタイルは `LEAP_QUIZ_STYLE_V1` に保存（`normal` / `context` / `listening`。未知の値は `normal` にフォールバック）。
 - 古文ゾーンではスタイルボタンの文言を「📝 例文」に切り替える（ボタンの 4 列レイアウトは LEAP と共通）。
 - スペル入力では `quiz-spelling-box`（語義＋入力欄＋決定）を表示し、見出し語と選択肢を隠す。採点は `submitSpellingAnswer()` が入力値を突き合わせ、**コイン・EXP・苦手登録・実績・学習状況は4択と同じ `handleAnswer()` に委譲**する（学習記録の整合性を保つため）。解答後は見出し語・IPAを開示し、誤答時は「あなたの解答 / 正解」を表示する。
-- **入力補助**: 出題時に `focusSpellingInput()` で入力欄を自動フォーカスし、毎問の「入力欄タップ」を省く（`renderQuestion()` のスペル分岐から `requestAnimationFrame` + 40ms で呼ぶ。スペルボックスの余白をタップしてもフォーカスされる）。端末キーボードはそのまま使う（`lang="en"` / `autocapitalize="off"` / `enterkeyhint="go"`）。スマホではキーボードを英字（ABC）に切り替える必要がある旨を入力欄下に明記する。**アプリ内キーボード（`quiz-spelling-pad`）は 2026-11-28 に廃止**（端末標準キーボードで十分との判断）。
+- **入力補助**: 出題時に `focusSpellingInput()` で入力欄を自動フォーカスし、毎問の「入力欄タップ」を省く（`renderQuestion()` のスペル分岐から `requestAnimationFrame` + 40ms で呼ぶ。スペルボックスの余白をタップしてもフォーカスされる）。端末キーボードはそのまま使う（`lang="en"` / `autocapitalize="off"` / `enterkeyhint="go"`）。スマホではキーボードを英字（ABC）に切り替える必要がある旨を入力欄下に明記する。**アプリ内キーボード（`quiz-spelling-pad`）は 2026-11-28 に廃止**（端末標準キーボードで十分との判断）。出題語の文字数（`n文字`）を入力欄の横に表示する（`#quiz-spelling-length`）。リスニングでも `#quiz-listening-length` に同じ文字数ヒントを出す。
 
 
 - リスニングでは `quiz-listening-box` を表示し、`quiz-word-row`（見出し語・IPA）を隠す。出題直後に `speakListeningWord()` で再生し、選択肢の自力想起マスクは他スタイルと同じく `brainFirstDelayMs()` だけ待つ。解答後は `revealListeningAnswer()` が見出し語を開示する。
@@ -407,10 +408,29 @@ expRequiredForLevel(level) = 100 + (level - 1) * 50
 
 ---
 
+### 4.11 中断したクイズの再開（`LEAP_QUIZ_RESUME_V1`）
+
+- 通常モード（ゲームモード `normal`）のクイズは、問題を表示するたびに `saveResumeState()` で現在地を保存する（模試・到達度テストは対象外）。
+- ホームに「⏯ 前回の続きがあります（範囲 ・ n / m 問目から）」バナー（`#home-resume-banner`）を出し、「つづきから」で `resumeQuiz()`、「破棄」で `discardResumeQuiz()`。
+- 再開は保存した単語 ID・並び・スタイル・スコア・誤答を復元して同じ問題から続ける（正解数・コンボ・コインも引き継ぐ）。1問目のみの状態（`index < 1`）はバナーを出さない。
+- 新しいクイズを開始したとき、クイズを完走／中断したときは保存を削除する。
+
+### 4.12 正誤の効果音・バイブ
+
+- `handleAnswer()` が `playAnswerFeedback(isCorrect)` を呼ぶ。`navigator.vibrate`（正解 10ms / 不正解 18-40-18ms）と WebAudio の短いビープ（正解 880Hz / 不正解 220Hz）。
+- 設定シートの「🔔 効果音・バイブ ON/OFF」（`LEAP_FEEDBACK_V1`）で切り替え。初期値は ON。
+
+### 4.13 今日の目標
+
+- ホームのリング（SVG、`#home-goal-ring`）が `userData.dailyLog[today]` / 20 を表示。20問に到達した日は `LEAP_DAILY_GOAL_SEEN_V1` で1日1回だけトーストを出す。
+
+---
+
 ## 5. 単語辞典
 
 - ホーム「📖 単語辞典（番号順）」から。**現在のゾーンの単語だけ**を ID 順に表示。
-- 検索: **英単語・日本語語義・単語番号**に対応（`normalizeSearchText`）。古文は読み（`reading`）でも検索できる。
+- 検索: **英単語・日本語語義・単語番号**に対応（`normalizeSearchText`）。
+- **頭文字ジャンプ**（`#dict-letter-jump`）: 英語は A–Z、古文は あ〜わ の行チップで先頭文字絞り込み（`setDictionaryLetter` / `kanaRow`、状態は `dictionaryFilter.letter` に保存）。古文は読み（`reading`）でも検索できる。
 - フィルタ（複数選択可、AND 結合）:
   - Part（ゾーンの有効 Part から動的生成。古文は「1章/2章」）
   - ID 範囲（開始・終了）
@@ -538,6 +558,9 @@ expRequiredForLevel(level) = 100 + (level - 1) * 50
 | `LEAP_KOBUN_SELECTED_PARTS_V1` | 古文で選択中の Part ID 配列 |
 | `LEAP_CUSTOM_RANGE_V1` / `LEAP_KOBUN_CUSTOM_RANGE_V1` | カスタム ID 範囲（開始・終了） |
 | `LEAP_QUIZ_STYLE_V1` | `"normal"` / `"context"` / `"listening"` / `"spelling"` |
+| `LEAP_QUIZ_RESUME_V1` | 中断したクイズの再開情報（`{ v, subject, ids[], index, style, label, correctCount, combo, maxCombo, earnedCoins, earnedExp, score, mistakeIds[], isDaily, isWeak, savedAt }`） |
+| `LEAP_FEEDBACK_V1` | 正誤の効果音・バイブ（`"0"` でOFF。未設定はON） |
+| `LEAP_DAILY_GOAL_SEEN_V1` | 今日の目標達成トーストを出した日（`YYYY-MM-DD`） |
 | `LEAP_GAME_MODE_V1` | `"normal"` / `"sprint"` / `"sudden"` |
 | `LEAP_QUIZ_STATUS_FILTER_V2` | 学習状況フィルタ（配列。V1 は旧形式） |
 | `LEAP_DICTIONARY_FILTER_V1` | 辞典の Part / ID範囲 / 学習状況フィルタ |
@@ -945,6 +968,7 @@ node patches/build_leap_data.js
 
 | 日付 | 変更内容 |
 |---|---|
+| 2026-11-28 | 🧩 小粒な改善をまとめて導入。①スペル・リスニングに出題語の**文字数ヒント**（`quiz-spelling-length` / `quiz-listening-length`）。②**中断したクイズの再開**（`LEAP_QUIZ_RESUME_V1`、ホームのつづきからバナー、`resumeQuiz` / `discardResumeQuiz`）。③ホームに**今日の目標リング**（20問／日、`dailyLog` 連動、達成トースト）。④正誤の**効果音・バイブ**（`LEAP_FEEDBACK_V1`、設定でON/OFF）。⑤結果画面に**「🔥 間違えた単語だけ復習」**ボタン（`reviewResultMistakes`、誤答が無いときは非表示）。⑥**PWA更新バナー**（勝手にリロードせず「更新する」で再読み込み）。⑦ホームに**前回の到達度テストカード**（判定・正答率・もう一度）。⑧辞典に**頭文字ジャンプ**（A–Z／あ〜わ）。⑨`examples_data.js`（2MB超）を **defer 読み込み**にして初回描画をブロックしないようにし、参照側は `builtinExamples()` / `LEAP_EXAMPLES_READY` で追従。`APP_VER=leap-v40-polish-batch` / `CACHE=leap-v62`。|
 | 2026-11-28 | 🔤 スペル入力のテンポ改善。出題時に `#quiz-spelling-input` を自動フォーカスし、毎問の「入力欄タップ」を省くようにした（スペルボックスの余白タップでもフォーカス）。入力欄に `lang="en"` / `autocapitalize="off"` / `enterkeyhint="go"` を付け、スマホではキーボードを英字（ABC）に切り替える旨を明記。※当初はアプリ内 QWERTY キーボードも実装したが、端末標準キーボードの方が扱いやすいため同日に廃止（`quiz-spelling-pad` / `LEAP_SPELLING_KB_V1` は現存しない）。`APP_VER=leap-v39-spelling-autofocus` / `CACHE=leap-v61`。|
 | 2026-11-28 | 🏆 実績を 93 → **115** に増強し、進捗が見えるようにした。①到達度テスト・語源ラッシュ／神経衰弱・累計解答数・1日の解答数・Part 4/5 制覇・古文150語踏破などを追加（カテゴリ `exam` / `game` を新設）。②数値系の実績に `progress` / `ACHIEVEMENT_PROGRESS` を追加し、未達成の行に進捗バーと「n / m」を表示。モーダル上部に「🎯 あと少しで解除」（達成率上位3件）を追加。③初見向け UI 改善として、ホームの副次メニュー（テスト・模試・記録・語源・辞典・ご意見・設定）を「📚 ほかのメニュー」の折りたたみに移動し、ヘッダー「?」／設定／初回ガイドから開ける**使い方ガイド（`guide-modal`）**を追加。④範囲選択画面の先頭に「迷ったらそのままスタートでOK」の案内を追加。`APP_VER=leap-v38-achievements-guide` / `CACHE=leap-v60`。|
 | 2026-11-27 | 📜 古文単語に例文・解説データを投入。Drive の「古文単語データ」9ファイルを `古文単語データ/` に追加し、`patches/build_kobun_details.js` で `kobun/kobun_details_data.js`（`KOBUN_WORD_DETAILS`、150語・例文354件）を生成。①辞典の詳細シートに古文情報（見出し漢字・活用/品詞・重要度）・コアイメージ・解説/入試/関連・例文（原文＋訳＋出典＋補足、`【…】` ハイライト、読み上げ）を表示。②古文の「📜 古語当て」を、実際の古典例文の空所補充クイズ「📝 例文」に置き換え（訳は出題時、原文の該当語と出典は解答後に表示。例文の無い語のみ語義→古語にフォールバック）。③古文の品詞をデータから付与し、4択のダミーを同品詞優先に。`APP_VER=leap-v37-kobun-examples` / `CACHE=leap-v59`。|

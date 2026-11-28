@@ -770,7 +770,8 @@
         if (tag) return tag;
       }
       if (currentSubject === "leap") {
-        const ex = BUILTIN_EXAMPLES[w.id] || BUILTIN_EXAMPLES[String(w.id)];
+        const builtinAll = builtinExamples();
+        const ex = builtinAll[w.id] || builtinAll[String(w.id)];
         if (ex && ex.pos) return normalizePosDetail(ex.pos);
       }
       return "";
@@ -841,7 +842,8 @@
 
       // 例文データに品詞が付いている場合はそれを優先
       if (currentSubject === "leap") {
-        const ex = BUILTIN_EXAMPLES[w.id] || BUILTIN_EXAMPLES[String(w.id)];
+        const builtinAll = builtinExamples();
+        const ex = builtinAll[w.id] || builtinAll[String(w.id)];
         if (ex && ex.pos) pos = normalizePos(ex.pos);
       }
       if (pos === "other" && currentSubject !== "kobun" && /^[a-z][a-z-]*$/.test(lw)) {
@@ -869,7 +871,10 @@
     }
 
     // ===== 例文データ（内蔵 + 読み込み） =====
-    const BUILTIN_EXAMPLES = (typeof LEAP_EXAMPLE_DATA !== "undefined" && LEAP_EXAMPLE_DATA) ? LEAP_EXAMPLE_DATA : {};
+    // 例文データ（examples_data.js）は defer で読み込むので、参照時にグローバルを見る
+    function builtinExamples() {
+      return (typeof LEAP_EXAMPLE_DATA !== "undefined" && LEAP_EXAMPLE_DATA) ? LEAP_EXAMPLE_DATA : {};
+    }
     const extraExamples = {};
 
     function registerExampleEntry(raw) {
@@ -904,7 +909,8 @@
       }
       if (extraExamples[w.id] && extraExamples[w.id].en) return extraExamples[w.id];
       if (currentSubject === "leap") {
-        const builtin = BUILTIN_EXAMPLES[w.id] || BUILTIN_EXAMPLES[String(w.id)];
+        const builtinAll = builtinExamples();
+        const builtin = builtinAll[w.id] || builtinAll[String(w.id)];
         if (builtin && typeof builtin.en === "string") return { en: builtin.en, ja: builtin.ja || "" };
       }
       return null;
@@ -1165,6 +1171,8 @@
       const mockRun = !!(options && options.mockExam);
       const examRun = !!(options && options.examMode) || mockRun;
       const forcedCount = Number(options && options.questionCount) || 0;
+      // 新しいクイズを始めたら前回の「つづき」は捨てる（再開時は resume:true で保持）
+      if (!(options && options.resume)) clearResumeState();
       mockExamRunning = mockRun;
       examRunning = examRun;
       examStartedAt = examRun ? Date.now() : 0;
@@ -1177,6 +1185,13 @@
       quizState.style = style;
       let candidates = shuffleArray([...pool]);
 
+      // 例文データが未読み込み（defer の直後など）なら一度だけ待って再試行
+      if (style === "context" && typeof LEAP_WORD_DETAILS === "undefined" && !(options && options.__examplesRetried)) {
+        showToast("例文データを読み込み中です…");
+        const retry = () => startQuizWithPool(pool, Object.assign({}, options, { __examplesRetried: true }));
+        if (window.LEAP_EXAMPLES_READY) window.LEAP_EXAMPLES_READY.then(retry); else setTimeout(retry, 1200);
+        return;
+      }
       if (style === "context") {
         candidates = candidates.filter(w => getContextData(w));
         if (candidates.length === 0) {
@@ -1630,6 +1645,14 @@
       const today = getTodayString();
       if (!userData.dailyLog || typeof userData.dailyLog !== "object") userData.dailyLog = {};
       userData.dailyLog[today] = (Number(userData.dailyLog[today]) || 0) + 1;
+      // 今日の目標（1日20問）に到達したら1日1回だけ祝う
+      try {
+        const goal = (typeof DAILY_GOAL_COUNT === "number") ? DAILY_GOAL_COUNT : 20;
+        if (userData.dailyLog[today] === goal && localStorage.getItem("LEAP_DAILY_GOAL_SEEN_V1") !== today) {
+          localStorage.setItem("LEAP_DAILY_GOAL_SEEN_V1", today);
+          showToast(`🎯 今日の目標 ${goal}問 を達成！`);
+        }
+      } catch (e) {}
       const keys = Object.keys(userData.dailyLog).sort();
       if (keys.length > 400) keys.slice(0, keys.length - 400).forEach(k => { delete userData.dailyLog[k]; });
     }
@@ -1748,6 +1771,7 @@
         const progBar = document.getElementById("quiz-progress-bar");
         if (progText) progText.textContent = `Q ${current} / ${total}`;
         if (progBar) progBar.style.width = `${((current - 1) / total) * 100}%`;
+        saveResumeState();
 
         const liveCoins = document.getElementById("quiz-live-coins");
         if (liveCoins) liveCoins.textContent = `🪙 +${quizState.earnedCoins}`;
@@ -1784,6 +1808,10 @@
         if (wordRow) wordRow.classList.toggle("hidden", isContext || isListening || isSpelling);
         if (contextBox) contextBox.classList.toggle("hidden", !isContext);
         if (listeningBox) listeningBox.classList.toggle("hidden", !isListening);
+        if (isListening) {
+          const lLen = document.getElementById("quiz-listening-length");
+          if (lLen) lLen.textContent = `${String(q.word.word || "").length}文字`;
+        }
         if (spellingBox) spellingBox.classList.toggle("hidden", !isSpelling);
         if (isSpelling) {
           const meaningEl = document.getElementById("quiz-spelling-meaning");
@@ -1803,6 +1831,8 @@
             focusSpellingInput();
             setTimeout(focusSpellingInput, 60);
           }
+          const sLen = document.getElementById("quiz-spelling-length");
+          if (sLen) sLen.textContent = `${String(q.word.word || "").length}文字`;
         }
         if (isContext) {
           const sentenceEl = document.getElementById("quiz-context-sentence");
@@ -1964,6 +1994,7 @@
 
       // 学習カレンダー用に日別の解答数を記録
       bumpDailyLog();
+      if (typeof playAnswerFeedback === "function") playAnswerFeedback(!!selectedOption.isCorrect);
 
       // 単語ごとの学習履歴データ (userData.wordStats) を蓄積
       if (!userData.wordStats) userData.wordStats = {};
@@ -2208,6 +2239,7 @@
 
     function finishQuiz(isAborted, endReason) {
       stopQuizTimers();
+      clearResumeState();
       quizState.isAborted = !!isAborted;
       quizState.endReason = endReason || quizState.endReason || "";
       const reason = quizState.endReason;
@@ -2437,6 +2469,13 @@
       }
       if (leveledUp) showToast(`🎉 Lv.${levelAfter} にレベルアップ！`);
 
+      // 「間違えた単語だけ復習」ボタンの表示通制
+      const reviewWrap = document.getElementById("result-review-mistakes");
+      const reviewCount = document.getElementById("result-review-count");
+      const mistakeCount = (quizState.mistakes || []).length;
+      if (reviewWrap) reviewWrap.classList.toggle("hidden", mistakeCount === 0);
+      if (reviewCount) reviewCount.textContent = String(mistakeCount);
+
       // 間違えた単語リスト（復習用）
       const mistakeSection = document.getElementById("result-mistakes-section");
       const mistakeList = document.getElementById("result-mistakes-list");
@@ -2465,6 +2504,111 @@
       }
 
       navigate("screen-result");
+    }
+
+    // ===== 中断したクイズの再開（LEAP_QUIZ_RESUME_V1） =====
+    const RESUME_KEY = "LEAP_QUIZ_RESUME_V1";
+    let resumeRestoring = false;
+
+    function canSaveResume() {
+      return !mockExamRunning && !examRunning && quizGameMode === "normal" && quizState.questions.length > 0;
+    }
+
+    function saveResumeState() {
+      if (resumeRestoring || !canSaveResume()) return;
+      try {
+        const ids = quizState.questions.map(q => (q.word && typeof q.word.id === "number") ? q.word.id : null).filter(id => id !== null);
+        if (ids.length < 2) { clearResumeState(); return; }
+        const payload = {
+          v: 1,
+          subject: currentSubject,
+          ids: ids,
+          index: quizState.currentIndex,
+          style: quizState.style,
+          label: selectedRange.label,
+          correctCount: quizState.correctCount,
+          combo: quizState.combo,
+          maxCombo: quizState.maxCombo,
+          earnedCoins: quizState.earnedCoins,
+          earnedExp: quizState.earnedExp,
+          score: quizState.score,
+          mistakeIds: (quizState.mistakes || []).map(w => w.id),
+          isDaily: !!isDailyMode,
+          isWeak: !!isWeakMode,
+          savedAt: new Date().toISOString()
+        };
+        localStorage.setItem(RESUME_KEY, JSON.stringify(payload));
+      } catch (e) {}
+    }
+
+    // ホームのバナー用（現在のゾーンで有効なものだけ）
+    function peekResumeState() { return loadResumeState(); }
+
+    function loadResumeState() {
+      try {
+        const raw = localStorage.getItem(RESUME_KEY);
+        if (!raw) return null;
+        const st = JSON.parse(raw);
+        if (!st || st.v !== 1 || !Array.isArray(st.ids) || st.ids.length < 2) return null;
+        if ((st.subject || "leap") !== currentSubject) return null;
+        if (st.subject === "kobun") return null;
+        const idx = Number(st.index) || 0;
+        if (idx < 1 || idx >= st.ids.length) return null;
+        return st;
+      } catch (e) { return null; }
+    }
+
+    function clearResumeState() {
+      try { localStorage.removeItem(RESUME_KEY); } catch (e) {}
+    }
+
+    function discardResumeQuiz() {
+      clearResumeState();
+      if (typeof renderHomeResumeBanner === "function") renderHomeResumeBanner();
+      showToast("前回の続きを破棄しました");
+    }
+
+    function resumeQuiz() {
+      const st = loadResumeState();
+      if (!st) { showToast("再開できるクイズがありません"); return; }
+      const byId = new Map(ALL_WORDS.map(w => [w.id, w]));
+      const pool = st.ids.map(id => byId.get(Number(id))).filter(Boolean);
+      if (pool.length < 2) { clearResumeState(); return; }
+      resumeRestoring = true;
+      isDailyMode = !!st.isDaily;
+      isWeakMode = !!st.isWeak;
+      questionLimit = pool.length;
+      quizStyle = QUIZ_STYLES.includes(st.style) ? st.style : "normal";
+      if (typeof syncModeUi === "function") syncModeUi();
+      startQuizWithPool(pool, { questionCount: pool.length, resume: true });
+      // 保存時の並び・進捗に戻す
+      const ordered = st.ids.map(id => quizState.questions.find(q => q.word && q.word.id === Number(id))).filter(Boolean);
+      if (ordered.length) quizState.questions = ordered;
+      quizState.currentIndex = Math.min(Math.max(0, Number(st.index) || 0), quizState.questions.length - 1);
+      quizState.correctCount = Number(st.correctCount) || 0;
+      quizState.combo = Number(st.combo) || 0;
+      quizState.maxCombo = Number(st.maxCombo) || 0;
+      quizState.earnedCoins = Number(st.earnedCoins) || 0;
+      quizState.earnedExp = Number(st.earnedExp) || 0;
+      quizState.score = Number(st.score) || 0;
+      quizState.mistakes = (st.mistakeIds || []).map(id => byId.get(Number(id))).filter(Boolean);
+      quizState.startLevel = getLevelState(userData.exp).level;
+      if (st.label) selectedRange = { start: selectedRange.start, end: selectedRange.end, label: st.label };
+      resumeRestoring = false;
+      renderQuestion();
+      showToast("前回の続きから再開しました");
+    }
+
+    // 結果画面の「間違えた単語だけ復習」
+    function reviewResultMistakes() {
+      const pool = (quizState.mistakes || []).slice();
+      if (!pool.length) { showToast("復習する単語がありません"); return; }
+      isDailyMode = false;
+      isWeakMode = false;
+      quizGameMode = "normal";
+      questionLimit = Math.min(20, pool.length);
+      selectedRange = { start: selectedRange.start, end: selectedRange.end, label: "間違い直し" };
+      startQuizWithPool(pool, { questionCount: questionLimit, forceNormalMode: true });
     }
 
     function retryCurrentQuiz() {

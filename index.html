@@ -11,7 +11,7 @@
     <script>
     // キャッシュ強制更新ロジック: 新バージョン検知時に古いServiceWorkerキャッシュを破棄
     (function() {
-      const APP_VER = "leap-v39-spelling-autofocus";
+      const APP_VER = "leap-v40-polish-batch";
       try {
         const storedVer = localStorage.getItem("LEAP_APP_CACHE_VER");
         if (storedVer !== APP_VER) {
@@ -69,7 +69,9 @@
   <!-- Supabase JS クライアント（CDN・ビルド不要。未設定時はローカルモードで動作） -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <!-- 例文・文脈テスト用の例文データ / 単語詳細データ -->
-  <script src="./examples_data.js"></script>
+  <!-- 例文データは 2MB 超なので defer（描画をブロックしない）。完了で LEAP_EXAMPLES_READY が解決する -->
+  <script>window.LEAP_EXAMPLES_READY = new Promise(function (resolve) { window.__resolveExamplesReady = resolve; });</script>
+  <script defer src="./examples_data.js" onload="window.__resolveExamplesReady && window.__resolveExamplesReady(true)" onerror="window.__resolveExamplesReady && window.__resolveExamplesReady(false)"></script>
   <!-- 語源・接頭辞・接尾辞などの参考資料 -->
   <script src="./reference_data.js"></script>
   <!-- 語源ラッシュ（接頭辞・接尾辞）用データ -->
@@ -202,6 +204,41 @@
           </div>
         </div>
       </div>
+
+      <!-- 今日の目標（1日20問） -->
+      <div id="home-daily-goal" class="bg-white border border-slate-200 rounded-2xl shadow-sm p-4 flex items-center gap-4">
+        <div class="relative w-16 h-16 shrink-0">
+          <svg viewBox="0 0 36 36" class="w-16 h-16 -rotate-90">
+            <circle cx="18" cy="18" r="15.5" fill="none" stroke="#e2e8f0" stroke-width="4"></circle>
+            <circle id="home-goal-ring" cx="18" cy="18" r="15.5" fill="none" stroke="#059669" stroke-width="4" stroke-linecap="round" stroke-dasharray="97.4" stroke-dashoffset="97.4" class="transition-all duration-500"></circle>
+          </svg>
+          <span id="home-goal-pct" class="absolute inset-0 flex items-center justify-center text-[11px] font-extrabold text-emerald-700">0%</span>
+        </div>
+        <div class="min-w-0 flex-1">
+          <p class="text-sm font-extrabold text-slate-900">今日の目標</p>
+          <p id="home-goal-text" class="text-[11px] text-slate-500 mt-0.5">0 / 20 問（あと20問）</p>
+          <p id="home-goal-done" class="hidden text-[11px] font-bold text-emerald-600 mt-0.5">🎉 達成！おつかれさま</p>
+        </div>
+        <button type="button" onclick="navigate('screen-select')" class="shrink-0 px-3 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-bold rounded-xl transition cursor-pointer">続ける</button>
+      </div>
+
+      <!-- つづきから（中断したクイズ） -->
+      <div id="home-resume-banner" class="hidden bg-indigo-50 border border-indigo-200 rounded-2xl p-4 shadow-sm">
+        <div class="flex items-start gap-3">
+          <span class="text-xl shrink-0">⏯</span>
+          <div class="min-w-0 flex-1">
+            <p class="text-sm font-extrabold text-indigo-900">前回の続きがあります</p>
+            <p id="home-resume-text" class="text-[11px] text-indigo-700 mt-0.5"></p>
+            <div class="flex gap-2 mt-2.5">
+              <button type="button" onclick="resumeQuiz()" class="px-3 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-[11px] font-bold rounded-lg transition cursor-pointer">つづきから</button>
+              <button type="button" onclick="discardResumeQuiz()" class="px-3 py-2 bg-white hover:bg-indigo-100 border border-indigo-200 text-indigo-700 text-[11px] font-bold rounded-lg transition cursor-pointer">破棄</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 前回の到達度テスト -->
+      <div id="home-exam-card" class="hidden bg-white border border-slate-200 rounded-2xl shadow-sm p-4"></div>
 
       <!-- ステータスカード -->
       <div class="grid grid-cols-2 gap-3 bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
@@ -508,6 +545,7 @@
           <div class="flex justify-center">
             <button type="button" onclick="speakListeningWord()" title="もう一度聞く" class="w-20 h-20 rounded-full bg-sky-50 border-2 border-sky-200 text-sky-600 hover:bg-sky-100 active:scale-95 flex items-center justify-center text-3xl transition cursor-pointer">🔊</button>
           </div>
+          <p id="quiz-listening-length" class="text-[11px] font-bold text-sky-700 bg-sky-50 border border-sky-200 px-2 py-0.5 rounded-full inline-block">0文字</p>
           <p class="text-[11px] text-slate-400 leading-relaxed">タップでもう一度再生（音が出ないときは端末の音量・マナーモードを確認）</p>
         </div>
         <!-- スペル入力表示（見出し語を隠し、語義から英単語を入力させる） -->
@@ -516,6 +554,7 @@
           <div class="flex items-center justify-center gap-1.5 flex-wrap">
             <span id="quiz-spelling-pos" class="hidden"></span>
             <p id="quiz-spelling-meaning" class="text-lg sm:text-xl font-bold leading-relaxed text-slate-900"></p>
+            <span id="quiz-spelling-length" class="text-[11px] font-bold text-indigo-700 bg-indigo-50 border border-indigo-200 px-2 py-0.5 rounded-full">0文字</span>
           </div>
           <div class="flex gap-2">
             <input id="quiz-spelling-input" type="text" lang="en" inputmode="text" enterkeyhint="go" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="英単語を入力" onkeydown="if(event.key==='Enter'){event.preventDefault();submitSpellingAnswer();}" class="flex-1 min-w-0 px-3 py-3 bg-slate-50 border border-slate-200 rounded-xl text-base font-bold text-slate-900 placeholder:text-slate-300 placeholder:font-normal focus:outline-none focus:ring-2 focus:ring-indigo-300">
@@ -768,6 +807,7 @@
 
       <div class="pb-1 space-y-1.5">
         <input type="search" id="dictionary-search" oninput="handleDictionarySearch()" placeholder="番号・英語・日本語で検索（例: 1 / debate / 討論）" class="w-full p-3 bg-white border border-slate-300 rounded-xl text-sm font-medium text-slate-800 focus:outline-none focus:border-slate-800">
+        <div id="dict-letter-jump" class="flex gap-1 overflow-x-auto pb-1"></div>
         <div id="dict-pagination-top" class="flex flex-wrap items-center gap-1.5"></div>
       </div>
       </div>
@@ -1244,6 +1284,11 @@
       </div>
 
       <!-- リトライ / ホームボタン / 挑戦ボタン -->
+      <div id="result-review-mistakes" class="hidden">
+        <button type="button" onclick="reviewResultMistakes()" class="w-full py-3.5 bg-rose-600 hover:bg-rose-700 active:scale-[0.99] text-white font-bold rounded-xl shadow-md transition text-sm flex items-center justify-center gap-2 cursor-pointer">
+          <span>🔥 間違えた単語だけ復習（<span id="result-review-count">0</span>語）</span>
+        </button>
+      </div>
       <div id="result-action-buttons" class="grid grid-cols-2 gap-3">
         <button type="button" onclick="retryCurrentQuiz()" class="py-3.5 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl shadow-md transition text-sm cursor-pointer">
           もう一度挑戦
@@ -1442,6 +1487,10 @@
               <span class="text-sm font-bold text-slate-800">アカウント・同期</span>
             </span>
             <span id="account-btn-state" class="text-[10px] font-extrabold bg-slate-100 text-slate-500 px-2 py-0.5 rounded-full shrink-0">未ログイン</span>
+          </button>
+          <button type="button" id="btn-feedback-toggle" onclick="toggleFeedbackSound()" class="w-full py-3 px-4 bg-white hover:bg-slate-50 active:scale-[0.99] border border-slate-200 text-slate-600 text-sm font-semibold rounded-xl shadow-sm transition-all flex items-center justify-center gap-2 cursor-pointer">
+            <span id="feedback-toggle-icon">🔔</span>
+            <span id="feedback-toggle-label">効果音・バイブ ON</span>
           </button>
           <button type="button" id="btn-voice-toggle" onclick="toggleVoice()" class="w-full py-3 px-4 bg-white hover:bg-slate-50 active:scale-[0.99] border border-slate-200 text-slate-600 text-sm font-semibold rounded-xl shadow-sm transition-all flex items-center justify-center gap-2 cursor-pointer">
             <span id="voice-toggle-icon">🔊</span>
@@ -1755,6 +1804,13 @@
     </div>
   </div>
 
+  <!-- アプリ更新通知（Service Worker が新しくなったとき） -->
+  <div id="app-update-banner" class="hidden fixed bottom-4 left-1/2 -translate-x-1/2 z-[80] bg-slate-900 text-white rounded-2xl shadow-2xl px-4 py-3 items-center gap-3 max-w-[92%]">
+    <span class="text-lg">✨</span>
+    <p class="text-[11px] font-bold leading-snug">新しいバージョンがあります</p>
+    <button type="button" onclick="applyAppUpdate()" class="ml-auto px-3 py-1.5 bg-emerald-500 hover:bg-emerald-600 text-white text-[11px] font-bold rounded-lg shrink-0 cursor-pointer">更新する</button>
+  </div>
+
   <!-- トースト通知 -->
   <div id="toast" class="fixed bottom-5 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-xs font-medium px-4 py-2 rounded-full shadow-lg opacity-0 pointer-events-none transition-all duration-300 z-50">
     コピーしました
@@ -1960,6 +2016,115 @@
       startQuizWithPool(ALL_WORDS.filter(w => w.id >= selectedRange.start && w.id <= selectedRange.end));
     }
 
+    // ===== 正誤の効果音・バイブ =====
+    const FEEDBACK_KEY = "LEAP_FEEDBACK_V1";
+    let feedbackAudioCtx = null;
+    function isFeedbackEnabled() {
+      try { return localStorage.getItem(FEEDBACK_KEY) !== "0"; } catch (e) { return true; }
+    }
+    function syncFeedbackToggleUi() {
+      const on = isFeedbackEnabled();
+      const icon = document.getElementById("feedback-toggle-icon");
+      const label = document.getElementById("feedback-toggle-label");
+      if (icon) icon.textContent = on ? "🔔" : "🔕";
+      if (label) label.textContent = on ? "効果音・バイブ ON" : "効果音・バイブ OFF";
+    }
+    function toggleFeedbackSound() {
+      try { localStorage.setItem(FEEDBACK_KEY, isFeedbackEnabled() ? "0" : "1"); } catch (e) {}
+      syncFeedbackToggleUi();
+      if (isFeedbackEnabled()) playAnswerFeedback(true);
+    }
+    // 正解は短い高音、不正解は低めの音。バイブは対応端末のみ。
+    function playAnswerFeedback(isCorrect) {
+      if (!isFeedbackEnabled()) return;
+      try { if (navigator.vibrate) navigator.vibrate(isCorrect ? 10 : [18, 40, 18]); } catch (e) {}
+      try {
+        const Ctx = window.AudioContext || window.webkitAudioContext;
+        if (!Ctx) return;
+        if (!feedbackAudioCtx) feedbackAudioCtx = new Ctx();
+        if (feedbackAudioCtx.state === "suspended") feedbackAudioCtx.resume();
+        const t = feedbackAudioCtx.currentTime;
+        const osc = feedbackAudioCtx.createOscillator();
+        const gain = feedbackAudioCtx.createGain();
+        osc.type = "sine";
+        osc.frequency.setValueAtTime(isCorrect ? 880 : 220, t);
+        gain.gain.setValueAtTime(0.0001, t);
+        gain.gain.exponentialRampToValueAtTime(isCorrect ? 0.05 : 0.07, t + 0.01);
+        gain.gain.exponentialRampToValueAtTime(0.0001, t + (isCorrect ? 0.09 : 0.16));
+        osc.connect(gain); gain.connect(feedbackAudioCtx.destination);
+        osc.start(t); osc.stop(t + (isCorrect ? 0.1 : 0.18));
+      } catch (e) {}
+    }
+
+    // ===== 今日の目標（1日 20 問） =====
+    const DAILY_GOAL_COUNT = 20;
+    function todayAnsweredCount() {
+      const log = userData.dailyLog || {};
+      return Number(log[getTodayString()]) || 0;
+    }
+    function renderHomeDailyGoal() {
+      const card = document.getElementById("home-daily-goal");
+      if (!card) return;
+      const done = todayAnsweredCount();
+      const goal = DAILY_GOAL_COUNT;
+      const pct = Math.min(100, Math.round((done / goal) * 100));
+      const ring = document.getElementById("home-goal-ring");
+      if (ring) ring.style.strokeDashoffset = String(97.4 * (1 - pct / 100));
+      const pctEl = document.getElementById("home-goal-pct");
+      if (pctEl) pctEl.textContent = `${pct}%`;
+      const txt = document.getElementById("home-goal-text");
+      if (txt) txt.textContent = done >= goal ? `${done} 問 達成` : `${done} / ${goal} 問（あと${goal - done}問）`;
+      const doneEl = document.getElementById("home-goal-done");
+      if (doneEl) doneEl.classList.toggle("hidden", done < goal);
+    }
+
+    // ===== 前回の到達度テスト =====
+    function renderHomeExamCard() {
+      const card = document.getElementById("home-exam-card");
+      if (!card) return;
+      const hist = (Array.isArray(userData.examHistory) ? userData.examHistory : [])
+        .filter(h => h && (h.subject || "leap") === currentSubject);
+      const last = hist[0];
+      if (!last) { card.classList.add("hidden"); card.innerHTML = ""; return; }
+      const gradeCls = last.grade === "S" ? "text-amber-600" : last.grade === "A" ? "text-emerald-600" : last.grade === "B" ? "text-sky-600" : "text-slate-600";
+      card.classList.remove("hidden");
+      card.innerHTML = `
+        <div class="flex items-center gap-3">
+          <span class="text-2xl shrink-0">🎓</span>
+          <div class="min-w-0 flex-1">
+            <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400">前回の到達度テスト</p>
+            <p class="text-sm font-extrabold text-slate-900 truncate">${escapeHtml(last.range || "全範囲")} ・ <span class="${gradeCls}">${escapeHtml(last.grade || "-")}判定</span></p>
+            <p class="text-[11px] text-slate-500 mt-0.5">正答率 ${Number(last.accuracy) || 0}%（${Number(last.correct) || 0}/${Number(last.total) || 0}）・${escapeHtml(last.date || "")}</p>
+          </div>
+          <button type="button" onclick="navigate('screen-exam')" class="shrink-0 px-3 py-2 bg-slate-900 hover:bg-slate-800 text-white text-[11px] font-bold rounded-xl transition cursor-pointer">もう一度</button>
+        </div>`;
+    }
+
+    // ===== 中断したクイズのバナー =====
+    function renderHomeResumeBanner() {
+      const el = document.getElementById("home-resume-banner");
+      if (!el) return;
+      const st = (typeof peekResumeState === "function") ? peekResumeState() : null;
+      if (!st) { el.classList.add("hidden"); return; }
+      el.classList.remove("hidden");
+      const total = (st.ids || []).length;
+      const next = Math.min((Number(st.index) || 0) + 1, total);
+      const when = st.savedAt ? String(st.savedAt).slice(5, 10).replace("-", "/") : "";
+      const t = document.getElementById("home-resume-text");
+      if (t) t.textContent = `${st.label || "クイズ"} ・ ${next} / ${total} 問目から${when ? `（${when} 保存）` : ""}`;
+    }
+
+    // ===== アプリ更新通知 =====
+    function showAppUpdateBanner() {
+      const el = document.getElementById("app-update-banner");
+      if (!el) return;
+      el.classList.remove("hidden");
+      el.classList.add("flex");
+    }
+    function applyAppUpdate() {
+      try { window.location.reload(); } catch (e) {}
+    }
+
     function updateUserUI() {
       const full = getFullTitle();
       const hCoins = document.getElementById("header-coins");
@@ -2025,6 +2190,12 @@
         }
       }
 
+
+      // ホームの追加カード（今日の目標・前回のテスト・つづきから）
+      renderHomeDailyGoal();
+      renderHomeExamCard();
+      renderHomeResumeBanner();
+      syncFeedbackToggleUi();
 
       // デイリーチャレンジボタンの状態更新
       const dailyBadge = document.getElementById("daily-badge");
@@ -4772,7 +4943,10 @@ listContainer.appendChild(row);
             const installing = reg.installing;
             if (installing) {
               installing.onstatechange = () => {
-                if (installing.state === "installed" && navigator.serviceWorker.controller) {
+                if (installing.state === "installed" && navigator.serviceWorker.controller && typeof showAppUpdateBanner === "function") {
+                  // 新しい版が準備できたことを、勝手にリロードせずバナーで知らせる
+                  showAppUpdateBanner();
+                } else if (installing.state === "installed" && navigator.serviceWorker.controller) {
                   // 新しいバージョンが準備できたら即時反映
                   window.location.reload();
                 }
