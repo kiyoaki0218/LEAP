@@ -85,4 +85,23 @@ test("通知メッセージ生成 (ストリーク維持のメッセージ)", ()
   assert.ok(payload.title.includes("連続学習"));
 });
 
-console.log(`\n${passed}/6 passed`);
+test("isNotificationActive の判定", () => {
+  global.localStorage.clear();
+  // Notification 未定義
+  assert.strictEqual(notif.isNotificationActive(), false);
+
+  // Notification API モック
+  global.Notification = { permission: "default" };
+  assert.strictEqual(notif.isNotificationActive(), false);
+
+  global.Notification.permission = "granted";
+  assert.strictEqual(notif.isNotificationActive(), false); // enabled is false
+
+  notif.saveConfig({ enabled: true });
+  assert.strictEqual(notif.isNotificationActive(), true);
+
+  global.Notification.permission = "denied";
+  assert.strictEqual(notif.isNotificationActive(), false);
+});
+
+console.log(`\n${passed}/7 passed`);

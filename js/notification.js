@@ -448,6 +448,128 @@
     refreshNotificationModalUI();
   }
 
+  /**
+   * 通知が現在アクティブ（権限許可済み かつ 設定ON）か
+   */
+  function isNotificationActive() {
+    if (!isSupported()) return false;
+    const perm = getPermission();
+    const cfg = getConfig();
+    return perm === "granted" && cfg.enabled === true;
+  }
+
+  /**
+   * ホーム画面の通知バナーを一時的に非表示にする
+   */
+  function dismissNotificationPrompt() {
+    try {
+      sessionStorage.setItem("LEAP_NOTIF_PROMPT_DISMISSED", "1");
+    } catch (e) {}
+    const banner = document.getElementById("home-notification-banner");
+    if (banner) banner.classList.add("hidden");
+  }
+
+  /**
+   * ホーム画面から通知をONにする
+   */
+  async function enableNotificationFromHome() {
+    const perm = getPermission();
+    if (perm === "unsupported") {
+      if (typeof showToast === "function") {
+        showToast("お使いの環境は通知に対応していません（※iOSはホーム画面に追加してご利用ください）");
+      }
+      return;
+    }
+
+    if (perm === "denied") {
+      openNotificationModal();
+      return;
+    }
+
+    if (perm === "granted") {
+      saveConfig({ enabled: true });
+      if (typeof showToast === "function") {
+        showToast("🔔 学習リマインダー通知をONにしました！");
+      }
+      renderHomeNotificationBanner();
+      refreshNotificationModalUI();
+      return;
+    }
+
+    // default: ユーザーに通知許可をリクエスト
+    const res = await requestPermission();
+    if (res === "granted") {
+      saveConfig({ enabled: true });
+      if (typeof showToast === "function") {
+        showToast("🔔 学習リマインダー通知をONにしました！");
+      }
+      renderHomeNotificationBanner();
+      refreshNotificationModalUI();
+      // 初回許可のお礼テスト通知を軽く送る
+      try {
+        showNotification("🎉 通知をONにしました！", {
+          body: `毎日 ${getConfig().time} に学習リマインダーをお届けします。`,
+          tag: "leap-notif-welcome"
+        });
+      } catch (e) {}
+    } else if (res === "denied") {
+      if (typeof showToast === "function") {
+        showToast("通知が拒否されました");
+      }
+      renderHomeNotificationBanner();
+      refreshNotificationModalUI();
+    }
+  }
+
+  /**
+   * ホーム画面の通知許可案内バナーの描画・更新
+   */
+  function renderHomeNotificationBanner() {
+    const banner = document.getElementById("home-notification-banner");
+    if (!banner) return;
+
+    // すでに通知が有効（権限許可済み かつ enabled === true）の場合は非表示
+    if (isNotificationActive()) {
+      banner.classList.add("hidden");
+      return;
+    }
+
+    // 非対応ブラウザの場合は非表示
+    if (!isSupported()) {
+      banner.classList.add("hidden");
+      return;
+    }
+
+    // セッションで明示的に閉じられている場合は非表示
+    try {
+      if (sessionStorage.getItem("LEAP_NOTIF_PROMPT_DISMISSED") === "1") {
+        banner.classList.add("hidden");
+        return;
+      }
+    } catch (e) {}
+
+    const perm = getPermission();
+    const descEl = document.getElementById("home-notif-banner-desc");
+    const btnLabel = document.getElementById("home-notif-enable-label");
+    const btn = document.getElementById("home-notif-enable-btn");
+
+    if (perm === "denied") {
+      if (descEl) descEl.textContent = "ブラウザ設定で通知がブロックされています。タップして設定を確認してください。";
+      if (btnLabel) btnLabel.textContent = "設定を確認する";
+      if (btn) {
+        btn.className = "px-3.5 py-1.5 bg-amber-600 hover:bg-amber-700 active:scale-[0.98] text-white text-xs font-bold rounded-xl shadow-sm transition flex items-center gap-1.5 cursor-pointer";
+      }
+    } else {
+      if (descEl) descEl.textContent = "毎日の学習習慣づくりに！設定時刻にリマインダーをお届けします。";
+      if (btnLabel) btnLabel.textContent = "通知をONにする";
+      if (btn) {
+        btn.className = "px-3.5 py-1.5 bg-sky-600 hover:bg-sky-700 active:scale-[0.98] text-white text-xs font-bold rounded-xl shadow-sm transition flex items-center gap-1.5 cursor-pointer";
+      }
+    }
+
+    banner.classList.remove("hidden");
+  }
+
   // エクスポート
   global.LEAP_NOTIFICATION = {
     STORAGE_KEYS,
@@ -464,6 +586,10 @@
     getStudyContext,
     checkAndTriggerReminder,
     startReminderTimer,
+    isNotificationActive,
+    dismissNotificationPrompt,
+    enableNotificationFromHome,
+    renderHomeNotificationBanner,
     openNotificationModal,
     closeNotificationModal,
     refreshNotificationModalUI,
@@ -484,13 +610,20 @@
   global.handleNotifReviewToggle = handleReviewToggle;
   global.handleNotifStreakToggle = handleStreakToggle;
   global.handleNotifTestClick = handleTestNotificationClick;
+  global.enableNotificationFromHome = enableNotificationFromHome;
+  global.dismissNotificationPrompt = dismissNotificationPrompt;
+  global.renderHomeNotificationBanner = renderHomeNotificationBanner;
 
-  // DOMロード時にタイマー起動
+  // DOMロード時にタイマー起動＆ホームバナー描画
   if (typeof document !== "undefined") {
-    if (document.readyState === "loading") {
-      document.addEventListener("DOMContentLoaded", startReminderTimer);
-    } else {
+    const init = () => {
       startReminderTimer();
+      renderHomeNotificationBanner();
+    };
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", init);
+    } else {
+      init();
     }
   }
 

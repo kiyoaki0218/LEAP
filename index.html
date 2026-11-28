@@ -11,7 +11,7 @@
     <script>
     // キャッシュ強制更新ロジック: 新バージョン検知時に古いServiceWorkerキャッシュを破棄
     (function() {
-      const APP_VER = "leap-v53-notification-reminder";
+      const APP_VER = "leap-v54-home-notif-prompt";
       try {
         const storedVer = localStorage.getItem("LEAP_APP_CACHE_VER");
         if (storedVer !== APP_VER) {
@@ -283,6 +283,29 @@
           <button type="button" onclick="openWeakWordsModal()" class="px-2.5 py-2 bg-white hover:bg-rose-100 border border-rose-200 text-rose-700 text-xs font-bold rounded-xl transition cursor-pointer">
             一覧
           </button>
+        </div>
+      </div>
+
+      <!-- 通知許可案内バナー（通知がOFFのときに表示） -->
+      <div id="home-notification-banner" class="hidden bg-gradient-to-r from-sky-50 to-indigo-50 border border-sky-200 rounded-2xl p-4 shadow-sm">
+        <div class="flex items-start gap-3">
+          <div class="w-10 h-10 rounded-xl bg-sky-500/10 text-sky-600 flex items-center justify-center text-xl shrink-0">🔔</div>
+          <div class="min-w-0 flex-1">
+            <div class="flex items-center justify-between">
+              <p class="text-sm font-bold text-slate-800">学習リマインダー通知</p>
+              <button type="button" onclick="dismissNotificationPrompt()" class="text-slate-400 hover:text-slate-600 p-1 text-sm font-bold leading-none cursor-pointer" title="閉じる">✕</button>
+            </div>
+            <p id="home-notif-banner-desc" class="text-[11px] text-slate-600 mt-0.5 leading-relaxed">毎日の学習習慣づくりに！設定時刻にリマインダーをお届けします。</p>
+            <div class="mt-2.5 flex items-center gap-2">
+              <button type="button" id="home-notif-enable-btn" onclick="enableNotificationFromHome()" class="px-3.5 py-1.5 bg-sky-600 hover:bg-sky-700 active:scale-[0.98] text-white text-xs font-bold rounded-xl shadow-sm transition flex items-center gap-1.5 cursor-pointer">
+                <span>🔔</span>
+                <span id="home-notif-enable-label">通知をONにする</span>
+              </button>
+              <button type="button" onclick="openNotificationModal()" class="px-2.5 py-1.5 bg-white hover:bg-slate-50 border border-slate-200 text-slate-600 text-[11px] font-bold rounded-xl transition cursor-pointer">
+                ⚙️ 設定
+              </button>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -2349,11 +2372,12 @@
       }
 
 
-      // ホームの追加カード（今日の目標・前回のテスト・つづきから）
+      // ホームの追加カード（今日の目標・前回のテスト・つづきから・通知案内）
       renderHomeDailyGoal();
       if (typeof renderHomeRoadmapCard === "function") renderHomeRoadmapCard();
       renderHomeExamCard();
       renderHomeResumeBanner();
+      if (typeof renderHomeNotificationBanner === "function") renderHomeNotificationBanner();
       syncFeedbackToggleUi();
 
       // デイリーチャレンジボタンの状態更新

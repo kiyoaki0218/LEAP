@@ -586,7 +586,8 @@ LEAP 本誌の見開きを再現して読み進めるビュー。
 ブラウザ標準の Web Notification API および Service Worker（`sw.js`）の `showNotification` / `notificationclick` を利用したプッシュ・ローカル通知機能（`js/notification.js`）。
 
 - **機能**:
-  - 設定画面（`#settings-modal`）内の「🔔 学習リマインダー通知」から通知設定モーダル（`#notification-modal`）を開いて管理。
+  - **ホーム画面の許可案内バナー**: 通知が OFF（未許可または無効化）のとき、ホーム画面に通知許可案内カード（`#home-notification-banner`）を常設。「🔔 通知をONにする」をタップするとブラウザの権限要求を経て即座に通知が有効化され、バナーは自動で非表示となる。
+  - **設定画面**: 設定画面（`#settings-modal`）内の「🔔 学習リマインダー通知」から通知設定モーダル（`#notification-modal`）を開いて管理。
   - **通知権限の管理**: ブラウザの通知権限（`granted` / `default` / `denied`）を判定・リクエスト。ブロック時はブラウザ設定での解除案内を表示。
   - **毎日の学習リマインダー**: 指定時刻（デフォルト `20:00`）に学習を促す通知を発行。1分ごとのタイマー判定で、同日内重複は `LEAP_NOTIF_LAST_DATE` で防止。
   - **コンテキスト連動通知**: 忘却曲線の復習待ち単語がある場合は「🧠 忘却曲線の復習が X 語待っています！」、ストリーク継続中は「🔥 連続学習 X 日目！今日も続けよう」と文面を動的最適化。
@@ -924,7 +925,7 @@ window.LEAP_SUPABASE_CONFIG = { url: "https://xxxx.supabase.co", anonKey: "sb_pu
 ├── assets/
 │   └── css/app.css            アプリ固有 CSS（旧 index.html 内の <style> ほか）
 ├── manifest.json              PWA マニフェスト
-├── sw.js                      Service Worker（キャッシュ leap-v76 / Network-First）
+├── sw.js                      Service Worker（キャッシュ leap-v77 / Network-First）
 ├── words_data.js              LEAP_WORDS_DATA（2,300語）
 ├── examples_data.js           LEAP_WORD_DETAILS（2,300語）+ LEAP_EXAMPLE_DATA（2,000語）
 ├── reference_data.js          LEAP_REFERENCE_DATA（5章）
@@ -1045,6 +1046,7 @@ node tests/cloud-merge.test.js  # 苦手単語・克服記録のクラウド統�
 
 | 日付 | 変更内容 |
 |---|---|
+| 2026-11-28 | 🔔 **ホーム画面に通知許可案内バナーを追加**（`#home-notification-banner`、`js/notification.js`）。通知がOFF（未許可または無効化）の場合にホーム画面へ案内カードを表示し、「🔔 通知をONにする」をタップするとワンタップでブラウザ通知権限のリクエストとリマインダー有効化が行えるように改善。通知が有効化されるとバナーは自動で非表示となる。単体テスト `tests/notification.test.js`（7件）に状態判定のテストを追加。`APP_VER=leap-v54-home-notif-prompt` / `CACHE=leap-v77`。|
 | 2026-11-28 | 🔔 **学習リマインダー通知**（ブラウザ経由の Web Notification API / Service Worker `showNotification`）を追加（`js/notification.js`）。①設定モーダル（`#settings-modal`）に「🔔 学習リマインダー通知」を追加し、専用設定モーダル（`#notification-modal`）で通知権限の許可リクエスト、毎日の通知時刻（`<input type="time">`、初期値 `20:00`）、忘却曲線の復習対象通知・連続記録（ストリーク維持）通知の ON/OFF、即時テスト通知を操作可能にした。②アプリ起動中およびバックグラウンド時に定期チェックを行い、設定時刻に未学習かつ同日未通知（`LEAP_NOTIF_LAST_DATE`）であれば通知を発行。③Service Worker（`sw.js`）に `notificationclick` を追加し、通知タップ時にアプリへフォーカスまたは起動。④単体テスト `tests/notification.test.js`（6件）を追加。`APP_VER=leap-v53-notification-reminder` / `CACHE=leap-v76`。|
 | 2026-11-28 | 📖 単語辞典の**本誌ビューを見開きレイアウトに刷新**（`js/dict-book.js` 再設計）。LEAP本誌の見開きを忠実に再現：見開き1組＝左4語/右4語、1語＝本誌1エントリを3カラム（左＝淡い青のパネルに番号・見出し語・IPA・品詞、中＝品詞の赤い小枠＋語義①〜（赤）・▸付きメモ、右＝①②の例文と訳、`【…】` を赤太字）で表示。赤いリボンのセクション見出し・右ページの running head（`Active Vocabulary（基幹語）`）・外側下のノンブル・右端の Part 縦タブを追加。前後の見開きへ「ページをめくる」（ボタン／スワイプ／←→キー、`flip-next`/`flip-prev`）。768px未満は縦積み、ダークモードでも紙面は明るいまま。古文単語は対象外。`APP_VER=leap-v52-dict-book-spread` / `CACHE=leap-v75`。|
 | 2026-11-28 | 📖 単語辞典に**本誌ビュー**を追加（`js/dict-book.js`）。LEAP本誌の見開き風に、左ページへ見出し語・発音記号・語義・頻出/派生メモ、右ページへ例文と訳を表示し、前後の単語へ「ページをめくる」ように移動できる（ボタン／スワイプ／←→キー、`flip-next`/`flip-prev` の CSS アニメーション）。辞典ヘッダーの「📖 本誌」と単語詳細の「📖 本誌ビュー」から開く。768px未満は縦積み、ダークモードでも紙面は明るいまま。`APP_VER=leap-v50-dict-book` / `CACHE=leap-v73`。|
