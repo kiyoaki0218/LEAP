@@ -167,6 +167,7 @@ const LEAP_EXAMPLE_DATA = {
 ```
 
 - `LEAP_WORD_DETAILS`: **2,300 語分（ID 1〜2300）**。IPA・語義タグ・品詞・コラム/頻出表現・例文。
+- `ipa` は **ID で `words_data.js` の単語と対応**する（表示するのは `words_data.js` の `word`、発音記号はこの `ipa`）。この対応は `node patches/build_leap_data.js` が元テキストの見出し番号から決めるため、**元テキストの番号が `words.json` とずれると別単語の発音記号が表示される**（2026-11-28 に 615=obey / 616=resist の入れ替わりを修正済み）。発音記号を直したときは、`words_data.js` の `word` と `examples_data.js` の `word` / `ipa` が同じ単語を指しているかを確認すること。
 - 例文付きの詳細: **2,000 語分（ID 1〜2000）**。`examples[].prompt` は空所化済みの問題文、`hasBlank` が true のものを例文クイズに使用。
 - `LEAP_EXAMPLE_DATA`: **2,000 語分（ID 1〜2000）**。例文クイズ・品詞バッジ用の軽量データ。
 - ID 2001〜2300 は「語義＋詳細（IPA/語義/コラム）」のみで、例文クイズ対象外。
@@ -968,6 +969,7 @@ node patches/build_leap_data.js
 
 | 日付 | 変更内容 |
 |---|---|
+| 2026-11-28 | 🎧 発音記号（IPA）の抜き取り校閲。①元テキスト `604_702.txt` は 615=obey / 616=resist なのに `words.json` と `words_data.js` が逆順だったため、resist の下に **obey の発音記号 `[oubéi]`** が表示されていた。番号を書籍どおり 615=obey（`[oubéi]`）/ 616=resist（`[rizíst]`）に修正（`words_data.js` / `LEAP単語データ/words.json`、`examples_data.js` の詳細は変更なしで整合）。②例文データに混入していた数学記号 **`∫`（積分記号）を `ʃ` に**（31箇所）、ギリシャ文字の混入 3 件（`conservation` / `veterinarian` / `scenario` の `έ`・`ὰ`）を修正。長音記号のゆれ（半角 `:`）を本来の **`ː`** に統一（111箇所。元テキストは 118 箇所）。③全 2,300 語の発音記号を綴り・辞書発音（CMUdict）と機械照合し、子音骨格の食い違い・重複・欠損が上記以外に無いことを確認。`APP_VER=leap-v41-ipa-proofread` / `CACHE=leap-v63`。|
 | 2026-11-28 | 🧩 小粒な改善をまとめて導入。①スペル・リスニングに出題語の**文字数ヒント**（`quiz-spelling-length` / `quiz-listening-length`）。②**中断したクイズの再開**（`LEAP_QUIZ_RESUME_V1`、ホームのつづきからバナー、`resumeQuiz` / `discardResumeQuiz`）。③ホームに**今日の目標リング**（20問／日、`dailyLog` 連動、達成トースト）。④正誤の**効果音・バイブ**（`LEAP_FEEDBACK_V1`、設定でON/OFF）。⑤結果画面に**「🔥 間違えた単語だけ復習」**ボタン（`reviewResultMistakes`、誤答が無いときは非表示）。⑥**PWA更新バナー**（勝手にリロードせず「更新する」で再読み込み）。⑦ホームに**前回の到達度テストカード**（判定・正答率・もう一度）。⑧辞典に**頭文字ジャンプ**（A–Z／あ〜わ）。⑨`examples_data.js`（2MB超）を **defer 読み込み**にして初回描画をブロックしないようにし、参照側は `builtinExamples()` / `LEAP_EXAMPLES_READY` で追従。`APP_VER=leap-v40-polish-batch` / `CACHE=leap-v62`。|
 | 2026-11-28 | 🔤 スペル入力のテンポ改善。出題時に `#quiz-spelling-input` を自動フォーカスし、毎問の「入力欄タップ」を省くようにした（スペルボックスの余白タップでもフォーカス）。入力欄に `lang="en"` / `autocapitalize="off"` / `enterkeyhint="go"` を付け、スマホではキーボードを英字（ABC）に切り替える旨を明記。※当初はアプリ内 QWERTY キーボードも実装したが、端末標準キーボードの方が扱いやすいため同日に廃止（`quiz-spelling-pad` / `LEAP_SPELLING_KB_V1` は現存しない）。`APP_VER=leap-v39-spelling-autofocus` / `CACHE=leap-v61`。|
 | 2026-11-28 | 🏆 実績を 93 → **115** に増強し、進捗が見えるようにした。①到達度テスト・語源ラッシュ／神経衰弱・累計解答数・1日の解答数・Part 4/5 制覇・古文150語踏破などを追加（カテゴリ `exam` / `game` を新設）。②数値系の実績に `progress` / `ACHIEVEMENT_PROGRESS` を追加し、未達成の行に進捗バーと「n / m」を表示。モーダル上部に「🎯 あと少しで解除」（達成率上位3件）を追加。③初見向け UI 改善として、ホームの副次メニュー（テスト・模試・記録・語源・辞典・ご意見・設定）を「📚 ほかのメニュー」の折りたたみに移動し、ヘッダー「?」／設定／初回ガイドから開ける**使い方ガイド（`guide-modal`）**を追加。④範囲選択画面の先頭に「迷ったらそのままスタートでOK」の案内を追加。`APP_VER=leap-v38-achievements-guide` / `CACHE=leap-v60`。|

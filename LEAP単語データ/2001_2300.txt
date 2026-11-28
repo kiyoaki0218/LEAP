@@ -11,7 +11,7 @@
 　例文：
 
 2003
-　circulate　[sé:rkjulèit]　自：①循環する ②〜を循環させる
+　circulate　[séːrkjulèit]　自：①循環する ②〜を循環させる
 　ーーー
 　コラム：ぐるぐると回る circ-[円]+-ate[動詞語尾] ☆círcle「円」 circulation「循環,流布,発行部数」 círcular「円形の」
 　例文：
@@ -74,7 +74,7 @@
 　　※対応単語（赤色）：frown ／ 眉をひそめる
 
 2013
-　hatch　[hæt∫]　自：①(卵から)かえる、孵化する 他②(卵から)〜をかえす ③(計画など)を企てる
+　hatch　[hætʃ]　自：①(卵から)かえる、孵化する 他②(卵から)〜をかえす ③(計画など)を企てる
 　ーーー
 　コラム：(鳥、魚、は虫類が卵から)かえる 宇宙船などの出入り口の「ハッチ」もこの単語に由来。
 　例文：Don't count your chickens before they are hatched. 「捕らぬ狸の皮算用(かえる前にヒヨコを数えるな).」
@@ -116,7 +116,7 @@
 　　※対応単語（赤色）：cater ／ 料理を用意する、cater ／ 要望に応える
 
 2019
-　flush　[flʌ∫]　自：①(ほおなどが)紅潮する 他②〜を水で流す
+　flush　[flʌʃ]　自：①(ほおなどが)紅潮する 他②〜を水で流す
 　ーーー
 　コラム：flu-[流れる]+-sh[動詞化] ☆flúid「流体」
 　例文：
@@ -128,7 +128,7 @@
 　例文：
 
 2021
-　endorse　[indó:rs]　他：(計画、候補者など)を支持する
+　endorse　[indóːrs]　他：(計画、候補者など)を支持する
 　ーーー
 　コラム：何[誰]かに対して公に支持[承認]する 遠藤推す考えを「支持する」 元は「(書類などに)裏書きする」の意味
 　例文：
@@ -158,7 +158,7 @@
 　例文：
 
 2026
-　forge　[fó:rdz]　他：①(関係など)を築く ②〜を偽造する
+　forge　[fóːrdz]　他：①(関係など)を築く ②〜を偽造する
 　ーーー
 　コラム：①「(新しく、強力な関係)を築く」 ②「(サインなど)を偽造する」 fac-[=fic, fec作る、行う]と同語源 *fórm「〜を形作る」
 　例文：
@@ -251,7 +251,7 @@
 　例文：
 
 2040
-　alleviate　[əlí:vièit]　他：(苦痛・困難など)を軽減する
+　alleviate　[əlíːvièit]　他：(苦痛・困難など)を軽減する
 　ーーー
 　コラム：(問題・状況など)を改善するから(負の感情など)を緩和するまで ★al-[=ad- 方向]+-lev-[=léver 持ち上げる]→「持ち上げて軽くする」 ☆élevate「持ち上げる(→持ち上げ外へ出す)」 rélevant「関連のある」
 　例文：
@@ -275,13 +275,13 @@
 　例文：
 
 2044
-　discard　[diská:rd]　他：(不要品)を捨てる
+　discard　[diskáːrd]　他：(不要品)を捨てる
 　ーーー
 　コラム：しばしば捨ててはいけない場所に捨てる (*日常では throw ~ away のほうが使われる) ★dis-[バラバラ]+-card[カード]→「(トランプの)カードをバラバラにして捨てる」
 　例文：
 
 2045
-　curb　[ká:rb]　他：①〜を抑制する 名②縁石
+　curb　[káːrb]　他：①〜を抑制する 名②縁石
 　ーーー
 　コラム：①「(病気、インフレなど)を下にカーブさせる」 ②「カーブした所」 *curve「曲線,カーブ」
 　例文：
@@ -315,7 +315,7 @@
 　　※対応単語（赤色）：lure ／ 誘い込む
 
 2050
-　reassure　[ri:əfúər]　他：〜を安心させる
+　reassure　[riːəfúər]　他：〜を安心させる
 　ーーー
 　コラム：心配することはないよと言って安心させる ★re-[再び]+-assure[保証する]→「(何度も保証して)安心させる」
 　例文：reassure an anxious patient 「不安な患者を安心させる」
@@ -350,13 +350,13 @@
 　　※対応単語（赤色）：enlighten ／ 啓蒙する
 
 2055
-　unleash　[ʌnlí:∫]　他：(怒りなど)を爆発させる、〜の束縛を解く
+　unleash　[ʌnlíːʃ]　他：(怒りなど)を爆発させる、〜の束縛を解く
 　ーーー
 　コラム：抑えていた感情や暴力などを解き放す un-[逆動作]+-leash[革ひも]から「束縛から解き放たれる」 ☆uncover「〜を明らかにする」 unveil「〜を明らかにする」
 　例文：
 
 2056
-　prolong　[prəló:ŋ]　他：(時間・期間・感情など)を長引かせる
+　prolong　[prəlóːŋ]　他：(時間・期間・感情など)を長引かせる
 　ーーー
 　コラム：少しでも長く継続するようにする pro-[前方]+-long[長い]から「前へ長くする」→「長引かせる」 ●shorten「〜を短くする」 life-prolonging device「延命装置」
 　例文：
@@ -380,7 +380,7 @@
 　例文：
 
 2060
-　exert　[igzó:rt]　他：(力、影響力など)を働かせる
+　exert　[igzóːrt]　他：(力、影響力など)を働かせる
 　ーーー
 　コラム：堅い語 ★ex-[外に]+-ert[出す]から「(力)を外に出す」→「(力)を働かせる」 ☆inért「不活性の(←出さない)」 名 exertion「(肉体的,精神的に激しい)努力,行使」
 　例文：
@@ -405,7 +405,7 @@
 　　※対応単語（赤色）：pierced ／ 穴を開けてもらう
 
 2064
-　harness　[há:rnis]　他：(自然の力など)を利用する
+　harness　[háːrnis]　他：(自然の力など)を利用する
 　ーーー
 　コラム：荒れる自然を手懐けて利用する 「馬を操るための馬具」が元の意味
 　例文：harness the forces of nature 「自然の諸力を利用する」
@@ -440,28 +440,28 @@
 　　※対応単語（赤色）：assimilate ／ 吸収する、assimilated ／ 溶け込む
 
 2069
-　discern　[disó:rn]　他：〜を見分ける
+　discern　[disóːrn]　他：〜を見分ける
 　ーーー
 　コラム：(慎重に観察,思考して)気づく dis-[バラバラ]+-cern[分ける] *sécret「秘密(←分け離されたもの)」
 　例文：discern the slight difference 「そのささいな違いを見分ける」
 　　※対応単語（赤色）：discern ／ 見分ける
 
 2070
-　scrutinize　[skrú:tənàiz]　他：〜を詳細に調べる、精査する
+　scrutinize　[skrúːtənàiz]　他：〜を詳細に調べる、精査する
 　ーーー
 　コラム：調査の厳密さや精密さを強調した語 (=examine ~ very carefully) ★scráp「ゴミ」まで「詳細に調べる」と覚えよう 名 scrútiny「精査,吟味」
 　例文：scrutinize the document 「その書類を精査する」
 　　※対応単語（赤色）：scrutinize ／ 精査する
 
 2071
-　streamline　[strí:mláin]　他：(作業・組織など)〜を合理化する
+　streamline　[stríːmláin]　他：(作業・組織など)〜を合理化する
 　ーーー
 　コラム：作業や組織などをより簡素に能率的にする 「流線型(←stréam「流れ」+líne「線」)」が元の意味
 　例文：streamline the production process 「製造過程を合理化する」
 　　※対応単語（赤色）：streamline ／ 合理化する
 
 2072
-　mentor　[ménto:r]　他：①〜を指導する 名②(会社、大学などでの)指導者
+　mentor　[méntoːr]　他：①〜を指導する 名②(会社、大学などでの)指導者
 　ーーー
 　コラム：★面と向かって「指導する」 a mentoring program「メンター制度」
 　例文：
@@ -479,7 +479,7 @@
 　例文：
 
 2075
-　presume　[prizú:m]　他：①(人が主語)〜と推定する ②(計画などが主語)〜を前提とする
+　presume　[prizúːm]　他：①(人が主語)〜と推定する ②(計画などが主語)〜を前提とする
 　ーーー
 　コラム：(確信をもって)推定する ★pre-[前に]+-sume[=take 取る]→「事前に〜と考える」 名 presúmption「推定,推論,厚かましさ」
 　例文：
@@ -535,20 +535,20 @@
 　　※対応単語（赤色）：evoke ／ 呼び起こす
 
 2084
-　harbor　[há:rbər]　他：①(悪意・疑いなど)を心に抱く ②(菌など)を住まわせる
+　harbor　[háːrbər]　他：①(悪意・疑いなど)を心に抱く ②(菌など)を住まわせる
 　ーーー
 　コラム：hárbor「港」から「港の中に入れる(かくまう)」→「心に抱く」 hárbor「(自然の地形を利用した)港」 pórt「(町を含む)商港」
 　例文：harbor deep resentment against him 「彼に深い憤りを抱く」 ／ Dirty towels can harbor dangerous germs. 「汚れたタオルは危険なばい菌の住処になりうる(ばい菌を住まわせる)。」
 　　※対応単語（赤色）：harbor ／ 抱く、harbor ／ 住処になりうる(ばい菌を住まわせる)
 
 2085
-　friction　[frík∫ən]　名：摩擦
+　friction　[fríkʃən]　名：摩擦
 　ーーー
 　コラム：(物と物の)摩擦から(国と国の)不和まで fríctional「摩擦の」 ⇨ frictional heat「摩擦熱」
 　例文：
 
 2086
-　mutation　[mju:téi∫ən]　名：突然変異
+　mutation　[mjuːtéiʃən]　名：突然変異
 　ーーー
 　コラム：生物用語 mut-[変化する]+-tion[こと] ☆commúte「通勤する(←場所を変える)」
 　例文：
@@ -566,7 +566,7 @@
 　例文：
 
 2089
-　veterinarian　[vètərənέəriən]　名：獣医
+　veterinarian　[vètərənéəriən]　名：獣医
 　ーーー
 　コラム：vét と略すこともある véteran「退役軍人」
 　例文：
@@ -578,7 +578,7 @@
 　例文：
 
 2091
-　obesity　[oubí:səti]　名：(病的な)肥満
+　obesity　[oubíːsəti]　名：(病的な)肥満
 　ーーー
 　コラム：ob-[=against]+-es-[=eat]→「逆らって食べる」 *object「反対する」 形 obése「肥満の(←overweight「太った」の深刻な状態)」 fát「脂肪」
 　例文：
@@ -590,38 +590,38 @@
 　例文：
 
 2093
-　dementia　[dimén∫iə]　名：認知症
+　dementia　[diménʃiə]　名：認知症
 　ーーー
 　コラム：脳や記憶に影響し、正常な思考や行動ができなくなる病気 de-[=down 下に]+-men-[記憶]+-ia[名詞語尾]→「記憶が低下すること」 *mémory「記憶」 mémoir「回顧録」 memento「思い出の品」
 　例文：
 
 2094
-　diabetes　[dàiəbí:tis]　名：糖尿病
+　diabetes　[dàiəbíːtis]　名：糖尿病
 　ーーー
 　コラム：インスリン作用不足により高血糖の状態が続く病気 ★dia-[横切る]+-betes[=go行く]→「(尿が)通り抜ける」
 　例文：develop [suffer from] diabetes 「糖尿病になる[を患う]」
 　　※対応単語（赤色）：diabetes ／ 糖尿病
 
 2095
-　placebo　[pləsi:bou]　名：偽薬、プラシーボ
+　placebo　[pləsiːbou]　名：偽薬、プラシーボ
 　ーーー
 　コラム：薬効の試験のために対照群(contróls)に使われる薬効のない薬 *pléase「〜を喜ばせる」と同じ語源で、「患者を喜ばせるための(気休めの)薬」と覚えよう
 　例文：
 
 2096
-　malnutrition　[mælnju:trí∫ən]　名：栄養失調
+　malnutrition　[mælnjuːtríʃən]　名：栄養失調
 　ーーー
 　コラム：必要な食べ物を十分に食べていない状態 mal-[悪い、不十分な]+-nutrition[栄養]→「栄養が不十分なこと」 *malária「マラリア」(mal-[悪い]+-aria[空気] *かつて、マラリアは「悪い空気によって感染する病気」だと信じられていた) nutrition「栄養(の摂取)」
 　例文：
 
 2097
-　dehydration　[di:haidréi∫ən]　名：脱水(症状)
+　dehydration　[diːhaidréiʃən]　名：脱水(症状)
 　ーーー
 　コラム：物質中にある水分を取り除く[なくなる]こと de-[=down 下に]+-hydra-[水]→「水の消失」 ☆hydrogen「水素」 a spin dryer「脱水機」
 　例文：
 
 2098
-　abortion　[əbó:r∫ən]　名：(妊娠)中絶(手術)
+　abortion　[əbóːrʃən]　名：(妊娠)中絶(手術)
 　ーーー
 　コラム：人工的に流産(miscarriage)させること ab-[=away]+-or-[=origin 生まれる]→「生まれるものを流す」 *órient「東洋の(←日の昇るところ)」 他 abort「〜を中絶する」
 　例文：
@@ -639,7 +639,7 @@
 　例文：
 
 2101
-　cardiologist　[kà:rdiálədzist]　名：心臓専門医
+　cardiologist　[kàːrdiálədzist]　名：心臓専門医
 　ーーー
 　コラム：heart の専門用語は cárdiac「心臓の」になる card-[=cord-心→心臓] *córdial「心からの」 cardiólogy「心臓(病)学」 cárdioid「《数学》心臓形」 cardiovascular「心臓血管の」
 　例文：
@@ -651,7 +651,7 @@
 　例文：
 
 2103
-　posture　[pást∫ər]　名：姿勢
+　posture　[pástʃər]　名：姿勢
 　ーーー
 　コラム：通例、(体の)姿勢 ★post-[置く]+-ture[状態]から「体の置かれた状態」→「姿勢」
 　例文：You have good posture. 「君は姿勢がいい。」
@@ -684,34 +684,34 @@
 　　※対応単語（赤色）：asylum ／ 亡命
 
 2108
-　workforce　[wá:rkfò:rs]　名：労働人口、総労働力
+　workforce　[wáːrkfòːrs]　名：労働人口、総労働力
 　ーーー
 　コラム：ある業種、会社で働く全人員 work-[労働]+-force[力]→「労働力」
 　例文：cut [slash] one's workforce 「〜の従業員数を削減する」
 　　※対応単語（赤色）：workforce ／ 従業員数
 
 2109
-　prefecture　[prí:fekt∫ər]　名：県、府
+　prefecture　[príːfektʃər]　名：県、府
 　ーーー
-　コラム：▶東京都は Tokyo Metropolis、「北海道」は Hokkaido と表現する cóunty [káunti]「郡」 wárd [wó:rd]「区」
+　コラム：▶東京都は Tokyo Metropolis、「北海道」は Hokkaido と表現する cóunty [káunti]「郡」 wárd [wóːrd]「区」
 　例文：
 
 2110
-　hierarchy　[háiərà:rki]　名：階層構造
+　hierarchy　[háiəràːrki]　名：階層構造
 　ーーー
 　コラム：ピラミッド状態の序列化された組織 日本語でも「ヒエラルキー」はよく使われるが、発音が違うので注意 形 hierarchical「(社会・組織などが)階層的な、階級的な」
 　例文：a social hierarchy 「社会階層構造」
 　　※対応単語（赤色）：hierarchy ／ 階層構造
 
 2111
-　autonomy　[ɔ:tánəmi]　名：自治(権)、自主性
+　autonomy　[ɔːtánəmi]　名：自治(権)、自主性
 　ーーー
 　コラム：自らを管理する自由 auto-[自己]+-nomy[=nórm法] 形 autónomous「自治の」
 　例文：the era of local autonomy 「地方自治の時代」
 　　※対応単語（赤色）：autonomy ／ 自治
 
 2112
-　delegation　[dèligéi∫ən]　名：代表団、使節団
+　delegation　[dèligéiʃən]　名：代表団、使節団
 　ーーー
 　コラム：会社,組織,国などを代表する人々の集団 de-[分離]+-legat-[送る]+-ion[名詞語尾]→「権限を(分離して)持たせ、送ること」 名 délegate「代表団(の1人)」 他「〜を代表として派遣する」
 　例文：
@@ -742,13 +742,13 @@
 　例文：
 
 2117
-　surplus　[sé:rpləs]　名：①余剰 ②(会計・財政)剰余金、黒字
+　surplus　[séːrpləs]　名：①余剰 ②(会計・財政)剰余金、黒字
 　ーーー
 　コラム：必要以上にあるもの、収入から必要経費を差し引いたお金 sur-[上]+-plus[プラス]→「必要な状態よりも上でプラスになっている」
 　例文：
 
 2118
-　expertise　[èkspərtí:z]　名：専門的知識、専門的技術〈不可算〉
+　expertise　[èkspərtíːz]　名：専門的知識、専門的技術〈不可算〉
 　ーーー
 　コラム：éxpert (on〜)「(〜の)専門家」
 　例文：
@@ -761,7 +761,7 @@
 　　※対応単語（赤色）：quota ／ ノルマ
 
 2120
-　subordinate　[səbó:rdənət]　名：①部下 形②下位の
+　subordinate　[səbóːrdənət]　名：①部下 形②下位の
 　ーーー
 　コラム：組織内での下の地位にいる者 sub-[下]+-ordi-[órder 順序]→「序列が下の者」 bóss [supérior]「上司」
 　例文：
@@ -780,7 +780,7 @@
 　例文：
 
 2123
-　correlation　[kɔ:rəléi∫ən]　名：相関(関係)
+　correlation　[kɔːrəléiʃən]　名：相関(関係)
 　ーーー
 　コラム：片方がもう片方の原因となっているような両者の関係 cor-[=con 共に]+-relation「関係」→「共に関係している」 自/他 córrelate「〜を相互に関係づける」 形 corrélative「相関的な」
 　例文：
@@ -799,20 +799,20 @@
 　　※対応単語（赤色）：disparity ／ 格差
 
 2126
-　divergence　[divá:rdzəns]　名：逸脱、相違、《数学》発散
+　divergence　[diváːrdzəns]　名：逸脱、相違、《数学》発散
 　ーーー
 　コラム：dífference よりも堅い表現 di-[=dis バラバラ]+-ver-[回る]→「回ってバラバラになり、離れていく」
 　例文：divergence between ideal and reality 「理想と現実の相違」
 　　※対応単語（赤色）：divergence ／ 相違
 
 2127
-　clash　[klæ∫]　名：①衝突、対立 自②(with〜)衝突する
+　clash　[klæʃ]　名：①衝突、対立 自②(with〜)衝突する
 　ーーー
 　コラム：(物、意見などが)衝突すること ◇crásh「(衝突して)破損する」 ★金属などがぶつかり合う擬音語からできた語
 　例文：
 
 2128
-　persecution　[pə:rsikjú:∫ən]　名：迫害
+　persecution　[pəːrsikjúːʃən]　名：迫害
 　ーーー
 　コラム：(主に宗教的,政治的理由で)しいたげること per-[=through 通して、ずっと]+-secu-[後を追う]+-tion[こと] *sécond「第2の(←1に続く)」 他 persecute「〜を迫害する」
 　例文：
@@ -863,7 +863,7 @@
 　例文：
 
 2136
-　pitfall　[pítfò:l]　名：(通例-s)落とし穴、隠れた危険
+　pitfall　[pítfòːl]　名：(通例-s)落とし穴、隠れた危険
 　ーーー
 　コラム：pit-[穴]+-fall「落下」→「(動物などを捕らえるための)落とし穴」
 　例文：pitfalls of e-commerce 「電子商取引の落とし穴」
@@ -876,7 +876,7 @@
 　例文：
 
 2138
-　upheaval　[ʌphí:vəl]　名：大変動
+　upheaval　[ʌphíːvəl]　名：大変動
 　ーーー
 　コラム：問題を起こすことになる大きな変化 up-[上]+-heaval[持ち上げること]から「隆起」→「大変動」 他 uproot「(住み慣れた土地から)〜を引き離す」
 　例文：weather the economic upheaval 「経済の大変動を乗り切る」
@@ -889,7 +889,7 @@
 　例文：
 
 2140
-　threshold　[θré∫hould]　名：(新しいものの)始まり
+　threshold　[θréʃhould]　名：(新しいものの)始まり
 　ーーー
 　コラム：(新時代、新局面などの)始まり ★元は「敷居」で、「闘(ある反応が発生する境界点)」の意味もある
 　例文：We are at the threshold of a new era. 「私たちは新たな時代の入り口にいる。」
@@ -910,7 +910,7 @@
 　　※対応単語（赤色）：momentum ／ 勢い
 
 2143
-　deterrent　[dité:rənt]　名：抑止するもの
+　deterrent　[ditéːrənt]　名：抑止するもの
 　ーーー
 　コラム：何かをすることを思いとどまらせるもの de-[分離]+-ter-[=terror 恐怖]→「怖がらせて引き離す」 他 detér「(恐怖・不安が)〜を思いとどまらせる」
 　例文：act as a deterrent to crime 「犯罪の抑止力として機能する」
@@ -929,7 +929,7 @@
 　例文：
 
 2146
-　internship　[íntərn∫ip]　名：実務研修、医学研修
+　internship　[íntərnʃip]　名：実務研修、医学研修
 　ーーー
 　コラム：主に学生が経験を積むための短期間の仕事 名 intern「実務研修中の学生、医学研修生」
 　例文：do a six-month internship 「半年間の実務研修をする」
@@ -943,26 +943,26 @@
 　　※対応単語（赤色）：paradigm ／ パラダイムシフト
 
 2148
-　altruism　[æltru:izm]　名：利他主義
+　altruism　[æltruːizm]　名：利他主義
 　ーーー
 　コラム：他者の利益になるよう行動する者 ★altr-[ほかのもの]+-ism[主義]→「ほかのものを大切にする主義」 ☆álibi「アリバイ(←ほかの場所にいた)」 他 álter「〜を変える(←ほかのものにする)」 形 altruistic「利他主義の」 名 altruist「利他主義者」 名 égoism「利己主義」
 　例文：
 
 2149
-　claustrophobia　[klɔ:strəfóubiə]　名：閉所恐怖症
+　claustrophobia　[klɔːstrəfóubiə]　名：閉所恐怖症
 　ーーー
 　コラム：= extreme or irrational fear of confined areas claustro-[=clósed 閉じた(場所)]+-phobia[恐怖] acrophobia「高所恐怖症」 xenophobia「外国人恐怖症」 -phobia「〜恐怖症」(⇔名-phile「〜を愛する人」 ⇨ áudiophile「オーディオ愛好家」)
 　例文：I have claustrophobia, so I cannot take elevators. 「私は閉所恐怖症なのでエレベータに乗れない。」
 　　※対応単語（赤色）：claustrophobia ／ 閉所恐怖症
 
 2150
-　Antarctic　[æntá:rktik]　名：(the-)南極(地方)
+　Antarctic　[æntáːrktik]　名：(the-)南極(地方)
 　ーーー
 　コラム：◇the South Pole「南極」 ant-[=against 対して]+-arctic「北極」→「北極の反対」 (*南極は北極よりも後に発見された)
 　例文：
 
 2151
-　latitude　[lætətjù:d]　名：緯度(省略形 lat.)
+　latitude　[lætətjùːd]　名：緯度(省略形 lat.)
 　ーーー
 　コラム：◇lóngitude「経度」 名 áltitude「高度」 ★lóngitude「経度」のほうが「長い(lóng)」と覚えよう the equátor「赤道(←両極からの距離が等しい線)」
 　例文：
@@ -988,14 +988,14 @@
 　　※対応単語（赤色）：calamity ／ 戦禍(戦争による災害)
 
 2155
-　precipitation　[prisipətéi∫ən]　名：降水(量)、〈化学〉沈殿
+　precipitation　[prisipətéiʃən]　名：降水(量)、〈化学〉沈殿
 　ーーー
 　コラム：rainfall「降雨」の堅い表現 pre-[前に]+-cip-[=cap頭]→「真っ逆さま(頭から先)に落ちる」
 　例文：a linear precipitation zone [belt] 「線状降水帯」
 　　※対応単語（赤色）：precipitation ／ 降水
 
 2156
-　meteor　[mi:tiər]　名：流星、隕石
+　meteor　[miːtiər]　名：流星、隕石
 　ーーー
 　コラム：日常では a shooting star のほうが使われる。なお、méteor が地上に落ちてきた場合、méteorite「隕石」となる ★見(み)てやあの「流星」 meteorology「気象学」 the Milky Way「天の川」
 　例文：A meteor shot across the night sky. 「流星が夜空を横切った。」
@@ -1015,7 +1015,7 @@
 　　※対応単語（赤色）：eclipse ／ 食
 
 2159
-　glacier　[gléi∫ər]　名：氷河
+　glacier　[gléiʃər]　名：氷河
 　ーーー
 　コラム：(低地に向かってゆっくりと流れ出る)氷のかたまり ◇íceberg「氷山(←海に浮かぶ氷のかたまり)」 形 glácial「氷河の、遅々とした」 ⇨ the glacial epoch「氷河期」
 　例文：
@@ -1047,7 +1047,7 @@
 　例文：
 
 2164
-　offspring　[ɔ:fsprin]　名：(集合的に)(人間・動物の)子、子孫
+　offspring　[ɔːfsprin]　名：(集合的に)(人間・動物の)子、子孫
 　ーーー
 　コラム：◇a child「(人間の)子」 ★off-[離れて]+-spring[跳ぶ]→「親から飛び出てきた(離れた)物」
 　例文：a tiger and its offspring 「トラとその子ども」
@@ -1061,13 +1061,13 @@
 　　※対応単語（赤色）：livestock ／ 畜産
 
 2166
-　carnivore　[ká:rnəvɔ:r]　名：肉食動物〈可算〉
+　carnivore　[káːrnəvɔːr]　名：肉食動物〈可算〉
 　ーーー
 　コラム：= an animal that eats flesh carni-[肉]+-vore[むさぼる] *cárnival「謝肉祭、祭り」 他 devour「〜をむさぼり食う」 名 hérbivore「草食動物」 名 ómnivore「雑食動物」
 　例文：
 
 2167
-　vertebrate　[vá:rtəbrət]　名：①脊椎動物 形②脊椎動物の
+　vertebrate　[váːrtəbrət]　名：①脊椎動物 形②脊椎動物の
 　ーーー
 　コラム：backbone (脊椎・背骨)を持つ生物のこと ★vert-[回る]→「脊椎(回転するもの)を持つもの」 ☆vértical「垂直の(←90度回転した)」 名 invértebrate「無脊椎動物」 名 vértebra「脊椎骨」
 　例文：
@@ -1086,7 +1086,7 @@
 　例文：
 
 2170
-　cortex　[kó:rteks]　名：皮質
+　cortex　[kóːrteks]　名：皮質
 　ーーー
 　コラム：(藻、菌などの)表皮層から(臓器の)表層の部分まで 「木の皮」が元の意味 the adrenal cortex「副腎皮質」
 　例文：the cerebral cortex 「大脳皮質」
@@ -1100,7 +1100,7 @@
 　　※対応単語（赤色）：siblings ／ きょうだい
 
 2172
-　extrovert　[ékstrəvə:rt]　名：外交的な人
+　extrovert　[ékstrəvəːrt]　名：外交的な人
 　ーーー
 　コラム：活発で自信があり、他者との交流を楽しむ人 extro-[外に]+-vert[回る→向く]→「(気持ちが)外に向いている人」 名 introvert「内向的な人」
 　例文：
@@ -1119,7 +1119,7 @@
 　　※対応単語（赤色）：plight ／ 窮状
 
 2175
-　turmoil　[tá:rmoil]　名：混乱
+　turmoil　[táːrmoil]　名：混乱
 　ーーー
 　コラム：(政治・経済的な)混乱から情緒不安定まで tur-[=turn 回す→かき乱す] ☆distúrb「〜に迷惑をかける、〜を乱す」
 　例文：be thrown into turmoil 「混乱に陥る」
@@ -1133,14 +1133,14 @@
 　　※対応単語（赤色）：fallacy ／ 誤謬
 
 2177
-　loophole　[lú:phəul]　名：抜け穴
+　loophole　[lúːphəul]　名：抜け穴
 　ーーー
 　コラム：(法律や税制などから)うまく逃れるための手段 *loop-[輪]+-hole[穴] (*軍事用語の「銃眼(城壁などの内部から銃などを構えて射撃するために備え付けられた小さな窓)」が元の意味)
 　例文：a loophole in the law 「法の抜け穴」
 　　※対応単語（赤色）：loophole ／ 抜け穴
 
 2178
-　congestion　[kəndzést∫ən]　名：混雑、充血
+　congestion　[kəndzéstʃən]　名：混雑、充血
 　ーーー
 　コラム：(人、物、血などが)過剰に集まること ★con-[共に]+-gest-[運ぶ]から「一緒に運んで、詰め込むこと」→「混雑」 ☆digést「〜を消化する」(di-[分離]) traffic congestion「交通渋滞」
 　例文：
@@ -1172,14 +1172,14 @@
 　　※対応単語（赤色）：Longevity ／ 長寿
 
 2183
-　detour　[dí:tuər]　名：回り道
+　detour　[díːtuər]　名：回り道
 　ーーー
 　コラム：(人生などにおいて)〜まで遠回りする、紆余曲折する は have a lot of twists and turns before 〜 などと表現する ◆de-[分離]+-tour[回る]→「(直接的な道から)離れた、曲がっている(回る)道」 *contour line「等高線」 名 shortcut「近道」
 　例文：make a detour 「回り道をする」
 　　※対応単語（赤色）：detour ／ 回り道
 
 2184
-　sewage　[sú:idz]　名：下水、(下水の)汚物、汚水
+　sewage　[súːidz]　名：下水、(下水の)汚物、汚水
 　ーーー
 　コラム：使用済みの汚れた水 *sew-[排水]+-age[名詞語尾]→「下水(←出された水)」 ☆shower「シャワー」 名 séwer「下水管」 名 drain「排水溝」
 　例文：
@@ -1198,7 +1198,7 @@
 　　※対応単語（赤色）：appliances ／ 家電(家庭用機器)
 
 2187
-　cuisine　[kwizí:n]　名：(独特の)料理(法)
+　cuisine　[kwizíːn]　名：(独特の)料理(法)
 　ーーー
 　コラム：(ある地域における)独特の料理(法) 他 cook「(火を使って)料理する」と同語源
 　例文：Spanish cuisine 「スペイン料理」
@@ -1218,20 +1218,20 @@
 　　※対応単語（赤色）：staple ／ 主食
 
 2190
-　scenario　[sinέəriòu]　名：(予想される)筋書き、事態、科学的モデル
+　scenario　[sinéəriòu]　名：(予想される)筋書き、事態、科学的モデル
 　ーーー
 　コラム：「脚本」の意味もあるが、一般には「事態」の意味で使うことが多い scéne「(劇、小説・映画などの)舞台」と同語源で、「劇の筋書き」から
 　例文：
 
 2191
-　autograph　[ɔ:təgræf]　名：(有名人などの)サイン
+　autograph　[ɔːtəgræf]　名：(有名人などの)サイン
 　ーーー
 　コラム：◇signature「(書類の)署名」 auto-[自己]+-graph[描く]→「自分で書いたもの」 *autónomy「自治(←自分で統治すること)」 名 autobiography「自伝」
 　例文：a ball with Otani's autograph 「大谷のサイン入りボール」
 　　※対応単語（赤色）：autograph ／ サイン
 
 2192
-　archive　[á:rkaiv]　名：①(-s)(集合的に)記録文書、公文書 ②公文書保管庫
+　archive　[áːrkaiv]　名：①(-s)(集合的に)記録文書、公文書 ②公文書保管庫
 　ーーー
 　コラム：①「(保管された)古い公的な記録」 ★「(単一の)記録」は document, récord を用いる
 　例文：
@@ -1243,7 +1243,7 @@
 　例文：
 
 2194
-　connotation　[kànətéi∫ən]　名：言外の意味、含意
+　connotation　[kànətéiʃən]　名：言外の意味、含意
 　ーーー
 　コラム：(文字どおりの意味に加えられる)言外の意味 con-[共に]+-note-[印→表示]から「(言葉と)共に表示する意味」
 　例文：a negative connotation 「否定的な含意」
@@ -1256,7 +1256,7 @@
 　例文：
 
 2196
-　lord　[lɔ:rd]　名：①(通例 the Lord)神 ②高位の貴族、支配者
+　lord　[lɔːrd]　名：①(通例 the Lord)神 ②高位の貴族、支配者
 　ーーー
 　コラム：①から発展して、「神のような存在」という意味でも使用する **landlord「家主,地主(←土地の支配者)」
 　例文：
@@ -1281,14 +1281,14 @@
 　　※対応単語（赤色）：pilgrims ／ 巡礼者
 
 2200
-　salvation　[sælvéi∫ən]　名：救済
+　salvation　[sælvéiʃən]　名：救済
 　ーーー
 　コラム：(魂の)救済から(損害・失敗などからの)救済まで 他 sáve「救う」と同系語 名 sálvage「海難救助」
 　例文：seek salvation 「救いを求める」
 　　※対応単語（赤色）：salvation ／ 救い
 
 2201
-　artifact　[á:rtəfækt]　名：(考古学的価値のある)人工遺物、出土品(〈英〉artefact)
+　artifact　[áːrtəfækt]　名：(考古学的価値のある)人工遺物、出土品(〈英〉artefact)
 　ーーー
 　コラム：(自然のものに対して)過去に人間によって作られた重要な物品 ★art-[つなぐ→技術]+-fact[作る]→「(人間の技術によって)作られたもの」
 　例文：
@@ -1300,7 +1300,7 @@
 　例文：
 
 2203
-　cue　[kjú:]　名：合図、キュー
+　cue　[kjúː]　名：合図、キュー
 　ーーー
 　コラム：何かを始める、または行動を起こすための指示 (right) on cue「ぴったりのタイミングで」
 　例文：wait for a cue from the stage manager 「舞台監督からの合図を待つ」
@@ -1321,7 +1321,7 @@
 　　※対応単語（赤色）：melancholy ／ ふさぎ込んでいた
 
 2206
-　self-esteem　[selfistí:m]　名：自尊心
+　self-esteem　[selfistíːm]　名：自尊心
 　ーーー
 　コラム：自分が認められ[評価され]ているという気持ち self-[自身]+-esteem[価値を置く]→「自分自身に価値を置く」 ☆éstimate「(数など)を推定する(←価値を見積もる)」
 　例文：build my self-esteem 「自尊心を高める」
@@ -1334,7 +1334,7 @@
 　例文：
 
 2208
-　precaution　[prikó:∫ən]　名：用心、予防策
+　precaution　[prikóːʃən]　名：用心、予防策
 　ーーー
 　コラム：危険なことや不快なことが起きないように手段を講じること pre-[前に]+-caution[用心]→「前もって用心しておくこと」
 　例文：
@@ -1346,14 +1346,14 @@
 　例文：
 
 2210
-　apprehension　[æprihén∫ən]　名：①不安 ②逮捕
+　apprehension　[æprihénʃən]　名：①不安 ②逮捕
 　ーーー
 　コラム：②日常では arrést のほうが使われる ap-[=ad 方向]+-prehen-[つかむ]→「心や体をつかまれること」 *comprehend「〜を理解している(←すべてをつかむ)」
 　例文：feel sick with apprehension 「不安で気分が悪い」 ／ the apprehension of smugglers 「密輸業者の逮捕」
 　　※対応単語（赤色）：apprehension ／ 不安、apprehension ／ 逮捕
 
 2211
-　scorn　[skó:rn]　名：軽蔑
+　scorn　[skóːrn]　名：軽蔑
 　ーーー
 　コラム：他人の考えや行動などを拒絶したり、見下したりすること ★スコーンと「軽蔑」する 他 scórn「〜を軽蔑する」 形 scornful「軽蔑した」
 　例文：look at him with scorn 「彼を軽蔑の目で見る」
@@ -1374,14 +1374,14 @@
 　　※対応単語（赤色）：sentiment ／ 感情
 
 2214
-　verge　[vá:rdz]　名：①瀬戸際、寸前 ②道路べり、(場所の)縁
+　verge　[váːrdz]　名：①瀬戸際、寸前 ②道路べり、(場所の)縁
 　ーーー
 　コラム：★馬耳(ばじ)東風で「瀬戸際」に立つ
 　例文：Anne was on the verge of tears. 「アンは泣き出す寸前だった。」 ／ the verge of the lake 「その湖の縁」
 　　※対応単語（赤色）：verge ／ 寸前、verge ／ 縁
 
 2215
-　plausible　[pló:zəbl]　形：(説明、言い訳などが)もっともらしい
+　plausible　[plóːzəbl]　形：(説明、言い訳などが)もっともらしい
 　ーーー
 　コラム：(実際には違うかもしれないが)一見、合理的で信じられそうな plaus-[拍手する]+-ible[可能]→「(なるほどと)拍手できてしまうような」 *applaud「拍手する」
 　例文：make a plausible excuse 「もっともらしい言い訳をする」
@@ -1435,7 +1435,7 @@
 　　※対応単語（赤色）：bilateral ／ 二国間
 
 2223
-　feudal　[fjú:dl]　形：(主に欧州の)封建制の
+　feudal　[fjúːdl]　形：(主に欧州の)封建制の
 　ーーー
 　コラム：★feud-[領地]+-al[関わる] ☆fée「報酬(←封建制の領地)」
 　例文：
@@ -1455,7 +1455,7 @@
 　　※対応単語（赤色）：complementary ／ 補い合う
 
 2226
-　pertinent　[pó:rtənənt]　形：①(直接)関連のある ②適切な
+　pertinent　[póːrtənənt]　形：①(直接)関連のある ②適切な
 　ーーー
 　コラム：①「関連があり、重要な」 ★per-[=through 通して]+-tine-[保つ→続く]から「何かを通して続いている」→「関連のある」 ☆cóntinent「大陸(←陸が続いている)」
 　例文：
@@ -1489,7 +1489,7 @@
 　　※対応単語（赤色）：drastic ／ 抜本的な
 
 2231
-　ubiquitous　[ju:bíkwətəs]　形：遍在している、至る所にある
+　ubiquitous　[juːbíkwətəs]　形：遍在している、至る所にある
 　ーーー
 　コラム：あちらこちらにある ★指、切ったっス! 血が「あちらこちらに」
 　例文：Convenience stores are ubiquitous these days. 「近ごろ、コンビニはどこにでもある。」
@@ -1503,20 +1503,20 @@
 　　※対応単語（赤色）：pervasive ／ 広範囲に見られる
 
 2233
-　exponential　[èkspounén∫əl]　形：(増加が)指数関数的な、急激な
+　exponential　[èkspounénʃəl]　形：(増加が)指数関数的な、急激な
 　ーーー
 　コラム：(急激な)増加を形容する語 副 exponentially「指数関数的に」 ●exponential function「指数関数」
 　例文：an exponential rise in the city's population 「その市の人口の急激な増加」
 　　※対応単語（赤色）：exponential ／ 急激な
 
 2234
-　perpetual　[pərpét∫uəl]　形：絶え間ない、永続する
+　perpetual　[pərpétʃuəl]　形：絶え間ない、永続する
 　ーーー
 　コラム：しばしば、「不快[不安]にさせるような」という含みをもつ per-[=through通して、ずっと]+-pet-[足→行く]→「ずっと続く」
 　例文：
 
 2235
-　future-oriented　[fjú:t∫ər ɔ:rièntid]　形：未来志向の
+　future-oriented　[fjúːtʃər ɔːrièntid]　形：未来志向の
 　ーーー
 　コラム：未来に興味や注意を向けた *orientation「志向,関心,(新たな仕事などへの)事前指導」 the Orient「東洋(=the East)」 a male-oriented society「男性中心の社会」
 　例文：
@@ -1529,7 +1529,7 @@
 　　※対応単語（赤色）：intact ／ 無傷の
 
 2237
-　maternal　[mətá:rnl]　形：母の、母親らしい
+　maternal　[mətáːrnl]　形：母の、母親らしい
 　ーーー
 　コラム：móther の形容詞形 名 maternity「母であること」 ⇨ maternity clothes「妊婦服」 ☑ 形 patérnal「父の、父親らしい」
 　例文：
@@ -1542,7 +1542,7 @@
 　　※対応単語（赤色）：masculine ／ 男性的な
 
 2239
-　juvenile　[dzú:vənl]　形：青少年の
+　juvenile　[dzúːvənl]　形：青少年の
 　ーーー
 　コラム：主に法律用語として使われる juve-[=young] *júnior「年少者」 名 rejuvenation「若返り」
 　例文：juvenile delinquency 「青少年の非行」
@@ -1569,7 +1569,7 @@
 　　※対応単語（赤色）：stray ／ 野良
 
 2243
-　dormant　[dó:rmənt]　形：(火山などが)休止状態の、眠っている
+　dormant　[dóːrmənt]　形：(火山などが)休止状態の、眠っている
 　ーーー
 　コラム：(将来的に再び活動する可能性はあるが)現在は動いていない dorm-[眠る]+-ant[形容詞語尾] *dórmitory「寮(←眠る場所)」 形 active「活動状態の」
 　例文：
@@ -1589,13 +1589,13 @@
 　　※対応単語（赤色）：edible ／ 食用の
 
 2246
-　perishable　[péri∫əbl]　形：(食べ物などが)腐りやすい
+　perishable　[périʃəbl]　形：(食べ物などが)腐りやすい
 　ーーー
 　コラム：★自 pérish「消える、死ぬ」 名 périshables「腐りやすい食べ物、生鮮食品」
 　例文：
 
 2247
-　naive　[na:í:v]　形：世間知らずの、愚直な
+　naive　[naːíːv]　形：世間知らずの、愚直な
 　ーーー
 　コラム：日本語の「ナイーブ(純真な)」と違い、ネガティブなイメージの語 na-[生まれる]→「生まれたままの」
 　例文：
@@ -1665,7 +1665,7 @@
 　　※対応単語（赤色）：obsessed ／ ばかり気にしている
 
 2258
-　preoccupied　[prì:ákjupaid]　形：(with〜) (〜に)夢中になった、(〜で)頭がいっぱいで
+　preoccupied　[prìːákjupaid]　形：(with〜) (〜に)夢中になった、(〜で)頭がいっぱいで
 　ーーー
 　コラム：(ほかのことに注意を払えないほど)特定のことが頭から離れない pre-[前に]+-occupied[占有されて]→「何よりも心が奪われて」 名 preoccupation「夢中,没頭,執着」
 　例文：be preoccupied with my weight 「体重のことばかり気にしている」
@@ -1721,13 +1721,13 @@
 　　※対応単語（赤色）：splendid ／ 素晴らしい
 
 2266
-　intriguing　[intrí:gin]　形：興味深い
+　intriguing　[intríːgin]　形：興味深い
 　ーーー
 　コラム：堅い語で、日常では very interesting のほうが使われる in-[中に]+-trig-[=trick 仕掛け]→「(中がどうなっているのか)興味をそそる」 ☆intricate「複雑な」
 　例文：
 
 2267
-　ingenious　[indzi:niəs]　形：独創的な
+　ingenious　[indziːniəs]　形：独創的な
 　ーーー
 　コラム：非常に効果的でなおかつ独創的な(装置,方法、計画) ★in-[中に]+-geni-[=genius 天才]→「中に天才がいる」 名 ingenuity「独創性」 名 génius「天才,天才的才能」(*つづりに-o-がないので注意)
 　例文：an ingenious device to get rid of fleas 「ノミを駆除する独創的な装置」
@@ -1765,7 +1765,7 @@
 　例文：
 
 2273
-　proficient　[prəfi∫ənt]　形：熟達した
+　proficient　[prəfiʃənt]　形：熟達した
 　ーーー
 　コラム：(鍛錬によって、能力や技術が)望ましい基準に達した pro-[前方]+-fic-[作る]から「前に進んで成果を作り上げる」→「熟達した」 名 proficiency「熟達」
 　例文：
@@ -1778,7 +1778,7 @@
 　　※対応単語（赤色）：immense ／ 広大な
 
 2275
-　unanimous　[ju:nænəməs]　形：満場一致の
+　unanimous　[juːnænəməs]　形：満場一致の
 　ーーー
 　コラム：全員の意見が一致して un-[=uni 1]+-anim-[命→心]+-ous[形容詞語尾]→「心が1つになって」 ☆animation「アニメ、動画(←キャラクターに生命を吹き込んで動かす)」 副 unánimously「満場一致で」
 　例文：reach a unanimous decision 「満場一致の決定に達する」
@@ -1792,14 +1792,14 @@
 　　※対応単語（赤色）：reckless ／ 無謀な
 
 2277
-　futile　[fjú:tl]　形：無駄な
+　futile　[fjúːtl]　形：無駄な
 　ーーー
 　コラム：(成功する見込みがないので、努力や行動が)無駄な ★fu-[流れる]から「(効果が)流れ出る」→「無駄な」 ☆confúse「〜を混乱させる(←(異なる物を)一緒に注ぐ)」 名 futility「無駄」
 　例文：make a futile attempt 「無駄な試みをする」
 　　※対応単語（赤色）：futile ／ 無駄な
 
 2278
-　brutal　[brú:tl]　形：残忍な
+　brutal　[brúːtl]　形：残忍な
 　ーーー
 　コラム：= very cruel and violent, without any pity ★-b(a)r-を含む単語は「野蛮」系の意味が多い ☆barbarian「野蛮人」 名 brúte「獣」
 　例文：
@@ -1838,7 +1838,7 @@
 　例文：
 
 2284
-　arbitrary　[á:rbətrèri]　形：独断的な、勝手な
+　arbitrary　[áːrbətrèri]　形：独断的な、勝手な
 　ーーー
 　コラム：(独裁者のように)自分勝手な ★あ一見とられん、「勝手な」判断
 　例文：make an arbitrary decision 「独断的な決定をする」
@@ -1851,7 +1851,7 @@
 　例文：
 
 2286
-　crude　[krú:d]　形：①粗末な、粗野な ②加工されていない
+　crude　[krúːd]　形：①粗末な、粗野な ②加工されていない
 　ーーー
 　コラム：②「天然のままの」 cru-[生の]→「生で未加工の、粗末な」 ☆crúel「残酷な」
 　例文：a crude rope bridge 「粗末なつり橋」 ／ crude oil 「原油(加工されていない油)」
@@ -1865,7 +1865,7 @@
 　　※対応単語（赤色）：extravagant ／ 過度な
 
 2288
-　obsolete　[absəlí:t]　形：廃れた
+　obsolete　[absəlíːt]　形：廃れた
 　ーーー
 　コラム：(新しいものが出たり、現代の基準に合わなくなったりして)使われなくなった ★ob-[=against に対して]+-ole-[=óld]→「何かに対して古くなった」
 　例文：
@@ -1913,14 +1913,14 @@
 　　※対応単語（赤色）：Intangible ／ 無形
 
 2295
-　superficial　[sù:pərfí∫əl]　形：表面的な
+　superficial　[sùːpərfíʃəl]　形：表面的な
 　ーーー
 　コラム：慎重に見たり、研究したりしていない ★super-[上]+-fic-[作る]+-ial[形容詞語尾] *fiction「小説(←作った話)」
 　例文：a superficial knowledge of Japanese history 「日本史に関する表面的な知識」
 　　※対応単語（赤色）：superficial ／ 表面的な
 
 2296
-　spatial　[spéi∫əl]　形：空間の
+　spatial　[spéiʃəl]　形：空間の
 　ーーー
 　コラム：名 space「空間」の形容詞形 (*c→tへのつづりの変化に注意 [ex] ínfluence→influential) 名 space「空間」 形 spacious「広々とした」
 　例文：spatial awareness 「空間認識(能力)」
@@ -1934,14 +1934,14 @@
 　　※対応単語（赤色）：hollow ／ 空洞の、hollow ／ こけた、hollow ／ うわべだけの
 
 2298
-　homogeneous　[hòumədzí:niəs]　形：均質の、同種の
+　homogeneous　[hòumədzíːniəs]　形：均質の、同種の
 　ーーー
 　コラム：(集団や物質などが)一様に同じ性質を持っている ★homo-[同じ]+-gene-[生む→種族]+-ous[の特徴を持つ]→「同じ種類の徴を持つ」 ☆homosexual「同性愛の」 形 heterogéneous「異種の」
 　例文：a homogeneous society 「均質な社会」
 　　※対応単語（赤色）：homogeneous ／ 均質な
 
 2299
-　feasible　[fi:zəbl]　形：(計画・方法などが)実現[実行]可能な
+　feasible　[fiːzəbl]　形：(計画・方法などが)実現[実行]可能な
 　ーーー
 　コラム：(現実的に実行することが可能だと判断できる)(≒possible) ★feas-[作る、行う]+-ble[可能]→「行うことができる」 ☆féat「偉業(←作り上げられたもの)」
 　例文：technically feasible 「技術的に実現可能な」

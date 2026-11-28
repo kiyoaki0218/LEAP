@@ -11,25 +11,25 @@
 　例文：① get [rid] of my old toys　①古いおもちゃを処分する / ② get [rid] of cockroaches　②ゴキブリを駆除する
 
 705
-　remove　[rimú:v]　他：①～を取り除く、取り去る ②(衣服)を脱ぐ
+　remove　[rimúːv]　他：①～を取り除く、取り去る ②(衣服)を脱ぐ
 　ーーー
 　コラム：日常では① get rid of ～ ② take ～ off のほうが使われる。/ 頻出：①目的語は stains「シミ(を抜く)」、one's makeup「化粧(を落とす)」、dishes「皿(を片付ける)」、a hat「帽子(を脱ぐ)」などさまざま。be (far) removed from ～「～から(遠く)隔たっている」/ 語源：re-[元へ]+-move[動かす]→「元に戻す」 / 派生語：removal「除去、移動」、remover「除去剤」⇨ a nail-polish remover「マニキュア落とし」
 　例文：① Illegally parked bicycles will be [removed].　①放置自転車(不法駐輪された自転車)は撤去される。 / ② [remove] my hat　②帽子を脱ぐ
 
 706
-　resource　[rí:sɔ:rs]　名：①(-s)(石油などの)資源、(人、国の)財産 ②(-s)(困難に立ち向かう)力量 ③(万一の頼みの)手段
+　resource　[ríːsɔːrs]　名：①(-s)(石油などの)資源、(人、国の)財産 ②(-s)(困難に立ち向かう)力量 ③(万一の頼みの)手段
 　ーーー
 　コラム：コアイメージ：「次々にわき上がってくるもの」 / 表現：natural resources「天然資源」、human resources「人材」 / 派生語：resourceful「困難に立ち向かえる」 / 関連語：coal「石炭」、petroleum「石油」
 　例文：① develop natural [resources]　①天然資源を開発する / ② sufficient [resources] to survive　②生き残るだけの十分な力量 / ③ as a last [resource]　③最後の手段として
 
 707
-　conservation　[kὰnsərvéiʃən]　名：①保護 ②保存
+　conservation　[kɑ̀nsərvéiʃən]　名：①保護 ②保存
 　ーーー
 　コラム：コアイメージ：「(将来のために)資源などを大切に使うこと」 / 表現：environmental conservation「環境保護」 / 語源：con-[すっかり]+-serve-[奉仕する]→「守る」 / 派生語：conserve「～を保護する、保全する」⇨ conserve natural resources「天然資源を保護する(=消費量を減らす)」、conservationist「環境保護論者」
 　例文：① [conservation] groups　①環境保護団体 / ② the law of [conservation] of energy　②エネルギー保存の法則
 
 708
-　preserve　[prizə́:rv]　他：①(自然など)を保護する ②(景観、平和、食品など)を保つ
+　preserve　[prizə́ːrv]　他：①(自然など)を保護する ②(景観、平和、食品など)を保つ
 　ーーー
 　コラム：コアイメージ：「今の状態を壊さないように大事にする」 / 語源：pre-[前に]+-serve[奉仕する]→「あらかじめ保護する」 / 派生語：preservation「保護、保存、維持」 / 関連語：sanctuary「禁猟区」
 　例文：① [preserve] endangered species　①絶滅危惧種を保護する / ② a well-[preserved] fossil　②保存状態のよい(よく保存されている)化石
@@ -83,7 +83,7 @@
 　例文：cultivate the [soil]　土を耕す
 
 717
-　weed　[wí:d]　名：①雑草、海草 ／ 他：②～の雑草を抜く
+　weed　[wíːd]　名：①雑草、海草 ／ 他：②～の雑草を抜く
 　ーーー
 　コラム：コアイメージ：「望まれない草」 / 注意：日本語の「ワカメ、昆布」に対応する英語はなく、seaweeds「海草(←海の雑草)」と表現するのがふつう。/ 派生語：weeding「草刈り、除草」、weedkiller「除草剤」
 　例文：① pull up [weeds]　①雑草を抜く / ② [weed] the garden　②庭の雑草を抜く
@@ -101,7 +101,7 @@
 　例文：He almost [drowned], but luckily he was saved.　彼は溺れかけたが、幸い救助された。
 
 720
-　leak　[lí:k]　自：①漏れる ／ 他：②～を漏らす ／ 名：③漏れ
+　leak　[líːk]　自：①漏れる ／ 他：②～を漏らす ／ 名：③漏れ
 　ーーー
 　コラム：コアイメージ：①「(水やガスなどが)漏れる」②「(機密事項など)を漏らす、リークする」 / 頻出：① leak out「(情報などが)漏れる」② leak A to B「AをBにリークする(漏らす)」 / 補足：日本語でも「情報をリークする(漏らす)」という。/ 派生語：leakage「漏れ」
 　例文：① This roof [leaks].　①雨漏りがする(この屋根は漏れる)。 / ② [leak] secret information　②秘密の情報を漏らす / ③ a gas [leak]　③ガス漏れ
@@ -119,13 +119,13 @@
 　例文：① ice crystals in the [atmosphere]　①大気中の氷の結晶 / ② Our workplace has a friendly [atmosphere].　②私たちの職場は和やかな雰囲気だ。 / ③ re-enter the [atmosphere]　③大気圏に再突入する
 
 723
-　forecast　[fɔ́:rkæ̀st]　名：①予報 ／ 他：②～を予報する
+　forecast　[fɔ́ːrkæ̀st]　名：①予報 ／ 他：②～を予報する
 　ーーー
 　コラム：コアイメージ：「(天候や社会情勢、出来事など)を(科学的に)予測し、報じる」 / 表現：① check the weather forecast「天気予報をチェックする」 / 語源：fore-[前もって]+-cast[投げる]→「前もって投げる」*broadcast「放送する(←幅広く投げる)」[活用] forecast-forecast-forecast
 　例文：① according to the weather [forecast]　①天気予報によれば / ② Snow is [forecast] for the weekend.　②週末は雪の予報だ(雪が予報された)。
 
 724
-　humid　[hjú:mid]　形：湿気が多い
+　humid　[hjúːmid]　形：湿気が多い
 　ーーー
 　コラム：主に「暑さについての不快感」を表すのに使う。/ 語源：hum-[土]→「(土の周りには)湿気がある」*human「人間(←土の上を歩くもの)」 / 派生語：humidity「湿度、湿気の多さ」、humidifier「加湿器」
 　例文：Kyoto is hot and [humid] in summer.　京都は夏は蒸し暑い。
@@ -143,7 +143,7 @@
 　例文：install [solar] panels on the roof　屋根にソーラーパネルを取り付ける
 
 727
-　species　[spí:ʃi:z]　名：種〈単複同形〉
+　species　[spíːʃiːz]　名：種〈単複同形〉
 　ーーー
 　コラム：コアイメージ：「(生物分類上の)種」 / 頻出：our species「人類」、The Origin of Species『種の起源』(C. Darwin 著) / 注意：「種類」の意味もあるがまれ。/ 語源：spec-[見る]から「様相」→「形状、種類」*aspect「側面、外観」 / 関連語：subspecies「亜種」、cross-species「異種間の」
 　例文：elephants and other endangered [species]　ゾウなどの絶滅危惧種
@@ -161,7 +161,7 @@
 　例文：Dinosaurs became [extinct] millions of years ago.　恐竜は何百万年も前に絶滅した。
 
 730
-　feed　[fí:d]　他：①～にえさを与える ②(子どもなど)を養う ／ 自：③(on ～)(～を)常食とする
+　feed　[fíːd]　他：①～にえさを与える ②(子どもなど)を養う ／ 自：③(on ～)(～を)常食とする
 　ーーー
 　コラム：コアイメージ：「(動物、赤ちゃん、病人)に食べ物を与える」 / 表現：be fed up with ～「～にうんざりしている」→ I'm fed up with his excuses.「彼の言い訳にはうんざりだ。」(*upは「完了」の意味) / 補足：food の動詞形。/ 派生語：feedback「(利用者などの)反響、意見」 / 関連語：a (zoo) keeper「(動物園の)飼育係」[活用] feed-fed-fed、bottle-feed「(赤ん坊)を人工乳で育てる」
 　例文：① [feed] these goldfish　①これらの金魚にえさを与える / ② [feed] a family of five　②5人家族を養う / ③ Sheep [feed] on grass.　③ヒツジは草を常食とする
@@ -173,7 +173,7 @@
 　例文：[energetic] boys and girls　活発な少年少女たち
 
 732
-　greedy　[grí:di]　形：貪欲な
+　greedy　[gríːdi]　形：貪欲な
 　ーーー
 　コラム：コアイメージ：「(あらゆるものに対して)醜いほどの欲求を示す」 / 表現：be greedy for ～「～を貪欲に求める」 / 語源：Greece「ギリシャ」とは別語源。/ 派生語：greed「貪欲さ、強欲さ」
 　例文：A [greedy] child ate all the pies.　食い意地の張った子がパイを全部食べた。
@@ -209,15 +209,15 @@
 　例文：Children are very [imaginative].　子どもは非常に想像力が豊かだ。
 
 738
-　afford　[əfɔ́:rd]　他：①(can -)～する余裕がある ②(SVO1O2)(O1に)O2を与える
+　afford　[əfɔ́ːrd]　他：①(can -)～する余裕がある ②(SVO1O2)(O1に)O2を与える
 　ーーー
 　コラム：コアイメージ：①主に「(経済的に)余裕がある」(*「(時間的に)余裕がある」場合は have enough time to do と表現するほうがふつう。)②「(喜び、機会など)を与える」〈まれ〉 / 頻出：① cannot afford (名詞) / to do「～の/～する余裕がない」 / 語源：af-[=ad 方向]+-ford[=forth 前へ]から「前進する」→「①(前進できる)余裕がある ②(前に出て)与える」 / 派生語：affordable「手ごろな価格の」
 　例文：① I cannot [afford] to buy a new car. (◇ I cannot buy a new car.)　①新車を買う余裕がない。(◇(何らかの事情で)新車が買えない。) / ② Music [affords] me great pleasure.　②音楽は私に大きな喜びを与えてくれる。
 
 739
-　eager　[í:gər]　形：熱心な
+　eager　[íːgər]　形：熱心な
 　ーーー
-　コラム：コアイメージ：「これからすることに我慢できない」 / 表現：be eager to do「～したがる」、be less eager to do「～したくなくなる」、be eager for ～「～が欲しい、熱望している」⇨ be eager for fame「名声を欲しがる」 / 覚え方：eagle [í:gl]「ワシ」に発音が似ている。/ 派生語：eagerly「熱心に」、eagerness「熱心、熱望」
+　コラム：コアイメージ：「これからすることに我慢できない」 / 表現：be eager to do「～したがる」、be less eager to do「～したくなくなる」、be eager for ～「～が欲しい、熱望している」⇨ be eager for fame「名声を欲しがる」 / 覚え方：eagle [íːgl]「ワシ」に発音が似ている。/ 派生語：eagerly「熱心に」、eagerness「熱心、熱望」
 　例文：Beth is [eager] to buy a fur coat.　ベスは毛皮のコートを買いたがっている。
 
 740
@@ -233,7 +233,7 @@
 　例文：① Her attitude suddenly became [aggressive].　①彼女の態度が突然攻撃的になった。 / ② A successful businessperson needs to be [aggressive].　②ビジネスで成功するためには積極的でないといけない。
 
 742
-　cruel　[krú:əl]　形：残酷な
+　cruel　[krúːəl]　形：残酷な
 　ーーー
 　コラム：コアイメージ：「(相手に苦痛を与えても何も感じないくらいに)冷徹な」 / 表現：be cruel to ～「～に残酷な仕打ちをする」 / 語源：cru-[生の]→「人間として未発達の」*crude「粗末な」 / 派生語：cruelty「残酷さ」 / 対義語：merciful「慈悲深い」
 　例文：Never be [cruel] to animals.　動物を残酷に扱うな。
@@ -253,7 +253,7 @@
 745
 　bold　[bóuld]　形：大胆な
 　ーーー
-　コラム：コアイメージ：「(人、行為、色、形などが)人目につくような、図太い」 / 頻出：a bold idea [act]「大胆な考え[行為]」 / 注意：bald [bɔ́:ld]「(頭が)はげた」と区別。/ 語源：「ふくれ上がった」が元の意味で、「思い上がった」→「大胆な」
+　コラム：コアイメージ：「(人、行為、色、形などが)人目につくような、図太い」 / 頻出：a bold idea [act]「大胆な考え[行為]」 / 注意：bald [bɔ́ːld]「(頭が)はげた」と区別。/ 語源：「ふくれ上がった」が元の意味で、「思い上がった」→「大胆な」
 　例文：a dress with a [bold] design　大胆なデザインの服
 
 746
@@ -281,7 +281,7 @@
 　例文：① Paul is [modest] about his success.　①ポールは成功を鼻にかけない。 / ② a [modest] house with a small garden　②小さな庭つきの質素な家(*謙遜して)
 
 750
-　stupid　[st(j)ú:pid]　形：ばかな
+　stupid　[st(j)úːpid]　形：ばかな
 　ーーー
 　コラム：コアイメージ：「(判断力に欠けていて)愚かな」 / 頻出：A is stupid [It is stupid of A] to do「～するなんてAはばかげている」 / 派生語：stupidity「愚かな行為[発言]」 / 対義語：clever「利口な」
 　例文：make a [stupid] mistake　ばかな間違いをする
@@ -335,7 +335,7 @@
 　例文：① an [efficient] method of transporting goods　①商品を輸送する能率的な方法 / ② an [efficient] accountant　②有能な会計士
 
 759
-　reasonable　[rí:zənəbl]　形：①理にかなった ②(値段が)手ごろな
+　reasonable　[ríːzənəbl]　形：①理にかなった ②(値段が)手ごろな
 　ーーー
 　コラム：コアイメージ：②「値段が理にかなっていて高すぎない」 / 頻出：① It is reasonable to think that S V.「～と考えるのが理にかなっている。」 / 語源：reason-[理性]+-able[可能]→「理性で納得できる」 / 派生語：reasonably「ほどよく」⇨ reasonably priced「手ごろな値段の」
 　例文：① What you're saying is [reasonable].　①あなたの言っていることはもっともだ。 / ② at a [reasonable] price　②手ごろな値段で
@@ -413,7 +413,7 @@
 　例文：It was [obvious] that she was unwell.　彼女の体調がすぐれないのは明白だった。
 
 772
-　remarkable　[rimɑ́:rkəbl]　形：注目すべき、すばらしい
+　remarkable　[rimɑ́ːrkəbl]　形：注目すべき、すばらしい
 　ーーー
 　コラム：コアイメージ：「発言に値するほどの」 / 語源：re-[再び]+-mark-[印]+-able[可能]から「何度も印をつけたくなる」→「注目すべき」 / 派生語：remarkably「著しく」
 　例文：make [remarkable] progress　注目すべき進歩を遂げる
@@ -431,19 +431,19 @@
 　例文：[various] ideas (*〈可算〉)　さまざまな考え / [various] kinds of information (*〈不可算〉)　さまざまな情報
 
 775
-　diversity　[divə́:rsəti]　名：多様性
+　diversity　[divə́ːrsəti]　名：多様性
 　ーーー
 　コラム：コアイメージ：「さまざまな人や物を含んでいること」 / 頻出：the diversity of A「Aの多様性」 / 表現：「多様性を容認する社会」は an inclusive society と表現する。/ 語源：di-[=dis バラバラ]+-verse-[回る]+-ity[こと]から「バラバラに回っていること」→「多様性」 / 派生語：diverse「多様な」、diversify「～を多様化する」
 　例文：the [diversity] of life on earth　地上の生物の多様性
 
 776
-　sort　[sɔ́:rt]　名：①種(類) ②(副詞的に)(- of)多少 ／ 他：③～を分類する
+　sort　[sɔ́ːrt]　名：①種(類) ②(副詞的に)(- of)多少 ／ 他：③～を分類する
 　ーーー
 　コラム：表現：① sort of + (無冠詞の単数形)「～の種類」 / 注意：②日常では a little よりも使われる。(*②は①が変化した用法。) / 補足：日本語でも「ソートする(データを特定の規則に従って並べ替える)」などの意味で使われる。/ 派生語：assortment「詰め合わせ(分類されたもの)」
 　例文：① What [sort] of soap do you use?　①どのような(種類の)石けんを使っているの。 / ② I'm [sort] of tired today.　②今日はちょっと疲れている。 / ③ The watermelons are [sorted] according to size [their size(s)].　③スイカは大きさによって分類されている。
 
 777
-　marvelous　[mɑ́:rvələs]　形：驚くべき、素晴らしい
+　marvelous　[mɑ́ːrvələs]　形：驚くべき、素晴らしい
 　ーーー
 　コラム：コアイメージ：「(人を興奮させるほど)すごい」 / 派生語：marvel (at ～)「(～に)驚く」([×] be marveled は不可。)
 　例文：have a [marvelous] memory　驚くべき記憶力を持っている
@@ -481,7 +481,7 @@
 783
 　ripe　[ráip]　形：熟した
 　ーーー
-　コラム：コアイメージ：「(果物などが)熟した」から「(機が)熟した」まで。/ 頻出：The time is ripe for ～.「今こそ～な時だ。」 / 語源：rip-[ちぎる]→「熟したのでちぎれる」*rip「～を裂く」、reap「～を刈り取る」 / 派生語：ripen「熟する」 / 関連語：orchard [ɔ́:rtʃərd]「果樹園」
+　コラム：コアイメージ：「(果物などが)熟した」から「(機が)熟した」まで。/ 頻出：The time is ripe for ～.「今こそ～な時だ。」 / 語源：rip-[ちぎる]→「熟したのでちぎれる」*rip「～を裂く」、reap「～を刈り取る」 / 派生語：ripen「熟する」 / 関連語：orchard [ɔ́ːrtʃərd]「果樹園」
 　例文：a [ripe] mango　熟したマンゴー
 
 784
@@ -505,13 +505,13 @@
 787
 　weird　[wíərd]　形：変な
 　ーーー
-　コラム：コアイメージ：「(侮蔑的に)気味の悪い」 / 類語：odd「(どこかふつうではなく)変な」 / 語源：weir-[ねじ曲がった]→「奇妙な」*wire「針金、ワイヤー」 / 派生語：weirdo「変な人」 / 関連語：a computer nerd [nə́:rd] [geek [gí:k]]「コンピュータおたく」
+　コラム：コアイメージ：「(侮蔑的に)気味の悪い」 / 類語：odd「(どこかふつうではなく)変な」 / 語源：weir-[ねじ曲がった]→「奇妙な」*wire「針金、ワイヤー」 / 派生語：weirdo「変な人」 / 関連語：a computer nerd [nə́ːrd] [geek [gíːk]]「コンピュータおたく」
 　例文：Steve is a little [weird], isn't he?　スティーブってちょっと変だよね。
 
 788
 　rough　[rʌ́f]　形：①(表面が)粗い ②おおざっぱな ③(海、天候などが)荒れている
 　ーーー
-　コラム：コアイメージ：「粗い、ざらざらした」 / 頻出：② a rough idea「おおまかな考え」 / 補足：日本語でも「ラフな服装」など②の意味で使うことがある。/ 対義語：① smooth [smú:ð]「なめらかな」 / 派生語：② roughly「おおよそ」
+　コラム：コアイメージ：「粗い、ざらざらした」 / 頻出：② a rough idea「おおまかな考え」 / 補足：日本語でも「ラフな服装」など②の意味で使うことがある。/ 対義語：① smooth [smúːð]「なめらかな」 / 派生語：② roughly「おおよそ」
 　例文：① a [rough] road　①でこぼこの道 / ② a [rough] idea of the plan　②その計画の概略(おおまかな考え) / ③ [rough] weather　③荒れた天候
 
 789
@@ -599,7 +599,7 @@
 　例文：① an [abstract] work of art　①抽象的な芸術作品 / ② an [abstract] of this paper　②この論文の要旨
 
 803
-　brand-new　[brǽndnjú:]　形：新品の、真新しい
+　brand-new　[brǽndnjúː]　形：新品の、真新しい
 　ーーー
 　コラム：コアイメージ：「手に入れたばかりで未使用の」(=very new) new よりも brand-new のほうが「新品」という意味が強い。/ 語源：「火から出したばかりの」が元の意味。*brand「銘柄(←焼き印を押されるから)」 / 注意：「ブランドのバッグ」は a designer bag と表現する。/ 関連語：newly「新たに」⇨ a newly married couple「新婚夫婦」、renew「～を一新する」
 　例文：[brand-new] climbing boots　新品の登山靴
@@ -617,7 +617,7 @@
 　例文：① [rapid] economic growth　①急速な経済成長 / ② shoot the [rapids] in our canoe　②急流をカヌーで下る
 
 806
-　urgent　[ə́:rdʒənt]　形：緊急の、差し迫った
+　urgent　[ə́ːrdʒənt]　形：緊急の、差し迫った
 　ーーー
 　コラム：コアイメージ：「(とても重要なので)急を要する」 / 頻出：an urgent problem of ～「～という緊急の課題」、on urgent business「急な用事で」 / 語源：urge「～をせきたてる、～に強く迫る」の形容詞形(「強く迫られた」→「緊急の」)。/ 派生語：urgency「緊急性」
 　例文：There is an [urgent] need for more nursery schools.　もっと多くの保育所が緊急に必要だ(もっと多くの保育所に対する緊急の必要性がある)。
