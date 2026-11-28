@@ -780,11 +780,12 @@
         });
         return;
       }
-      const openModal = ["achievements-modal", "modal-weak-words", "word-detail-modal"]
+      const openModal = ["achievements-modal", "guide-modal", "modal-weak-words", "word-detail-modal"]
         .map(id => document.getElementById(id))
         .find(el => el && !el.classList.contains("hidden"));
       if (openModal) {
         if (openModal.id === "word-detail-modal") closeWordDetail();
+        else if (openModal.id === "guide-modal") closeGuideModal();
         else openModal.classList.add("hidden");
         try { history.pushState({ screen: currentScreenId() }, ""); } catch (e) {}
         return;

@@ -235,6 +235,171 @@
         condition: (u) => Number(u.coins) >= 10000 }
     );
 
+    // === 追加実績（到達度テスト・語源ゲーム・学習量） ===
+    // 既存の userData フィールドだけで判定できるものに限定している。
+    function _sumDailyLog(u) {
+      return Object.values(u.dailyLog || {}).reduce((s, n) => s + (Number(n) || 0), 0);
+    }
+    function _maxDailyLog(u) {
+      return Object.values(u.dailyLog || {}).reduce((m, n) => Math.max(m, Number(n) || 0), 0);
+    }
+    function _kobunLearned(u) {
+      return Object.keys(u.wordStats || {}).filter(k => Number(k) >= 10001).length;
+    }
+    function _rushBest(u) {
+      const r = (u.affixStats && u.affixStats.rushBest) || {};
+      return Math.max(Number(r.prefix) || 0, Number(r.suffix) || 0);
+    }
+    function _memoryClears(u) {
+      const m = (u.affixStats && u.affixStats.memoryBest) || {};
+      return Object.values(m).filter(v => v && Number(v.moves) > 0).length;
+    }
+    function _exams(u) {
+      return (Array.isArray(u.examHistory) ? u.examHistory : []).filter(h => h && h.grade);
+    }
+    const _GRADE_RANK = { D: 1, C: 2, B: 3, A: 4, S: 5 };
+    function _bestExamAccuracy(u) {
+      return _exams(u).reduce((m, h) => Math.max(m, Number(h.accuracy) || 0), 0);
+    }
+
+    ACHIEVEMENTS.push(
+      // === 到達度テスト（exam） ===
+      { id: "exam_first", name: "はじめての到達度テスト", icon: "🎓", category: "exam", desc: "到達度テストを最後まで受験する", price: 150,
+        condition: (u) => _exams(u).length >= 1, progress: (u) => [_exams(u).length, 1] },
+      { id: "exam_grade_b", name: "合格圏が見えた", icon: "📋", category: "exam", desc: "到達度テストでB判定以上をとる", price: 300,
+        condition: (u) => _exams(u).some(h => (_GRADE_RANK[h.grade] || 0) >= 3) },
+      { id: "exam_grade_a", name: "A判定ブレイク", icon: "🥇", category: "exam", desc: "到達度テストでA判定以上をとる", price: 600,
+        condition: (u) => _exams(u).some(h => (_GRADE_RANK[h.grade] || 0) >= 4) },
+      { id: "exam_grade_s", name: "S判定の頂", icon: "💎", category: "exam", desc: "到達度テストでS判定をとる", price: 1200,
+        condition: (u) => _exams(u).some(h => h.grade === "S") },
+      { id: "exam_5", name: "テスト常連", icon: "🔁", category: "exam", desc: "到達度テストを5回受験する", price: 500,
+        condition: (u) => _exams(u).length >= 5, progress: (u) => [_exams(u).length, 5] },
+      { id: "exam_perfect", name: "到達度満点", icon: "🎯", category: "exam", desc: "到達度テストで正答率100%をとる", price: 900,
+        condition: (u) => _bestExamAccuracy(u) >= 100 },
+
+      // === 語源ラッシュ・接辞神経衰弱（game） ===
+      { id: "rush_500", name: "語源ラッシュ入門", icon: "🧩", category: "game", desc: "語源ラッシュで500点をとる", price: 150,
+        condition: (u) => _rushBest(u) >= 500, progress: (u) => [_rushBest(u), 500] },
+      { id: "rush_1500", name: "接辞ハンター", icon: "🧠", category: "game", desc: "語源ラッシュで1500点をとる", price: 400,
+        condition: (u) => _rushBest(u) >= 1500, progress: (u) => [_rushBest(u), 1500] },
+      { id: "rush_3000", name: "語源の支配者", icon: "👑", category: "game", desc: "語源ラッシュで3000点をとる", price: 900,
+        condition: (u) => _rushBest(u) >= 3000, progress: (u) => [_rushBest(u), 3000] },
+      { id: "memory_clear", name: "神経衰弱クリア", icon: "🃏", category: "game", desc: "接辞神経衰弱をクリアする", price: 200,
+        condition: (u) => _memoryClears(u) >= 1, progress: (u) => [_memoryClears(u), 1] },
+      { id: "memory_both", name: "神経衰弱マスター", icon: "🎴", category: "game", desc: "接頭辞・接尾辞の両方で神経衰弱をクリアする", price: 500,
+        condition: (u) => _memoryClears(u) >= 2, progress: (u) => [_memoryClears(u), 2] },
+
+      // === 学習量（words） ===
+      { id: "answers_500", name: "500問の積み上げ", icon: "📝", category: "words", desc: "累計500問に解答する", price: 300,
+        condition: (u) => _sumDailyLog(u) >= 500, progress: (u) => [_sumDailyLog(u), 500] },
+      { id: "answers_2000", name: "2000問の努力", icon: "📚", category: "words", desc: "累計2000問に解答する", price: 800,
+        condition: (u) => _sumDailyLog(u) >= 2000, progress: (u) => [_sumDailyLog(u), 2000] },
+      { id: "answers_5000", name: "5000問の怪物", icon: "🌏", category: "words", desc: "累計5000問に解答する", price: 2000,
+        condition: (u) => _sumDailyLog(u) >= 5000, progress: (u) => [_sumDailyLog(u), 5000] },
+      { id: "day_100", name: "1日100問", icon: "🔥", category: "words", desc: "1日で100問に解答する", price: 300,
+        condition: (u) => _maxDailyLog(u) >= 100, progress: (u) => [_maxDailyLog(u), 100] },
+      { id: "day_300", name: "1日300問", icon: "🌋", category: "words", desc: "1日で300問に解答する", price: 900,
+        condition: (u) => _maxDailyLog(u) >= 300, progress: (u) => [_maxDailyLog(u), 300] },
+      { id: "words_1000", name: "語彙の惑星", icon: "🗺️", category: "words", desc: "異なる1000単語に解答する", price: 3000,
+        condition: (u) => Object.keys(u.wordStats || {}).length >= 1000, progress: (u) => [Object.keys(u.wordStats || {}).length, 1000] },
+      { id: "words_1500", name: "語彙の宇宙", icon: "🌐", category: "words", desc: "異なる1500単語に解答する", price: 4000,
+        condition: (u) => Object.keys(u.wordStats || {}).length >= 1500, progress: (u) => [Object.keys(u.wordStats || {}).length, 1500] },
+      { id: "mastered_300", name: "定着した300語", icon: "🏅", category: "words", desc: "3回以上正解した単語を300語つくる", price: 2500,
+        condition: (u) => Object.values(u.wordStats || {}).filter(s => (s.correct || 0) >= 3).length >= 300,
+        progress: (u) => [Object.values(u.wordStats || {}).filter(s => (s.correct || 0) >= 3).length, 300] },
+      { id: "part4_80", name: "Part 4 制圧", icon: "4️⃣", category: "words", desc: "Part 4の8割の単語に解答する", price: 1600,
+        condition: (u) => _partCoverage(u, 4) >= 0.8, progress: (u) => [Math.round(_partCoverage(u, 4) * 100), 80] },
+      { id: "part5_80", name: "Part 5 制圧", icon: "5️⃣", category: "words", desc: "Part 5の8割の単語に解答する", price: 2000,
+        condition: (u) => _partCoverage(u, 5) >= 0.8, progress: (u) => [Math.round(_partCoverage(u, 5) * 100), 80] },
+
+      // === 裏世界（kobun） ===
+      { id: "kobun_150", name: "裏世界の全踏破", icon: "📜", category: "kobun", desc: "古文単語150語すべてに解答する", price: 2000,
+        condition: (u) => _kobunLearned(u) >= 150, progress: (u) => [_kobunLearned(u), 150] },
+      { id: "kobun_master_30", name: "古文の達人", icon: "🖌️", category: "kobun", desc: "古文単語を30語マスターする", price: 1200,
+        condition: (u) => Object.entries(u.wordStats || {}).filter(([k, v]) => Number(k) >= 10001 && (v.correct || 0) >= 3).length >= 30,
+        progress: (u) => [Object.entries(u.wordStats || {}).filter(([k, v]) => Number(k) >= 10001 && (v.correct || 0) >= 3).length, 30] },
+
+      // === 継続（daily） ===
+      { id: "streak_60", name: "二ヶ月の求道者", icon: "🗓️", category: "daily", desc: "60日連続で学習する", price: 3000,
+        condition: (u) => (u.streak || 0) >= 60, progress: (u) => [Number(u.streak) || 0, 60] },
+      { id: "daily_30", name: "デイリー常連", icon: "💫", category: "daily", desc: "デイリーチャレンジを30回クリアする", price: 1200,
+        condition: (u) => (u.dailyClears || 0) >= 30, progress: (u) => [Number(u.dailyClears) || 0, 30] },
+      { id: "review_50", name: "記憶の管理者", icon: "🧭", category: "daily", desc: "忘却曲線復習を50回完了する", price: 2000,
+        condition: (u) => (u.reviewClears || 0) >= 50, progress: (u) => [Number(u.reviewClears) || 0, 50] },
+      { id: "correct_2000", name: "語彙のレジェンド", icon: "🏆", category: "correct", desc: "累計2000問正解を達成する", price: 4000,
+        condition: (u) => _totalCorrect(u) >= 2000, progress: (u) => [_totalCorrect(u), 2000] }
+    );
+
+    // 既存の数値系実績の進捗（現在値 / 目標値）。「あと少し」表示と進捗バーに使う。
+    const ACHIEVEMENT_PROGRESS = {
+      correct_10: (u) => [_totalCorrect(u), 10],
+      correct_30: (u) => [_totalCorrect(u), 30],
+      correct_50: (u) => [_totalCorrect(u), 50],
+      correct_100: (u) => [_totalCorrect(u), 100],
+      correct_200: (u) => [_totalCorrect(u), 200],
+      correct_300: (u) => [_totalCorrect(u), 300],
+      correct_500: (u) => [_totalCorrect(u), 500],
+      correct_1000: (u) => [_totalCorrect(u), 1000],
+      level_2: (u) => [getLevelState(u.exp).level, 2],
+      level_5: (u) => [getLevelState(u.exp).level, 5],
+      level_10: (u) => [getLevelState(u.exp).level, 10],
+      level_20: (u) => [getLevelState(u.exp).level, 20],
+      level_30: (u) => [getLevelState(u.exp).level, 30],
+      level_50: (u) => [getLevelState(u.exp).level, 50],
+      combo_3: (u) => [Number(u.maxComboEver) || 0, 3],
+      combo_5: (u) => [Number(u.maxComboEver) || 0, 5],
+      combo_10: (u) => [Number(u.maxComboEver) || 0, 10],
+      combo_15: (u) => [Number(u.maxComboEver) || 0, 15],
+      combo_20: (u) => [Number(u.maxComboEver) || 0, 20],
+      combo_30: (u) => [Number(u.maxComboEver) || 0, 30],
+      words_10: (u) => [Object.keys(u.wordStats || {}).length, 10],
+      words_50: (u) => [Object.keys(u.wordStats || {}).length, 50],
+      words_100: (u) => [Object.keys(u.wordStats || {}).length, 100],
+      words_300: (u) => [Object.keys(u.wordStats || {}).length, 300],
+      words_600: (u) => [Object.keys(u.wordStats || {}).length, 600],
+      mastered_10: (u) => [Object.values(u.wordStats || {}).filter(s => (s.correct || 0) >= 3).length, 10],
+      mastered_50: (u) => [Object.values(u.wordStats || {}).filter(s => (s.correct || 0) >= 3).length, 50],
+      mastered_100: (u) => [Object.values(u.wordStats || {}).filter(s => (s.correct || 0) >= 3).length, 100],
+      streak_3: (u) => [Number(u.streak) || 0, 3],
+      streak_7: (u) => [Number(u.streak) || 0, 7],
+      streak_14: (u) => [Number(u.streak) || 0, 14],
+      streak_30: (u) => [Number(u.streak) || 0, 30],
+      daily_5: (u) => [Number(u.dailyClears) || 0, 5],
+      daily_10: (u) => [Number(u.dailyClears) || 0, 10],
+      review_5: (u) => [Number(u.reviewClears) || 0, 5],
+      review_20: (u) => [Number(u.reviewClears) || 0, 20],
+      coin_100: (u) => [Number(u.coins) || 0, 100],
+      coin_500: (u) => [Number(u.coins) || 0, 500],
+      coin_1000: (u) => [Number(u.coins) || 0, 1000],
+      coin_3000: (u) => [Number(u.coins) || 0, 3000],
+      coins_10000: (u) => [Number(u.coins) || 0, 10000],
+      quiz_5_times: (u) => [Number(u.totalQuizzes) || 0, 5],
+      quiz_10_times: (u) => [Number(u.totalQuizzes) || 0, 10],
+      quiz_25_times: (u) => [Number(u.totalQuizzes) || 0, 25],
+      quiz_30_times: (u) => [Number(u.totalQuizzes) || 0, 30],
+      quiz_50_times: (u) => [Number(u.totalQuizzes) || 0, 50],
+      part1_80: (u) => [Math.round(_partCoverage(u, 1) * 100), 80],
+      part2_80: (u) => [Math.round(_partCoverage(u, 2) * 100), 80],
+      part3_80: (u) => [Math.round(_partCoverage(u, 3) * 100), 80],
+      kobun_10: (u) => [_kobunLearned(u), 10],
+      kobun_50: (u) => [_kobunLearned(u), 50],
+      kobun_master_10: (u) => [Object.entries(u.wordStats || {}).filter(([k, v]) => Number(k) >= 10001 && (v.correct || 0) >= 3).length, 10]
+    };
+
+    // 実績の進捗（未対応のものは null）
+    function achievementProgress(a) {
+      if (!a) return null;
+      try {
+        const fn = typeof a.progress === "function" ? a.progress : ACHIEVEMENT_PROGRESS[a.id];
+        if (typeof fn !== "function") return null;
+        const p = fn(userData);
+        if (!Array.isArray(p) || p.length < 2) return null;
+        const cur = Number(p[0]) || 0;
+        const goal = Math.max(1, Number(p[1]) || 1);
+        return { cur: Math.max(0, Math.round(cur)), goal: Math.round(goal) };
+      } catch (e) { return null; }
+    }
+
     function isAchievementDone(id) {
       return unlockedAchievements.includes(id);
     }
@@ -407,6 +572,27 @@
       `;
       list.appendChild(progDiv);
 
+      // あと少しで解除できる実績（未達成のうち進捗率が高いもの）
+      const nextGoals = ACHIEVEMENTS
+        .filter(a => !isAchievementDone(a.id))
+        .map(a => ({ a: a, p: achievementProgress(a) }))
+        .filter(x => x.p && x.p.cur > 0 && x.p.cur < x.p.goal)
+        .sort((x, y) => (y.p.cur / y.p.goal) - (x.p.cur / x.p.goal))
+        .slice(0, 3);
+      if (nextGoals.length) {
+        const goalsBox = document.createElement("div");
+        goalsBox.className = "p-3 bg-amber-50/70 border border-amber-200 rounded-2xl mb-2 space-y-2";
+        goalsBox.innerHTML = `<p class="text-[11px] font-extrabold text-amber-900">🎯 あと少しで解除</p>`
+          + nextGoals.map(({ a, p }) => {
+            const gPct = Math.min(100, Math.round((p.cur / p.goal) * 100));
+            return `<div class="space-y-1">`
+              + `<div class="flex items-center justify-between gap-2 text-[11px] font-bold text-amber-900"><span class="truncate">${a.icon} ${a.name}</span><span class="shrink-0 tabular-nums">${p.cur} / ${p.goal}</span></div>`
+              + `<div class="w-full bg-amber-200/70 h-1.5 rounded-full overflow-hidden"><div class="bg-amber-500 h-full rounded-full" style="width:${gPct}%"></div></div>`
+              + `</div>`;
+          }).join("");
+        list.appendChild(goalsBox);
+      }
+
       // カテゴリフィルタータブ
       const tabs = [
         { id: "all", label: "すべて" },
@@ -420,6 +606,8 @@
         { id: "review", label: "復習" },
         { id: "shop", label: "ショップ" },
         { id: "daily", label: "継続" },
+        { id: "exam", label: "テスト" },
+        { id: "game", label: "語源ゲーム" },
         { id: "kobun", label: "裏世界" }
       ];
       const tabContainer = document.createElement("div");
@@ -466,6 +654,11 @@
 
       filtered.forEach(a => {
         const done = isAchievementDone(a.id);
+        const prog = done ? null : achievementProgress(a);
+        const progPct = prog ? Math.min(100, Math.round((prog.cur / prog.goal) * 100)) : 0;
+        const progHtml = prog
+          ? `<div class="mt-1.5"><div class="w-full bg-slate-200 h-1 rounded-full overflow-hidden"><div class="bg-emerald-500 h-full rounded-full" style="width:${progPct}%"></div></div><div class="text-[10px] font-bold text-slate-400 tabular-nums mt-0.5">${prog.cur} / ${prog.goal}</div></div>`
+          : "";
         const div = document.createElement("div");
         div.className = `flex items-center gap-3 p-2.5 rounded-2xl border transition-all ${
           done
@@ -480,6 +673,7 @@
               ${done ? '<span class="text-[10px] text-emerald-700 bg-emerald-200/80 px-1.5 py-0.2 rounded font-bold">達成！</span>' : ''}
             </div>
             <div class="text-[11px] text-slate-400 mt-0.5 truncate">${a.desc}</div>
+            ${progHtml}
           </div>
           <div class="text-right shrink-0">
             <span class="text-xs font-bold ${done ? "text-amber-600" : "text-slate-400"}">🪙 +${a.price}</span>

@@ -11,7 +11,7 @@
     <script>
     // キャッシュ強制更新ロジック: 新バージョン検知時に古いServiceWorkerキャッシュを破棄
     (function() {
-      const APP_VER = "leap-v37-kobun-examples";
+      const APP_VER = "leap-v38-achievements-guide";
       try {
         const storedVer = localStorage.getItem("LEAP_APP_CACHE_VER");
         if (storedVer !== APP_VER) {
@@ -97,6 +97,7 @@
         始まりのビギナー
       </div>
       <div class="flex items-center gap-1 shrink-0">
+        <button type="button" id="header-guide-btn" onclick="openGuideModal()" class="w-8 h-8 rounded-lg flex items-center justify-center bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-500 font-bold text-xs transition cursor-pointer" title="使い方ガイド">?</button>
         <button type="button" id="header-achievement-btn" onclick="openAchievementsModal()" class="h-8 px-1.5 sm:px-2 rounded-lg flex items-center gap-1 bg-slate-100 hover:bg-slate-200 border border-slate-200 transition cursor-pointer" title="実績・トロフィーを見る">
           <span class="text-sm">🏆</span>
           <span id="header-achievement-count" class="text-[10px] sm:text-[11px] font-bold text-emerald-700 bg-emerald-100 px-1.5 py-0.2 rounded-full">0/39</span>
@@ -147,7 +148,7 @@
         <div class="flex items-start justify-between gap-2">
           <div class="min-w-0">
             <p class="text-sm font-extrabold text-slate-900">👋 はじめての方へ</p>
-            <p class="text-[11px] text-slate-500 mt-0.5">この3つだけ覚えれば大丈夫です。</p>
+            <p class="text-[11px] text-slate-500 mt-0.5">この3つだけ覚えれば大丈夫です。<button type="button" onclick="openGuideModal()" class="ml-1 font-bold text-emerald-600 hover:underline cursor-pointer">くわしい使い方 ›</button></p>
           </div>
           <button type="button" onclick="dismissOnboarding()" class="text-[10px] font-bold text-slate-400 hover:text-slate-700 shrink-0 cursor-pointer">閉じる</button>
         </div>
@@ -252,6 +253,16 @@
         </div>
       </div>
 
+      <!-- 副次メニュー（既定は閉じておき、初見の人の迷いを減らす） -->
+      <details id="home-more-menu" class="group bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden px-3 py-2 space-y-3">
+        <summary class="flex items-center justify-between gap-2 cursor-pointer list-none select-none py-1">
+          <span class="flex items-center gap-2 text-sm font-bold text-slate-700">📚 ほかのメニュー</span>
+          <span class="text-[11px] font-bold text-slate-400">
+            <span class="group-open:hidden">テスト・模試・記録・辞典 ▾</span>
+            <span class="hidden group-open:inline">閉じる ▴</span>
+          </span>
+        </summary>
+
       <!-- 学びを深めるツール（2列に集約して縦の長さを抑える） -->
       <div class="space-y-2">
         <p class="text-[11px] font-extrabold text-slate-400 tracking-widest px-1">もっと学ぶ</p>
@@ -286,6 +297,8 @@
         <button type="button" onclick="openSettingsModal()" class="py-2.5 bg-white hover:bg-slate-50 border border-slate-200 rounded-xl shadow-sm text-[11px] font-bold text-slate-700 transition cursor-pointer">⚙️ 設定</button>
       </div>
 
+      </details>
+
       <!-- 学習履歴（最近5回） -->
       <div id="home-score-history" class="hidden bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
         <button type="button" onclick="toggleScoreHistory()" class="w-full flex items-center justify-between p-4 cursor-pointer hover:bg-slate-50 transition">
@@ -303,6 +316,8 @@
         <h2 class="text-xl font-bold text-slate-900">出題範囲＆設定</h2>
         <button type="button" onclick="navigate('screen-home')" class="text-sm text-slate-500 hover:text-slate-800 shrink-0 whitespace-nowrap">戻る</button>
       </div>
+
+      <p class="text-[11px] text-slate-500 bg-emerald-50 border border-emerald-200 rounded-xl px-3 py-2 leading-relaxed">迷ったら、下までスクロールして「この条件でスタート」を押すだけでOK（Part 1・10問・通常4択ではじめられます）。</p>
 
       <!-- 出題スタイル（通常4択 / 例文・文脈テスト） -->
       <div class="bg-white p-3 rounded-xl border border-slate-200 shadow-sm space-y-2">
@@ -1347,8 +1362,8 @@
       </div>
       <div id="achievement-list" class="space-y-2 overflow-y-auto" style="max-height: 50vh;"></div>
 
-      <div class="pt-2 border-t border-slate-100 text-center text-xs text-slate-400">
-        達成時にボーナスコインが付与されます（今回は0コインの条件のみ狙います）
+      <div class="pt-2 border-t border-slate-100 text-center text-[11px] text-slate-400 leading-relaxed">
+        達成するとボーナスコインがもらえます。未達成の実績は進捗バーと「あと少しで解除」から確認できます。
       </div>
     </div>
   </div>
@@ -1436,6 +1451,13 @@
 
         <div class="space-y-2 pt-3 border-t border-slate-100">
           <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400 px-1">サポート</p>
+          <button type="button" onclick="closeSettingsModal(); openGuideModal()" class="w-full py-3 px-4 bg-white hover:bg-slate-50 active:bg-slate-100 border border-slate-200 rounded-xl shadow-sm transition-all flex items-center justify-between cursor-pointer">
+            <span class="flex items-center gap-2 min-w-0">
+              <span class="text-lg">❓</span>
+              <span class="text-sm font-bold text-slate-800">使い方ガイド</span>
+            </span>
+            <span class="text-[10px] font-bold text-slate-400 shrink-0">はじめての人向け</span>
+          </button>
           <button type="button" onclick="closeSettingsModal(); openAnnouncementsModal()" class="w-full py-3 px-4 bg-white hover:bg-slate-50 active:bg-slate-100 border border-slate-200 rounded-xl shadow-sm transition-all flex items-center gap-2 cursor-pointer">
             <span class="text-lg">📢</span>
             <span class="text-sm font-bold text-slate-800">お知らせ</span>
@@ -1670,6 +1692,65 @@
       <div class="px-4 py-3 border-t border-slate-100 bg-slate-50 flex gap-2">
         <button type="button" onclick="copyFeedbackText()" class="px-3 py-2.5 bg-white hover:bg-slate-100 border border-slate-200 text-slate-600 text-xs font-bold rounded-xl transition cursor-pointer shrink-0">文面をコピー</button>
         <button type="button" id="feedback-submit" onclick="submitFeedback()" class="flex-1 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl transition cursor-pointer">送信する</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 使い方ガイド（初めての人向け。ヘッダーの ? と設定から開ける） -->
+  <div id="guide-modal" class="fixed inset-0 z-[66] hidden items-end sm:items-center justify-center p-0 sm:p-4" role="dialog" aria-modal="true" aria-labelledby="guide-title">
+    <div class="backdrop-in absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onclick="closeGuideModal()"></div>
+    <div class="sheet-in relative bg-white w-full sm:max-w-md max-h-[88vh] rounded-t-3xl sm:rounded-3xl shadow-2xl flex flex-col overflow-hidden">
+      <div class="px-5 pt-4 pb-3 border-b border-slate-100 flex items-start gap-3">
+        <span class="w-10 h-10 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center justify-center text-xl shrink-0">❓</span>
+        <div class="min-w-0 flex-1">
+          <h3 id="guide-title" class="text-lg font-extrabold text-slate-900">使い方ガイド</h3>
+          <p class="text-[11px] text-slate-400">はじめての人は、この3ステップだけで大丈夫。</p>
+        </div>
+        <button type="button" onclick="closeGuideModal()" class="text-slate-400 hover:text-slate-700 text-lg font-bold p-1 shrink-0">✕</button>
+      </div>
+
+      <div class="px-4 py-3 overflow-y-auto space-y-4">
+        <ol class="space-y-3">
+          <li class="flex gap-2.5">
+            <span class="w-6 h-6 rounded-full bg-emerald-600 text-white text-[11px] font-extrabold flex items-center justify-center shrink-0">1</span>
+            <span class="text-xs text-slate-600 leading-relaxed"><b class="text-slate-900">範囲と問題数を選んでスタート</b><br>トップの「クイズを始める」→ Part を選ぶ →「この条件でスタート」。最初は10問がおすすめです。</span>
+          </li>
+          <li class="flex gap-2.5">
+            <span class="w-6 h-6 rounded-full bg-emerald-600 text-white text-[11px] font-extrabold flex items-center justify-center shrink-0">2</span>
+            <span class="text-xs text-slate-600 leading-relaxed"><b class="text-slate-900">答え合わせの画面で意味を確認</b><br>4択を選ぶと正解と語義が出ます。間違えた単語は自動で「苦手」に登録されます。</span>
+          </li>
+          <li class="flex gap-2.5">
+            <span class="w-6 h-6 rounded-full bg-emerald-600 text-white text-[11px] font-extrabold flex items-center justify-center shrink-0">3</span>
+            <span class="text-xs text-slate-600 leading-relaxed"><b class="text-slate-900">翌日トップの「復習」を押す</b><br>忘れかけた頃にちょうど出てくるので、覚え直しが最小の回数で済みます。</span>
+          </li>
+        </ol>
+
+        <div class="rounded-xl border border-slate-200 bg-slate-50 p-3 space-y-2">
+          <p class="text-[11px] font-extrabold text-slate-700">📌 学習状況の見かた</p>
+          <div class="grid grid-cols-2 gap-1.5 text-[11px]">
+            <span class="px-2 py-1 rounded-lg bg-white border border-slate-200 text-slate-500">未学習：まだ出題なし</span>
+            <span class="px-2 py-1 rounded-lg bg-rose-50 border border-rose-200 text-rose-700">苦手：正答率50%未満</span>
+            <span class="px-2 py-1 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-700">学習中：正答率50%以上</span>
+            <span class="px-2 py-1 rounded-lg bg-amber-50 border border-amber-200 text-amber-800">マスター：3回以上正解</span>
+          </div>
+        </div>
+
+        <div class="rounded-xl border border-slate-200 p-3 space-y-1.5">
+          <p class="text-[11px] font-extrabold text-slate-700">🧭 慣れてきたら使える機能</p>
+          <p class="text-[11px] text-slate-500 leading-relaxed">
+            <b class="text-slate-700">例文・リスニング・スペル</b>で同じ単語を別角度から練習／<b class="text-slate-700">到達度テスト</b>で50問の実力チェック／<b class="text-slate-700">学習記録</b>でカレンダーとマスター率／<b class="text-slate-700">語源ラッシュ</b>で接辞をゲーム感覚で暗記。トップの「ほかのメニュー」にまとまっています。
+          </p>
+        </div>
+
+        <div class="rounded-xl border border-slate-200 p-3 space-y-1.5">
+          <p class="text-[11px] font-extrabold text-slate-700">💾 データの保存</p>
+          <p class="text-[11px] text-slate-500 leading-relaxed">進捗はこの端末に自動保存されます。ログインするとクラウド同期・機種変更時の引き継ぎ・全国一斉模試・フレンド機能が使えます（未ログインでも学習機能はすべて使えます）。</p>
+        </div>
+      </div>
+
+      <div class="px-4 py-3 border-t border-slate-100 bg-slate-50 flex gap-2">
+        <button type="button" onclick="closeGuideModal(); startBeginnerQuiz()" class="flex-1 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl transition cursor-pointer">10問でためす</button>
+        <button type="button" onclick="closeGuideModal(); navigate('screen-select')" class="flex-1 py-2.5 bg-white hover:bg-slate-100 border border-slate-200 text-slate-700 text-xs font-bold rounded-xl transition cursor-pointer">範囲を選んで始める</button>
       </div>
     </div>
   </div>
@@ -3177,6 +3258,20 @@ listContainer.appendChild(row);
       modal.classList.remove("hidden");
       modal.classList.add("flex");
     }
+    // ===== 使い方ガイド =====
+    function openGuideModal() {
+      const modal = document.getElementById("guide-modal");
+      if (!modal) return;
+      modal.classList.remove("hidden");
+      modal.classList.add("flex");
+    }
+    function closeGuideModal() {
+      const modal = document.getElementById("guide-modal");
+      if (!modal) return;
+      modal.classList.add("hidden");
+      modal.classList.remove("flex");
+    }
+
     function closeSettingsModal() {
       const modal = document.getElementById("settings-modal");
       if (!modal) return;
