@@ -645,7 +645,7 @@
     }
 
     // 画面遷移
-    const SCREENS = ["screen-home", "screen-select", "screen-quiz", "screen-shop", "screen-social", "screen-dictionary", "screen-reference", "screen-affix", "screen-affix-rush", "screen-affix-memory", "screen-reader", "screen-exam", "screen-stats", "screen-mock-exam", "screen-result"];
+    const SCREENS = ["screen-home", "screen-select", "screen-quiz", "screen-shop", "screen-social", "screen-dictionary", "screen-reference", "screen-affix", "screen-affix-rush", "screen-affix-memory", "screen-reader", "screen-exam", "screen-stats", "screen-mock-exam", "screen-roadmap", "screen-result"];
     function currentScreenId() {
       const found = SCREENS.find(id => {
         const el = document.getElementById(id);
@@ -745,6 +745,8 @@
       if (screenId === "screen-mock-exam" && typeof renderMockExamScreen === "function") renderMockExamScreen();
       if (screenId === "screen-stats" && typeof renderStatsScreen === "function") renderStatsScreen();
       if (screenId === "screen-home") updateUserUI();
+      // 管理者のみ: 未対応のご意見があればホームで知らせる（RLSで非管理者は0件）
+      if (screenId === "screen-home" && typeof renderAdminFeedbackNotice === "function") renderAdminFeedbackNotice();
 
       if (!options.fromHistory) {
         const same = !!(history.state && history.state.screen === screenId);

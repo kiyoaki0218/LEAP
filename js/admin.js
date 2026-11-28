@@ -202,6 +202,13 @@
     if (logout) logout.classList.remove("hidden");
     setLoginMessage("");
     await Promise.all([loadAnnouncements(), loadFeedback(), loadMockExams()]);
+    // ホームの通知から ./admin.html#feedback で来たときに、そのタブを開く
+    applyHashTab();
+  }
+
+  function applyHashTab() {
+    const tab = (location.hash || "").replace(/^#/, "");
+    if (["announcements", "feedback", "mock", "members"].includes(tab)) switchTab(tab);
   }
 
   function showLogin() {
@@ -1048,8 +1055,17 @@
       return;
     }
 
-    // 想定正答率（expected_rates）を自動計算
+    // 想定正答率（expected_rates）を自動計算（従来方式との互換用）
     const expectedRates = qids.map((_, i) => Math.round((0.45 + 0.35 * (i / Math.max(qids.length - 1, 1))) * 1000) / 1000);
+    // 難易度（Part 1..5）を単語データから設定（偏差値の 3PL/EAP 推定に使う）
+    const wordMap = new Map();
+    (typeof LEAP_WORDS_DATA !== "undefined" ? LEAP_WORDS_DATA : []).forEach((w) => wordMap.set(Number(w.id), w));
+    const questionLevels = qids.map((id, i) => {
+      const w = wordMap.get(Number(id));
+      const part = w ? Number(w.part) : NaN;
+      if (part >= 1 && part <= 5) return part;
+      return Math.min(5, Math.max(1, Math.ceil((i + 1) / Math.max(1, qids.length / 5))));
+    });
     const rangeLabel = `${subject === 'kobun' ? '古文' : 'LEAP'}（${qids.length}問）`;
 
     const payload = {
@@ -1058,6 +1074,7 @@
       range_label: rangeLabel,
       question_ids: qids,
       expected_rates: expectedRates,
+      question_levels: questionLevels,
       start_at: startAt,
       end_at: endAt,
       duration_sec: durationSec
@@ -1308,6 +1325,7 @@
     document.querySelectorAll("[data-admin-tab]").forEach((btn) => {
       btn.addEventListener("click", () => switchTab(btn.dataset.adminTab));
     });
+    window.addEventListener("hashchange", applyHashTab);
     resetAnnouncementForm();
     resetMockForm();
 

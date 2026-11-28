@@ -255,6 +255,7 @@ create table if not exists public.mock_exams (
   range_label text,
   question_ids int[] not null,
   expected_rates float8[],
+  question_levels int[],
   start_at timestamptz not null,
   end_at timestamptz not null,
   duration_sec int not null default 1500,
@@ -387,6 +388,89 @@ create policy mock_exam_results_admin_select on public.mock_exam_results
   for select to authenticated
   using (public.is_admin());
 
+-- 難易度（Part）つき答案から 3PL + EAP で偏差値を推定する
+-- p(θ) = 0.25 + 0.75 / (1 + exp(-(θ - b)))   b は Part 1..5 → -1.7 / -1.0 / -0.3 / 0.5 / 1.2
+-- 事前分布 N(0,1)、θ は -4〜4 を 0.1 刻みで評価（js/mock-score.js と同じ式）
+create or replace function public.mock_ability_deviation(
+  p_exam public.mock_exams,
+  p_answers jsonb
+)
+returns numeric
+language plpgsql
+immutable
+as $mockdev$
+declare
+  v_levels int[] := coalesce(p_exam.question_levels, '{}'::int[]);
+  v_ids int[] := coalesce(p_exam.question_ids, '{}'::int[]);
+  v_b_map float8[] := array[-1.7, -1.0, -0.3, 0.5, 1.2];
+  v_b float8[] := '{}';
+  v_u boolean[] := '{}';
+  v_n int;
+  v_i int;
+  v_j int;
+  v_idx int;
+  v_level int;
+  v_t float8;
+  v_ll float8;
+  v_p float8;
+  v_w float8;
+  v_sum float8 := 0;
+  v_sumt float8 := 0;
+  v_sumt2 float8 := 0;
+  v_mean float8;
+begin
+  if array_length(v_levels, 1) is null or array_length(v_ids, 1) is null then
+    return null;
+  end if;
+  if p_answers is null or jsonb_typeof(p_answers) <> 'array' then
+    return null;
+  end if;
+  for v_j in 0 .. jsonb_array_length(p_answers) - 1 loop
+    v_idx := null;
+    select t.ord into v_idx
+      from jsonb_array_elements(to_jsonb(v_ids)) with ordinality as t(q, ord)
+     where (t.q #>> '{}')::int = (p_answers -> v_j ->> 'id')::int
+     limit 1;
+    if v_idx is null or v_idx > array_length(v_levels, 1) then
+      continue;
+    end if;
+    v_level := v_levels[v_idx];
+    if v_level is null or v_level < 1 or v_level > 5 then
+      v_b := v_b || 0::float8;
+    else
+      v_b := v_b || v_b_map[v_level];
+    end if;
+    v_u := v_u || coalesce((p_answers -> v_j ->> 'correct')::boolean, false);
+  end loop;
+  v_n := coalesce(array_length(v_u, 1), 0);
+  if v_n = 0 then
+    return null;
+  end if;
+  for v_i in 0 .. 80 loop
+    v_t := -4 + v_i * 0.1;
+    v_ll := 0;
+    for v_j in 1 .. v_n loop
+      v_p := 0.25 + 0.75 / (1 + exp(-(v_t - v_b[v_j])));
+      v_p := least(1 - 1e-6, greatest(1e-6, v_p));
+      if v_u[v_j] then
+        v_ll := v_ll + ln(v_p);
+      else
+        v_ll := v_ll + ln(1 - v_p);
+      end if;
+    end loop;
+    v_w := exp(v_ll - 0.5 * v_t * v_t);
+    v_sum := v_sum + v_w;
+    v_sumt := v_sumt + v_t * v_w;
+    v_sumt2 := v_sumt2 + v_t * v_t * v_w;
+  end loop;
+  if v_sum <= 0 then
+    return null;
+  end if;
+  v_mean := v_sumt / v_sum;
+  return least(80, greatest(20, round((50 + 10 * v_mean)::numeric, 1)));
+end;
+$mockdev$;
+
 -- ------------------------------------------------------------
 -- 集計 RPC: ハイブリッド偏差値 + 志望校別（大学×文理）集計
 -- ------------------------------------------------------------
@@ -396,7 +480,8 @@ create policy mock_exam_results_admin_select on public.mock_exam_results
 --   3) ハイブリッド平均 μ = w*標本平均 + (1-w)*理論平均, w = N/(N+8)
 --   4) 標準偏差は 標本SD と 理論SD=√(n·p̄·(1-p̄)) を同じ重みで混ぜ、
 --      下限 clip = max(total*0.06, 2.0)、上限 clip = max(total*0.35, 下限) を適用
---   5) 偏差値 = clamp(50 + 10*(score-μ)/SD_eff, 25, 75)
+--   5) question_levels があれば 3PL+EAP（mock_ability_deviation）で偏差値、無ければ
+--      clamp(50 + 10*(score-μ)/SD_eff, 20, 80) にフォールバック
 --   6) N < 5 は provisional = true（暫定・参考値）として返す
 --   7) 志望校は groupId 単位。母数 < 5 なら 同tier → 同category → 全体 へフォールバック
 -- ------------------------------------------------------------
@@ -503,8 +588,11 @@ begin
     select round(100.0 * count(*) / greatest(v_n, 1), 1) into v_percentile
       from public.mock_exam_results
      where exam_id = p_exam_id and not is_late and score <= v_my_result.score;
-    v_deviation := 50 + 10 * (v_score - v_mu) / v_sd_eff;
-    v_deviation := least(75, greatest(25, v_deviation));
+    v_deviation := public.mock_ability_deviation(v_exam, v_my_result.answers);
+    if v_deviation is null then
+      v_deviation := 50 + 10 * (v_score - v_mu) / v_sd_eff;
+    end if;
+    v_deviation := least(80, greatest(20, v_deviation));
   end if;
 
   select coalesce(choices, '[]'::jsonb) into v_choices

@@ -712,6 +712,8 @@
     // ---- 表示 ----
     function renderCloudAccount() {
       const signedIn = !!(cloudState.user && supabaseClient);
+      // ログイン・同期のたびに、管理者向けの未対応意見バナーを更新する
+      if (typeof renderAdminFeedbackNotice === "function") renderAdminFeedbackNotice();
       const outEl = document.getElementById("cloud-signed-out");
       const inEl = document.getElementById("cloud-signed-in");
       if (outEl) outEl.classList.toggle("hidden", signedIn);
@@ -725,6 +727,14 @@
         btnState.className = "text-[10px] font-extrabold px-2 py-0.5 rounded-full shrink-0 " +
           (signedIn ? "bg-emerald-100 text-emerald-800" : "bg-slate-100 text-slate-500");
       }
+
+      // ログイン導線（ホーム・設定）: 未ログインのときだけ目立たせる
+      const showCta = CLOUD_ENABLED && !signedIn;
+      ["home-login-pill", "settings-login-cta"].forEach((id) => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.classList.toggle("hidden", !showCta);
+      });
 
       const note = document.getElementById("cloud-unavailable-note");
       if (note) {

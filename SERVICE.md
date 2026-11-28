@@ -22,7 +22,7 @@
 - **収録**: 英単語 2,300 語（Part 1〜5）／例文・単語詳細 2,300 語分・例文クイズ 2,000 語分／参考資料 5 章／接辞 32 グループ・132 語根／古文単語 150 語（2 章）・古文詳細 150 語分（例文 354 件）。
 - **主な遊び**: 通常4択・例文穴埋め・リスニング4択・スペル入力・60秒スプリント・サドンデス、到達度テスト（50問・25分・S〜D判定）、**全国一斉模試（日時指定の時間割制・ハイブリッド偏差値・志望校判定）**、デイリーチャレンジ、忘却曲線の苦手復習、学習カレンダー/Part別マスター率の振り返り、コイン/EXP/レベル、称号・フレーム・アバター、実績 115 種（進捗バー・「あと少しで解除」付き）、共有URL（挑戦状）、任意ログインによるクラウド同期・相互フレンドの詳細ステータス閲覧。運営向けに **お知らせ**（ホーム表示）と **意見箱**（匿名可）、管理者用の `admin.html`（模試管理・新規模試作成・過去成績集約・お知らせ CRUD・意見トリアージ）を持つ。
 - **ホスティング**: 静的ホスティング（Vercel 想定。`vercel.json` なし、`.vercel/` は gitignore）。
-- **主要ファイル**: `index.html`（アプリ本体）、`js/core.js`（称号・ゾーン・画面遷移の基盤）、`js/mock-exam.js`（全国一斉模試）、`js/cloud-sync.js`（Supabase 認証・クラウド同期・フレンド）、`js/quiz-engine.js`（出題エンジン・到達度テスト・タイマー）、`js/quiz-resume.js`（つづきからの保存データ）、`js/cloud-merge.js`（苦手単語・克服記録のクラウド統合）、`tests/`（`resume` / `cloud-merge` の単体テスト）、`js/ui-stats-dict.js`（辞典・単語詳細・参考資料・実績・ショップ）、`assets/css/app.css`（アプリ固有 CSS）、`admin.html` ＋ `js/admin.js`（管理者ダッシュボード）、`supabase_config.js`（Supabase 公開設定の共有）、`words_data.js`、`examples_data.js`、`reference_data.js`、`affix_data.js`、`mock_schools_data.js`（模試の志望校マスタ）、`kobun/kobun_words_data.js`、`kobun/kobun_details_data.js`、`sw.js`、`manifest.json`、`supabase/schema.sql`（DB/RLS・模試集計RPC・意見箱RPC）、`supabase/admin_roles.sql`（管理者の一覧・付与・解除RPC）、`supabase/migration_mock_public.sql`（模試の公開スケジュールRPC）、`LEAP単語データ/`・`古文単語データ/`（元データ）、`patches/`（データ生成・一括改修スクリプト）。
+- **主要ファイル**: `index.html`（アプリ本体）、`js/core.js`（称号・ゾーン・画面遷移の基盤）、`js/mock-exam.js`（全国一斉模試）、`js/cloud-sync.js`（Supabase 認証・クラウド同期・フレンド）、`js/quiz-engine.js`（出題エンジン・到達度テスト・タイマー）、`js/quiz-resume.js`（つづきからの保存データ）、`js/cloud-merge.js`（苦手単語・克服記録のクラウド統合）、`tests/`（`resume` / `cloud-merge` の単体テスト）、`js/ui-stats-dict.js`（辞典・単語詳細・参考資料・実績・ショップ）、`assets/css/app.css`（アプリ固有 CSS）、`admin.html` ＋ `js/admin.js`（管理者ダッシュボード）、`supabase_config.js`（Supabase 公開設定の共有）、`words_data.js`、`examples_data.js`、`reference_data.js`、`affix_data.js`、`mock_schools_data.js`（模試の志望校マスタ）、`difficulty_data.js`（Part別の難易度）、`updates_data.js`（アプリ内の更新履歴）、`kobun/kobun_words_data.js`、`kobun/kobun_details_data.js`、`sw.js`、`manifest.json`、`supabase/schema.sql`（DB/RLS・模試集計RPC・意見箱RPC）、`supabase/admin_roles.sql`（管理者の一覧・付与・解除RPC）、`supabase/migration_mock_public.sql`（模試の公開スケジュールRPC）、`LEAP単語データ/`・`古文単語データ/`（元データ）、`patches/`（データ生成・一括改修スクリプト）。
 
 ---
 
@@ -90,7 +90,7 @@
 
 | id | 画面 | 役割 |
 |---|---|---|
-| `screen-home` | ホーム | ゾーン切替、お知らせ（模試のお知らせは模試ページへの直リンク付き）、次回模試バナー（開催中は残り時間）、はじめてガイド（学習履歴ゼロの人だけ）、クイズ／デイリーの主導線、プレイヤーカード、連続学習、苦手バナー、**「📚 ほかのメニュー」折りたたみ**（2列の学習ツール＝到達度テスト・模試・学習記録・語源、3列のツール＝辞典・ご意見・設定）、今日の目標リング（`DAILY_GOAL_COUNT`=20問／日、`dailyLog` で進捗、達成でトースト）、つづきからバナー（`LEAP_QUIZ_RESUME_V1`）、前回の到達度テストカード（`examHistory`）、最近の学習履歴 |
+| `screen-home` | ホーム | ゾーン切替、お知らせ（模試のお知らせは模試ページへの直リンク付き）、次回模試バナー（開催中は残り時間）、はじめてガイド（学習履歴ゼロの人だけ）、クイズ／デイリーの主導線、プレイヤーカード、連続学習、苦手バナー、**常時表示の準メニュー**（3列のコンパクトタイル＝到達度テスト・模試・学習記録・語源ラッシュ・ショップ・実績、3列のツール＝辞典・ご意見・設定、その下にアップデート情報）、今日の目標リング（`DAILY_GOAL_COUNT`=20問／日、`dailyLog` で進捗、達成でトースト）、つづきからバナー（`LEAP_QUIZ_RESUME_V1`）、前回の到達度テストカード（`examHistory`）、最近の学習履歴 |
 | `screen-select` | 出題範囲＆設定 | スタイル／ゲームモード／Part・カスタム範囲／出題数／学習状況フィルタ |
 | `screen-quiz` | クイズ | 問題カード、4択、タイマー、コンボ、次へ |
 | `screen-result` | 結果 | スコア、正答率、間違い一覧、共有・画像保存・再挑戦 |
@@ -112,7 +112,7 @@
 
 ホームの副次的な入口（実績・ショップ・アカウント／同期・自分の詳細・音声ON/OFF・追加JSON読込）は「⚙️ 設定」シートに集約している（`openSettingsModal` / `closeSettingsModal`）。各ボタンは既存IDを保つため、バッジやラベルの自動更新はそのまま動作する。
 
-ホームの導線は「主導線を上・副次機能を下」の順に並べる。学習ツールとツール（辞典・ご意見・設定）は「📚 ほかのメニュー」（`#home-more-menu` の `<details>`）に既定で折りたたみ、初見の人が迷わないようにしている。ヘッダーの「?」ボタンと設定シートの「使い方ガイド」から `guide-modal`（3ステップ＋学習状況の見かた＋使える機能＋データ保存の説明）を開ける。`home-onboarding` は `totalQuizzes === 0` かつ `scoreHistory` と `wordStats` が空のときだけ表示し、閉じると `LEAP_ONBOARDING_DISMISSED_V1` に記録して以後は出さない。ガイドの「10問でためす」は先頭100語から10問を学習状況フィルタなしで開始する（`startBeginnerQuiz`）。
+ホームの導線は「主導線を上・副次機能を下」の順に並べる。学習ツール（到達度テスト・模試・学習記録・語源・ショップ・実績）とツール（辞典・ご意見・設定）は **`#home-more-menu` として常時表示**する（以前は「📚 ほかのメニュー」の `<details>` に折りたたんでいたが、ショップなどの準メイン機能が設定経由でしか開けず見つけにくかったため廃止）。ヘッダーのコイン表示（`#header-coins-btn`）もタップでショップへ遷移する。ヘッダーの「?」ボタンと設定シートの「使い方ガイド」から `guide-modal`（3ステップ＋学習状況の見かた＋使える機能＋データ保存の説明）を開ける。`home-onboarding` は `totalQuizzes === 0` かつ `scoreHistory` と `wordStats` が空のときだけ表示し、閉じると `LEAP_ONBOARDING_DISMISSED_V1` に記録して以後は出さない。ガイドの「10問でためす」は先頭100語から10問を学習状況フィルタなしで開始する（`startBeginnerQuiz`）。
 
 模試の共有リンク `?mock=<examId>` で開くと、Supabase クライアントの初期化だけを待ってから該当模試を開く（`checkMockExamLink` → `scheduleLinkedMockExam` → `openLinkedMockExam`）。**ログインは不要**。お知らせの本文かタイトルに「模試」を含む場合、ホームのお知らせ行と一覧モーダルに「模試ページを開く」ボタンが出る（`announcementAction`）。
 
@@ -362,6 +362,8 @@ expRequiredForLevel(level) = 100 + (level - 1) * 50
 - **克服（ステージ4クリア）** すると `weakWords[id]` を削除し、`graduatedWords[id] = 今日` を記録する。この記録がないと、クラウド統合で他端末の古い `weakWords` から復活してしまう。間違え直すと `graduatedWords[id]` は削除される。
 - ホームの苦手バナーから「特訓する」（`startWeakWordsQuiz`）または「一覧」（モーダルで個別削除・ゾーン単位リセット）。
 - 復習は**通常モード・通常4択固定**。完了で `reviewClears` 加算。
+- **復習の出題プールは `ALL_WORDS` の単語オブジェクトに置き換える**。`weakWords` の保存レコードは `id / word / meaning / 復習状態` だけを持ち、`detail.ipa` や品詞を持たない。以前はこのレコードをそのまま出題していたため、**復習クイズだけ発音記号が出なかった**（`startWeakWordsQuiz` の `canonical()`）。
+- 発音記号は `wordIpa(w)` が `detail.ipa` → `w.ipa` → `LEAP_WORD_DETAILS[String(w.id)].ipa` の順で引く。詳細データが未展開の単語（クラウドから復元した苦手など）でも表示できる。苦手単語一覧・結果画面の誤答一覧・模試の弱点分析レポートの誤答一覧にも同じヘルパーで発音記号を表示する。
 
 ### 4.8 連続学習（ストリーク）
 
@@ -385,19 +387,24 @@ expRequiredForLevel(level) = 100 + (level - 1) * 50
 
 ### 4.10 全国一斉模試（`screen-mock-exam`）
 
-日時を揃えた「時間割制」の模試。**受験はログイン不要**で、未ログインでも受験・採点・復習・端末保存ができる。全国集計（偏差値・順位・志望校判定）への提出と `get_mock_exam_report` は Supabase ＋ ログイン時のみ。Supabase 未設定／通信不可のときは、端末内の単語から作る「オフライン練習模試」（30問・20分・何度でも受験可）を一覧の先頭に表示する。
+日時を揃えた「時間割制」の模試。**受験はログイン不要**で、未ログインでも受験・採点・復習・端末保存ができる。全国集計（偏差値・順位・志望校判定）への提出と `get_mock_exam_report` は Supabase ＋ ログイン時のみ。Supabase 未設定／通信不可のときは、端末内の単語から作る「いつでも実力診断模試」（Part 1〜5 を均等に混ぜた30問・20分・何度でも受験可）を一覧の先頭に表示する。診断模試も難易度つき採点で偏差値・志望校判定の目安を出す。
 
 - **スケジュール**: `mock_exams` を新しい順に取得し、開催中／開催前を先、終了済みを後に並べる。`start_at` / `end_at` で次の3状態を判定（`mockPhase`）。
   - 開催前（`now < start_at`）: 開始までのカウントダウンと志望校登録。
   - 受験時間枠内（`start_at <= now <= end_at`）: 「模試を開始する」。制限時間は開催回の `duration_sec`（既定 1500 秒 = 25 分）。
   - 終了後（`now > end_at`）: 成績表（確定 or 暫定）と志望校判定を表示。
-- **出題**: `mock_exams.question_ids` の単語をそのまま出題（`subject` = `leap` / `kobun`）。通常4択固定。
+- **出題**: `mock_exams.question_ids` の単語をそのまま出題（`subject` = `leap` / `kobun`）。通常4択固定。診断模試（`mockBuildOfflineExam`）は Part ごとに均等な30問を組み立てる。
+- **難易度（Part）つき採点**: `difficulty_data.js` の Part 別困難度 b（Part 1 = -1.7 / 2 = -1.0 / 3 = -0.3 / 4 = 0.5 / 5 = 1.2、`LEAP_DIFFICULTY.words` で語ごとに上書き可）を使い、4択の当て推量 c=0.25 を考慮した **3PL で能力 θ を EAP 推定**する（`js/mock-score.js`。事前分布 N(0,1)、θ は -4〜4 を 0.1 刻み）。偏差値 = 50 + 10θ（20〜80 にクリップ）。素点ではなく難易度で重み付けされるため、Part 1 だけ全問正解しても 75 に張り付かず、発展（Part 4–5）を取ると上がる。**受験者が 0 人でも算出できる**（母集団をモデルで仮定するため、人数が集まらなくても偏差値が出る）。
+- **サーバ側の同一実装**: `mock_ability_deviation(p_exam, p_answers)` が同じ式で計算する（`supabase/migration_mock_difficulty.sql` / `schema.sql`）。`mock_exams.question_levels`（Part 1..5）が未設定の回は従来の素点式にフォールバックする。回答 `answers[{ id, correct, sec }]` を `question_ids` と突き合わせて難易度に変換する。
+- **信頼区間と判定**: 事後分布の SD から 90% 区間を出し、成績表に「偏差値 62.8（目安 51–74）」と表示。**判定は区間の下限**を使う（`mockJudgeFor` → `LeapMockScore.judgeTier`。tier 別 A/B/C しきい値は tier1 65/58/50、tier2 62/55/47、tier3 58/50/43、tier4 53/45/38）。モデル推定があるときは N<5 でも「判定保留」にせず、N の注記つきで判定を出す。
+- **難易度別の内訳**: `mockRenderDifficultyCard` が Part ごとの正答数・正答率・難易度ラベル（基礎〜難関）を成績表に表示する。
+- **志望校（ロードマップ）判定**: `userData.roadmap` があれば、未ログイン・オフラインでも志望校 tier で A〜D 判定と合格圏ギャップを表示する（`mockRenderRoadmapJudge`）。
 - **開始時刻の保持**: 開始時に `mockExamStartedAt` を記録し、`elapsed_sec` を提出。終了時刻を過ぎた提出は `is_late = true`（参考記録）として保存し、正規受験の集計から除外する。
 - **エントリー**: 第1〜第5志望を `mock_exam_entries.choices`（jsonb 配列）に保存。各要素は `{ facultyId, univ, faculty, groupId, groupName, tier, category }` の自己記述形式で、これだけで大学×文理／tier／category の集計ができる。ローカル下書きは `LEAP_MOCK_CHOICES_V1`。
   - 選択 UI は「大学名・学部名の検索」＋「カテゴリ」「難易度（tier）」の絞り込みを備え、該当する大学・学部だけをセレクトに出す（件数表示・条件クリア付き）。
 - **成績表**: `get_mock_exam_report` の返却値を表示。偏差値・順位・上位パーセンタイル・受験者数 N・平均・トリム平均・理論平均・実効SD・志望校判定（A/B/C/D または判定保留）・全大学×文理群の目安一覧（カテゴリ見出し付き・スクロール）。
-- **判定**（`mockJudgeFor`）: 偏差値と `tier` 別しきい値（tier1: 63/57/50、tier2: 60/54/47、tier3: 56/50/44、tier4: 52/46/40）で A〜D を決め、志望者内パーセンタイルが上位25%なら1段上げ、下位20%なら1段下げる。**N < 5 または暫定フラグ時は「判定保留（暫定）」**。
-- **合格圏ギャップ**（`mockJudgeGap`）: 志望校カードに、tier 別の A 基準偏差値と現在の偏差値の差を「🎯 合格圏（A）まで あと偏差値 X」として表示する（到達済みなら「✅ 合格圏（A）に到達しています」）。偏差値が算出できないときは表示しない。
+- **判定**（`mockJudgeFor`）: モデル推定があるときは偏差値の**信頼区間下限**を使う（無いときは偏差値そのもの）。`tier` 別しきい値で A〜D を決め、志望者内パーセンタイルが上位25%なら1段上げ、下位20%なら1段下げる。モデル推定が無い旧記録で N < 5 のときだけ「判定保留（暫定）」。
+- **合格圏ギャップ**（`mockJudgeGap`）: 志望校カードに、tier 別の A 基準偏差値と現在の偏差値（下限）の差を「🎯 合格圏（A）まで あと偏差値 X」として表示する（到達済みなら「✅ 合格圏（A）に到達しています」）。偏差値が算出できないときは表示しない。
 - **ログイン不要の受験**: 開催スケジュールは未ログインでも読める公開 RPC `get_mock_exam_schedule()` で取得する（`question_ids` は受験時間枠内だけ返る。RPC 未適用ならログイン時のみ `mock_exams` を直接 SELECT）。志望校エントリーはローカル下書き（`LEAP_MOCK_CHOICES_V1`）に保存し、ログイン時のみ `mock_exam_entries` へ upsert。受験結果は未ログイン／通信エラー時 `LEAP_MOCK_LOCAL_RESULTS_V1`（`{ [examId]: { score, total, elapsed_sec, answers, is_late, submitted_at } }`）に保存し、結果画面は「端末内の採点結果」カード（得点・正答率・所要時間）を表示する。ログイン後に同じ回を開くと「☁️ 全国集計に提出する」（`resubmitLocalMockResult`）から `mock_exam_results` へ提出でき、成功したら端末側の記録は削除する。
 - **弱点分析レポート**（`mockRenderWeaknessCard`）: 提出済みの `answers`（`[{ id, correct, sec }]`）を単語データへ引き直し、Part（古文は章）別の正答率バー・最も弱い分野のひとことコメント・間違えた単語の一覧（最大12件、語義つき）を成績表の下に表示する。全国集計・端末内採点の両方で動く（`mockBuildWeaknessAnalysis`）。
 - **リマインド**: 開催回ごとに「⏰ リマインド設定」を切り替えられる（`toggleMockReminder`）。設定は `LEAP_MOCK_REMINDERS_V1` に保存し、開始24時間前〜終了までの間、起動時に1日1回トーストで知らせる（`mockCheckReminders`、同日重複は `LEAP_MOCK_REMINDER_SEEN_V1` で抑止）。終了から1日以上たった設定は自動で削除する。一覧にも「⏰ リマインド設定済み」を表示。
@@ -426,7 +433,25 @@ expRequiredForLevel(level) = 100 + (level - 1) * 50
 
 ### 4.13 今日の目標
 
-- ホームのリング（SVG、`#home-goal-ring`）が `userData.dailyLog[today]` / 20 を表示。20問に到達した日は `LEAP_DAILY_GOAL_SEEN_V1` で1日1回だけトーストを出す。
+- ホームのリング（SVG、`#home-goal-ring`）が `userData.dailyLog[today]` / 目標問数を表示。目標は通常 20 問だが、**志望校ロードマップがあれば「1日の新規語数 ＋ 復習期限の来た苦手語数」**（`roadmapDailyTarget()`）に置き換わる。20問に到達した日は `LEAP_DAILY_GOAL_SEEN_V1` で1日1回だけトーストを出す。
+
+### 4.14 志望校ロードマップ（`screen-roadmap`）
+
+志望校を主軸に、試験日から逆算した学習計画を出す。ログイン不要・端末内で完結する。
+
+- **保存**: `userData.roadmap = { label, tier, targetDeviation, examDate, startDate, createdAt, updatedAt }`（クラウド同期対象）。志望校は `MOCK_FACULTIES` の候補から選ぶと tier が入る（自由入力も可。その場合は tier 3）。
+- **逆算**（`LeapRoadmapPlan.computePlan`、DOM 非依存・`tests/roadmap.test.js` で検証）: `remaining = 総語数 − 習得語数`、`wordsPerDay = ceil(remaining / 残り日数)`。習得は `wordStats[id].total > 0` で判定し、Part ごとの `done` を出す。
+- **Part ごとの期限**: Part 順に残り語数を累積し、残り日数を按分して「Part n は YYYY-MM-DD まで」を出す（完了済み Part は「完了」）。最終 Part の期限は試験日。
+- **予定線との差**: `expectedDone = 総語数 × 経過日数 / (経過日数 + 残り日数)` と比較し、`ahead` / `ontrack` / `behind` と遅れ日数を表示。試験日を過ぎていれば `overdue`。
+- **ホーム常設カード**（`#home-roadmap-card`）: 志望校・試験日・今日のノルマ（新規＋復習）・習得率バー・予定との差を表示。未設定なら「計画を作る」ボタン。今日の目標リングもこのノルマに連動する。
+- **専用画面**: 志望校（datalist 候補）・試験日・目標偏差値の入力、保存／解除、逆算プラン（残り日数・1日の新規語数・残り語数・Part 別マイルストーン）。模試成績表の「志望校判定（ロードマップ）」からも開ける。
+
+### 4.15 アップデート情報（`updates-modal`）
+
+- 変更点は `updates_data.js` の `LEAP_UPDATES`（新しい順）に `{ version, date, tag, title, items[] }` で持つ。アプリ内の「📣 アップデート情報」モーダルがこれを描画する（`renderUpdatesList`）。`SERVICE.md` の更新履歴とは別で、**利用者向けの言葉**で書く（開発メモは SERVICE.md 側）。
+- 入口: ホーム下部の「📣 アップデート情報」と、設定シートの「アップデート情報」。
+- 未読は `LEAP_UPDATES_SEEN_V1`（最後に開いた `version`）と先頭エントリを比べ、NEW バッジを出す（`renderUpdatesBadge`）。モーダルを開いた時点で既読化。
+- 表示: タグ（新機能/改善/修正/データ）、version、日付、タイトル、箇条書き。先頭に「最新」バッジ。
 
 ---
 
@@ -737,6 +762,7 @@ window.LEAP_SUPABASE_CONFIG = { url: "https://xxxx.supabase.co", anonKey: "sb_pu
 - **意見箱**: ホーム下部・設定シート・模試成績表の3か所から `feedback-modal` を開く。種別（感想/要望/不具合/称賛/その他）、本文（最大2,000字）、★1〜5（任意）、連絡先（任意）、自動添付（表示中の画面名・教科・UA）。下書きは `LEAP_FEEDBACK_DRAFT_V1` に保存。
 - **未ログインでも投稿可**。未設定・オフライン時は送信ボタンを案内に切り替え、「文面をコピー」で定型文をクリップボードへ。
 - 投稿は `rpc("submit_feedback", ...)` を呼ぶだけ。テーブルへの直接 INSERT 権限は anon に与えない。
+- **管理者向けの未対応通知**: ホームの `#home-admin-feedback` に、`feedback` の `status in ('new', 'reading')` 件数を表示する（`renderAdminFeedbackNotice`）。`feedback` の SELECT は `is_admin()` の RLS しか通らないため、**管理者以外は 0 件＝バナー非表示**（専用 RPC なし・件数のみ）。ログイン／同期時（`renderCloudAccount`）とホーム表示時（`navigate`）に更新し、「開く」で `./admin.html#feedback`（管理画面の意見箱タブ）へ遷移する（`applyHashTab`）。
 
 #### 投稿 RPC `submit_feedback(p_category, p_body, p_rating, p_page, p_subject, p_contact, p_client_token, p_honeypot)`
 
@@ -866,12 +892,14 @@ window.LEAP_SUPABASE_CONFIG = { url: "https://xxxx.supabase.co", anonKey: "sb_pu
 ├── assets/
 │   └── css/app.css            アプリ固有 CSS（旧 index.html 内の <style> ほか）
 ├── manifest.json              PWA マニフェスト
-├── sw.js                      Service Worker（キャッシュ leap-v59 / Network-First）
+├── sw.js                      Service Worker（キャッシュ leap-v68 / Network-First）
 ├── words_data.js              LEAP_WORDS_DATA（2,300語）
 ├── examples_data.js           LEAP_WORD_DETAILS（2,300語）+ LEAP_EXAMPLE_DATA（2,000語）
 ├── reference_data.js          LEAP_REFERENCE_DATA（5章）
 ├── affix_data.js              AFFIX_DATA（接頭辞16 + 接尾辞16、132語根）
 ├── mock_schools_data.js       MOCK_UNIV_GROUPS / MOCK_FACULTIES（全国一斉模試の志望校マスタ）
+├── difficulty_data.js         LEAP_DIFFICULTY（Part 別の難易度 b・個別上書き）
+├── updates_data.js            LEAP_UPDATES（アプリ内「アップデート情報」の履歴）
 ├── kobun/
 │   ├── kobun_words_data.js    KOBUN_WORDS_DATA（150語）+ KOBUN_PARTS
 │   ├── kobun_details_data.js  KOBUN_WORD_DETAILS（150語・例文354件。build_kobun_details.js の生成物）
@@ -965,8 +993,9 @@ node tests/cloud-merge.test.js  # 苦手単語・克服記録のクラウド統�
 - 参考資料の第5部クイズは採点・保存なし（学習補助の読み物）。
 - 外部 CDN（Tailwind / html2canvas / Google Fonts）に依存。オフライン時はキャッシュ済みの範囲で動作するが、初回はオンラインが必要。
 - 共有 URL は Base64 化した結果情報のみ（個人情報・進捗は含まない）。
-- **全国一斉模試の受験はログイン不要**。未ログインの結果は端末（`LEAP_MOCK_LOCAL_RESULTS_V1`）に保存し、ログイン後に全国集計へ提出できる。全国偏差値・順位・志望校判定の集計だけが Supabase ＋ ログインを必要とする。Supabase 未設定時はオフライン練習模試のみ表示する。
-- 模試の偏差値・志望校判定は受験者数が少ないうちは暫定（N < 5 で「判定保留」）。`mock_exam_results` は 1 人 1 回（`(exam_id, user_id)` unique）で、再受験分は保存されない（画面では参考表示）。
+- **全国一斉模試の受験はログイン不要**。未ログインの結果は端末（`LEAP_MOCK_LOCAL_RESULTS_V1`）に保存し、ログイン後に全国集計へ提出できる。全国**順位**だけが Supabase ＋ ログインを必要とする（偏差値・志望校判定は難易度モデルで端末内でも算出）。Supabase 未設定時は「いつでも実力診断模試」を表示する。
+- 模試の偏差値は難易度（Part）つきの 3PL/EAP で推定する。**受験者0人でも偏差値は出る**が、1回の結果は信頼区間が広い（30問で ±10 程度）。判定は区間の下限を使うため、1回の高得点で A 判定にはなりにくい。
+- `mock_exams.question_levels`（Part 1..5）が未設定の回は従来の素点式（25〜75）で集計する。管理画面（`admin.html`）で模試を保存すると `question_ids` の単語から自動で入る。`mock_exam_results` は 1 人 1 回（`(exam_id, user_id)` unique）で、再受験分は保存されない（画面では参考表示）。
 - 模試の開催回は `mock_exams` に手動で追加する（`question_ids` と `expected_rates` を同じ並びで指定）。`schema.sql` のサンプルはインストール時の相対日時。
 - 模試の志望校マスタを変更したら `mock_schools_data.js` と `sw.js` の `ASSETS`／`CACHE`、`APP_VER` を更新する。
 - **お知らせは Supabase 未設定時に表示されない**（静的フォールバックを置かない方針）。`announcements` を取得できない場合もホームは静かに非表示になる。
@@ -984,6 +1013,11 @@ node tests/cloud-merge.test.js  # 苦手単語・克服記録のクラウド統�
 
 | 日付 | 変更内容 |
 |---|---|
+| 2026-11-28 | 📐 ホームの準メニューを3列のコンパクトタイルに集約。前回追加したショップ・実績を含む6項目（到達度テスト・全国模試・学習記録・語源ラッシュ・ショップ・実績）を `grid-cols-3` の低いタイル（アイコン＋ラベル＋9pxの補足）に変更し、2列カード3段→3列2段にしてホームの縦の長さを削減した（補足の文言は維持しつつ、320px 幅で溢れる文言は短縮）。見出しも実態に合わせて「もっと学ぶ」→「メニュー」に変更。タイルの見た目は `assets/css/app.css` の `.menu-tile`（`--icon` / `--label` / `--sub` / `--shop` / `--row`、ダークモード対応）に集約し、HTML 側はクラス 1 つで書けるようにした。`APP_VER=leap-v48-home-compact` / `CACHE=leap-v71`。|
+| 2026-11-28 | 🏠 準メニュー（ショップ等）を上層に移動。①「📚 ほかのメニュー」の折りたたみを廃止し、`#home-more-menu` として常時表示に変更。到達度テスト・全国一斉模試・学習記録・語源ラッシュに加えて、**ショップ**と**実績**を2列カードで追加した。②ヘッダーのコイン表示をボタン化（`#header-coins-btn`）し、タップで `screen-shop` を開けるようにした（PC幅では「ショップ」ラベル付き）。③設定シート内のショップ導線は残す。`APP_VER=leap-v47-home-menu` / `CACHE=leap-v69`。|
+| 2026-11-28 | 📣 アップデート情報の閲覧と、管理者向けの未対応意見通知を追加。①`updates_data.js`（`LEAP_UPDATES`）に**利用者向け**の更新履歴を持たせ、ホーム下部・設定から開ける `updates-modal` で表示（タグ・version・日付・箇条書き。先頭に「最新」）。未読は `LEAP_UPDATES_SEEN_V1` と比較して NEW バッジを出す。②ホームに `#home-admin-feedback` を追加し、ログイン中の管理者に限り `feedback` の未対応（`new`/`reading`）件数を表示。`feedback` の SELECT は `is_admin()` の RLS しか通らないため、**非管理者は 0 件で非表示**（専用RPC・スキーマ変更なし）。ログイン/同期時とホーム表示時に更新し、「開く」で `admin.html#feedback` の意見箱タブを直接開く（`applyHashTab`）。`APP_VER=leap-v46-updates-admin-notice` / `CACHE=leap-v68`。|
+| 2026-11-28 | 🔤 忘却曲線クイズで発音記号が出ない問題を修正。①原因は復習プールが `weakWords` の保存レコード（`id/word/meaning` のみ）で、`detail.ipa` を持たないまま出題していたこと。`startWeakWordsQuiz` で出題時に `ALL_WORDS` の単語オブジェクトへ置き換えるようにした（発音記号・品詞・例文も通常クイズと同じになる）。②`wordIpa(w)` を追加し、`detail.ipa` → `w.ipa` → `LEAP_WORD_DETAILS[id].ipa` の順にフォールバック（詳細未展開の単語でも表示）。`applyWordIpa` もこれを使う。③苦手単語一覧（モーダル）と結果画面の誤答一覧にも発音記号を表示。`APP_VER=leap-v45-weak-ipa` / `CACHE=leap-v67`。|
+| 2026-11-28 | 🏫 模試の採点を難易度ベースに作り直し、志望校ロードマップとログイン導線を追加。①**難易度タグ**: `difficulty_data.js` に Part ごとの困難度（Part 1–5 を個別に設定）を持たせ、単語は Part から難易度を引く（`LEAP_DIFFICULTY.words` で語ごとの上書き可）。②**偏差値**: 素点＋理論平均のブレンドをやめ、4択の当て推量 c=0.25 を考慮した **3PL + EAP**（`js/mock-score.js`、事前分布 N(0,1)・θ を0.1刻み）で能力推定し `50+10θ`。Part 1 だけ全問正解しても 75 に張り付かず（30問全正解 → 62.8、目安 51–74）、発展語を取ると上がる。受験者0人でも算出できるので母数不足でも偏差値が出る。③**判定**: 事後 SD の90%区間を出し、**下限**で tier 別 A〜D を判定（`LeapMockScore.judgeTier`）。N<5 でもモデル推定があれば暫定扱いにしない。④**DB**: `mock_exams.question_levels` と `mock_ability_deviation()` を追加し、RPC の偏差値を差し替え（未設定回は従来式へフォールバック）。`supabase/migration_mock_difficulty.sql` を同梱。⑤**ロードマップ**: 志望校＋試験日から1日の語数と Part ごとの期限を逆算（`js/roadmap.js` / `LeapRoadmapPlan`）。ホーム常設カード＋`screen-roadmap` を追加し、今日の目標リングをノルマに連動。⑥**ログイン導線**: ホームのプレイヤーカード・設定の先頭・初回ガイド3・模試の成績表／案内にログインボタンを追加。⑦「いつでも実力診断模試」を Part 均等の30問にし、偏差値・志望校判定の目安を端末内で表示。⑧単体テスト `tests/mock-score.test.js`（12件）・`tests/roadmap.test.js`（10件）を追加。`APP_VER=leap-v44-mock-difficulty-roadmap` / `CACHE=leap-v66`。|
 | 2026-11-28 | ☁️ 忘却曲線（苦手単語）のクラウド同期を修正。①統合ルールが `nextReview` の**早い方**を採用していたため、スマホで復習を進めても PC 側の古いデータとのマージで期日が巻き戻り、「本日復習」が消えなかった。**`lastReviewed` が新しい方を正**とするルールに変更（同日なら stage → nextReview の遅い方、`count` は多い方）。②ステージ4クリアで苦手から削除すると他端末の古いデータから復活していたため、`graduatedWords`（克服日の記録）を追加。③`cloudPush()` が書き込み前にクラウドの更新を確認し、**他端末が新しければ先に取り込んで統合**するようにした（古いローカルで上書きしない）。マージ規則は `js/cloud-merge.js` に切り出し、`tests/cloud-merge.test.js`（10ケース）を追加。`APP_VER=leap-v43-cloud-weak-merge` / `CACHE=leap-v65`。|
 | 2026-11-28 | ⏯ 「つづきから」の保存の取り扱いを修正。①以前は**新しいクイズを開始した瞬間に保存を削除**しており、別の範囲を試しただけで前回の続きが黙って消えていた。これをやめ、**上書きは2問目以降に進んだときだけ**（`LeapQuizResume.canOverwrite`）にした。②完走／中断時も**そのクイズの保存だけ**を消すようにし（`clearResumeStateIfCurrent` / `matchesQuiz`）、1問だけの別クイズをやっても別の「つづき」が消えないようにした。③保存形式・検証を `js/quiz-resume.js` に切り出し、**依存なしで回せる単体テスト `tests/resume.test.js`（10ケース）**を追加。`APP_VER=leap-v42-resume-guard` / `CACHE=leap-v64`。|
 | 2026-11-28 | 🎧 発音記号（IPA）の抜き取り校閲。①元テキスト `604_702.txt` は 615=obey / 616=resist なのに `words.json` と `words_data.js` が逆順だったため、resist の下に **obey の発音記号 `[oubéi]`** が表示されていた。番号を書籍どおり 615=obey（`[oubéi]`）/ 616=resist（`[rizíst]`）に修正（`words_data.js` / `LEAP単語データ/words.json`、`examples_data.js` の詳細は変更なしで整合）。②例文データに混入していた数学記号 **`∫`（積分記号）を `ʃ` に**（31箇所）、ギリシャ文字の混入 3 件（`conservation` / `veterinarian` / `scenario` の `έ`・`ὰ`）を修正。長音記号のゆれ（半角 `:`）を本来の **`ː`** に統一（111箇所。元テキストは 118 箇所）。③全 2,300 語の発音記号を綴り・辞書発音（CMUdict）と機械照合し、子音骨格の食い違い・重複・欠損が上記以外に無いことを確認。`APP_VER=leap-v41-ipa-proofread` / `CACHE=leap-v63`。|

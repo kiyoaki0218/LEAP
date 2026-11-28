@@ -466,8 +466,19 @@
       closeWeakWordsModal();
       isWeakMode = true;
 
-      const dueList = getDueWeakWords();
-      const targetList = (!forceAll && dueList.length > 0) ? dueList : allWeakList;
+      // weakWords の保存レコードは id/word/meaning だけなので、出題は必ず単語データ本体に置き換える
+      // （発音記号・品詞・例文など、通常クイズと同じ情報を使えるようにする）
+      const wordById = new Map(ALL_WORDS.map(w => [w.id, w]));
+      const canonical = (list) => list
+        .map(r => wordById.get(Number(r && r.id)))
+        .filter(Boolean);
+
+      const dueList = canonical(getDueWeakWords());
+      const targetList = (!forceAll && dueList.length > 0) ? dueList : canonical(allWeakList);
+      if (targetList.length === 0) {
+        showAlert({ title: "単語データが見つかりません", message: "苦手単語のデータを読み直してください。", icon: "🔍" });
+        return;
+      }
       const labelText = (!forceAll && dueList.length > 0)
         ? `忘却曲線復習 (${dueList.length}語)`
         : `苦手単語特訓 (${targetList.length}語)`;
@@ -817,10 +828,22 @@
       el.className = "inline-flex items-center gap-1 flex-wrap align-middle shrink-0";
     }
 
+    // 発音記号（IPA）を取り出す。詳細が未展開の単語（苦手リストの保存レコードなど）は
+    // LEAP_WORD_DETAILS を id で引き直す。
+    function wordIpa(w) {
+      if (!w) return "";
+      let ipa = (w.detail && w.detail.ipa) || w.ipa || "";
+      if (!ipa && w.id !== undefined && w.id !== null && typeof LEAP_WORD_DETAILS !== "undefined") {
+        const d = LEAP_WORD_DETAILS[String(w.id)];
+        if (d && d.ipa) ipa = d.ipa;
+      }
+      return ipa;
+    }
+
     // 発音記号（IPA）を単語の下に表示
     function applyWordIpa(el, w) {
       if (!el) return;
-      const ipa = (w && ((w.detail && w.detail.ipa) || w.ipa)) || "";
+      const ipa = wordIpa(w);
       if (!ipa) {
         el.textContent = "";
         el.classList.add("hidden");
@@ -2495,6 +2518,7 @@
             <div class="shrink-0 max-w-[45%] min-w-0">
               <span class="font-bold text-slate-800 break-words">${w.word}</span>
               <span class="text-slate-400 text-[10px] ml-1 whitespace-nowrap">#${w.id}</span>
+              ${wordIpa(w) ? `<div class="text-[10px] text-slate-400 tracking-wide">[${wordIpa(w)}]</div>` : ""}
             </div>
             <div class="text-slate-600 font-medium text-right leading-relaxed break-words min-w-0">${w.meaning}</div>
           `;

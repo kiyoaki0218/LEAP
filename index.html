@@ -11,7 +11,7 @@
     <script>
     // キャッシュ強制更新ロジック: 新バージョン検知時に古いServiceWorkerキャッシュを破棄
     (function() {
-      const APP_VER = "leap-v43-cloud-weak-merge";
+      const APP_VER = "leap-v48-home-compact";
       try {
         const storedVer = localStorage.getItem("LEAP_APP_CACHE_VER");
         if (storedVer !== APP_VER) {
@@ -61,6 +61,8 @@
 
   <!-- 実データ(1〜1000)の読み込み -->
   <script src="./words_data.js"></script>
+  <script src="./difficulty_data.js"></script>
+  <script src="./updates_data.js"></script>
   <script src="./kobun/kobun_words_data.js"></script>
   <!-- 古文単語の詳細（例文・解説・活用など。古文単語データ/ から生成） -->
   <script src="./kobun/kobun_details_data.js"></script>
@@ -91,10 +93,11 @@
       <span id="zone-label" class="text-[10px] font-bold text-white bg-emerald-600 px-1.5 py-0.5 rounded-md whitespace-nowrap">LEAP</span>
     </div>
     <div class="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm ml-auto min-w-0">
-      <div class="bg-amber-50 border border-amber-200 px-1.5 sm:px-2.5 py-1 rounded-full font-bold text-amber-800 flex items-center gap-1 shadow-sm shrink-0">
+      <button type="button" id="header-coins-btn" onclick="navigate('screen-shop')" title="コインでショップを見る" class="bg-amber-50 hover:bg-amber-100 active:scale-[0.98] border border-amber-200 px-1.5 sm:px-2.5 py-1 rounded-full font-bold text-amber-800 flex items-center gap-1 shadow-sm shrink-0 transition cursor-pointer">
         <span>🪙</span>
         <span id="header-coins">0</span>
-      </div>
+        <span class="text-[9px] font-extrabold text-amber-600 hidden sm:inline">ショップ</span>
+      </button>
       <div id="header-title" class="hidden sm:block bg-slate-200 text-slate-700 font-semibold px-2 py-1 rounded-md text-xs max-w-[140px] truncate shrink-0">
         始まりのビギナー
       </div>
@@ -134,6 +137,9 @@
         <div id="home-announcements-list" class="space-y-1"></div>
       </div>
 
+      <!-- 管理者向け: 未対応のご意見（管理者アカウントのみ・RLSで判定） -->
+      <div id="home-admin-feedback" class="hidden bg-indigo-50 border border-indigo-200 rounded-2xl p-3 shadow-sm"></div>
+
       <!-- 次回の模試（開催中・開催予定があるときだけ表示） -->
       <div id="home-mock-banner" class="hidden"></div>
 
@@ -166,6 +172,7 @@
           <li class="flex gap-2.5">
             <span class="w-5 h-5 rounded-full bg-emerald-600 text-white text-[10px] font-extrabold flex items-center justify-center shrink-0">3</span>
             <span class="text-[11px] text-slate-600 leading-relaxed"><b class="text-slate-800">ログインすると模試・フレンド機能</b><br>全国一斉模試の偏差値判定や、機種変更時の引き継ぎが使えます。</span>
+            <button type="button" onclick="openAccount()" class="mt-2 w-full py-2 bg-sky-600 hover:bg-sky-700 text-white text-[11px] font-bold rounded-lg transition cursor-pointer">☁️ ログインする（無料・任意）</button>
           </li>
         </ol>
         <button type="button" onclick="startBeginnerQuiz()" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl transition cursor-pointer">10問でためす</button>
@@ -201,6 +208,7 @@
               <div id="home-exp-bar" class="h-full w-0 rounded-full bg-gradient-to-r from-emerald-400 to-emerald-600 transition-all duration-500"></div>
             </div>
             <p id="home-exp-next" class="text-[10px] text-slate-400 mt-1">次のレベルまであと 100 EXP（正解1問 +10 EXP）</p>
+            <button type="button" id="home-login-pill" onclick="openAccount()" class="hidden mt-2 w-full py-1.5 bg-sky-50 hover:bg-sky-100 border border-sky-200 text-sky-800 text-[11px] font-bold rounded-lg transition cursor-pointer">☁️ ログイン（任意・機種変更の引き継ぎ）</button>
           </div>
         </div>
       </div>
@@ -221,6 +229,9 @@
         </div>
         <button type="button" onclick="navigate('screen-select')" class="shrink-0 px-3 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-bold rounded-xl transition cursor-pointer">続ける</button>
       </div>
+
+      <!-- 志望校ロードマップ（ホーム常設） -->
+      <div id="home-roadmap-card" class="bg-white border border-slate-200 rounded-2xl shadow-sm p-4"></div>
 
       <!-- つづきから（中断したクイズ） -->
       <div id="home-resume-banner" class="hidden bg-indigo-50 border border-indigo-200 rounded-2xl p-4 shadow-sm">
@@ -290,51 +301,53 @@
         </div>
       </div>
 
-      <!-- 副次メニュー（既定は閉じておき、初見の人の迷いを減らす） -->
-      <details id="home-more-menu" class="group bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden px-3 py-2 space-y-3">
-        <summary class="flex items-center justify-between gap-2 cursor-pointer list-none select-none py-1">
-          <span class="flex items-center gap-2 text-sm font-bold text-slate-700">📚 ほかのメニュー</span>
-          <span class="text-[11px] font-bold text-slate-400">
-            <span class="group-open:hidden">テスト・模試・記録・辞典 ▾</span>
-            <span class="hidden group-open:inline">閉じる ▴</span>
-          </span>
-        </summary>
-
-      <!-- 学びを深めるツール（2列に集約して縦の長さを抑える） -->
-      <div class="space-y-2">
-        <p class="text-[11px] font-extrabold text-slate-400 tracking-widest px-1">もっと学ぶ</p>
-        <div class="grid grid-cols-2 gap-2.5">
-          <button type="button" onclick="navigate('screen-exam')" class="text-left p-3 bg-white hover:bg-slate-50 active:scale-[0.99] border border-slate-200 rounded-xl shadow-sm transition-all cursor-pointer">
-            <span class="text-lg">🎓</span>
-            <span class="block text-xs font-bold text-slate-800 mt-1">到達度テスト</span>
-            <span class="block text-[10px] text-slate-400 mt-0.5">50問・S〜D判定</span>
+      <!-- 準メイン機能（ショップ・記録・テストなど）はホームから直接開ける。見た目は app.css の .menu-tile -->
+      <div id="home-more-menu" class="space-y-3">
+        <p class="text-[11px] font-extrabold text-slate-400 tracking-widest px-1">メニュー</p>
+        <div class="grid grid-cols-3 gap-2">
+          <button type="button" class="menu-tile" onclick="navigate('screen-exam')">
+            <span class="menu-tile-icon">🎓</span>
+            <span class="menu-tile-label">到達度テスト</span>
+            <span class="menu-tile-sub">実力チェック</span>
           </button>
-          <button type="button" onclick="navigate('screen-mock-exam')" class="text-left p-3 bg-white hover:bg-slate-50 active:scale-[0.99] border border-slate-200 rounded-xl shadow-sm transition-all cursor-pointer">
-            <span class="text-lg">🏫</span>
-            <span class="block text-xs font-bold text-slate-800 mt-1">全国一斉模試</span>
-            <span class="block text-[10px] text-slate-400 mt-0.5">偏差値・志望校判定</span>
+          <button type="button" class="menu-tile" onclick="navigate('screen-mock-exam')">
+            <span class="menu-tile-icon">🏫</span>
+            <span class="menu-tile-label">全国模試</span>
+            <span class="menu-tile-sub">偏差値・志望校</span>
           </button>
-          <button type="button" onclick="navigate('screen-stats')" class="text-left p-3 bg-white hover:bg-slate-50 active:scale-[0.99] border border-slate-200 rounded-xl shadow-sm transition-all cursor-pointer">
-            <span class="text-lg">📊</span>
-            <span class="block text-xs font-bold text-slate-800 mt-1">学習記録</span>
-            <span class="block text-[10px] text-slate-400 mt-0.5">カレンダー・Part別</span>
+          <button type="button" class="menu-tile" onclick="navigate('screen-stats')">
+            <span class="menu-tile-icon">📊</span>
+            <span class="menu-tile-label">学習記録</span>
+            <span class="menu-tile-sub">カレンダー</span>
           </button>
-          <button type="button" onclick="openAffixHub()" class="text-left p-3 bg-white hover:bg-slate-50 active:scale-[0.99] border border-slate-200 rounded-xl shadow-sm transition-all cursor-pointer">
-            <span class="text-lg">🧩</span>
-            <span class="block text-xs font-bold text-slate-800 mt-1">語源ラッシュ</span>
-            <span class="block text-[10px] text-slate-400 mt-0.5">接辞ラッシュ・神経衰弱</span>
+          <button type="button" class="menu-tile" onclick="openAffixHub()">
+            <span class="menu-tile-icon">🧩</span>
+            <span class="menu-tile-label">語源ラッシュ</span>
+            <span class="menu-tile-sub">接辞ゲーム</span>
+          </button>
+          <button type="button" class="menu-tile menu-tile--shop" onclick="navigate('screen-shop')">
+            <span class="menu-tile-icon">🛍️</span>
+            <span class="menu-tile-label">ショップ</span>
+            <span class="menu-tile-sub">称号・アバター</span>
+          </button>
+          <button type="button" class="menu-tile" onclick="openAchievementsModal()">
+            <span class="menu-tile-icon">🏆</span>
+            <span class="menu-tile-label">実績</span>
+            <span class="menu-tile-sub">115種・進捗</span>
           </button>
         </div>
-      </div>
 
-      <!-- ツール -->
-      <div class="grid grid-cols-3 gap-2">
-        <button type="button" onclick="openDictionary()" class="py-2.5 bg-white hover:bg-slate-50 border border-slate-200 rounded-xl shadow-sm text-[11px] font-bold text-slate-700 transition cursor-pointer">📖 単語辞典</button>
-        <button type="button" onclick="openFeedbackModal()" class="py-2.5 bg-white hover:bg-slate-50 border border-slate-200 rounded-xl shadow-sm text-[11px] font-bold text-slate-700 transition cursor-pointer">📮 ご意見</button>
-        <button type="button" onclick="openSettingsModal()" class="py-2.5 bg-white hover:bg-slate-50 border border-slate-200 rounded-xl shadow-sm text-[11px] font-bold text-slate-700 transition cursor-pointer">⚙️ 設定</button>
-      </div>
+        <div class="grid grid-cols-3 gap-2">
+          <button type="button" class="menu-tile menu-tile--row" onclick="openDictionary()">📖 単語辞典</button>
+          <button type="button" class="menu-tile menu-tile--row" onclick="openFeedbackModal()">📮 ご意見</button>
+          <button type="button" class="menu-tile menu-tile--row" onclick="openSettingsModal()">⚙️ 設定</button>
+        </div>
+      <button type="button" onclick="openUpdatesModal()" class="w-full py-2 hover:bg-slate-100/70 rounded-xl text-[10px] font-bold text-slate-500 transition cursor-pointer flex items-center justify-center gap-1.5">
+        <span>📣 アップデート情報</span>
+        <span id="updates-home-badge" class="hidden text-[9px] font-extrabold bg-rose-500 text-white px-1.5 py-0.5 rounded-full">NEW</span>
+      </button>
 
-      </details>
+      </div>
 
       <!-- 学習履歴（最近5回） -->
       <div id="home-score-history" class="hidden bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
@@ -1141,6 +1154,18 @@
       </button>
     </section>
 
+    <!-- 志望校ロードマップ -->
+    <section id="screen-roadmap" class="fade-in hidden space-y-5">
+      <div class="flex items-center justify-between pb-2 border-b border-slate-200">
+        <div>
+          <h2 class="text-xl font-bold text-slate-900">🎯 志望校ロードマップ</h2>
+          <p class="text-xs text-slate-400">志望校と試験日から、1日の語数とPart期限を逆算</p>
+        </div>
+        <button type="button" onclick="navigate('screen-home')" class="text-sm text-slate-500 hover:text-slate-800 shrink-0 whitespace-nowrap">戻る</button>
+      </div>
+      <div id="roadmap-body"></div>
+    </section>
+
     <!-- 全国一斉模試（日時指定の時間割制） -->
     <section id="screen-mock-exam" class="fade-in hidden space-y-5">
       <div class="flex items-center justify-between pb-2 border-b border-slate-200">
@@ -1481,6 +1506,17 @@
 
         <div class="space-y-2 pt-3 border-t border-slate-100">
           <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400 px-1">アカウント・音声</p>
+          <button type="button" onclick="closeSettingsModal(); openUpdatesModal()" class="w-full py-3 px-4 bg-white hover:bg-slate-50 active:bg-slate-100 border border-slate-200 rounded-xl shadow-sm transition-all flex items-center justify-between cursor-pointer">
+            <span class="flex items-center gap-2 min-w-0">
+              <span class="text-lg">📣</span>
+              <span class="text-sm font-bold text-slate-800">アップデート情報</span>
+            </span>
+            <span class="flex items-center gap-1.5 shrink-0">
+              <span id="updates-settings-badge" class="hidden text-[9px] font-extrabold bg-rose-500 text-white px-1.5 py-0.5 rounded-full">NEW</span>
+              <span class="text-slate-400 text-xs">›</span>
+            </span>
+          </button>
+          <button type="button" id="settings-login-cta" onclick="closeSettingsModal(); openAccount()" class="hidden w-full py-3 px-4 bg-sky-600 hover:bg-sky-700 text-white text-sm font-bold rounded-xl shadow-sm transition-all cursor-pointer">☁️ ログインして引き継ぎ・全国順位を使う</button>
           <button type="button" onclick="closeSettingsModal(); openAccount()" class="w-full py-3 px-4 bg-white hover:bg-slate-50 active:bg-slate-100 border border-slate-200 rounded-xl shadow-sm transition-all flex items-center justify-between cursor-pointer">
             <span class="flex items-center gap-2 min-w-0">
               <span class="text-lg">☁️</span>
@@ -1669,6 +1705,25 @@
   </div>
 
   <!-- お知らせ一覧 -->
+  <!-- アップデート情報 -->
+  <div id="updates-modal" class="fixed inset-0 z-[70] hidden items-end sm:items-center justify-center p-0 sm:p-4" role="dialog" aria-modal="true" aria-labelledby="updates-title">
+    <div class="backdrop-in absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onclick="closeUpdatesModal()"></div>
+    <div class="sheet-in relative bg-white w-full sm:max-w-lg max-h-[88vh] rounded-t-3xl sm:rounded-3xl shadow-2xl flex flex-col overflow-hidden">
+      <div class="px-5 pt-4 pb-3 border-b border-slate-100 flex items-start gap-3">
+        <span class="w-10 h-10 rounded-xl bg-sky-50 border border-sky-200 flex items-center justify-center text-xl shrink-0">📣</span>
+        <div class="min-w-0 flex-1">
+          <h3 id="updates-title" class="text-lg font-extrabold text-slate-900">アップデート情報</h3>
+          <p class="text-[11px] text-slate-400">最近の変更点をまとめています。</p>
+        </div>
+        <button type="button" onclick="closeUpdatesModal()" class="text-slate-400 hover:text-slate-700 text-lg font-bold p-1 shrink-0">✕</button>
+      </div>
+      <div id="updates-list" class="px-4 py-4 overflow-y-auto space-y-3"></div>
+      <div class="px-4 py-3 border-t border-slate-100 bg-slate-50">
+        <button type="button" onclick="closeUpdatesModal()" class="w-full py-2.5 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold rounded-xl transition cursor-pointer">閉じる</button>
+      </div>
+    </div>
+  </div>
+
   <div id="announcements-modal" class="fixed inset-0 z-[70] hidden items-end sm:items-center justify-center p-0 sm:p-4" role="dialog" aria-modal="true" aria-labelledby="announcements-title">
     <div class="backdrop-in absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onclick="closeAnnouncementsModal()"></div>
     <div class="sheet-in relative bg-white w-full sm:max-w-lg max-h-[88vh] rounded-t-3xl sm:rounded-3xl shadow-2xl flex flex-col overflow-hidden">
@@ -1822,11 +1877,13 @@
 
   <!-- アプリ基盤（称号・アイテムのマスタ、ゾーン、画面遷移）。インライン JS より先に読み込む -->
   <script src="./js/core.js"></script>
+  <script src="./js/mock-score.js"></script>
   <script src="./js/mock-exam.js"></script>
   <script src="./js/cloud-merge.js"></script>
   <script src="./js/cloud-sync.js"></script>
   <script src="./js/quiz-resume.js"></script>
   <script src="./js/quiz-engine.js"></script>
+  <script src="./js/roadmap.js"></script>
   <script src="./js/ui-stats-dict.js"></script>
   <script>
     // 称号・アイテム・ゾーン定義・データ読込は js/core.js（ファイル分割 Stage 2）
@@ -2070,7 +2127,8 @@
       const card = document.getElementById("home-daily-goal");
       if (!card) return;
       const done = todayAnsweredCount();
-      const goal = DAILY_GOAL_COUNT;
+      const roadmapGoal = (typeof roadmapDailyTarget === "function") ? roadmapDailyTarget() : 0;
+      const goal = roadmapGoal > 0 ? roadmapGoal : DAILY_GOAL_COUNT;
       const pct = Math.min(100, Math.round((done / goal) * 100));
       const ring = document.getElementById("home-goal-ring");
       if (ring) ring.style.strokeDashoffset = String(97.4 * (1 - pct / 100));
@@ -2197,6 +2255,7 @@
 
       // ホームの追加カード（今日の目標・前回のテスト・つづきから）
       renderHomeDailyGoal();
+      if (typeof renderHomeRoadmapCard === "function") renderHomeRoadmapCard();
       renderHomeExamCard();
       renderHomeResumeBanner();
       syncFeedbackToggleUi();
@@ -2719,6 +2778,7 @@
                 <span class="text-[10px] bg-slate-100 text-slate-600 font-bold px-1.5 py-0.2 rounded">${weakSourceLabel(item.source)}</span>
                 ${isDue ? '<span class="text-[10px] bg-rose-600 text-white font-bold px-1.5 py-0.2 rounded">本日復習</span>' : `<span class="text-[10px] text-slate-400">次回: ${item.nextReview}</span>`}
               </div>
+              ${(typeof wordIpa === "function" && wordIpa(item)) ? `<div class="text-[11px] text-slate-400 tracking-wide mt-0.5">[${escapeHtml(wordIpa(item))}]</div>` : ""}
               <div class="text-slate-500 mt-0.5 truncate">${item.meaning}</div>
             </div>
             <button type="button" onclick="removeSingleWeakWord(${item.id})" class="text-slate-400 hover:text-rose-600 text-xs px-2 py-1 rounded shrink-0">削除</button>
@@ -4898,6 +4958,118 @@ listContainer.appendChild(row);
       modal.classList.remove("flex");
     }
 
+    // ===== アップデート情報 =====
+    const UPDATES_SEEN_KEY = "LEAP_UPDATES_SEEN_V1";
+
+    function latestUpdateEntry() {
+      return (typeof LEAP_UPDATES !== "undefined" && Array.isArray(LEAP_UPDATES) && LEAP_UPDATES[0]) || null;
+    }
+
+    function updatesSeenVersion() {
+      try { return localStorage.getItem(UPDATES_SEEN_KEY) || ""; } catch (e) { return ""; }
+    }
+
+    function renderUpdatesBadge() {
+      const latest = latestUpdateEntry();
+      const unseen = !!(latest && latest.version !== updatesSeenVersion());
+      ["updates-home-badge", "updates-settings-badge"].forEach((id) => {
+        const el = document.getElementById(id);
+        if (el) el.classList.toggle("hidden", !unseen);
+      });
+    }
+
+    function formatUpdateDate(value) {
+      const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(value || ""));
+      if (!m) return String(value || "");
+      return `${Number(m[2])}/${Number(m[3])}`;
+    }
+
+    function renderUpdatesList() {
+      const list = document.getElementById("updates-list");
+      if (!list) return;
+      const items = (typeof LEAP_UPDATES !== "undefined" && Array.isArray(LEAP_UPDATES)) ? LEAP_UPDATES : [];
+      if (!items.length) {
+        list.innerHTML = `<p class="text-center text-xs text-slate-400 py-6">更新情報はありません。</p>`;
+        return;
+      }
+      const tagStyles = {
+        "新機能": "text-emerald-800 bg-emerald-50 border-emerald-200",
+        "改善": "text-sky-800 bg-sky-50 border-sky-200",
+        "修正": "text-amber-800 bg-amber-50 border-amber-200",
+        "データ": "text-indigo-800 bg-indigo-50 border-indigo-200"
+      };
+      list.innerHTML = items.map((u, i) => {
+        const cls = tagStyles[u.tag] || "text-slate-700 bg-slate-50 border-slate-200";
+        return `<article class="border border-slate-200 rounded-2xl p-3.5 space-y-1.5">
+          <div class="flex items-center gap-1.5 flex-wrap">
+            <span class="text-[9px] font-extrabold border rounded-full px-1.5 py-0.5 ${cls}">${escapeHtml(u.tag || "更新")}</span>
+            ${i === 0 ? `<span class="text-[9px] font-extrabold text-rose-700 bg-rose-50 border border-rose-200 rounded-full px-1.5 py-0.5">最新</span>` : ""}
+            <span class="text-[10px] font-bold text-slate-500">${escapeHtml(u.version || "")}</span>
+            <span class="text-[10px] text-slate-400">${escapeHtml(formatUpdateDate(u.date))}</span>
+          </div>
+          <h4 class="text-sm font-extrabold text-slate-900 break-words">${escapeHtml(u.title || "")}</h4>
+          <ul class="text-[12px] text-slate-600 leading-relaxed space-y-1 list-disc pl-4">${(u.items || []).map((t) => `<li>${escapeHtml(t)}</li>`).join("")}</ul>
+        </article>`;
+      }).join("");
+    }
+
+    function openUpdatesModal() {
+      renderUpdatesList();
+      const modal = document.getElementById("updates-modal");
+      if (!modal) return;
+      modal.classList.remove("hidden");
+      modal.classList.add("flex");
+      const latest = latestUpdateEntry();
+      if (latest) { try { localStorage.setItem(UPDATES_SEEN_KEY, latest.version); } catch (e) {} }
+      renderUpdatesBadge();
+    }
+
+    function closeUpdatesModal() {
+      const modal = document.getElementById("updates-modal");
+      if (!modal) return;
+      modal.classList.add("hidden");
+      modal.classList.remove("flex");
+    }
+
+    // ===== 管理者向け: 未対応のご意見の通知 =====
+    // feedback の SELECT は管理者しか通らない（RLS）ので、非管理者は 0 件＝非表示になる。
+    async function renderAdminFeedbackNotice() {
+      const wrap = document.getElementById("home-admin-feedback");
+      if (!wrap) return;
+      const ready = (typeof supabaseClient !== "undefined" && supabaseClient
+        && typeof cloudState !== "undefined" && cloudState && cloudState.user);
+      if (!ready) {
+        wrap.classList.add("hidden");
+        wrap.innerHTML = "";
+        return;
+      }
+      try {
+        const { count, error } = await supabaseClient
+          .from("feedback")
+          .select("id", { count: "exact", head: true })
+          .in("status", ["new", "reading"]);
+        if (error) throw error;
+        const n = Number(count) || 0;
+        if (!n) {
+          wrap.classList.add("hidden");
+          wrap.innerHTML = "";
+          return;
+        }
+        wrap.classList.remove("hidden");
+        wrap.innerHTML = `<div class="flex items-start gap-2.5">
+          <span class="text-lg shrink-0">📮</span>
+          <div class="min-w-0 flex-1">
+            <p class="text-[11px] font-extrabold text-indigo-900">未対応のご意見が ${n} 件あります</p>
+            <p class="text-[10px] text-indigo-700/80 mt-0.5">管理者のみに表示しています。管理画面の「意見箱」で確認・状態更新できます。</p>
+          </div>
+          <a href="./admin.html#feedback" class="shrink-0 px-2.5 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-[10px] font-bold rounded-lg transition">開く</a>
+        </div>`;
+      } catch (e) {
+        wrap.classList.add("hidden");
+        wrap.innerHTML = "";
+      }
+    }
+
     // 初期化
     window.addEventListener("DOMContentLoaded", () => {
       initDarkMode();
@@ -4918,6 +5090,12 @@ listContainer.appendChild(row);
       scheduleLinkedMockExam(0);
       mockCheckReminders();
       mockRefreshHomeBanner();
+      renderUpdatesBadge();
+      renderAdminFeedbackNotice();
+      // タブに戻ってきたときにも管理者向けの未対応件数を取り直す
+      document.addEventListener("visibilitychange", () => {
+        if (document.visibilityState === "visible") renderAdminFeedbackNotice();
+      });
       initAchievements();
       initCloud();
       initCommunityUi();

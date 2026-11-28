@@ -415,7 +415,24 @@
       const source = (currentSubject === "kobun") ? (KOBUN_SOURCE || []) : (LEAP_SOURCE || []);
       const ids = [];
       const count = 30;
-      if (source.length) {
+      // Part（＝難易度）を均等に混ぜる
+      const byPart = {};
+      source.forEach(w => {
+        if (!w || !Number.isFinite(Number(w.id))) return;
+        const p = Number(w.part) || 0;
+        (byPart[p] = byPart[p] || []).push(Number(w.id));
+      });
+      const partKeys = Object.keys(byPart).map(Number).sort((a, b) => a - b);
+      if (partKeys.length) {
+        const perPart = Math.max(1, Math.ceil(count / partKeys.length));
+        partKeys.forEach(p => {
+          const list = byPart[p];
+          const step = Math.max(1, Math.floor(list.length / perPart));
+          for (let i = 0; i < perPart && i * step < list.length && ids.length < count; i++) {
+            ids.push(list[i * step]);
+          }
+        });
+      } else if (source.length) {
         const step = Math.max(1, Math.floor(source.length / count));
         for (let i = 0; i < count && i * step < source.length; i++) {
           const w = source[i * step];
@@ -425,9 +442,9 @@
       const now = Date.now();
       return {
         id: MOCK_OFFLINE_EXAM_ID,
-        title: "オフライン練習模試",
+        title: "いつでも実力診断模試",
         subject: currentSubject,
-        range_label: "端末内の全範囲から30問",
+        range_label: "Part 1〜5 から均等に30問（難易度混成）",
         question_ids: ids,
         question_count: ids.length,
         expected_rates: [],
@@ -440,9 +457,11 @@
 
     // 端末内採点用の簡易レポート（全国集計は行わない）
     function mockBuildOfflineReport(result) {
+      const model = mockModelScore(result);
       return {
-        ok: true, local: true, offline: true, stats: null,
-        me: { result: result, rank: null, percentile: null, deviation: null, provisional: true },
+        ok: true, local: true, offline: true,
+        stats: model ? { n: 0, n_all: 0, n_late: 0, provisional: false, model: true, lo: model.lo, hi: model.hi } : null,
+        me: { result: result, rank: null, percentile: null, deviation: model ? model.deviation : null, model: model, provisional: !model },
         groups: [], allGroups: []
       };
     }
@@ -515,23 +534,120 @@
       return sum;
     }
 
-    // RPC が使えないときのフォールバック（理論平均だけを使った参考値）
+    // 3PL + EAP で答案から能力θを推定し、偏差値と信頼区間を出す（端末内で完結）
+    function mockModelScore(result) {
+      if (!result || !Array.isArray(result.answers) || !result.answers.length) return null;
+      if (typeof LeapMockScore === "undefined") return null;
+      const map = {};
+      (ALL_WORDS || []).forEach(w => { map[w.id] = w; });
+      const items = LeapMockScore.itemsFromAnswers(result.answers, map, (typeof LEAP_DIFFICULTY !== "undefined" ? LEAP_DIFFICULTY : null));
+      if (!items.length) return null;
+      const est = LeapMockScore.estimateAbility(items);
+      return {
+        deviation: est.deviation,
+        lo: est.lo,
+        hi: est.hi,
+        se: Math.round(est.se * 100) / 100,
+        theta: Math.round(est.theta * 100) / 100,
+        scored: est.total
+      };
+    }
+
+    function mockMyModel() {
+      const result = mockMyResult || (mockLocalReport && mockLocalReport.me && mockLocalReport.me.result) || null;
+      return mockModelScore(result);
+    }
+
+    // 偏差値の表示用（モデル推定があれば信頼区間つき）
+    function mockDeviationView(rep) {
+      const model = (rep && rep.me && rep.me.model) || mockMyModel();
+      const raw = rep && rep.me ? rep.me.deviation : null;
+      const dev = model ? model.deviation : (raw === null || raw === undefined || raw === "" ? null : Number(raw));
+      return { dev: Number.isFinite(dev) ? dev : null, model: model, lo: model ? model.lo : null, hi: model ? model.hi : null };
+    }
+
+    // 答案を Part ごとに集計（難易度の内訳表示用）
+    function mockPartStats(result) {
+      const map = {};
+      (ALL_WORDS || []).forEach(w => { map[w.id] = w; });
+      const out = {};
+      ((result && result.answers) || []).forEach(a => {
+        const w = a ? map[a.id] : null;
+        if (!w) return;
+        const p = Number(w.part) || 0;
+        if (!p) return;
+        if (!out[p]) out[p] = { correct: 0, total: 0 };
+        out[p].total += 1;
+        if (a.correct) out[p].correct += 1;
+      });
+      return out;
+    }
+
+    function mockRenderDifficultyCard(rep) {
+      const result = (rep && rep.me && rep.me.result) || null;
+      if (!result) return "";
+      const parts = mockPartStats(result);
+      const rows = Object.keys(parts).map(Number).sort((a, b) => a - b).map(p => {
+        const s = parts[p];
+        const def = (typeof LEAP_DIFFICULTY !== "undefined" && LEAP_DIFFICULTY.parts[p]) || {};
+        const pct = s.total ? Math.round(s.correct / s.total * 100) : 0;
+        return `<div class="flex items-center gap-2 text-[10px]">
+          <span class="w-14 shrink-0 font-bold text-slate-700">Part ${p}</span>
+          <span class="shrink-0 text-slate-400 w-12">${escapeHtml(def.label || "")}</span>
+          <span class="h-1.5 flex-1 bg-slate-200 rounded-full overflow-hidden"><span class="block h-full bg-indigo-400" style="width:${pct}%"></span></span>
+          <span class="shrink-0 tabular-nums text-slate-600 w-14 text-right">${s.correct}/${s.total}</span>
+        </div>`;
+      }).join("");
+      if (!rows) return "";
+      return `<div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-2">
+        <p class="text-xs font-bold text-slate-700">🧩 難易度別の内訳</p>
+        ${rows}
+        <p class="text-[10px] text-slate-400 leading-relaxed">Part ごとの難易度（基礎→難関）を重みとして採点しています。${escapeHtml(mockModelNote(rep))}</p>
+      </div>`;
+    }
+
+    // 志望校ロードマップの志望校でも判定を出す（未ログイン・オフラインでも）
+    function mockRenderRoadmapJudge(rep) {
+      const rm = userData.roadmap;
+      if (!rm || !rm.label) return "";
+      const j = mockJudgeFor({ groupName: rm.label, tier: rm.tier, percentileWithin: null }, rep);
+      const gap = mockJudgeGap({ tier: rm.tier }, rep);
+      return `<div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-1">
+        <p class="text-xs font-bold text-slate-700">🎯 志望校判定（ロードマップ）</p>
+        <div class="border rounded-xl p-3 ${j.cls}">
+          <div class="flex items-center justify-between gap-2"><p class="text-[11px] font-extrabold truncate">${escapeHtml(rm.label)}</p><span class="text-[11px] font-extrabold border rounded-md px-1.5 py-0.5 bg-white/70">${j.label}</span></div>
+          <p class="text-[10px] mt-1">${escapeHtml(j.note)}</p>
+          ${gap ? `<p class="text-[10px] font-extrabold mt-1">${escapeHtml(gap.label)}</p>` : ""}
+        </div>
+        <button type="button" onclick="openRoadmap()" class="w-full mt-1 py-2 bg-white hover:bg-slate-50 border border-slate-300 text-slate-700 text-[10px] font-bold rounded-lg cursor-pointer">ロードマップで今日の計画を見る</button>
+      </div>`;
+    }
+
+    function mockModelNote(rep) {
+      const v = mockDeviationView(rep);
+      if (!v.model) return "";
+      return `難易度つき採点（3PL/EAP）: 偏差値 ${v.dev}（目安 ${v.lo}–${v.hi}）／ 使用 ${v.model.scored} 問`;
+    }
+
+    // RPC が使えないときのフォールバック（難易度モデルがあればそれを使う）
     function mockBuildLocalReport(exam, result) {
       const total = Math.max(1, Number(result && result.total) || 1);
       const score = Number(result && result.score) || 0;
       const theory = mockTheoryMeanForExam(exam);
       const p = Math.min(0.95, Math.max(0.05, theory / total));
       const sd = Math.max(Math.sqrt(total * p * (1 - p)), Math.max(total * 0.06, 2));
-      const dev = Math.round(Math.min(75, Math.max(25, 50 + 10 * (score - theory) / sd)) * 10) / 10;
+      const legacy = Math.round(Math.min(75, Math.max(25, 50 + 10 * (score - theory) / sd)) * 10) / 10;
+      const model = mockModelScore(result);
       return {
         ok: true, local: true,
         stats: {
           n: 1, n_all: 1, n_late: result && result.is_late ? 1 : 0, mean: score,
           trimmed_mean: score, theory_mean: Math.round(theory * 10) / 10,
           hybrid_mean: Math.round(theory * 10) / 10, sd_sample: 0,
-          sd_effective: Math.round(sd * 100) / 100, provisional: true
+          sd_effective: Math.round(sd * 100) / 100,
+          provisional: !model, model: !!model, lo: model ? model.lo : null, hi: model ? model.hi : null
         },
-        me: { result: result, rank: null, percentile: null, deviation: dev, provisional: true },
+        me: { result: result, rank: null, percentile: null, deviation: model ? model.deviation : legacy, model: model, provisional: !model },
         groups: [], allGroups: []
       };
     }
@@ -951,6 +1067,7 @@
       const missHtml = an.missed.slice(0, 12).map(r => `<div class="flex items-start justify-between gap-2 bg-rose-50/60 border border-rose-100 rounded-lg px-2.5 py-1.5">
         <div class="min-w-0">
           <p class="text-[11px] font-extrabold text-slate-800 truncate">${escapeHtml(r.word.word)}<span class="text-[9px] text-slate-400 ml-1">#${r.word.id}</span></p>
+          ${(typeof wordIpa === "function" && wordIpa(r.word)) ? `<p class="text-[9px] text-slate-400 tracking-wide truncate">[${escapeHtml(wordIpa(r.word))}]</p>` : ""}
           <p class="text-[10px] text-slate-500 truncate">${escapeHtml(r.word.meaning || "")}</p>
         </div>
         <span class="shrink-0 text-[9px] font-bold text-rose-700">${escapeHtml(mockPartLabel(exam, r.word.part))}</span>
@@ -1335,9 +1452,11 @@
 
     function mockJudgeFor(group, rep) {
       const stats = (rep && rep.stats) || {};
+      const model = (rep && rep.me && rep.me.model) || null;
       const devRaw = rep && rep.me ? rep.me.deviation : null;
-      const dev = (devRaw === null || devRaw === undefined || devRaw === "") ? NaN : Number(devRaw);
-      const provisional = !!stats.provisional || !!(group && group.provisional) || !!(rep && rep.local);
+      // モデル推定があるときは信頼区間の下限で判定する（1回の出来で過大評価しない）
+      const dev = model ? Number(model.lo) : ((devRaw === null || devRaw === undefined || devRaw === "") ? NaN : Number(devRaw));
+      const provisional = !model && (!!stats.provisional || !!(group && group.provisional) || !!(rep && rep.local));
       if (!Number.isFinite(dev)) {
         return { label: "判定保留", cls: "text-slate-700 bg-slate-50 border-slate-300", note: "偏差値を算出できませんでした" };
       }
@@ -1348,30 +1467,30 @@
           note: `受験者数 N=${Number(stats.n) || 0}（5未満）のため参考値。データが増えると判定が安定します。`
         };
       }
-      const tier = Number(group && group.tier) || 3;
-      const th = MOCK_JUDGE_THRESHOLDS[tier] || MOCK_JUDGE_THRESHOLDS[3];
-      let idx = dev >= th[0] ? 0 : dev >= th[1] ? 1 : dev >= th[2] ? 2 : 3;
-      const within = Number(group && group.percentileWithin);
-      if (Number.isFinite(within) && group.percentileWithin !== null) {
-        if (within <= 25 && idx > 0) idx -= 1;
-        else if (within >= 80 && idx < 3) idx += 1;
-      }
+      const tier = Number(group && group.tier) || Number((userData.roadmap || {}).tier) || 3;
+      const classes = {
+        A: "text-emerald-800 bg-emerald-50 border-emerald-300",
+        B: "text-sky-800 bg-sky-50 border-sky-300",
+        C: "text-amber-800 bg-amber-50 border-amber-300",
+        D: "text-rose-800 bg-rose-50 border-rose-300"
+      };
+      const judged = (typeof LeapMockScore !== "undefined")
+        ? LeapMockScore.judgeTier(tier, dev, { percentileWithin: group && group.percentileWithin })
+        : null;
       const labels = ["A（合格圏）", "B（挑戦圏）", "C（要強化）", "D（基礎固め）"];
-      const classes = [
-        "text-emerald-800 bg-emerald-50 border-emerald-300",
-        "text-sky-800 bg-sky-50 border-sky-300",
-        "text-amber-800 bg-amber-50 border-amber-300",
-        "text-rose-800 bg-rose-50 border-rose-300"
-      ];
+      const label = judged ? judged.label : labels[3];
+      const grade = judged ? judged.grade : "D";
       return {
-        label: labels[idx], cls: classes[idx],
-        note: `tier ${tier}${mockTierLabel(tier) ? `（${mockTierLabel(tier)}）` : ""}基準 ／ 偏差値 ${dev}`
+        label: label,
+        cls: classes[grade] || classes.D,
+        note: `tier ${tier}${mockTierLabel(tier) ? `（${mockTierLabel(tier)}）` : ""}基準 ／ 偏差値（下限）${Math.round(dev * 10) / 10}${model ? `（推定 ${model.deviation}）` : ""}`
       };
     }
 
     // 合格圏（A）まであと何ポイントの偏差値が必要か
     function mockJudgeGap(group, rep) {
-      const raw = rep && rep.me ? rep.me.deviation : null;
+      const model = rep && rep.me && rep.me.model;
+      const raw = model ? model.lo : (rep && rep.me ? rep.me.deviation : null);
       if (raw === null || raw === undefined || raw === "") return null;
       const dev = Number(raw);
       if (!Number.isFinite(dev)) return null;
@@ -1399,22 +1518,27 @@
         const offSec = Math.max(0, Number(r.elapsed_sec) || 0);
         const offMin = Math.floor(offSec / 60);
         const offRest = String(offSec % 60).padStart(2, "0");
+        const view = mockDeviationView(rep);
         wrap.innerHTML = `<div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-3">
           <div class="flex items-center justify-between gap-2">
             <p class="text-xs font-bold text-slate-700">📝 端末内の採点結果</p>
             <span class="text-[10px] font-extrabold px-2 py-0.5 rounded-full border text-slate-700 bg-slate-50 border-slate-300">オフライン記録</span>
           </div>
-          <div class="grid grid-cols-3 gap-2 text-center">
+          <div class="grid grid-cols-2 gap-2 text-center">
             <div class="bg-slate-50 rounded-xl p-2"><p class="text-[10px] font-bold text-slate-400">得点</p><p class="text-xl font-extrabold text-slate-900 tabular-nums">${offScore}<span class="text-[11px] text-slate-400">/${offTotal}</span></p></div>
             <div class="bg-slate-50 rounded-xl p-2"><p class="text-[10px] font-bold text-slate-400">正答率</p><p class="text-xl font-extrabold text-emerald-700 tabular-nums">${offAcc}<span class="text-[11px] text-slate-400">%</span></p></div>
+            <div class="bg-indigo-50 rounded-xl p-2"><p class="text-[10px] font-bold text-indigo-500">偏差値</p><p class="text-xl font-extrabold text-indigo-700 tabular-nums">${view.dev === null ? "-" : view.dev}</p><p class="text-[9px] font-bold text-indigo-500">${view.model ? `目安 ${view.lo}–${view.hi}` : "参考"}</p></div>
             <div class="bg-slate-50 rounded-xl p-2"><p class="text-[10px] font-bold text-slate-400">所要時間</p><p class="text-xl font-extrabold text-indigo-700 tabular-nums">${offMin}<span class="text-[11px] text-slate-400">分${offRest}秒</span></p></div>
           </div>
+          ${mockRenderDifficultyCard(rep)}
+          ${mockRenderRoadmapJudge(rep)}
           ${mockRenderWeaknessCard(exam, r)}
           ${mockRenderTimeCard(exam, r)}
           ${mockRenderNoteCard(exam)}
           ${mockRenderHistoryCard(exam)}
           ${r.is_late ? `<p class="text-[10px] font-bold text-amber-800 bg-amber-50 border border-amber-200 rounded-lg px-2 py-1">終了時刻を過ぎた提出のため参考記録です。</p>` : ""}
-          <p class="text-[10px] text-slate-400 leading-relaxed">${exam && exam.offline ? "練習模試のため、全国順位・偏差値・志望校判定はありません。" : "ログインすると全国集計に提出でき、偏差値・順位・志望校判定が表示されます。"}</p>
+          <p class="text-[10px] text-slate-400 leading-relaxed">${exam && exam.offline ? "この端末だけで採点する診断模試です。偏差値・志望校判定は難易度つきの目安で、全国順位はログイン時に全国一斉模試へ提出すると表示されます。" : "ログインすると全国集計に提出でき、偏差値・順位・志望校判定が表示されます。"}</p>
+          ${(!mockIsReady() && supabaseClient) ? `<button type="button" onclick="openAccount()" class="w-full py-2.5 bg-sky-600 hover:bg-sky-700 text-white text-[11px] font-bold rounded-xl transition cursor-pointer">☁️ ログインして全国順位も見る</button>` : ""}
           ${mockSubmitNote ? `<p class="text-[11px] font-bold text-indigo-800 bg-indigo-50 border border-indigo-200 rounded-lg px-3 py-2">${escapeHtml(mockSubmitNote)}</p>` : ""}
           ${(mockIsReady() && exam && !exam.offline) ? `<button type="button" onclick="resubmitLocalMockResult()" class="w-full py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-[11px] font-bold rounded-xl transition cursor-pointer">☁️ 全国集計に提出する</button>` : ""}
           <div class="grid grid-cols-2 gap-2">
@@ -1429,8 +1553,10 @@
       if (result) {
         const stats = (rep && rep.stats) || {};
         const my = (rep && rep.me) || {};
-        const provisional = !!stats.provisional || !!(rep && rep.local);
-        const dev = (my.deviation === null || my.deviation === undefined) ? "-" : my.deviation;
+        const view = mockDeviationView(rep);
+        const model = view.model;
+        const provisional = !model && (!!stats.provisional || !!(rep && rep.local));
+        const dev = view.dev === null ? "-" : view.dev;
         const total = Math.max(1, Number(result.total) || 1);
         const score = Number(result.score) || 0;
         const pct = (my.percentile === null || my.percentile === undefined) ? "-" : my.percentile;
@@ -1440,10 +1566,10 @@
         parts.push(`<div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-3">
           <div class="flex items-center justify-between gap-2">
             <p class="text-xs font-bold text-slate-700">📊 成績表</p>
-            <span class="text-[10px] font-extrabold px-2 py-0.5 rounded-full border ${provisional ? "text-amber-800 bg-amber-50 border-amber-300" : "text-emerald-800 bg-emerald-50 border-emerald-300"}">${provisional ? "暫定（データ不足・参考値）" : "確定集計"}</span>
+            <span class="text-[10px] font-extrabold px-2 py-0.5 rounded-full border ${(provisional || (model && n < 5)) ? "text-amber-800 bg-amber-50 border-amber-300" : "text-emerald-800 bg-emerald-50 border-emerald-300"}">${provisional ? "暫定（データ不足・参考値）" : (model && n < 5 ? "難易度モデル採点（参考）" : "確定集計")}</span>
           </div>
           <div class="grid grid-cols-3 gap-2 text-center">
-            <div class="bg-slate-50 rounded-xl p-2"><p class="text-[10px] font-bold text-slate-400">偏差値</p><p class="text-2xl font-extrabold text-indigo-700 tabular-nums">${dev}</p></div>
+            <div class="bg-slate-50 rounded-xl p-2"><p class="text-[10px] font-bold text-slate-400">偏差値</p><p class="text-2xl font-extrabold text-indigo-700 tabular-nums">${dev}</p>${model ? `<p class="text-[9px] font-bold text-indigo-500">目安 ${model.lo}–${model.hi}</p>` : ""}</div>
             <div class="bg-slate-50 rounded-xl p-2"><p class="text-[10px] font-bold text-slate-400">順位</p><p class="text-2xl font-extrabold text-slate-900 tabular-nums">${rank}<span class="text-xs font-bold text-slate-400">位</span></p><p class="text-[10px] text-slate-400">/ ${n}人</p></div>
             <div class="bg-slate-50 rounded-xl p-2"><p class="text-[10px] font-bold text-slate-400">上位</p><p class="text-2xl font-extrabold text-emerald-700 tabular-nums">${pctileText}<span class="text-xs font-bold text-slate-400">%</span></p></div>
           </div>
@@ -1455,7 +1581,7 @@
             <p>受験者数 N=<span class="font-bold text-slate-700">${n}</span>${Number(stats.n_late) ? `（参考記録 ${stats.n_late}件を除く）` : ""}</p>
             <p>集計単位: 全体</p>
             <p>平均 ${stats.mean} ／ トリム平均 ${stats.trimmed_mean}</p>
-            <p>理論平均 ${stats.theory_mean} ／ 実効SD ${stats.sd_effective}</p>
+            <p>理論平均 ${stats.theory_mean} ／ 実効SD ${stats.sd_effective}${model ? " ／ 難易度モデル採点" : ""}</p>
           </div>
           ${mockSubmitNote ? `<p class="text-[11px] font-bold text-amber-800 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2">${escapeHtml(mockSubmitNote)}</p>` : ""}
           ${rep && rep.local ? `<p class="text-[10px] text-rose-600">サーバー集計に接続できないため、理論平均だけを使った参考値を表示しています。</p>` : ""}
@@ -1464,8 +1590,11 @@
             <button type="button" onclick="reviewMockMistakes()" class="py-2.5 bg-rose-600 hover:bg-rose-700 text-white text-[11px] font-bold rounded-xl transition cursor-pointer">🔥 間違いを復習</button>
             <button type="button" onclick="registerMockMistakesToWeak()" class="col-span-2 py-2.5 bg-white hover:bg-rose-50 border border-rose-300 text-rose-700 text-[11px] font-bold rounded-xl transition cursor-pointer">🧠 間違えた単語を苦手に登録</button>
           </div>
+          ${(!mockIsReady() && supabaseClient) ? `<button type="button" onclick="openAccount()" class="w-full py-2.5 bg-sky-600 hover:bg-sky-700 text-white text-[11px] font-bold rounded-xl transition cursor-pointer">☁️ ログインして順位も確定させる</button>` : ""}
           <button type="button" onclick="openMockFeedback()" class="w-full py-2 bg-white hover:bg-slate-50 border border-slate-200 text-slate-600 text-[10px] font-bold rounded-xl transition cursor-pointer">📮 この模試の感想を送る</button>
         </div>`);
+        parts.push(mockRenderDifficultyCard(rep));
+        parts.push(mockRenderRoadmapJudge(rep));
       } else {
         parts.push(`<div class="bg-white p-4 rounded-xl border border-dashed border-slate-300 text-center"><p class="text-2xl">🗓️</p><p class="text-xs font-bold text-slate-600 mt-1">まだ受験結果がありません</p><p class="text-[11px] text-slate-400 mt-0.5">受験期間内に挑戦すると、偏差値・順位・志望校判定が表示されます。</p></div>`);
       }
@@ -1560,12 +1689,12 @@
         notice.innerHTML = `<div class="bg-indigo-50 border border-indigo-200 rounded-2xl p-4 space-y-2">
           <p class="text-sm font-bold text-indigo-900">🚀 ログインなしで受験できます</p>
           <p class="text-[11px] text-indigo-800 leading-relaxed">模試の受験・採点・復習はこのまま使えます。ログインすると結果が全国集計に提出され、偏差値・順位・志望校判定が表示されます。</p>
-          <button type="button" onclick="navigate('screen-social')" class="px-3 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-[11px] font-bold rounded-xl transition cursor-pointer">ログインして全国集計に参加</button>
+          <button type="button" onclick="openAccount()" class="px-3 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-[11px] font-bold rounded-xl transition cursor-pointer">ログインして全国集計に参加</button>
         </div>`;
       } else {
         notice.innerHTML = `<div class="bg-amber-50 border border-amber-200 rounded-2xl p-4 space-y-1">
-          <p class="text-sm font-bold text-amber-900">🎯 オフライン練習模試</p>
-          <p class="text-[11px] text-amber-800 leading-relaxed">この端末では Supabase が未設定のため全国集計は使えませんが、端末内の単語から作った練習模試（30問・20分）を受験できます。結果はこの端末に保存されます。</p>
+          <p class="text-sm font-bold text-amber-900">🎯 いつでも実力診断模試</p>
+          <p class="text-[11px] text-amber-800 leading-relaxed">この端末では Supabase が未設定のため全国集計は使えませんが、Part 1〜5 を均等に混ぜた診断模試（30問・20分）を受験できます。難易度つき採点で偏差値・志望校判定の目安が出ます。</p>
         </div>`;
       }
       if (!mockExamsLoaded && !mockBusy) loadMockExams();

@@ -370,3 +370,60 @@ html.dark [class~="text-slate-100"] { color: #f1f5f9 !important; }
 html.dark [class~="divide-slate-100"] > :not([hidden]) ~ :not([hidden]),
 html.dark [class~="divide-slate-200"] > :not([hidden]) ~ :not([hidden]) { border-color: #334155 !important; }
 html.dark select option { background-color: #1e293b; color: #f8fafc; }
+
+/* ===== ホームのメニュータイル ===== */
+.menu-tile {
+  display: block;
+  text-align: left;
+  padding: 0.625rem 0.5rem;
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.75rem;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05);
+  transition: background-color 0.15s, border-color 0.15s, transform 0.15s;
+  cursor: pointer;
+}
+.menu-tile:hover { background-color: #f8fafc; }
+.menu-tile:active { transform: scale(0.98); }
+.menu-tile-icon { display: block; font-size: 1rem; line-height: 1; }
+.menu-tile-label {
+  display: block;
+  margin-top: 0.25rem;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1.25;
+  color: #1e293b;
+}
+.menu-tile-sub {
+  display: block;
+  font-size: 9px;
+  line-height: 1.25;
+  color: #94a3b8;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.menu-tile--shop { border-color: #fde68a; }
+.menu-tile--shop:hover { background-color: #fffbeb; }
+.menu-tile--shop .menu-tile-sub { color: #b45309; }
+.menu-tile--row {
+  text-align: center;
+  font-size: 11px;
+  font-weight: 700;
+  color: #334155;
+}
+
+html.dark .menu-tile,
+html[data-theme="dark"] .menu-tile { background-color: #172033; border-color: #334155; }
+html.dark .menu-tile:hover,
+html[data-theme="dark"] .menu-tile:hover { background-color: #1f2a40; }
+html.dark .menu-tile-label,
+html[data-theme="dark"] .menu-tile-label { color: #f8fafc; }
+html.dark .menu-tile-sub,
+html[data-theme="dark"] .menu-tile-sub { color: #cbd5e1; }
+html.dark .menu-tile--shop,
+html[data-theme="dark"] .menu-tile--shop { border-color: rgba(217, 119, 6, 0.55); }
+html.dark .menu-tile--shop .menu-tile-sub,
+html[data-theme="dark"] .menu-tile--shop .menu-tile-sub { color: #fcd34d; }
+html.dark .menu-tile--row,
+html[data-theme="dark"] .menu-tile--row { color: #dbe4ef; }
